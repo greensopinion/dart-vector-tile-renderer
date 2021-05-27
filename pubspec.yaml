@@ -1,7 +1,7 @@
 name: tile_inator
 description: A vector tile renderer for use in creating map tile images.
 version: 0.0.1
-homepage:
+homepage: https://github.com/greensopinion/tile_inator
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+dev_dependencies: 
+  test: ^1.17.5
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
