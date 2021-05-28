@@ -4,27 +4,34 @@ import 'package:vector_tile/vector_tile.dart';
 
 import 'polygon_renderer.dart';
 import '../logger.dart';
+import '../theme.dart';
 
 abstract class FeatureRenderer {
-  void render(Canvas canvas, VectorTileLayer layer, VectorTileFeature feature);
+  void render(Canvas canvas, ThemeElement theme, VectorTileLayer layer,
+      VectorTileFeature feature);
 }
 
-class FeatureRendererDispatcher extends FeatureRenderer {
+class FeatureDispatcher {
   final Logger logger;
   final Map<VectorTileGeomType, FeatureRenderer> typeToRenderer;
 
-  FeatureRendererDispatcher(this.logger)
+  FeatureDispatcher(this.logger)
       : typeToRenderer = createDispatchMapping(logger);
 
-  @override
-  void render(Canvas canvas, VectorTileLayer layer, VectorTileFeature feature) {
+  void render(Canvas canvas, Theme theme, VectorTileLayer layer,
+      VectorTileFeature feature) {
     final type = feature.type;
     if (type != null) {
       final delegate = typeToRenderer[type];
       if (delegate == null) {
         logger.warn(() => 'feature $type is not implemented');
       } else {
-        delegate.render(canvas, layer, feature);
+        final themeElement = theme.element(name: layer.name);
+        if (themeElement == null) {
+          logger.warn(() => 'no theme for ${layer.name}, skipping feature');
+        } else {
+          delegate.render(canvas, themeElement, layer, feature);
+        }
       }
     }
   }

@@ -8,13 +8,14 @@ import 'features/feature_renderer.dart';
 import 'logger.dart';
 
 class Renderer {
+  final Theme theme;
   final LayerFilter layerFilter;
   final Logger logger;
-  final FeatureRenderer featureRenderer;
+  final FeatureDispatcher featureRenderer;
 
-  Renderer({required this.layerFilter, Logger? logger})
+  Renderer({required this.theme, required this.layerFilter, Logger? logger})
       : this.logger = logger ?? Logger.noop(),
-        featureRenderer = FeatureRendererDispatcher(logger ?? Logger.noop());
+        featureRenderer = FeatureDispatcher(logger ?? Logger.noop());
 
   void render(Canvas canvas, VectorTile tile) {
     _filteredLayers(tile).forEach((layer) {
@@ -25,7 +26,7 @@ class Renderer {
   void _renderLayer(Canvas canvas, VectorTileLayer layer) {
     logger.log(() => 'rendering layer ${layer.name}');
     layer.features.forEach((feature) {
-      featureRenderer.render(canvas, layer, feature);
+      featureRenderer.render(canvas, theme, layer, feature);
     });
   }
 

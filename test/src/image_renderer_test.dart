@@ -15,6 +15,7 @@ void main() {
     final bytes = await File('test_data/sample_tile.pbf').readAsBytes();
     final tile = VectorTileReader().read(bytes);
     final renderer = ImageRenderer(
+        theme: LightTheme(),
         scale: 4,
         layerFilter: LayerFilter.named(names: ['water', 'waterway']),
         logger: testLogger);

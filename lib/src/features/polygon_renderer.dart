@@ -5,6 +5,7 @@ import 'package:vector_tile/vector_tile_feature.dart';
 import 'dart:ui';
 
 import '../logger.dart';
+import '../theme.dart';
 import 'feature_renderer.dart';
 
 class PolygonRenderer extends FeatureRenderer {
@@ -12,7 +13,8 @@ class PolygonRenderer extends FeatureRenderer {
 
   PolygonRenderer(this.logger);
   @override
-  void render(Canvas canvas, VectorTileLayer layer, VectorTileFeature feature) {
+  void render(Canvas canvas, ThemeElement theme, VectorTileLayer layer,
+      VectorTileFeature feature) {
     final geometry = feature.decodeGeometry();
     if (geometry != null) {
       if (geometry.type == GeometryType.Polygon) {
@@ -36,11 +38,7 @@ class PolygonRenderer extends FeatureRenderer {
             }
           });
         });
-        final paint = Paint()
-          ..style = PaintingStyle.fill
-          ..color = Color.fromARGB(255, 0xad, 0xcd, 0xeb)
-          ..strokeWidth = 1.0;
-        canvas.drawPath(path, paint);
+        canvas.drawPath(path, theme.paint);
       } else {
         logger.warn(
             () => 'polygon geometryType=${geometry.type} is not implemented');
