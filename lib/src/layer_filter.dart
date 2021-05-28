@@ -1,4 +1,4 @@
-import 'package:tile_inator/tile_inator.dart';
+import 'package:dart_vector_tile_renderer/renderer.dart';
 
 abstract class LayerFilter {
   factory LayerFilter.named({required List<String> names}) =>

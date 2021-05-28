@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:tile_inator/src/vector_tile_reader.dart';
-import 'package:tile_inator/tile_inator.dart';
+import 'package:dart_vector_tile_renderer/src/vector_tile_reader.dart';
+import 'package:dart_vector_tile_renderer/renderer.dart';
 import 'extensions.dart';
 
 void main() {

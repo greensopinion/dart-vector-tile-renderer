@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:tile_inator/tile_inator.dart';
+import 'package:dart_vector_tile_renderer/renderer.dart';
 
 import 'package:vector_tile/vector_tile.dart';
 

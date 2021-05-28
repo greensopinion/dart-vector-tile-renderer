@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:tile_inator/src/layer_filter.dart';
-import 'package:tile_inator/tile_inator.dart';
+import 'package:dart_vector_tile_renderer/src/layer_filter.dart';
+import 'package:dart_vector_tile_renderer/renderer.dart';
 
 import 'fakes.dart';
 

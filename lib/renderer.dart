@@ -1,4 +1,4 @@
-library tile_inator;
+library dart_vector_tile_renderer;
 
 export 'package:vector_tile/vector_tile.dart';
 

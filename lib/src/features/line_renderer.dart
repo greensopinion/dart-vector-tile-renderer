@@ -1,4 +1,4 @@
-import 'package:tile_inator/src/constants.dart';
+import 'package:dart_vector_tile_renderer/src/constants.dart';
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
 

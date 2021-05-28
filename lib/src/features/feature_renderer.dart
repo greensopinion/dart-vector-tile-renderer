@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:tile_inator/src/features/line_renderer.dart';
+import 'package:dart_vector_tile_renderer/src/features/line_renderer.dart';
 import 'package:vector_tile/vector_tile.dart';
 
 import 'polygon_renderer.dart';

@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:tile_inator/tile_inator.dart';
+import 'package:dart_vector_tile_renderer/renderer.dart';
 
 void main() {
   test('provides a renderer', () {

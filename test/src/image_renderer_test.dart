@@ -3,9 +3,9 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:test/test.dart';
-import 'package:tile_inator/src/image_renderer.dart';
-import 'package:tile_inator/src/vector_tile_reader.dart';
-import 'package:tile_inator/tile_inator.dart';
+import 'package:dart_vector_tile_renderer/src/image_renderer.dart';
+import 'package:dart_vector_tile_renderer/src/vector_tile_reader.dart';
+import 'package:dart_vector_tile_renderer/renderer.dart';
 
 import 'test_files.dart';
 import 'test_logger.dart';
