@@ -25,7 +25,7 @@ class Renderer {
   void _renderLayer(Canvas canvas, VectorTileLayer layer) {
     logger.log(() => 'rendering layer ${layer.name}');
     layer.features.forEach((feature) {
-      featureRenderer.render(canvas, feature);
+      featureRenderer.render(canvas, layer, feature);
     });
   }
 

@@ -12,7 +12,6 @@ import 'test_logger.dart';
 
 void main() {
   test('renders a vector tile', () async {
-    final size = 1024;
     final bytes = await File('test_data/sample_tile.pbf').readAsBytes();
     final tile = VectorTileReader().read(bytes);
     final renderer = ImageRenderer(
@@ -20,11 +19,11 @@ void main() {
         layerFilter: LayerFilter.named(names: ['water', 'waterway']),
         logger: testLogger);
     final image = await renderer.render(tile);
-    expect(image.width, size);
-    expect(image.height, size);
     final imageBytes = await image.toPng();
     final file = await writeTestFile(imageBytes, 'tile.png');
     final stat = await file.stat();
+    expect(image.width, 1024);
+    expect(image.height, 1024);
     expect(stat.size, isNonZero);
   });
 }

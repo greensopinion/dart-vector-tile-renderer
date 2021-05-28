@@ -23,9 +23,7 @@ class ImageRenderer {
     final canvas =
         Canvas(recorder, Rect.fromLTRB(0, 0, size.toDouble(), size.toDouble()));
     canvas.scale(scale.toDouble(), scale.toDouble());
-
     Renderer(layerFilter: layerFilter, logger: logger).render(canvas, tile);
-
     return recorder.endRecording().toImage(size, size);
   }
 }

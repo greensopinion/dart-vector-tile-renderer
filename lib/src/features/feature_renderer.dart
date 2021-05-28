@@ -6,7 +6,7 @@ import 'polygon_renderer.dart';
 import '../logger.dart';
 
 abstract class FeatureRenderer {
-  void render(Canvas canvas, VectorTileFeature feature);
+  void render(Canvas canvas, VectorTileLayer layer, VectorTileFeature feature);
 }
 
 class FeatureRendererDispatcher extends FeatureRenderer {
@@ -16,14 +16,15 @@ class FeatureRendererDispatcher extends FeatureRenderer {
   FeatureRendererDispatcher(this.logger)
       : typeToRenderer = createDispatchMapping(logger);
 
-  void render(Canvas canvas, VectorTileFeature feature) {
+  @override
+  void render(Canvas canvas, VectorTileLayer layer, VectorTileFeature feature) {
     final type = feature.type;
     if (type != null) {
       final delegate = typeToRenderer[type];
       if (delegate == null) {
         logger.warn(() => 'feature $type is not implemented');
       } else {
-        delegate.render(canvas, feature);
+        delegate.render(canvas, layer, feature);
       }
     }
   }
