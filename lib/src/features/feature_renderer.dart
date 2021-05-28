@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:tile_inator/src/features/line_renderer.dart';
 import 'package:vector_tile/vector_tile.dart';
 
 import 'polygon_renderer.dart';
@@ -38,6 +39,9 @@ class FeatureDispatcher {
 
   static Map<VectorTileGeomType, FeatureRenderer> createDispatchMapping(
       Logger logger) {
-    return {VectorTileGeomType.POLYGON: PolygonRenderer(logger)};
+    return {
+      VectorTileGeomType.POLYGON: PolygonRenderer(logger),
+      VectorTileGeomType.LINESTRING: LineRenderer(logger)
+    };
   }
 }

@@ -1,9 +1,10 @@
 import 'dart:ui';
 
 class ThemeElement {
-  final Paint paint;
+  final Paint fillPaint;
+  final Paint linePaint;
 
-  ThemeElement(this.paint);
+  ThemeElement({required this.fillPaint, required this.linePaint});
 }
 
 class Theme {

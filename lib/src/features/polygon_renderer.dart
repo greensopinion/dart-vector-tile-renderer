@@ -38,7 +38,7 @@ class PolygonRenderer extends FeatureRenderer {
             }
           });
         });
-        canvas.drawPath(path, theme.paint);
+        canvas.drawPath(path, theme.fillPaint);
       } else {
         logger.warn(
             () => 'polygon geometryType=${geometry.type} is not implemented');
