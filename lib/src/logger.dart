@@ -6,6 +6,7 @@ abstract class Logger {
   const Logger._();
 
   void log(MessageFunction message);
+  void warn(MessageFunction message);
 }
 
 class _NoOpLogger extends Logger {
@@ -13,6 +14,8 @@ class _NoOpLogger extends Logger {
 
   @override
   void log(MessageFunction message) {}
+  @override
+  void warn(MessageFunction message) {}
 }
 
 class _ConsoleLogger extends Logger {
@@ -21,5 +24,11 @@ class _ConsoleLogger extends Logger {
   @override
   void log(MessageFunction message) {
     print(message());
+  }
+
+  @override
+  void warn(MessageFunction message) {
+    final t = message();
+    print('WARN: $t');
   }
 }
