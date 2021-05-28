@@ -1,7 +1,9 @@
 import 'dart:ui';
 
-import 'tile.dart';
+import 'package:tile_inator/tile_inator.dart';
+
+import 'package:vector_tile/vector_tile.dart';
 
 class Renderer {
-  void render(Canvas canvas, Tile tile) {}
+  void render(Canvas canvas, VectorTile tile) {}
 }
