@@ -1,5 +1,5 @@
 name: dart_vector_tile_renderer
-description: A vector tile renderer for use in creating map tile images.
+description: A vector tile renderer for use in creating map tile images or writing to a canvas.
 version: 0.0.1
 homepage: https://github.com/greensopinion/dart-vector-tile-renderer
 
