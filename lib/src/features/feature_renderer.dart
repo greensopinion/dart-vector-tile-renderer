@@ -1,25 +1,25 @@
 import 'dart:ui';
 
-import 'package:dart_vector_tile_renderer/src/features/line_renderer.dart';
 import 'package:vector_tile/vector_tile.dart';
 
 import 'polygon_renderer.dart';
+import 'line_renderer.dart';
 import '../logger.dart';
-import '../theme.dart';
+import '../themes/style.dart';
 
 abstract class FeatureRenderer {
-  void render(Canvas canvas, ThemeElement theme, VectorTileLayer layer,
+  void render(Canvas canvas, Style style, VectorTileLayer layer,
       VectorTileFeature feature);
 }
 
-class FeatureDispatcher {
+class FeatureDispatcher extends FeatureRenderer {
   final Logger logger;
   final Map<VectorTileGeomType, FeatureRenderer> typeToRenderer;
 
   FeatureDispatcher(this.logger)
       : typeToRenderer = createDispatchMapping(logger);
 
-  void render(Canvas canvas, Theme theme, VectorTileLayer layer,
+  void render(Canvas canvas, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
     final type = feature.type;
     if (type != null) {
@@ -27,12 +27,7 @@ class FeatureDispatcher {
       if (delegate == null) {
         logger.warn(() => 'feature $type is not implemented');
       } else {
-        final themeElement = theme.element(name: layer.name);
-        if (themeElement == null) {
-          logger.warn(() => 'no theme for ${layer.name}, skipping feature');
-        } else {
-          delegate.render(canvas, themeElement, layer, feature);
-        }
+        delegate.render(canvas, style, layer, feature);
       }
     }
   }

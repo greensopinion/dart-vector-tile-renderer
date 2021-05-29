@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui';
 
+import 'package:dart_vector_tile_renderer/src/themes/outdoor_theme.dart';
+import 'package:dart_vector_tile_renderer/src/themes/theme_reader.dart';
 import 'package:test/test.dart';
 import 'package:dart_vector_tile_renderer/src/image_renderer.dart';
 import 'package:dart_vector_tile_renderer/src/vector_tile_reader.dart';
@@ -15,9 +15,8 @@ void main() {
     final bytes = await File('test_data/sample_tile.pbf').readAsBytes();
     final tile = VectorTileReader().read(bytes);
     final renderer = ImageRenderer(
-        theme: LightTheme(),
+        theme: ThemeReader(testLogger).read(outdoorTheme()),
         scale: 4,
-        layerFilter: LayerFilter.named(names: ['water', 'waterway']),
         logger: testLogger);
     final image = await renderer.render(tile);
     final imageBytes = await image.toPng();

@@ -1,0 +1,40 @@
+import 'dart:ui';
+
+import 'package:dart_vector_tile_renderer/src/constants.dart';
+import 'package:dart_vector_tile_renderer/src/themes/selector.dart';
+
+import '../context.dart';
+import 'style.dart';
+import 'theme.dart';
+
+class FillLayer extends ThemeLayer {
+  final LayerSelector selector;
+  final Style style;
+
+  FillLayer(String id, this.selector, this.style) : super(id);
+
+  @override
+  void render(Context context) {
+    selector.select(context.tile.layers).forEach((layer) {
+      selector.features(layer.features).forEach((feature) {
+        context.featureRenderer.render(context.canvas, style, layer, feature);
+      });
+    });
+  }
+}
+
+class BackgroundLayer extends ThemeLayer {
+  final Color fillColor;
+
+  BackgroundLayer(String id, this.fillColor) : super(id);
+
+  @override
+  void render(Context context) {
+    context.logger.log(() => 'rendering $id');
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = fillColor;
+    context.canvas.drawRect(
+        Rect.fromLTRB(0, 0, tileSize.toDouble(), tileSize.toDouble()), paint);
+  }
+}

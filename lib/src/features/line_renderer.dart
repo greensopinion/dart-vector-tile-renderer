@@ -5,7 +5,7 @@ import 'package:vector_tile/vector_tile_feature.dart';
 import 'dart:ui';
 
 import '../logger.dart';
-import '../theme.dart';
+import '../themes/style.dart';
 import 'feature_renderer.dart';
 
 class LineRenderer extends FeatureRenderer {
@@ -14,8 +14,11 @@ class LineRenderer extends FeatureRenderer {
   LineRenderer(this.logger);
 
   @override
-  void render(Canvas canvas, ThemeElement theme, VectorTileLayer layer,
+  void render(Canvas canvas, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
+    if (style.linePaint == null) {
+      logger.warn(() => 'line does not have a line paint');
+    }
     final geometry = feature.decodeGeometry();
     if (geometry != null) {
       List<List<List<double>>> lines;
@@ -46,7 +49,7 @@ class LineRenderer extends FeatureRenderer {
           }
         });
       });
-      canvas.drawPath(path, theme.linePaint);
+      canvas.drawPath(path, style.linePaint!);
     }
   }
 }
