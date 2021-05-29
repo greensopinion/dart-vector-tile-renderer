@@ -1,3 +1,3 @@
-## 0.1.0
+## 0.1.1
 
 * Initial release, supporting theming, polygons and lines.
