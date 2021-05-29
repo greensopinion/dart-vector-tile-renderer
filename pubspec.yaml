@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  vector_tile: ^0.2.1
+  vector_tile: ^0.2.2
 
 dev_dependencies: 
   test: ^1.17.5
