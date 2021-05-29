@@ -8,4 +8,5 @@ export 'src/image_to_png.dart';
 export 'src/image_renderer.dart';
 export 'src/logger.dart';
 export 'src/themes/theme.dart';
-export 'src/themes/outdoor_theme.dart';
+export 'src/themes/light_theme.dart';
+export 'src/themes/theme_reader.dart';

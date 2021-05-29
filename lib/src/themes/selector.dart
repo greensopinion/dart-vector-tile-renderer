@@ -8,7 +8,7 @@ abstract class LayerSelector {
       _CompositeSelector;
   factory LayerSelector.named(String name) = _NamedLayerSelector;
   factory LayerSelector.withProperty(String name,
-      {required List<String> values,
+      {required List<dynamic> values,
       required bool negated}) = _PropertyLayerSelector;
 
   Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers);
@@ -52,7 +52,7 @@ class _NamedLayerSelector extends LayerSelector {
 
 class _PropertyLayerSelector extends LayerSelector {
   final String name;
-  final List<String> values;
+  final List<dynamic> values;
   final bool negated;
   _PropertyLayerSelector(this.name,
       {required this.values, required this.negated})
@@ -60,9 +60,7 @@ class _PropertyLayerSelector extends LayerSelector {
 
   @override
   Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) =>
-      tileLayers.where((layer) {
-        return features(layer.features).isNotEmpty;
-      });
+      tileLayers;
 
   @override
   Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
@@ -72,12 +70,15 @@ class _PropertyLayerSelector extends LayerSelector {
     });
   }
 
-  _matches(VectorTileValue? value) {
-    final match = value == null
-        ? false
-        : value.stringValue == null
-            ? false
-            : values.contains(value.stringValue);
+  bool _matches(VectorTileValue? value) {
+    if (value == null) {
+      return false;
+    }
+    final v = value.dartStringValue ??
+        value.dartIntValue?.toInt() ??
+        value.dartDoubleValue ??
+        value.dartBoolValue;
+    final match = v == null ? false : values.contains(v);
     return negated ? !match : match;
   }
 }

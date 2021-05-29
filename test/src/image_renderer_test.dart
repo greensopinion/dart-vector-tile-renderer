@@ -1,10 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_vector_tile_renderer/src/themes/outdoor_theme.dart';
-import 'package:dart_vector_tile_renderer/src/themes/theme_reader.dart';
 import 'package:test/test.dart';
-import 'package:dart_vector_tile_renderer/src/image_renderer.dart';
-import 'package:dart_vector_tile_renderer/src/vector_tile_reader.dart';
 import 'package:dart_vector_tile_renderer/renderer.dart';
 
 import 'test_files.dart';
@@ -15,7 +11,7 @@ void main() {
     final bytes = await File('test_data/sample_tile.pbf').readAsBytes();
     final tile = VectorTileReader().read(bytes);
     final renderer = ImageRenderer(
-        theme: ThemeReader(testLogger).read(outdoorTheme()),
+        theme: ThemeReader(testLogger).read(lightTheme()),
         scale: 4,
         logger: testLogger);
     final image = await renderer.render(tile);

@@ -14,44 +14,51 @@ class SelectorFactory {
       if (filter == null) {
         return selector;
       }
-      if (filter.length < 3) {
-        if (filter[0] == 'all' && filter[1] is List) {
-          filter = filter[1] as List<dynamic>;
-        } else {
-          throw Exception('unexpected filter: $filter');
-        }
-      }
-      final op = filter[0];
-      final LayerSelector filterSelector;
-      if (op == '==') {
-        filterSelector = _equalsSelector(filter);
-      } else if (op == 'in') {
-        filterSelector = _inSelector(filter);
-      } else if (op == '!in') {
-        filterSelector = _inSelector(filter, negated: true);
-      } else {
-        logger.warn(() => 'unsupported filter operator $op');
-        return LayerSelector.none();
-      }
-      return LayerSelector.composite([selector, filterSelector]);
+      return LayerSelector.composite([selector, _createFilter(filter)]);
     }
     logger.warn(() => 'theme layer has no source-layer: ${themeLayer["id"]}');
     return LayerSelector.none();
   }
 
-  LayerSelector _equalsSelector(List<dynamic> filter) {
-    if (filter.length > 3) {
-      throw Exception('unexpected filter');
+  LayerSelector _createFilter(List filter) {
+    if (filter.isEmpty) {
+      throw Exception('unexpected filter: $filter');
+    }
+    final op = filter[0];
+    if (op == '==') {
+      return _equalsSelector(filter);
+    } else if (op == '!=') {
+      return _equalsSelector(filter, negated: true);
+    } else if (op == 'in') {
+      return _inSelector(filter);
+    } else if (op == '!in') {
+      return _inSelector(filter, negated: true);
+    } else if (op == 'all') {
+      return LayerSelector.composite(filter.sublist(1).map((f) {
+        if (f is List) {
+          return _createFilter(f);
+        }
+        throw Exception('unexpected all filter: $f');
+      }).toList());
+    } else {
+      logger.warn(() => 'unsupported filter operator $op');
+      return LayerSelector.none();
+    }
+  }
+
+  LayerSelector _equalsSelector(List<dynamic> filter, {bool negated = false}) {
+    if (filter.length != 3) {
+      throw Exception('unexpected filter $filter');
     }
     final propertyName = filter[1];
     final propertyValue = filter[2];
     return LayerSelector.withProperty(propertyName,
-        values: [propertyValue], negated: false);
+        values: [propertyValue], negated: negated);
   }
 
   LayerSelector _inSelector(List<dynamic> filter, {bool negated = false}) {
     final propertyName = filter[1];
-    final propertyValues = filter.sublist(2).whereType<String>().toList();
+    final propertyValues = filter.sublist(2).toList();
     return LayerSelector.withProperty(propertyName,
         values: propertyValues, negated: negated);
   }

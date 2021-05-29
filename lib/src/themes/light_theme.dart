@@ -1,5 +1,5 @@
-Map<String, dynamic> outdoorTheme() {
-  return _outdoorTheme;
+Map<String, dynamic> lightTheme() {
+  return _lightTheme;
 }
 
 // Copyright (c) 2016, KlokanTech.com & OpenMapTiles contributors.
@@ -35,7 +35,7 @@ Map<String, dynamic> outdoorTheme() {
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 // OF SUCH DAMAGE.
 // https://github.com/openmaptiles/osm-bright-gl-style/blob/master/style.json
-final _outdoorTheme = {
+final _lightTheme = {
   "version": 8,
   "name": "Bright",
   "layers": [
