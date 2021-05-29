@@ -20,3 +20,19 @@ class PaintFactory {
     }
   }
 }
+
+class LinePaintInterpolator {
+  static void interpolate(Paint paint, dynamic jsonPaint,
+      {double defaultStrokeWidth = 1.2}) {
+    paint.strokeWidth = defaultStrokeWidth;
+    final lineWidth = jsonPaint['line-width'];
+    if (lineWidth is Map) {
+      final base = lineWidth['base'];
+      if (base is num) {
+        paint.strokeWidth = base.toDouble();
+      }
+    } else if (lineWidth is num) {
+      paint.strokeWidth = lineWidth.toDouble();
+    }
+  }
+}

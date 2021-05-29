@@ -34,6 +34,8 @@ class ThemeReader {
       return _toBackgroundTheme(jsonLayer);
     } else if (type == 'fill') {
       return _toFillTheme(jsonLayer);
+    } else if (type == 'line') {
+      return _toLineTheme(jsonLayer);
     }
     logger.warn(() => 'theme layer type $type not implemented');
     return null;
@@ -53,8 +55,20 @@ class ThemeReader {
     final paint = paintFactory.create('fill', jsonLayer['paint']);
     if (paint != null) {
       paint.style = PaintingStyle.fill;
-      return FillLayer(jsonLayer['id'] ?? _unknownId, selector,
+      return DefaultLayer(jsonLayer['id'] ?? _unknownId, selector,
           Style(fillPaint: paint, linePaint: null));
+    }
+  }
+
+  ThemeLayer? _toLineTheme(jsonLayer) {
+    final selector = selectorFactory.create(jsonLayer);
+    final jsonPaint = jsonLayer['paint'];
+    final paint = paintFactory.create('line', jsonPaint);
+    if (paint != null) {
+      paint.style = PaintingStyle.stroke;
+      LinePaintInterpolator.interpolate(paint, jsonPaint);
+      return DefaultLayer(jsonLayer['id'] ?? _unknownId, selector,
+          Style(fillPaint: null, linePaint: paint));
     }
   }
 }

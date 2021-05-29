@@ -7,11 +7,11 @@ import '../context.dart';
 import 'style.dart';
 import 'theme.dart';
 
-class FillLayer extends ThemeLayer {
+class DefaultLayer extends ThemeLayer {
   final LayerSelector selector;
   final Style style;
 
-  FillLayer(String id, this.selector, this.style) : super(id);
+  DefaultLayer(String id, this.selector, this.style) : super(id);
 
   @override
   void render(Context context) {

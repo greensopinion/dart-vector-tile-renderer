@@ -33,6 +33,10 @@ class SelectorFactory {
       return _inSelector(filter);
     } else if (op == '!in') {
       return _inSelector(filter, negated: true);
+    } else if (op == 'has') {
+      return _hasSelector(filter);
+    } else if (op == '!has') {
+      return _hasSelector(filter, negated: true);
     } else if (op == 'all') {
       return LayerSelector.composite(filter.sublist(1).map((f) {
         if (f is List) {
@@ -61,5 +65,10 @@ class SelectorFactory {
     final propertyValues = filter.sublist(2).toList();
     return LayerSelector.withProperty(propertyName,
         values: propertyValues, negated: negated);
+  }
+
+  LayerSelector _hasSelector(List<dynamic> filter, {bool negated = false}) {
+    final propertyName = filter[1];
+    return LayerSelector.hasProperty(propertyName, negated: negated);
   }
 }
