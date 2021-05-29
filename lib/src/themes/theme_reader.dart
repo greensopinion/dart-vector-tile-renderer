@@ -52,11 +52,15 @@ class ThemeReader {
 
   ThemeLayer? _toFillTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
-    final paint = paintFactory.create('fill', jsonLayer['paint']);
+    final paintJson = jsonLayer['paint'];
+    final paint = paintFactory.create('fill', paintJson);
+    final outlinePaint = paintFactory.create('fill-outline', paintJson);
     if (paint != null) {
       paint.style = PaintingStyle.fill;
+      outlinePaint?.style = PaintingStyle.stroke;
+      outlinePaint?.strokeWidth = 0.5;
       return DefaultLayer(jsonLayer['id'] ?? _unknownId, selector,
-          Style(fillPaint: paint, linePaint: null));
+          Style(fillPaint: paint, outlinePaint: outlinePaint));
     }
   }
 
@@ -67,8 +71,8 @@ class ThemeReader {
     if (paint != null) {
       paint.style = PaintingStyle.stroke;
       LinePaintInterpolator.interpolate(paint, jsonPaint);
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId, selector,
-          Style(fillPaint: null, linePaint: paint));
+      return DefaultLayer(
+          jsonLayer['id'] ?? _unknownId, selector, Style(linePaint: paint));
     }
   }
 }

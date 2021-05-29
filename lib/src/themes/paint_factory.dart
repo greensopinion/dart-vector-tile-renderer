@@ -16,7 +16,12 @@ class PaintFactory {
         logger.warn(() => 'expected color');
         return null;
       }
-      return Paint()..color = color;
+      final paint = Paint()..color = color;
+      final opacity = json['$prefix-opacity'];
+      if (opacity is num) {
+        paint.color = color.withOpacity(opacity.toDouble());
+      }
+      return paint;
     }
   }
 }

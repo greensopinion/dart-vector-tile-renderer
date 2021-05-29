@@ -42,6 +42,9 @@ class PolygonRenderer extends FeatureRenderer {
           });
         });
         canvas.drawPath(path, style.fillPaint!);
+        if (style.outlinePaint != null) {
+          canvas.drawPath(path, style.outlinePaint!);
+        }
       } else {
         logger.warn(
             () => 'polygon geometryType=${geometry.type} is not implemented');

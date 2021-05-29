@@ -16,7 +16,7 @@ void main() {
         logger: testLogger);
     final image = await renderer.render(tile);
     final imageBytes = await image.toPng();
-    final file = await writeTestFile(imageBytes, 'tile.png');
+    final file = await writeTestFile(imageBytes, 'rendered-tile.png');
     final stat = await file.stat();
     expect(image.width, 1024);
     expect(image.height, 1024);
