@@ -86,9 +86,37 @@ class _PropertyLayerSelector extends LayerSelector {
   @override
   Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
     return features.where((feature) {
+      if (name == '\$type') {
+        return _matchesType(feature);
+      }
       final properties = feature.decodeProperties();
       return properties.any((map) => _matches(map[name]));
     });
+  }
+
+  bool _matchesType(VectorTileFeature feature) {
+    final typeName = _typeName(feature.geometryType);
+    return values.contains(typeName);
+  }
+
+  String _typeName(GeometryType? geometryType) {
+    if (geometryType == null) {
+      return '<none>';
+    }
+    switch (geometryType) {
+      case GeometryType.Point:
+        return 'Point';
+      case GeometryType.LineString:
+        return 'LineString';
+      case GeometryType.Polygon:
+        return 'Polygon';
+      case GeometryType.MultiPoint:
+        return 'MultiPoint';
+      case GeometryType.MultiLineString:
+        return 'MultiLineString';
+      case GeometryType.MultiPolygon:
+        return 'MultiPolygon';
+    }
   }
 
   bool _matches(VectorTileValue? value) {
