@@ -1,9 +1,9 @@
-import 'package:dart_vector_tile_renderer/src/constants.dart';
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
 
 import 'dart:ui';
 
+import '../constants.dart';
 import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';

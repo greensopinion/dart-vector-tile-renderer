@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:dart_vector_tile_renderer/renderer.dart';
+import 'package:vector_tile_renderer/renderer.dart';
 
 import 'test_files.dart';
 import 'test_logger.dart';

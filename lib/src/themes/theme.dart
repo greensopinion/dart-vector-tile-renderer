@@ -1,4 +1,4 @@
-import 'package:dart_vector_tile_renderer/src/context.dart';
+import '../context.dart';
 
 class Theme {
   final List<ThemeLayer> layers;

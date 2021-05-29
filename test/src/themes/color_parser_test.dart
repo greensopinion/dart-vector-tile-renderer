@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:dart_vector_tile_renderer/src/themes/color_parser.dart';
+import 'package:vector_tile_renderer/src/themes/color_parser.dart';
 
 void main() {
   test('parses an RGB color', () {

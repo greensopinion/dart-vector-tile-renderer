@@ -1,4 +1,4 @@
-import 'package:dart_vector_tile_renderer/renderer.dart';
+import 'package:vector_tile/vector_tile.dart';
 
 abstract class LayerSelector {
   LayerSelector._();

@@ -1,4 +1,4 @@
-import 'package:dart_vector_tile_renderer/src/themes/selector.dart';
+import 'selector.dart';
 
 import '../logger.dart';
 
