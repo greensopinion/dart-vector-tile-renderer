@@ -7,7 +7,7 @@ Written in Dart to enable use of vector tiles with Flutter.
 
 An example of output:
 
-![rendered tile](./rendered-tile.png)
+![rendered tile](https://raw.githubusercontent.com/greensopinion/dart-vector-tile-renderer/main/rendered-tile.png)
 
 ## License
 
