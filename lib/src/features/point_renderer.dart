@@ -17,9 +17,7 @@ class PointRenderer extends FeatureRenderer {
   @override
   void render(Canvas canvas, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
-    final textPaint = style.textPaint;
-    final textSize = style.textSize;
-    if (textPaint == null || textSize == null) {
+    if (style.textPaint == null || style.textSize == null) {
       logger.warn(() => 'point does not have a text paint or size');
       return;
     }
@@ -45,17 +43,7 @@ class PointRenderer extends FeatureRenderer {
           .firstOrNull()
           ?.stringValue;
       if (name != null) {
-        final textStyle = TextStyle(
-            foreground: textPaint,
-            background: Paint()..color = Color.fromARGB(0, 0, 0, 0),
-            fontSize: textSize,
-            letterSpacing: style.textLetterSpacing);
-        final textSpan = TextSpan(style: textStyle, text: name);
-        final textPainter = TextPainter(
-            text: textSpan,
-            textAlign: TextAlign.center,
-            textDirection: TextDirection.ltr)
-          ..layout();
+        final textPainter = _createTextPainter(style, name);
         points.forEach((point) {
           points.forEach((point) {
             if (point.length < 2) {
@@ -70,5 +58,17 @@ class PointRenderer extends FeatureRenderer {
         logger.warn(() => 'point with no name?');
       }
     }
+  }
+
+  _createTextPainter(Style style, String name) {
+    final textStyle = TextStyle(
+        foreground: style.textPaint,
+        fontSize: style.textSize,
+        letterSpacing: style.textLetterSpacing);
+    return TextPainter(
+        text: TextSpan(style: textStyle, text: name),
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr)
+      ..layout();
   }
 }

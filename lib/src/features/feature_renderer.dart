@@ -38,7 +38,7 @@ class FeatureDispatcher extends FeatureRenderer {
     return {
       VectorTileGeomType.POLYGON: PolygonRenderer(logger),
       VectorTileGeomType.LINESTRING: LineRenderer(logger),
-      // VectorTileGeomType.POINT: PointRenderer(logger),
+      VectorTileGeomType.POINT: PointRenderer(logger),
     };
   }
 }

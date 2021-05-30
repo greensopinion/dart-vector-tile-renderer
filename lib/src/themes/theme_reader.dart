@@ -14,7 +14,7 @@ class ThemeReader {
   final Logger logger;
   late final SelectorFactory selectorFactory;
   late final PaintFactory paintFactory;
-  ThemeReader(Logger? logger) : this.logger = logger ?? Logger.noop() {
+  ThemeReader({Logger? logger}) : this.logger = logger ?? Logger.noop() {
     selectorFactory = SelectorFactory(this.logger);
     paintFactory = PaintFactory(this.logger);
   }
