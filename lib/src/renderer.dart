@@ -16,9 +16,16 @@ class Renderer {
       : this.logger = logger ?? Logger.noop(),
         featureRenderer = FeatureDispatcher(logger ?? Logger.noop());
 
-  void render(Canvas canvas, VectorTile tile) {
+  /// renders the given tile to the canvas
+  ///
+  /// [zoom] the current zoom level, which is used to filter theme layers
+  ///        via `minzoom` and `maxzoom`. Value if provided must be >= 0 and <= 24
+  ///        When absent all layers are applied as if `minzoom` and `maxzoom` were
+  ///        not specified in the theme.
+  void render(Canvas canvas, VectorTile tile, {required int? zoom}) {
     final context = Context(logger, canvas, featureRenderer, tile);
-    theme.layers.forEach((themeLayer) {
+    final effectiveTheme = (zoom == null) ? theme : theme.atZoom(zoom);
+    effectiveTheme.layers.forEach((themeLayer) {
       logger.log(() => 'rendering theme layer ${themeLayer.id}');
       themeLayer.render(context);
     });

@@ -6,6 +6,8 @@ abstract class LayerSelector {
   factory LayerSelector.none() = _NoneLayerSelector;
   factory LayerSelector.composite(List<LayerSelector> selectors) =
       _CompositeSelector;
+  factory LayerSelector.any(List<LayerSelector> selectors) =
+      _AnyCompositeSelector;
   factory LayerSelector.named(String name) = _NamedLayerSelector;
   factory LayerSelector.withProperty(String name,
       {required List<dynamic> values,
@@ -37,6 +39,28 @@ class _CompositeSelector extends LayerSelector {
       result = delegate.features(result);
     });
     return result;
+  }
+}
+
+class _AnyCompositeSelector extends LayerSelector {
+  final List<LayerSelector> delegates;
+  _AnyCompositeSelector(this.delegates) : super._();
+
+  @override
+  Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) {
+    final Set<VectorTileLayer> selected = Set();
+    for (final delegate in delegates) {
+      selected.addAll(delegate.select(tileLayers));
+    }
+    return tileLayers.where((layer) => selected.contains(layer));
+  }
+
+  Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
+    final Set<VectorTileFeature> selected = Set();
+    for (final delegate in delegates) {
+      selected.addAll(delegate.features(features));
+    }
+    return features.where((layer) => selected.contains(layer));
   }
 }
 

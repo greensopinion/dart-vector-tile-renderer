@@ -16,13 +16,19 @@ class ImageRenderer {
     assert(scale >= 1 && scale <= 4);
   }
 
-  Future<Image> render(VectorTile tile) {
+  /// renders the given tile to an image
+  ///
+  /// [zoom] the current zoom level, which is used to filter theme layers
+  ///        via `minzoom` and `maxzoom`. Value if provided must be >= 0 and <= 24
+  ///        When absent all layers are applied as if `minzoom` and `maxzoom` were
+  ///        not specified in the theme.
+  Future<Image> render(VectorTile tile, {required int? zoom}) {
     final recorder = PictureRecorder();
     int size = scale * tileSize;
     final canvas =
         Canvas(recorder, Rect.fromLTRB(0, 0, size.toDouble(), size.toDouble()));
     canvas.scale(scale.toDouble(), scale.toDouble());
-    Renderer(theme: theme, logger: logger).render(canvas, tile);
+    Renderer(theme: theme, logger: logger).render(canvas, tile, zoom: zoom);
     return recorder.endRecording().toImage(size, size);
   }
 }

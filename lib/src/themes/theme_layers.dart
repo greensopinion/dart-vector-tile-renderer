@@ -11,7 +11,12 @@ class DefaultLayer extends ThemeLayer {
   final LayerSelector selector;
   final Style style;
 
-  DefaultLayer(String id, this.selector, this.style) : super(id);
+  DefaultLayer(String id,
+      {required this.selector,
+      required this.style,
+      required int? minzoom,
+      required int? maxzoom})
+      : super(id, minzoom: minzoom, maxzoom: maxzoom);
 
   @override
   void render(Context context) {
@@ -26,7 +31,8 @@ class DefaultLayer extends ThemeLayer {
 class BackgroundLayer extends ThemeLayer {
   final Color fillColor;
 
-  BackgroundLayer(String id, this.fillColor) : super(id);
+  BackgroundLayer(String id, this.fillColor)
+      : super(id, minzoom: 0, maxzoom: 24);
 
   @override
   void render(Context context) {

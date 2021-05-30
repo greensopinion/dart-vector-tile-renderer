@@ -44,6 +44,13 @@ class SelectorFactory {
         }
         throw Exception('unexpected all filter: $f');
       }).toList());
+    } else if (op == 'any') {
+      return LayerSelector.any(filter.sublist(1).map((f) {
+        if (f is List) {
+          return _createFilter(f);
+        }
+        throw Exception('unexpected all filter: $f');
+      }).toList());
     } else {
       logger.warn(() => 'unsupported filter operator $op');
       return LayerSelector.none();

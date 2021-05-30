@@ -14,7 +14,7 @@ void main() {
         theme: ThemeReader(testLogger).read(lightTheme()),
         scale: 4,
         logger: testLogger);
-    final image = await renderer.render(tile);
+    final image = await renderer.render(tile, zoom: 16);
     final imageBytes = await image.toPng();
     final file = await writeTestFile(imageBytes, 'rendered-tile.png');
     final stat = await file.stat();
