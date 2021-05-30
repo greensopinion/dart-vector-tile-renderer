@@ -9,6 +9,10 @@ An example of output:
 
 ![rendered tile](https://raw.githubusercontent.com/greensopinion/dart-vector-tile-renderer/main/rendered-tile.png)
 
+## Known Issues
+
+* Text rendering to an image results in blocks of color (works fine in a widget)
+
 ## License
 
 Copyright 2021 David Green

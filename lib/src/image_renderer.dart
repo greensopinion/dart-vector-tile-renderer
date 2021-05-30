@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/painting.dart';
 import 'package:vector_tile/vector_tile.dart';
 
 import 'constants.dart';
