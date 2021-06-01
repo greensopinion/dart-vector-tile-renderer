@@ -1,4 +1,4 @@
-Map<String, dynamic> lightTheme() {
+Map<String, dynamic> lightThemeData() {
   return _lightTheme;
 }
 

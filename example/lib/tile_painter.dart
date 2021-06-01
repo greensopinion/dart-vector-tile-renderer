@@ -11,7 +11,7 @@ class TilePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final tile = VectorTileReader().read(tileBytes);
-    final theme = ThemeReader().read(lightTheme());
+    final theme = ProvidedThemes.lightTheme();
     canvas.save();
     canvas.scale(scale.toDouble(), scale.toDouble());
     Renderer(theme: theme).render(canvas, tile, zoom: 15);

@@ -17,7 +17,8 @@ class LineRenderer extends FeatureRenderer {
   void render(Canvas canvas, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
     if (style.linePaint == null) {
-      logger.warn(() => 'line does not have a line paint');
+      logger.warn(() =>
+          'line does not have a line paint for vector tile layer ${layer.name}');
       return;
     }
     final geometry = feature.decodeGeometry();
