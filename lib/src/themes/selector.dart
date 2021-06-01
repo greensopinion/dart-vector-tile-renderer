@@ -14,10 +14,20 @@ abstract class LayerSelector {
       required bool negated}) = _PropertyLayerSelector;
   factory LayerSelector.hasProperty(String name, {required bool negated}) =
       _HasPropertyLayerSelector;
+  factory LayerSelector.comparingProperty(
+          String name, ComparisonOperator op, num value) =
+      _NumericComparisonLayerSelector;
 
   Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers);
 
   Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features);
+}
+
+enum ComparisonOperator {
+  GREATER_THAN_OR_EQUAL_TO,
+  LESS_THAN_OR_EQUAL_TO,
+  GREATER_THAN,
+  LESS_THAN
 }
 
 class _CompositeSelector extends LayerSelector {
@@ -92,6 +102,46 @@ class _HasPropertyLayerSelector extends LayerSelector {
       final hasProperty = properties.any((map) => map.keys.contains(name));
       return negated ? !hasProperty : hasProperty;
     });
+  }
+}
+
+class _NumericComparisonLayerSelector extends LayerSelector {
+  final String name;
+  final ComparisonOperator op;
+  final num value;
+  _NumericComparisonLayerSelector(this.name, this.op, this.value) : super._() {
+    if (name.startsWith('\$')) {
+      throw Exception('Unsupported comparison property $name');
+    }
+  }
+
+  @override
+  Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
+    return features.where((feature) {
+      final properties = feature.decodeProperties();
+      return properties.any((map) => _matches(map[name]));
+    });
+  }
+
+  @override
+  Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) =>
+      tileLayers;
+
+  _matches(VectorTileValue? value) {
+    final v = value?.dartIntValue?.toInt() ?? value?.dartDoubleValue;
+    if (v == null) {
+      return false;
+    }
+    switch (op) {
+      case ComparisonOperator.GREATER_THAN_OR_EQUAL_TO:
+        return v >= this.value;
+      case ComparisonOperator.LESS_THAN_OR_EQUAL_TO:
+        return v >= this.value;
+      case ComparisonOperator.LESS_THAN:
+        return v < this.value;
+      case ComparisonOperator.GREATER_THAN:
+        return v > this.value;
+    }
   }
 }
 

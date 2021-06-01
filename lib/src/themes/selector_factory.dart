@@ -51,8 +51,12 @@ class SelectorFactory {
         }
         throw Exception('unexpected all filter: $f');
       }).toList());
+    } else if ((op == ">=" || op == "<=" || op == "<" || op == ">") &&
+        filter.length == 3 &&
+        filter[2] is num) {
+      return _numericComparisonSelector(filter, op);
     } else {
-      logger.warn(() => 'unsupported filter operator $op');
+      logger.warn(() => 'unsupported filter operator $op defined as $filter');
       return LayerSelector.none();
     }
   }
@@ -77,5 +81,28 @@ class SelectorFactory {
   LayerSelector _hasSelector(List<dynamic> filter, {bool negated = false}) {
     final propertyName = filter[1];
     return LayerSelector.hasProperty(propertyName, negated: negated);
+  }
+
+  LayerSelector _numericComparisonSelector(List<dynamic> filter, String op) {
+    ComparisonOperator comparison = _toComparisonOperator(op);
+    final propertyName = filter[1] as String;
+    final propertyValue = filter[2] as num;
+    return LayerSelector.comparingProperty(
+        propertyName, comparison, propertyValue);
+  }
+}
+
+ComparisonOperator _toComparisonOperator(String op) {
+  switch (op) {
+    case "<=":
+      return ComparisonOperator.LESS_THAN_OR_EQUAL_TO;
+    case ">=":
+      return ComparisonOperator.GREATER_THAN_OR_EQUAL_TO;
+    case "<":
+      return ComparisonOperator.LESS_THAN;
+    case ">":
+      return ComparisonOperator.GREATER_THAN;
+    default:
+      throw Exception(op);
   }
 }
