@@ -13,6 +13,7 @@ An example of output:
 
 * Text rendering to an image results in blocks of color (works fine in a widget)
 * Label sizing and collisions (overlap)
+* Theme layer types not implemented: raster, circle, fill-extrusion, heatmap, hillshade, sky
 
 ## License
 

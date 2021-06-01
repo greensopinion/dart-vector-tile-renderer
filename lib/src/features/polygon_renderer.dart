@@ -15,8 +15,10 @@ class PolygonRenderer extends FeatureRenderer {
   @override
   void render(Canvas canvas, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
-    if (style.fillPaint == null) {
-      logger.warn(() => 'polygon does not have a fill paint');
+    if (style.fillPaint == null && style.outlinePaint == null) {
+      logger
+          .warn(() => 'polygon does not have a fill paint or an outline paint');
+      return;
     }
     final geometry = feature.decodeGeometry();
     if (geometry != null) {

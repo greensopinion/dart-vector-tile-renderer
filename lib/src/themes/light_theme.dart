@@ -78,8 +78,7 @@ final _lightTheme = {
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url":
-          "https://api.maptiler.com/tiles/v3/tiles.json?key=pk.eyJ1IjoiZ3JlZW5zb3BpbmlvbiIsImEiOiJja3A0NDYzbTMwMWlrMnZsaHRnanJkM2NnIn0.3Yw-Kzh_jlQYKlF9IW6D1w"
+      "url": "https://api.maptiler.com/tiles/v3/tiles.json?key={key}"
     },
     "natural_earth_shaded_relief": {
       "maxzoom": 6,
@@ -91,8 +90,7 @@ final _lightTheme = {
     }
   },
   "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
-  "glyphs":
-      "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=pk.eyJ1IjoiZ3JlZW5zb3BpbmlvbiIsImEiOiJja3A0NDYzbTMwMWlrMnZsaHRnanJkM2NnIn0.3Yw-Kzh_jlQYKlF9IW6D1w",
+  "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={key}",
   "layers": [
     {
       "id": "background",
@@ -1806,7 +1804,7 @@ final _lightTheme = {
       "source": "openmaptiles",
       "source-layer": "building",
       "minzoom": 13,
-      "maxzoom": 14,
+      "maxzoom": 0,
       "paint": {
         "fill-color": "hsl(35, 8%, 85%)",
         "fill-outline-color": {
@@ -1816,25 +1814,6 @@ final _lightTheme = {
             [14, "hsl(35, 6%, 79%)"]
           ]
         }
-      }
-    },
-    {
-      "id": "building-3d",
-      "type": "fill-extrusion",
-      "source": "openmaptiles",
-      "source-layer": "building",
-      "minzoom": 14,
-      "paint": {
-        "fill-extrusion-color": "hsl(35, 8%, 85%)",
-        "fill-extrusion-height": {
-          "property": "render_height",
-          "type": "identity"
-        },
-        "fill-extrusion-base": {
-          "property": "render_min_height",
-          "type": "identity"
-        },
-        "fill-extrusion-opacity": 0.8
       }
     },
     {

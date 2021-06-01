@@ -24,9 +24,6 @@ void main() {
   test('renders a vector tile', () async {
     final bytes = await File('test_data/sample_tile.pbf').readAsBytes();
     final tile = VectorTileReader().read(bytes);
-    await assertImageWith(tile, zoom: 18);
-    await assertImageWith(tile, zoom: 16);
-    await assertImageWith(tile, zoom: 10);
-    await assertImageWith(tile, zoom: 2);
+    await assertImageWith(tile, zoom: 15);
   });
 }
