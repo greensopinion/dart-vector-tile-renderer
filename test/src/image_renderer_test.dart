@@ -12,7 +12,7 @@ void main() {
         theme: ProvidedThemes.lightTheme(logger: testLogger),
         scale: 4,
         logger: testLogger);
-    final image = await renderer.render(tile, zoom: 16);
+    final image = await renderer.render(tile, zoom: zoom);
     final imageBytes = await image.toPng();
     final file = await writeTestFile(imageBytes, 'rendered-tile-zoom$zoom.png');
     final stat = await file.stat();
@@ -24,7 +24,7 @@ void main() {
   test('renders a vector tile', () async {
     final bytes = await File('test_data/sample_tile.pbf').readAsBytes();
     final tile = VectorTileReader().read(bytes);
-    await assertImageWith(tile, zoom: 25);
+    await assertImageWith(tile, zoom: 18);
     await assertImageWith(tile, zoom: 16);
     await assertImageWith(tile, zoom: 10);
     await assertImageWith(tile, zoom: 2);

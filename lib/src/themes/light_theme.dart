@@ -460,6 +460,7 @@ final _lightTheme = {
       "metadata": {"mapbox:group": "1444849364238.8171"},
       "source": "openmaptiles",
       "source-layer": "building",
+      "minzoom": 15,
       "paint": {
         "fill-antialias": true,
         "fill-color": {
@@ -477,6 +478,7 @@ final _lightTheme = {
       "metadata": {"mapbox:group": "1444849364238.8171"},
       "source": "openmaptiles",
       "source-layer": "building",
+      "minzoom": 16,
       "layout": {"visibility": "visible"},
       "paint": {
         "fill-color": "#f2eae2",
