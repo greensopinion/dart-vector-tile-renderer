@@ -31,7 +31,7 @@ class PaintFactory {
 
 class LinePaintInterpolator {
   static void interpolate(Paint paint, dynamic jsonPaint,
-      {double defaultStrokeWidth = 1.2}) {
+      {double defaultStrokeWidth = 1.0}) {
     paint.strokeWidth = defaultStrokeWidth;
     final lineWidth = jsonPaint['line-width'];
     if (lineWidth is Map) {
