@@ -1,3 +1,8 @@
+## 0.1.4
+
+* improved theme api
+* improved light theme
+* support theme filter operators `>=`, `<=`, `<`, `>`
 ## 0.1.3
 
 * added example app
