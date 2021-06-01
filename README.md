@@ -15,6 +15,13 @@ An example of output:
 * Label sizing and collisions (overlap)
 * Theme layer types not implemented: raster, circle, fill-extrusion, heatmap, hillshade, sky
 
+## Development
+
+### Resources
+
+* [Maputnik Style Editor](https://maputnik.github.io/)
+* Theme [style specification](https://docs.mapbox.com/mapbox-gl-js/style-spec/)
+
 ## License
 
 Copyright 2021 David Green
