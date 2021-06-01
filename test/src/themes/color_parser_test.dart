@@ -2,13 +2,22 @@ import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/themes/color_parser.dart';
 
 void main() {
-  test('parses an RGB color', () {
+  test('parses a hex RGB color', () {
     final color = ColorParser.parse('#90d86c');
     expect(color, isNotNull);
     expect(color!.alpha, 0xff);
     expect(color.red, 0x90);
     expect(color.green, 0xd8);
     expect(color.blue, 0x6c);
+  });
+
+  test('parses an RGB color', () {
+    final color = ColorParser.parse('rgb(239, 238,12)');
+    expect(color, isNotNull);
+    expect(color!.alpha, 0xff);
+    expect(color.red, 239);
+    expect(color.green, 238);
+    expect(color.blue, 12);
   });
   test('parses an hsl color', () {
     final color = ColorParser.parse('hsl(248, 7%, 66%)');

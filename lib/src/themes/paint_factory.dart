@@ -9,6 +9,9 @@ class PaintFactory {
   PaintFactory(this.logger);
 
   Paint? create(String prefix, json) {
+    if (json == null) {
+      return null;
+    }
     final colorSpec = json['$prefix-color'];
     if (colorSpec is String) {
       Color? color = ColorParser.parse(colorSpec);

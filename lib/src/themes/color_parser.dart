@@ -21,6 +21,7 @@ class ColorParser {
       return Color.fromARGB(0xff, int.parse(r, radix: 16),
           int.parse(g, radix: 16), int.parse(b, radix: 16));
     }
+
     if ((color.startsWith('hsla(') || color.startsWith('hsl(')) &&
         color.endsWith(')')) {
       final components = color
@@ -47,18 +48,20 @@ class ColorParser {
         }
       }
     }
-    if (color.startsWith('rgba(') && color.endsWith(')')) {
+    if ((color.startsWith('rgba(') || color.startsWith('rgb(')) &&
+        color.endsWith(')')) {
       final components = color
-          .replaceAll(RegExp(r"rgba\("), '')
+          .replaceAll(RegExp(r"rgba?\("), '')
           .replaceAll(RegExp(r"\)"), '')
           .split(',')
           .map((s) => s.trim())
           .toList();
-      if (components.length == 4) {
+      if (components.length == 4 || components.length == 3) {
         final r = int.tryParse(components[0]);
         final g = int.tryParse(components[1]);
         final b = int.tryParse(components[2]);
-        final alpha = double.tryParse(components[3]);
+        final alpha =
+            components.length == 3 ? 1.0 : double.tryParse(components[3]);
         if (r != null && g != null && b != null && alpha != null) {
           return Color.fromARGB((0xff * alpha).toInt(), r, g, b);
         }
