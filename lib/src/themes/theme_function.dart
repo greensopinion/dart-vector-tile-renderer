@@ -1,40 +1,71 @@
 import 'dart:math';
+import 'dart:ui';
 
-class ThemeFunction {
-  double? exponential(json, double zoom) {
-    final base = (json['base'] as num?)?.toDouble() ?? 1.0;
-    double lowerStop = 0;
+import 'theme_function_model.dart';
+
+abstract class ThemeFunction<T> {
+  T? exponential(FunctionModel<T> model, double zoom) {
+    T? lowerStop;
     double lowerStopZoom = -1;
-    double upperStop = lowerStop;
+    T? upperStop;
     double upperStopZoom = lowerStopZoom;
-    final stops = json['stops'] as List<dynamic>?;
-    if (stops == null) {
-      return null;
-    }
-    for (var stop in stops) {
-      final stopZoom = (stop[0] as num).toDouble();
-      final stopValue = (stop[1] as num).toDouble();
-      if (stopZoom > zoom && lowerStopZoom == -1) {
+    for (var stop in model.stops) {
+      if (stop.zoom > zoom && lowerStop == null) {
         return null;
       }
-      if (stopZoom <= zoom) {
-        lowerStop = stopValue;
-        lowerStopZoom = stopZoom;
+      if (stop.zoom <= zoom) {
+        lowerStop = stop.value;
+        lowerStopZoom = stop.zoom;
         upperStop = lowerStop;
         upperStopZoom = lowerStopZoom;
       } else {
-        upperStop = stopValue;
-        upperStopZoom = stopZoom;
+        upperStop = stop.value;
+        upperStopZoom = stop.zoom;
         break;
       }
     }
     double stopZoomDifference = upperStopZoom - lowerStopZoom;
-    double effectiveStop = lowerStop;
+    T? effectiveStop = lowerStop;
     if (stopZoomDifference > 0) {
-      double zoomOffset = (zoom - lowerStopZoom) / stopZoomDifference;
-      double stopDifference = upperStop - lowerStop;
-      effectiveStop = lowerStop + (stopDifference * zoomOffset);
+      double differencePercentage = (zoom - lowerStopZoom) / stopZoomDifference;
+      effectiveStop =
+          applyDifference(lowerStop, upperStop, differencePercentage);
     }
-    return pow(base, effectiveStop).toDouble();
+    return applyFunction(model.base, effectiveStop);
+  }
+
+  T? applyFunction(T? base, T? effectiveStop);
+  T? applyDifference(T? lower, T? upper, double offsetPercentage);
+}
+
+class DoubleThemeFunction extends ThemeFunction<double> {
+  @override
+  double? applyFunction(double? base, double? effectiveStop) {
+    if (base != null && effectiveStop != null) {
+      return pow(base, effectiveStop).toDouble();
+    }
+    return null;
+  }
+
+  @override
+  double? applyDifference(
+      double? lower, double? upper, double offsetPercentage) {
+    if (lower != null && upper != null) {
+      double stopDifference = upper - lower;
+      return lower + (stopDifference * offsetPercentage);
+    }
+    return lower;
+  }
+}
+
+class ColorThemeFunction extends ThemeFunction<Color> {
+  @override
+  Color? applyDifference(Color? lower, Color? upper, double offsetPercentage) {
+    return lower;
+  }
+
+  @override
+  Color? applyFunction(Color? base, Color? effectiveStop) {
+    return effectiveStop;
   }
 }

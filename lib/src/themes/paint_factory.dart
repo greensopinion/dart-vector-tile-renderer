@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:vector_tile_renderer/src/themes/style.dart';
 import 'package:vector_tile_renderer/src/themes/theme_function.dart';
+import 'package:vector_tile_renderer/src/themes/theme_function_model.dart';
 
 import 'color_parser.dart';
 
@@ -33,15 +34,18 @@ class PaintFactory {
 }
 
 class LinePaintInterpolator {
-  static final _function = ThemeFunction();
+  static final _function = DoubleThemeFunction();
 
   static LineWidthZoomFunction? interpolate(Paint paint, dynamic jsonPaint,
       {double defaultStrokeWidth = 1.0}) {
     paint.strokeWidth = defaultStrokeWidth;
     final lineWidth = jsonPaint['line-width'];
     if (lineWidth is Map) {
-      return (double zoom) =>
-          _function.exponential(lineWidth, zoom) ?? defaultStrokeWidth;
+      final model = DoubleFunctionModelFactory().create(lineWidth);
+      if (model != null) {
+        return (double zoom) =>
+            _function.exponential(model, zoom) ?? defaultStrokeWidth;
+      }
     } else if (lineWidth is num) {
       paint.strokeWidth = lineWidth.toDouble();
     }

@@ -1,15 +1,12 @@
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/themes/theme_function.dart';
+import 'package:vector_tile_renderer/src/themes/theme_function_model.dart';
 
 void main() {
-  final definition = {
-    'base': 1.2,
-    'stops': [
-      [14, 0.5],
-      [20, 10]
-    ]
-  };
-  final function = ThemeFunction();
+  final definition = FunctionModel<double>(
+      1.2, [FunctionStop<double>(14, 0.5), FunctionStop<double>(20, 10)]);
+
+  final function = DoubleThemeFunction();
   final epsilon = 0.006;
   test('provides null for zoom values less than the lowest stop', () {
     expect(function.exponential(definition, 12), isNull);
