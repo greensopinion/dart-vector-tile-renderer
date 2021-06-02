@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 

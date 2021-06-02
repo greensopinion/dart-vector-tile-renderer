@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:vector_tile/vector_tile.dart';
 
 import '../context.dart';

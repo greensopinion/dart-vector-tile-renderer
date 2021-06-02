@@ -1,9 +1,5 @@
-import 'package:flutter/rendering.dart';
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/themes/selector_factory.dart';
-import 'package:vector_tile_renderer/src/extensions.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart';
-
 import '../test_logger.dart';
 import '../test_tile.dart';
 
@@ -46,10 +42,3 @@ final _minorRoadThemeLayer = {
     }
   }
 };
-
-String? _stringProperty(VectorTileFeature feature, String name) => feature
-    .decodeProperties()
-    .map((e) => e[name])
-    .whereType<VectorTileValue>()
-    .firstOrNull()
-    ?.stringValue;
