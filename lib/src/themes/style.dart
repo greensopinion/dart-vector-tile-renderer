@@ -1,21 +1,17 @@
-import 'dart:ui';
-
-typedef LineWidthZoomFunction = double Function(double);
+import 'package:vector_tile_renderer/src/themes/paint_factory.dart';
 
 class Style {
-  final Paint? fillPaint;
-  final Paint? linePaint;
-  final LineWidthZoomFunction? lineWidthFunction;
-  final Paint? textPaint;
+  final PaintStyle? fillPaint;
+  final PaintStyle? linePaint;
+  final PaintStyle? textPaint;
   final double? textSize;
   final double? textLetterSpacing;
-  final Paint? outlinePaint;
+  final PaintStyle? outlinePaint;
 
   Style(
       {this.fillPaint,
       this.outlinePaint,
       this.linePaint,
-      this.lineWidthFunction,
       this.textPaint,
       this.textSize,
       this.textLetterSpacing});

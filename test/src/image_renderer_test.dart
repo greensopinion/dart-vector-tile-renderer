@@ -22,6 +22,7 @@ void main() {
 
   test('renders a vector tile', () async {
     final tile = await readTestTile();
+    await assertImageWith(tile, zoom: 6);
     await assertImageWith(tile, zoom: 13);
     await assertImageWith(tile, zoom: 15);
     await assertImageWith(tile, zoom: 18);

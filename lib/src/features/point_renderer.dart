@@ -44,26 +44,33 @@ class PointRenderer extends FeatureRenderer {
           .firstOrNull()
           ?.stringValue;
       if (name != null) {
-        final textPainter = _createTextPainter(style, name);
-        points.forEach((point) {
+        final textPainter = _createTextPainter(style, name, zoom: context.zoom);
+        if (textPainter != null) {
           points.forEach((point) {
-            if (point.length < 2) {
-              throw Exception('invalid point ${point.length}');
-            }
-            final x = (point[0] / layer.extent) * tileSize;
-            final y = (point[1] / layer.extent) * tileSize;
-            textPainter.paint(context.canvas, Offset(x, y));
+            points.forEach((point) {
+              if (point.length < 2) {
+                throw Exception('invalid point ${point.length}');
+              }
+              final x = (point[0] / layer.extent) * tileSize;
+              final y = (point[1] / layer.extent) * tileSize;
+              textPainter.paint(context.canvas, Offset(x, y));
+            });
           });
-        });
+        }
       } else {
         logger.warn(() => 'point with no name?');
       }
     }
   }
 
-  _createTextPainter(Style style, String name) {
+  TextPainter? _createTextPainter(Style style, String name,
+      {required double zoom}) {
+    final foreground = style.textPaint!.paint(zoom: zoom);
+    if (foreground == null) {
+      return null;
+    }
     final textStyle = TextStyle(
-        foreground: style.textPaint,
+        foreground: foreground,
         fontSize: style.textSize,
         letterSpacing: style.textLetterSpacing);
     return TextPainter(

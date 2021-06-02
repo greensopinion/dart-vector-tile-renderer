@@ -27,13 +27,13 @@ class PolygonRenderer extends FeatureRenderer {
         final polygon = geometry as GeometryPolygon;
         logger.log(() => 'rendering polygon');
         final coordinates = polygon.coordinates;
-        _renderPolygon(context.canvas, style, layer, coordinates);
+        _renderPolygon(context, style, layer, coordinates);
       } else if (geometry.type == GeometryType.MultiPolygon) {
         final multiPolygon = geometry as GeometryMultiPolygon;
         logger.log(() => 'rendering multi-polygon');
         final polygons = multiPolygon.coordinates;
         polygons?.forEach((coordinates) {
-          _renderPolygon(context.canvas, style, layer, coordinates);
+          _renderPolygon(context, style, layer, coordinates);
         });
       } else {
         logger.warn(
@@ -42,7 +42,7 @@ class PolygonRenderer extends FeatureRenderer {
     }
   }
 
-  void _renderPolygon(Canvas canvas, Style style, VectorTileLayer layer,
+  void _renderPolygon(Context context, Style style, VectorTileLayer layer,
       List<List<List<double>>> coordinates) {
     final path = Path();
     coordinates.forEach((ring) {
@@ -62,11 +62,17 @@ class PolygonRenderer extends FeatureRenderer {
         }
       });
     });
-    if (style.fillPaint != null) {
-      canvas.drawPath(path, style.fillPaint!);
+    final fillPaint = style.fillPaint == null
+        ? null
+        : style.fillPaint!.paint(zoom: context.zoom);
+    if (fillPaint != null) {
+      context.canvas.drawPath(path, fillPaint);
     }
-    if (style.outlinePaint != null) {
-      canvas.drawPath(path, style.outlinePaint!);
+    final outlinePaint = style.outlinePaint == null
+        ? null
+        : style.outlinePaint!.paint(zoom: context.zoom);
+    if (outlinePaint != null) {
+      context.canvas.drawPath(path, outlinePaint);
     }
   }
 }

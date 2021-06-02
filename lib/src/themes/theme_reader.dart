@@ -59,12 +59,12 @@ class ThemeReader {
   ThemeLayer? _toFillTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
-    final paint = paintFactory.create('fill', paintJson);
-    final outlinePaint = paintFactory.create('fill-outline', paintJson);
+    final paint = paintFactory.create(
+        _layerId(jsonLayer), PaintingStyle.fill, 'fill', paintJson);
+    final outlinePaint = paintFactory.create(
+        _layerId(jsonLayer), PaintingStyle.stroke, 'fill-outline', paintJson,
+        defaultStrokeWidth: 0.5);
     if (paint != null) {
-      paint.style = PaintingStyle.fill;
-      outlinePaint?.style = PaintingStyle.stroke;
-      outlinePaint?.strokeWidth = 0.5;
       return DefaultLayer(jsonLayer['id'] ?? _unknownId,
           selector: selector,
           style: Style(fillPaint: paint, outlinePaint: outlinePaint),
@@ -76,23 +76,24 @@ class ThemeReader {
   ThemeLayer? _toLineTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final jsonPaint = jsonLayer['paint'];
-    final paint = paintFactory.create('line', jsonPaint);
-    if (paint != null) {
-      paint.style = PaintingStyle.stroke;
-      final lineWidthFunction =
-          LinePaintInterpolator.interpolate(paint, jsonPaint);
+    final lineStyle = paintFactory.create(
+        _layerId(jsonLayer), PaintingStyle.stroke, 'line', jsonPaint);
+    if (lineStyle != null) {
       return DefaultLayer(jsonLayer['id'] ?? _unknownId,
           selector: selector,
-          style: Style(linePaint: paint, lineWidthFunction: lineWidthFunction),
+          style: Style(linePaint: lineStyle),
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
   }
 
+  String _layerId(jsonLayer) => jsonLayer['id'] as String? ?? '<none>';
+
   ThemeLayer? _toSymbolTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final jsonPaint = jsonLayer['paint'];
-    final paint = paintFactory.create('text', jsonPaint);
+    final paint = paintFactory.create(
+        _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint);
     if (paint != null) {
       final textSize = _toTextSize(jsonLayer);
       final textLetterSpacing =
