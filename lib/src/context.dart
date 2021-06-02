@@ -10,6 +10,7 @@ class Context {
   final Canvas canvas;
   final FeatureDispatcher featureRenderer;
   final VectorTile tile;
+  final double zoom;
 
-  Context(this.logger, this.canvas, this.featureRenderer, this.tile);
+  Context(this.logger, this.canvas, this.featureRenderer, this.tile, this.zoom);
 }

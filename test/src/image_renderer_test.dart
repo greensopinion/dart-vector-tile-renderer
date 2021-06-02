@@ -5,9 +5,10 @@ import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import 'test_files.dart';
 import 'test_logger.dart';
+import 'test_tile.dart';
 
 void main() {
-  Future<void> assertImageWith(VectorTile tile, {required int zoom}) async {
+  Future<void> assertImageWith(VectorTile tile, {required double zoom}) async {
     final renderer = ImageRenderer(
         theme: ProvidedThemes.lightTheme(logger: testLogger),
         scale: 4,
@@ -22,8 +23,7 @@ void main() {
   }
 
   test('renders a vector tile', () async {
-    final bytes = await File('test_data/sample_tile.pbf').readAsBytes();
-    final tile = VectorTileReader().read(bytes);
+    final tile = await readTestTile();
     await assertImageWith(tile, zoom: 15);
   });
 }

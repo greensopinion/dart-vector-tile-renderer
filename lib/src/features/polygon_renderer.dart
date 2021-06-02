@@ -3,6 +3,7 @@ import 'package:vector_tile/vector_tile_feature.dart';
 
 import 'dart:ui';
 
+import '../context.dart';
 import '../logger.dart';
 import '../themes/style.dart';
 import '../constants.dart';
@@ -13,7 +14,7 @@ class PolygonRenderer extends FeatureRenderer {
 
   PolygonRenderer(this.logger);
   @override
-  void render(Canvas canvas, Style style, VectorTileLayer layer,
+  void render(Context context, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
     if (style.fillPaint == null && style.outlinePaint == null) {
       logger
@@ -26,13 +27,13 @@ class PolygonRenderer extends FeatureRenderer {
         final polygon = geometry as GeometryPolygon;
         logger.log(() => 'rendering polygon');
         final coordinates = polygon.coordinates;
-        _renderPolygon(canvas, style, layer, coordinates);
+        _renderPolygon(context.canvas, style, layer, coordinates);
       } else if (geometry.type == GeometryType.MultiPolygon) {
         final multiPolygon = geometry as GeometryMultiPolygon;
         logger.log(() => 'rendering multi-polygon');
         final polygons = multiPolygon.coordinates;
         polygons?.forEach((coordinates) {
-          _renderPolygon(canvas, style, layer, coordinates);
+          _renderPolygon(context.canvas, style, layer, coordinates);
         });
       } else {
         logger.warn(

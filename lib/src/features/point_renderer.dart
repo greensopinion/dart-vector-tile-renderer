@@ -4,6 +4,7 @@ import 'package:vector_tile/vector_tile_feature.dart';
 
 import 'dart:ui';
 
+import '../context.dart';
 import '../logger.dart';
 import '../extensions.dart';
 import '../constants.dart';
@@ -15,7 +16,7 @@ class PointRenderer extends FeatureRenderer {
   PointRenderer(this.logger);
 
   @override
-  void render(Canvas canvas, Style style, VectorTileLayer layer,
+  void render(Context context, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
     if (style.textPaint == null || style.textSize == null) {
       logger.warn(() => 'point does not have a text paint or size');
@@ -51,7 +52,7 @@ class PointRenderer extends FeatureRenderer {
             }
             final x = (point[0] / layer.extent) * tileSize;
             final y = (point[1] / layer.extent) * tileSize;
-            textPainter.paint(canvas, Offset(x, y));
+            textPainter.paint(context.canvas, Offset(x, y));
           });
         });
       } else {

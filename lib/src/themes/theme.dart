@@ -4,19 +4,20 @@ class Theme {
   final List<ThemeLayer> layers;
   Theme(this.layers);
 
-  Theme atZoom(int zoom) {
+  Theme atZoom(double zoom) {
     return Theme(
         this.layers.where((layer) => _matchesZoom(zoom, layer)).toList());
   }
 
-  bool _matchesZoom(int zoom, ThemeLayer layer) =>
-      (zoom >= (layer.minzoom ?? 0)) && (zoom <= (layer.maxzoom ?? 24));
+  bool _matchesZoom(double zoom, ThemeLayer layer) =>
+      (zoom >= (layer.minzoom ?? double.negativeInfinity)) &&
+      (zoom <= (layer.maxzoom ?? double.infinity));
 }
 
 abstract class ThemeLayer {
   final String id;
-  final int? minzoom;
-  final int? maxzoom;
+  final double? minzoom;
+  final double? maxzoom;
   ThemeLayer(this.id, {required this.minzoom, required this.maxzoom});
 
   void render(Context context);

@@ -14,15 +14,15 @@ class DefaultLayer extends ThemeLayer {
   DefaultLayer(String id,
       {required this.selector,
       required this.style,
-      required int? minzoom,
-      required int? maxzoom})
+      required double? minzoom,
+      required double? maxzoom})
       : super(id, minzoom: minzoom, maxzoom: maxzoom);
 
   @override
   void render(Context context) {
     selector.select(context.tile.layers).forEach((layer) {
       selector.features(layer.features).forEach((feature) {
-        context.featureRenderer.render(context.canvas, style, layer, feature);
+        context.featureRenderer.render(context, style, layer, feature);
       });
     });
   }

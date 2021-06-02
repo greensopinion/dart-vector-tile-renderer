@@ -79,10 +79,11 @@ class ThemeReader {
     final paint = paintFactory.create('line', jsonPaint);
     if (paint != null) {
       paint.style = PaintingStyle.stroke;
-      LinePaintInterpolator.interpolate(paint, jsonPaint);
+      final lineWidthFunction =
+          LinePaintInterpolator.interpolate(paint, jsonPaint);
       return DefaultLayer(jsonLayer['id'] ?? _unknownId,
           selector: selector,
-          style: Style(linePaint: paint),
+          style: Style(linePaint: paint, lineWidthFunction: lineWidthFunction),
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
@@ -107,8 +108,8 @@ class ThemeReader {
     }
   }
 
-  int? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toInt();
-  int? _maxZoom(jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toInt();
+  double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
+  double? _maxZoom(jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
 }
 
 double _toTextSize(jsonLayer) {

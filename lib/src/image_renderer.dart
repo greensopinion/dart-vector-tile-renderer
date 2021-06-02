@@ -21,9 +21,7 @@ class ImageRenderer {
   ///
   /// [zoom] the current zoom level, which is used to filter theme layers
   ///        via `minzoom` and `maxzoom`. Value if provided must be >= 0 and <= 24
-  ///        When absent all layers are applied as if `minzoom` and `maxzoom` were
-  ///        not specified in the theme.
-  Future<Image> render(VectorTile tile, {required int? zoom}) {
+  Future<Image> render(VectorTile tile, {required double zoom}) {
     final recorder = PictureRecorder();
     int size = scale * tileSize;
     final canvas =

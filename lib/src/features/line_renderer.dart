@@ -4,6 +4,8 @@ import 'package:vector_tile/vector_tile_feature.dart';
 import 'dart:ui';
 
 import '../constants.dart';
+import '../context.dart';
+import '../extensions.dart';
 import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
@@ -14,7 +16,7 @@ class LineRenderer extends FeatureRenderer {
   LineRenderer(this.logger);
 
   @override
-  void render(Canvas canvas, Style style, VectorTileLayer layer,
+  void render(Context context, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
     if (style.linePaint == null) {
       logger.warn(() =>
@@ -51,7 +53,12 @@ class LineRenderer extends FeatureRenderer {
           }
         });
       });
-      canvas.drawPath(path, style.linePaint!);
+      var effectivePaint = style.linePaint!;
+      if (style.lineWidthFunction != null) {
+        effectivePaint = effectivePaint.copy();
+        effectivePaint.strokeWidth = style.lineWidthFunction!(context.zoom);
+      }
+      context.canvas.drawPath(path, style.linePaint!);
     }
   }
 }

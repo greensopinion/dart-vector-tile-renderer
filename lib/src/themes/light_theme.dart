@@ -1803,7 +1803,7 @@ final _lightTheme = {
       "type": "fill",
       "source": "openmaptiles",
       "source-layer": "building",
-      "minzoom": 13,
+      "minzoom": 16,
       "paint": {
         "fill-color": "hsl(35, 8%, 85%)",
         "fill-outline-color": {

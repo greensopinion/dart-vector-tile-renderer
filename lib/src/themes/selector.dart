@@ -164,45 +164,41 @@ class _PropertyLayerSelector extends LayerSelector {
         return _matchesType(feature);
       }
       final properties = feature.decodeProperties();
-      return properties.any((map) => _matches(map[name]));
+      final positiveMatch = properties.any((map) => _positiveMatch(map[name]));
+      return negated ? !positiveMatch : positiveMatch;
     });
   }
 
   bool _matchesType(VectorTileFeature feature) {
-    final typeName = _typeName(feature.geometryType);
+    final typeName = _typeName(feature.type);
     return values.contains(typeName);
   }
 
-  String _typeName(GeometryType? geometryType) {
+  String _typeName(VectorTileGeomType? geometryType) {
     if (geometryType == null) {
       return '<none>';
     }
     switch (geometryType) {
-      case GeometryType.Point:
+      case VectorTileGeomType.POINT:
         return 'Point';
-      case GeometryType.LineString:
+      case VectorTileGeomType.LINESTRING:
         return 'LineString';
-      case GeometryType.Polygon:
+      case VectorTileGeomType.POLYGON:
         return 'Polygon';
-      case GeometryType.MultiPoint:
-        return 'MultiPoint';
-      case GeometryType.MultiLineString:
-        return 'MultiLineString';
-      case GeometryType.MultiPolygon:
-        return 'MultiPolygon';
+      case VectorTileGeomType.UNKNOWN:
+        return '<unknown>';
     }
   }
 
-  bool _matches(VectorTileValue? value) {
-    if (value == null) {
-      return negated ? true : false;
+  bool _positiveMatch(VectorTileValue? value) {
+    if (value != null) {
+      final v = value.dartStringValue ??
+          value.dartIntValue?.toInt() ??
+          value.dartDoubleValue ??
+          value.dartBoolValue;
+      return v == null ? false : values.contains(v);
     }
-    final v = value.dartStringValue ??
-        value.dartIntValue?.toInt() ??
-        value.dartDoubleValue ??
-        value.dartBoolValue;
-    final match = v == null ? false : values.contains(v);
-    return negated ? !match : match;
+    return false;
   }
 }
 

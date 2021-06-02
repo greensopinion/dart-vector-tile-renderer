@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:vector_tile/vector_tile.dart';
 
+import '../context.dart';
 import 'point_renderer.dart';
 import 'polygon_renderer.dart';
 import 'line_renderer.dart';
@@ -9,7 +10,7 @@ import '../logger.dart';
 import '../themes/style.dart';
 
 abstract class FeatureRenderer {
-  void render(Canvas canvas, Style style, VectorTileLayer layer,
+  void render(Context context, Style style, VectorTileLayer layer,
       VectorTileFeature feature);
 }
 
@@ -20,7 +21,7 @@ class FeatureDispatcher extends FeatureRenderer {
   FeatureDispatcher(this.logger)
       : typeToRenderer = createDispatchMapping(logger);
 
-  void render(Canvas canvas, Style style, VectorTileLayer layer,
+  void render(Context context, Style style, VectorTileLayer layer,
       VectorTileFeature feature) {
     final type = feature.type;
     if (type != null) {
@@ -28,7 +29,7 @@ class FeatureDispatcher extends FeatureRenderer {
       if (delegate == null) {
         logger.warn(() => 'feature $type is not implemented');
       } else {
-        delegate.render(canvas, style, layer, feature);
+        delegate.render(context, style, layer, feature);
       }
     }
   }
