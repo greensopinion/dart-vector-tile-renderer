@@ -1,4 +1,4 @@
-## 0.1.7
+## 0.1.8
 
 * improve line size interpolation
 * introduce `zoomScaleFactor` for rendering tiles at greater than
