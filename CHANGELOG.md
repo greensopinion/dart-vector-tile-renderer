@@ -1,5 +1,10 @@
 ## 0.1.7
 
+* improve line size interpolation
+* introduce `zoomScaleFactor` for rendering tiles at greater than
+  their normal size
+## 0.1.7
+
 * improved theme color support
 * correct default stroke width for lines
 

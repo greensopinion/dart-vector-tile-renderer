@@ -55,6 +55,10 @@ class LineRenderer extends FeatureRenderer {
       });
       var effectivePaint = style.linePaint!.paint(zoom: context.zoom);
       if (effectivePaint != null) {
+        if (context.zoomScaleFactor > 1.0) {
+          effectivePaint.strokeWidth =
+              effectivePaint.strokeWidth / context.zoomScaleFactor;
+        }
         context.canvas.drawPath(path, effectivePaint);
       }
     }

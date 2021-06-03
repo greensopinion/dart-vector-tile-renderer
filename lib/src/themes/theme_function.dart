@@ -5,67 +5,66 @@ import 'theme_function_model.dart';
 
 abstract class ThemeFunction<T> {
   T? exponential(FunctionModel<T> model, double zoom) {
-    T? lowerStop;
-    double lowerStopZoom = -1;
-    T? upperStop;
-    double upperStopZoom = lowerStopZoom;
+    FunctionStop? lower;
+    FunctionStop? upper;
     for (var stop in model.stops) {
-      if (stop.zoom > zoom && lowerStop == null) {
+      if (stop.zoom > zoom && lower == null) {
         return null;
       }
       if (stop.zoom <= zoom) {
-        lowerStop = stop.value;
-        lowerStopZoom = stop.zoom;
-        upperStop = lowerStop;
-        upperStopZoom = lowerStopZoom;
+        lower = stop;
+        upper = stop;
       } else {
-        upperStop = stop.value;
-        upperStopZoom = stop.zoom;
+        upper = stop;
         break;
       }
     }
-    double stopZoomDifference = upperStopZoom - lowerStopZoom;
-    T? effectiveStop = lowerStop;
-    if (stopZoomDifference > 0) {
-      double differencePercentage = (zoom - lowerStopZoom) / stopZoomDifference;
-      effectiveStop =
-          applyDifference(lowerStop, upperStop, differencePercentage);
+    if (lower == null) {
+      return null;
     }
-    return applyFunction(model.base, effectiveStop);
+    return interpolate(model.base, lower, upper!, zoom);
   }
 
-  T? applyFunction(T? base, T? effectiveStop);
-  T? applyDifference(T? lower, T? upper, double offsetPercentage);
+  T? interpolate(T? base, FunctionStop lower, FunctionStop upper, double zoom);
 }
 
 class DoubleThemeFunction extends ThemeFunction<double> {
   @override
-  double? applyFunction(double? base, double? effectiveStop) {
-    if (base != null && effectiveStop != null) {
-      return pow(base, effectiveStop).toDouble();
+  double? interpolate(
+      double? base, FunctionStop lower, FunctionStop upper, double zoom) {
+    if (base == null) {
+      base = 1.0;
     }
-    return null;
+    final factor = interpolationFactor(base, lower.zoom, upper.zoom, zoom);
+    return (lower.value * (1 - factor)) + (upper.value * factor);
   }
 
-  @override
-  double? applyDifference(
-      double? lower, double? upper, double offsetPercentage) {
-    if (lower != null && upper != null) {
-      double stopDifference = upper - lower;
-      return lower + (stopDifference * offsetPercentage);
+  double interpolationFactor(
+      double base, double lower, double upper, double input) {
+    final difference = upper - lower;
+    if (difference <= 1.0) {
+      return 0;
     }
-    return lower;
+    final progress = input - lower;
+    if (base <= 1.05 && base >= 0.95) {
+      return progress / difference;
+    }
+    return (pow(base, progress) - 1) / (pow(base, difference) - 1);
   }
 }
 
 class ColorThemeFunction extends ThemeFunction<Color> {
   @override
-  Color? applyDifference(Color? lower, Color? upper, double offsetPercentage) {
-    return lower;
-  }
-
-  @override
-  Color? applyFunction(Color? base, Color? effectiveStop) {
-    return effectiveStop;
+  Color? interpolate(
+      Color? base, FunctionStop lower, FunctionStop upper, double zoom) {
+    final difference = lower.zoom - upper.zoom;
+    if (difference < 1.0) {
+      return lower.value;
+    }
+    final progress = zoom - lower.zoom;
+    if (progress / difference < 0.5) {
+      return lower.value;
+    }
+    return upper.value;
   }
 }
