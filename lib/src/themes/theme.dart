@@ -10,8 +10,7 @@ class Theme {
   }
 
   bool _matchesZoom(double zoom, ThemeLayer layer) =>
-      (zoom >= (layer.minzoom ?? double.negativeInfinity)) &&
-      (zoom <= (layer.maxzoom ?? double.infinity));
+      (zoom >= (layer.minzoom ?? -1)) && (zoom <= (layer.maxzoom ?? 100));
 }
 
 abstract class ThemeLayer {
