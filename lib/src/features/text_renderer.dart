@@ -9,8 +9,23 @@ class TextRenderer {
   final Context context;
   final Style style;
   late final TextPainter? _painter;
+  late final Offset? _translation;
   TextRenderer(this.context, this.style, String text) {
     _painter = _createTextPainter(context, style, text);
+    _translation = _layout();
+  }
+
+  Rect? labelBox(Offset offset) {
+    if (_painter == null) {
+      return null;
+    }
+    double x = offset.dx;
+    double y = offset.dy;
+    if (_translation != null) {
+      x += _translation!.dx;
+      y += _translation!.dy;
+    }
+    return Rect.fromLTRB(x, y, x + _painter!.width, y + _painter!.height);
   }
 
   void render(Offset offset) {
@@ -18,13 +33,12 @@ class TextRenderer {
     if (painter == null) {
       return;
     }
-    Offset? translation = _layout();
-    if (translation != null) {
+    if (_translation != null) {
       context.canvas.save();
-      context.canvas.translate(translation.dx, translation.dy);
+      context.canvas.translate(_translation!.dx, _translation!.dy);
     }
     painter.paint(context.canvas, offset);
-    if (translation != null) {
+    if (_translation != null) {
       context.canvas.restore();
     }
   }
