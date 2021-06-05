@@ -14,7 +14,7 @@ class TilePainter extends CustomPainter {
     final theme = ProvidedThemes.lightTheme();
     canvas.save();
     canvas.scale(scale.toDouble(), scale.toDouble());
-    Renderer(theme: theme).render(canvas, tile, zoom: 15);
+    Renderer(theme: theme).render(canvas, tile, zoomScaleFactor: 1.0, zoom: 15);
     canvas.restore();
   }
 

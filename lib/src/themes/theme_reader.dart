@@ -65,7 +65,8 @@ class ThemeReader {
         _layerId(jsonLayer), PaintingStyle.stroke, 'fill-outline', paintJson,
         defaultStrokeWidth: 0.5);
     if (paint != null) {
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId,
+      return DefaultLayer(
+          jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
           selector: selector,
           style: Style(fillPaint: paint, outlinePaint: outlinePaint),
           minzoom: _minZoom(jsonLayer),
@@ -79,7 +80,8 @@ class ThemeReader {
     final lineStyle = paintFactory.create(
         _layerId(jsonLayer), PaintingStyle.stroke, 'line', jsonPaint);
     if (lineStyle != null) {
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId,
+      return DefaultLayer(
+          jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
           selector: selector,
           style: Style(linePaint: lineStyle),
           minzoom: _minZoom(jsonLayer),
@@ -98,7 +100,8 @@ class ThemeReader {
       final textSize = _toTextSize(jsonLayer);
       final textLetterSpacing =
           (jsonLayer['layout']?['text-letter-spacing'] as num?)?.toDouble();
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId,
+      return DefaultLayer(
+          jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
           selector: selector,
           style: Style(
               textPaint: paint,
@@ -119,6 +122,22 @@ double _toTextSize(jsonLayer) {
     return textSize.toDouble();
   }
   return 16;
+}
+
+ThemeLayerType _toLayerType(jsonLayer) {
+  final type = jsonLayer['type'] ?? '';
+  switch (type) {
+    case 'background':
+      return ThemeLayerType.background;
+    case 'fill':
+      return ThemeLayerType.fill;
+    case 'line':
+      return ThemeLayerType.line;
+    case 'symbol':
+      return ThemeLayerType.symbol;
+    default:
+      return ThemeLayerType.unsupported;
+  }
 }
 
 final _unknownId = '<unknown>';

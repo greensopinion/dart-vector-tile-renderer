@@ -3,6 +3,7 @@ import 'package:vector_tile/vector_tile_feature.dart';
 
 import 'dart:ui';
 
+import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../logger.dart';
 import '../themes/style.dart';
@@ -14,8 +15,8 @@ class PolygonRenderer extends FeatureRenderer {
 
   PolygonRenderer(this.logger);
   @override
-  void render(Context context, Style style, VectorTileLayer layer,
-      VectorTileFeature feature) {
+  void render(Context context, ThemeLayerType layerType, Style style,
+      VectorTileLayer layer, VectorTileFeature feature) {
     if (style.fillPaint == null && style.outlinePaint == null) {
       logger
           .warn(() => 'polygon does not have a fill paint or an outline paint');

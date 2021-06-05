@@ -13,11 +13,15 @@ class Theme {
       (zoom >= (layer.minzoom ?? -1)) && (zoom <= (layer.maxzoom ?? 100));
 }
 
+enum ThemeLayerType { fill, line, symbol, background, unsupported }
+
 abstract class ThemeLayer {
   final String id;
+  final ThemeLayerType type;
   final double? minzoom;
   final double? maxzoom;
-  ThemeLayer(this.id, {required this.minzoom, required this.maxzoom});
+  ThemeLayer(this.id, this.type,
+      {required this.minzoom, required this.maxzoom});
 
   void render(Context context);
 }

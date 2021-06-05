@@ -1,4 +1,5 @@
 import 'package:vector_tile/vector_tile.dart';
+import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import '../context.dart';
 import 'point_renderer.dart';
@@ -8,26 +9,32 @@ import '../logger.dart';
 import '../themes/style.dart';
 
 abstract class FeatureRenderer {
-  void render(Context context, Style style, VectorTileLayer layer,
-      VectorTileFeature feature);
+  void render(Context context, ThemeLayerType layerType, Style style,
+      VectorTileLayer layer, VectorTileFeature feature);
 }
 
 class FeatureDispatcher extends FeatureRenderer {
   final Logger logger;
   final Map<VectorTileGeomType, FeatureRenderer> typeToRenderer;
+  final Map<VectorTileGeomType, FeatureRenderer> symbolTypeToRenderer;
 
   FeatureDispatcher(this.logger)
-      : typeToRenderer = createDispatchMapping(logger);
+      : typeToRenderer = createDispatchMapping(logger),
+        symbolTypeToRenderer = createSymbolDispatchMapping(logger);
 
-  void render(Context context, Style style, VectorTileLayer layer,
-      VectorTileFeature feature) {
+  void render(Context context, ThemeLayerType layerType, Style style,
+      VectorTileLayer layer, VectorTileFeature feature) {
     final type = feature.type;
     if (type != null) {
-      final delegate = typeToRenderer[type];
+      final rendererMapping = layerType == ThemeLayerType.symbol
+          ? symbolTypeToRenderer
+          : typeToRenderer;
+      final delegate = rendererMapping[type];
       if (delegate == null) {
-        logger.warn(() => 'feature $type is not implemented');
+        logger.warn(
+            () => 'layer type $layerType feature $type is not implemented');
       } else {
-        delegate.render(context, style, layer, feature);
+        delegate.render(context, layerType, style, layer, feature);
       }
     }
   }
@@ -37,6 +44,13 @@ class FeatureDispatcher extends FeatureRenderer {
     return {
       VectorTileGeomType.POLYGON: PolygonRenderer(logger),
       VectorTileGeomType.LINESTRING: LineRenderer(logger),
+      VectorTileGeomType.POINT: PointRenderer(logger),
+    };
+  }
+
+  static Map<VectorTileGeomType, FeatureRenderer> createSymbolDispatchMapping(
+      Logger logger) {
+    return {
       VectorTileGeomType.POINT: PointRenderer(logger),
     };
   }

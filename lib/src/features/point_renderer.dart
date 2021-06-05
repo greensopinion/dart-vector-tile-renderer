@@ -4,6 +4,7 @@ import 'package:vector_tile/vector_tile_feature.dart';
 
 import 'dart:ui';
 
+import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../logger.dart';
 import '../extensions.dart';
@@ -16,8 +17,8 @@ class PointRenderer extends FeatureRenderer {
   PointRenderer(this.logger);
 
   @override
-  void render(Context context, Style style, VectorTileLayer layer,
-      VectorTileFeature feature) {
+  void render(Context context, ThemeLayerType layerType, Style style,
+      VectorTileLayer layer, VectorTileFeature feature) {
     if (style.textPaint == null || style.textSize == null) {
       logger.warn(() => 'point does not have a text paint or size');
       return;
@@ -44,7 +45,8 @@ class PointRenderer extends FeatureRenderer {
           .firstOrNull()
           ?.stringValue;
       if (name != null) {
-        final textPainter = _createTextPainter(style, name, zoom: context.zoom);
+        final textPainter =
+            _createTextPainter(context, style, name, zoom: context.zoom);
         if (textPainter != null) {
           points.forEach((point) {
             points.forEach((point) {
@@ -63,15 +65,19 @@ class PointRenderer extends FeatureRenderer {
     }
   }
 
-  TextPainter? _createTextPainter(Style style, String name,
+  TextPainter? _createTextPainter(Context context, Style style, String name,
       {required double zoom}) {
     final foreground = style.textPaint!.paint(zoom: zoom);
     if (foreground == null) {
       return null;
     }
+    double textSize = style.textSize ?? 16;
+    if (context.zoomScaleFactor > 1.0) {
+      textSize = textSize / context.zoomScaleFactor;
+    }
     final textStyle = TextStyle(
         foreground: foreground,
-        fontSize: style.textSize,
+        fontSize: textSize,
         letterSpacing: style.textLetterSpacing);
     return TextPainter(
         text: TextSpan(style: textStyle, text: name),

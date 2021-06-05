@@ -3,9 +3,9 @@ import 'package:vector_tile/vector_tile_feature.dart';
 
 import 'dart:ui';
 
+import '../../vector_tile_renderer.dart';
 import '../constants.dart';
 import '../context.dart';
-import '../extensions.dart';
 import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
@@ -16,8 +16,8 @@ class LineRenderer extends FeatureRenderer {
   LineRenderer(this.logger);
 
   @override
-  void render(Context context, Style style, VectorTileLayer layer,
-      VectorTileFeature feature) {
+  void render(Context context, ThemeLayerType layerType, Style style,
+      VectorTileLayer layer, VectorTileFeature feature) {
     if (style.linePaint == null) {
       logger.warn(() =>
           'line does not have a line paint for vector tile layer ${layer.name}');

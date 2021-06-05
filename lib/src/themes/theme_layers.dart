@@ -11,18 +11,18 @@ class DefaultLayer extends ThemeLayer {
   final LayerSelector selector;
   final Style style;
 
-  DefaultLayer(String id,
+  DefaultLayer(String id, ThemeLayerType type,
       {required this.selector,
       required this.style,
       required double? minzoom,
       required double? maxzoom})
-      : super(id, minzoom: minzoom, maxzoom: maxzoom);
+      : super(id, type, minzoom: minzoom, maxzoom: maxzoom);
 
   @override
   void render(Context context) {
     selector.select(context.tile.layers).forEach((layer) {
       selector.features(layer.features).forEach((feature) {
-        context.featureRenderer.render(context, style, layer, feature);
+        context.featureRenderer.render(context, type, style, layer, feature);
       });
     });
   }
@@ -32,7 +32,7 @@ class BackgroundLayer extends ThemeLayer {
   final Color fillColor;
 
   BackgroundLayer(String id, this.fillColor)
-      : super(id, minzoom: 0, maxzoom: 24);
+      : super(id, ThemeLayerType.background, minzoom: 0, maxzoom: 24);
 
   @override
   void render(Context context) {
