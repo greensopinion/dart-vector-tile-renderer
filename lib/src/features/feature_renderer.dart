@@ -2,8 +2,8 @@ import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import '../context.dart';
-import 'line_symbol_renderer.dart';
-import 'point_renderer.dart';
+import 'symbol_line_renderer.dart';
+import 'symbol_point_renderer.dart';
 import 'polygon_renderer.dart';
 import 'line_renderer.dart';
 import '../logger.dart';
@@ -45,15 +45,14 @@ class FeatureDispatcher extends FeatureRenderer {
     return {
       VectorTileGeomType.POLYGON: PolygonRenderer(logger),
       VectorTileGeomType.LINESTRING: LineRenderer(logger),
-      VectorTileGeomType.POINT: PointRenderer(logger),
     };
   }
 
   static Map<VectorTileGeomType, FeatureRenderer> createSymbolDispatchMapping(
       Logger logger) {
     return {
-      VectorTileGeomType.POINT: PointRenderer(logger),
-      VectorTileGeomType.LINESTRING: LineSymbolRenderer(logger)
+      VectorTileGeomType.POINT: SymbolPointRenderer(logger),
+      VectorTileGeomType.LINESTRING: SymbolLineRenderer(logger)
     };
   }
 }

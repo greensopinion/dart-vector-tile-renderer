@@ -13,10 +13,10 @@ import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
 
-class PointRenderer extends FeatureRenderer {
+class SymbolPointRenderer extends FeatureRenderer {
   final Logger logger;
   final FeatureGeometry geometry;
-  PointRenderer(this.logger) : geometry = FeatureGeometry(logger);
+  SymbolPointRenderer(this.logger) : geometry = FeatureGeometry(logger);
 
   @override
   void render(Context context, ThemeLayerType layerType, Style style,

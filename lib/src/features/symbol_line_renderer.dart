@@ -12,11 +12,11 @@ import '../themes/style.dart';
 import 'feature_renderer.dart';
 import 'feature_geometry.dart';
 
-class LineSymbolRenderer extends FeatureRenderer {
+class SymbolLineRenderer extends FeatureRenderer {
   final Logger logger;
   final FeatureGeometry geometry;
 
-  LineSymbolRenderer(this.logger) : geometry = FeatureGeometry(logger);
+  SymbolLineRenderer(this.logger) : geometry = FeatureGeometry(logger);
 
   @override
   void render(Context context, ThemeLayerType layerType, Style style,
