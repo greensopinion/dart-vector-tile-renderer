@@ -101,21 +101,48 @@ class SymbolLineRenderer extends FeatureRenderer {
 
   Tangent? _occupyLabelSpace(
       Context context, TextRenderer renderer, PathMetric metric) {
-    final tangent = metric.getTangentForOffset(metric.length / 2);
+    Tangent? tangent = metric.getTangentForOffset(metric.length / 2);
     if (tangent != null) {
-      Rect? box = renderer.labelBox(tangent.position);
-      if (box != null) {
-        if (tangent.angle != 0) {
-          final size = max(box.width, box.height);
-          box = Rect.fromLTWH(box.left, box.top, size, size);
-          if (!context.labelSpace.isOccupied(box)) {
-            context.labelSpace.occupy(box);
-            return tangent;
+      tangent = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+      if (tangent == null) {
+        tangent = metric.getTangentForOffset(metric.length / 4);
+        if (tangent != null) {
+          tangent = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+          if (tangent == null) {
+            tangent = metric.getTangentForOffset(metric.length * 3 / 4);
+            if (tangent != null) {
+              tangent = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+            }
           }
         }
       }
     }
+    return tangent;
+  }
+
+  Tangent? _occupyLabelSpaceAtTangent(
+      Context context, TextRenderer renderer, Tangent tangent) {
+    Rect? box = renderer.labelBox(tangent.position);
+    if (box != null) {
+      if (tangent.angle != 0) {
+        if (_isApproximatelyVertical(tangent.angle)) {
+          box = Rect.fromLTWH(box.left, box.top, box.height, box.width);
+        } else {
+          final size = max(box.width, box.height);
+          box = Rect.fromLTWH(box.left, box.top, size, size);
+        }
+        if (!context.labelSpace.isOccupied(box)) {
+          context.labelSpace.occupy(box);
+          return tangent;
+        }
+      }
+    }
     return null;
+  }
+
+  bool _isApproximatelyVertical(double radians) {
+    return (radians >= 1.5 && radians <= 1.65) ||
+        (radians >= 4.6 && radians <= 4.8);
   }
 }
 

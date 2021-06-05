@@ -7,6 +7,10 @@ class LabelSpace {
       occupied.any((existing) => existing.overlaps(rect));
 
   void occupy(Rect box) {
-    occupied.add(box);
+    final boxWithMargin = Rect.fromLTRB(box.left - margin, box.top - margin,
+        box.right + (2 * margin), box.bottom + (2 * margin));
+    occupied.add(boxWithMargin);
   }
 }
+
+final margin = 2.0;
