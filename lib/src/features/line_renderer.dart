@@ -9,11 +9,13 @@ import '../context.dart';
 import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
+import 'feature_geometry.dart';
 
 class LineRenderer extends FeatureRenderer {
   final Logger logger;
+  final FeatureGeometry geometry;
 
-  LineRenderer(this.logger);
+  LineRenderer(this.logger) : geometry = FeatureGeometry(logger);
 
   @override
   void render(Context context, ThemeLayerType layerType, Style style,
@@ -23,20 +25,8 @@ class LineRenderer extends FeatureRenderer {
           'line does not have a line paint for vector tile layer ${layer.name}');
       return;
     }
-    final geometry = feature.decodeGeometry();
-    if (geometry != null) {
-      List<List<List<double>>> lines;
-      if (geometry.type == GeometryType.LineString) {
-        final linestring = geometry as GeometryLineString;
-        lines = [linestring.coordinates];
-      } else if (geometry.type == GeometryType.MultiLineString) {
-        final linestring = geometry as GeometryMultiLineString;
-        lines = linestring.coordinates;
-      } else {
-        logger.warn(() =>
-            'linestring geometryType=${geometry.type} is not implemented');
-        return;
-      }
+    final lines = geometry.decodeLines(feature);
+    if (lines != null) {
       logger.log(() => 'rendering linestring');
       final path = Path();
       lines.forEach((line) {

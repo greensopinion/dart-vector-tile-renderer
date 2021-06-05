@@ -1,15 +1,12 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/themes/style.dart';
 import 'package:vector_tile_renderer/src/themes/theme_function.dart';
 import 'package:vector_tile_renderer/src/themes/theme_function_model.dart';
 
 import 'color_parser.dart';
 
 import '../logger.dart';
-
-typedef DoubleZoomFunction = double? Function(double zoom);
-typedef ColorZoomFunction = Color? Function(double zoom);
+import 'style.dart';
 
 class PaintStyle {
   final String id;

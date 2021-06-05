@@ -2,6 +2,7 @@ import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import '../context.dart';
+import 'line_symbol_renderer.dart';
 import 'point_renderer.dart';
 import 'polygon_renderer.dart';
 import 'line_renderer.dart';
@@ -52,6 +53,7 @@ class FeatureDispatcher extends FeatureRenderer {
       Logger logger) {
     return {
       VectorTileGeomType.POINT: PointRenderer(logger),
+      VectorTileGeomType.LINESTRING: LineSymbolRenderer(logger)
     };
   }
 }

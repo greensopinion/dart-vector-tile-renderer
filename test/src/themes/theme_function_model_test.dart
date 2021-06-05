@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:vector_tile_renderer/src/themes/theme_function.dart';
 import 'package:vector_tile_renderer/src/themes/theme_function_model.dart';
 
 void main() {

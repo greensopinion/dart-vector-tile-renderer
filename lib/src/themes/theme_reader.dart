@@ -8,7 +8,10 @@ import 'style.dart';
 import 'theme.dart';
 import 'dart:core';
 
+import 'theme_function.dart';
+import 'theme_function_model.dart';
 import 'theme_layers.dart';
+import '../vector_tile_extensions.dart';
 
 class ThemeReader {
   final Logger logger;
@@ -97,16 +100,12 @@ class ThemeReader {
     final paint = paintFactory.create(
         _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint);
     if (paint != null) {
-      final textSize = _toTextSize(jsonLayer);
-      final textLetterSpacing =
-          (jsonLayer['layout']?['text-letter-spacing'] as num?)?.toDouble();
+      final layout = _toTextLayout(jsonLayer);
+
       return DefaultLayer(
           jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
           selector: selector,
-          style: Style(
-              textPaint: paint,
-              textSize: textSize,
-              textLetterSpacing: textLetterSpacing),
+          style: Style(textPaint: paint, textLayout: layout),
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
@@ -114,14 +113,58 @@ class ThemeReader {
 
   double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
   double? _maxZoom(jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
+
+  TextLayout _toTextLayout(jsonLayer) {
+    final layout = jsonLayer['layout'];
+    final textSize = _toTextSize(layout);
+    final textLetterSpacing =
+        _toDoubleZoomFunction(layout?['text-letter-spacing']);
+    final placement =
+        LayoutPlacement.fromName(layout?['symbol-placement'] as String?);
+    final anchor = LayoutAnchor.fromName(layout?['text-anchor'] as String?);
+    final textFunction = _toTextFunction(layout?['text-field']);
+    return TextLayout(
+        placement: placement,
+        anchor: anchor,
+        text: textFunction,
+        textSize: textSize,
+        textLetterSpacing: textLetterSpacing);
+  }
+
+  FeatureTextFunction _toTextFunction(String? textField) {
+    if (textField != null) {
+      final match = RegExp(r'\{(.+?)\}').firstMatch(textField);
+      if (match != null) {
+        final fieldName = match.group(1);
+        if (fieldName != null) {
+          return (feature) => feature.stringProperty(fieldName);
+        }
+      }
+    }
+    return (feature) => feature.stringProperty('name');
+  }
 }
 
-double _toTextSize(jsonLayer) {
-  final textSize = jsonLayer['layout']?['text-size'];
-  if (textSize is num) {
-    return textSize.toDouble();
+DoubleZoomFunction _toTextSize(layout) {
+  final function = _toDoubleZoomFunction(layout?['text-size']);
+
+  return (function != null) ? function : (zoom) => 16.0;
+}
+
+DoubleZoomFunction? _toDoubleZoomFunction(layoutProperty) {
+  if (layoutProperty == null) {
+    return null;
   }
-  return 16;
+  if (layoutProperty is Map) {
+    final model = DoubleFunctionModelFactory().create(layoutProperty);
+    if (model != null) {
+      return (zoom) => DoubleThemeFunction().exponential(model, zoom);
+    }
+  } else if (layoutProperty is num) {
+    final size = layoutProperty.toDouble();
+    return (zoom) => size;
+  }
+  return null;
 }
 
 ThemeLayerType _toLayerType(jsonLayer) {
