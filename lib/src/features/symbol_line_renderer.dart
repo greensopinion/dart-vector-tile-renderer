@@ -13,7 +13,6 @@ import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
-import 'label_space.dart';
 import 'text_abbreviator.dart';
 
 class SymbolLineRenderer extends FeatureRenderer {
