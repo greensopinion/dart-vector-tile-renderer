@@ -1,3 +1,8 @@
+## 0.1.10
+
+* avoid label collisions by eliminating labels that would draw over others
+* rotate labels to align with roads 
+
 ## 0.1.9
 
 * improve performance
