@@ -66,7 +66,7 @@ class ThemeReader {
         _layerId(jsonLayer), PaintingStyle.fill, 'fill', paintJson);
     final outlinePaint = paintFactory.create(
         _layerId(jsonLayer), PaintingStyle.stroke, 'fill-outline', paintJson,
-        defaultStrokeWidth: 0.5);
+        defaultStrokeWidth: 0.1);
     if (paint != null) {
       return DefaultLayer(
           jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
