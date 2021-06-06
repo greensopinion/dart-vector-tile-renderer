@@ -1,3 +1,6 @@
+## 0.1.11
+
+* support text-halo-width and text-halo-color
 ## 0.1.10
 
 * avoid label collisions by eliminating labels that would draw over others
