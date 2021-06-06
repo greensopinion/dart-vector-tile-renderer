@@ -69,6 +69,9 @@ class TextRenderer {
   }
 
   Offset? _layout() {
+    if (_painter == null) {
+      return null;
+    }
     final anchor = style.textLayout!.anchor;
     final size = _painter!.size;
     switch (anchor) {
