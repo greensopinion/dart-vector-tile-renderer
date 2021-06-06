@@ -61,7 +61,7 @@ class SymbolLineRenderer extends FeatureRenderer {
               context.canvas.save();
               context.canvas
                   .translate(tangent.position.dx, tangent.position.dy);
-              context.canvas.rotate(-tangent.angle);
+              context.canvas.rotate(-_rightSideUpAngle(tangent.angle));
               context.canvas
                   .translate(-tangent.position.dx, -tangent.position.dy);
             }
@@ -144,6 +144,19 @@ class SymbolLineRenderer extends FeatureRenderer {
     return (radians >= 1.5 && radians <= 1.65) ||
         (radians >= 4.6 && radians <= 4.8);
   }
+
+  double _rightSideUpAngle(double radians) {
+    if (radians > _rotationShiftUpper || radians < _rotationShiftLower) {
+      return radians + _rotationShift;
+    }
+    return radians;
+  }
 }
 
 final _minPathMetricSize = 100.0;
+
+final _degToRad = pi / 180.0;
+final _rotationOfershot = 3;
+final _rotationShiftUpper = (90 + _rotationOfershot) * _degToRad;
+final _rotationShiftLower = -(90 + _rotationOfershot) * _degToRad;
+final _rotationShift = (180 * _degToRad);
