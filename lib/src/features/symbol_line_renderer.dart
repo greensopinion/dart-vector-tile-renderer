@@ -14,6 +14,7 @@ import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
 import 'label_space.dart';
+import 'text_abbreviator.dart';
 
 class SymbolLineRenderer extends FeatureRenderer {
   final Logger logger;
@@ -53,7 +54,8 @@ class SymbolLineRenderer extends FeatureRenderer {
         });
         final metrics = path.computeMetrics().toList();
         if (metrics.length > 0) {
-          final renderer = TextRenderer(context, style, text);
+          final abbreviated = TextAbbreviator().abbreviate(text);
+          final renderer = TextRenderer(context, style, abbreviated);
           final tangent = _findMiddleMetric(context, metrics, renderer);
           if (tangent != null) {
             final rotate = (tangent.angle >= 0.01 || tangent.angle <= -0.01);

@@ -1,6 +1,7 @@
 import 'package:flutter/rendering.dart';
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
+import 'package:vector_tile_renderer/src/features/text_abbreviator.dart';
 import 'package:vector_tile_renderer/src/features/text_renderer.dart';
 
 import 'dart:ui';
@@ -32,7 +33,8 @@ class SymbolPointRenderer extends FeatureRenderer {
       logger.log(() => 'rendering points');
       final text = textLayout.text(feature);
       if (text != null) {
-        final textRenderer = TextRenderer(context, style, text);
+        final abbreviated = TextAbbreviator().abbreviate(text);
+        final textRenderer = TextRenderer(context, style, abbreviated);
         points.forEach((point) {
           points.forEach((point) {
             if (point.length < 2) {
