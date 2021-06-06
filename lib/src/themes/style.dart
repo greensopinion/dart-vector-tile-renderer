@@ -7,12 +7,14 @@ import '../extensions.dart';
 
 typedef DoubleZoomFunction = double? Function(double zoom);
 typedef ColorZoomFunction = Color? Function(double zoom);
+typedef TextHaloFunction = List<Shadow>? Function(double zoom);
 
 class Style {
   final PaintStyle? fillPaint;
   final PaintStyle? linePaint;
   final PaintStyle? textPaint;
   final TextLayout? textLayout;
+  final TextHaloFunction? textHalo;
   final PaintStyle? outlinePaint;
 
   Style(
@@ -20,7 +22,8 @@ class Style {
       this.outlinePaint,
       this.linePaint,
       this.textPaint,
-      this.textLayout});
+      this.textLayout,
+      this.textHalo});
 }
 
 class LayoutPlacement {

@@ -39,7 +39,7 @@ class DoubleFunctionModelFactory {
 class ColorFunctionModelFactory {
   FunctionModel<Color>? create(json) {
     Color? base = json['base'] is String
-        ? ColorParser.parse(json['base'] as String?)
+        ? ColorParser.toColor(json['base'] as String?)
         : null;
     final stops = json['stops'] as List<dynamic>?;
     if (stops == null) {
@@ -51,7 +51,7 @@ class ColorFunctionModelFactory {
     final modelStops = <FunctionStop<Color>>[];
     for (final stop in stops) {
       final stopZoom = (stop[0] as num).toDouble();
-      final stopValue = ColorParser.parse(stop[1] as String);
+      final stopValue = ColorParser.toColor(stop[1] as String);
       if (stopValue != null) {
         modelStops.add(FunctionStop<Color>(stopZoom, stopValue));
       }

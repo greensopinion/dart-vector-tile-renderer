@@ -58,8 +58,12 @@ class TextRenderer {
       if (spacingFunction != null) {
         spacing = spacingFunction(context.zoom);
       }
+      final shadows = style.textHalo?.call(context.zoom);
       final textStyle = TextStyle(
-          foreground: foreground, fontSize: textSize, letterSpacing: spacing);
+          foreground: foreground,
+          fontSize: textSize,
+          letterSpacing: spacing,
+          shadows: shadows);
       return TextPainter(
           text: TextSpan(style: textStyle, text: text),
           textAlign: TextAlign.center,

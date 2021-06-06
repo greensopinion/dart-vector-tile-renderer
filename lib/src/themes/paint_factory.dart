@@ -57,7 +57,7 @@ class PaintFactory {
     if (paint == null) {
       return null;
     }
-    final color = _toColor(paint['$prefix-color']);
+    final color = ColorParser.parse(paint['$prefix-color']);
     if (color == null) {
       return null;
     }
@@ -83,21 +83,5 @@ class PaintFactory {
       }
     }
     return (_) => null;
-  }
-
-  ColorZoomFunction? _toColor(colorSpec) {
-    if (colorSpec is String) {
-      Color? color = ColorParser.parse(colorSpec);
-      if (color == null) {
-        logger.warn(() => 'expected color');
-        return null;
-      }
-      return (zoom) => color;
-    } else if (colorSpec is Map) {
-      final model = ColorFunctionModelFactory().create(colorSpec);
-      if (model != null) {
-        return (zoom) => ColorThemeFunction().exponential(model, zoom);
-      }
-    }
   }
 }

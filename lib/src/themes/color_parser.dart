@@ -2,8 +2,26 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'style.dart';
+import 'theme_function.dart';
+import 'theme_function_model.dart';
+
 class ColorParser {
-  static Color? parse(String? color) {
+  static ColorZoomFunction? parse(colorSpec) {
+    if (colorSpec is String) {
+      Color? color = toColor(colorSpec);
+      if (color != null) {
+        return (zoom) => color;
+      }
+    } else if (colorSpec is Map) {
+      final model = ColorFunctionModelFactory().create(colorSpec);
+      if (model != null) {
+        return (zoom) => ColorThemeFunction().exponential(model, zoom);
+      }
+    }
+  }
+
+  static Color? toColor(String? color) {
     if (color == null) {
       return null;
     }

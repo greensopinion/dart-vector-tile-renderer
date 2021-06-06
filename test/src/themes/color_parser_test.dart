@@ -3,7 +3,7 @@ import 'package:vector_tile_renderer/src/themes/color_parser.dart';
 
 void main() {
   test('parses a hex RGB color', () {
-    final color = ColorParser.parse('#90d86c');
+    final color = ColorParser.toColor('#90d86c');
     expect(color, isNotNull);
     expect(color!.alpha, 0xff);
     expect(color.red, 0x90);
@@ -12,7 +12,7 @@ void main() {
   });
 
   test('parses an RGB color', () {
-    final color = ColorParser.parse('rgb(239, 238,12)');
+    final color = ColorParser.toColor('rgb(239, 238,12)');
     expect(color, isNotNull);
     expect(color!.alpha, 0xff);
     expect(color.red, 239);
@@ -20,7 +20,7 @@ void main() {
     expect(color.blue, 12);
   });
   test('parses an hsl color', () {
-    final color = ColorParser.parse('hsl(248, 7%, 66%)');
+    final color = ColorParser.toColor('hsl(248, 7%, 66%)');
     expect(color, isNotNull);
     expect(color!.alpha, 0xff);
     expect(color.red, 0xA4);
@@ -28,7 +28,7 @@ void main() {
     expect(color.blue, 0xAE);
   });
   test('parses an hsla color', () {
-    final color = ColorParser.parse('hsla(96, 40%, 49%, 0.36)');
+    final color = ColorParser.toColor('hsla(96, 40%, 49%, 0.36)');
     expect(color, isNotNull);
     expect(color!.alpha, 92);
     expect(color.red, 0x73);

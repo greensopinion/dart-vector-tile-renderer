@@ -1,4 +1,5 @@
 import 'package:flutter/painting.dart';
+import 'package:vector_tile_renderer/src/themes/text_halo_factory.dart';
 
 import '../logger.dart';
 import 'color_parser.dart';
@@ -52,7 +53,7 @@ class ThemeReader {
 
   ThemeLayer? _toBackgroundTheme(jsonLayer) {
     final backgroundColor =
-        ColorParser.parse(jsonLayer['paint']?['background-color']);
+        ColorParser.toColor(jsonLayer['paint']?['background-color']);
     if (backgroundColor != null) {
       return BackgroundLayer(jsonLayer['id'] ?? _unknownId, backgroundColor);
     }
@@ -101,11 +102,13 @@ class ThemeReader {
         _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint);
     if (paint != null) {
       final layout = _toTextLayout(jsonLayer);
+      final textHalo = _toTextHalo(jsonLayer);
 
       return DefaultLayer(
           jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
           selector: selector,
-          style: Style(textPaint: paint, textLayout: layout),
+          style:
+              Style(textPaint: paint, textLayout: layout, textHalo: textHalo),
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
@@ -129,6 +132,17 @@ class ThemeReader {
         text: textFunction,
         textSize: textSize,
         textLetterSpacing: textLetterSpacing);
+  }
+
+  TextHaloFunction? _toTextHalo(jsonLayer) {
+    final paint = jsonLayer['paint'];
+    if (paint != null) {
+      final haloWidth = (paint['text-halo-width'] as num?)?.toDouble();
+      final colorFunction = ColorParser.parse(paint['text-halo-color']);
+      if (haloWidth != null && colorFunction != null) {
+        return TextHaloFactory.toHaloFunction(colorFunction, haloWidth);
+      }
+    }
   }
 
   FeatureTextFunction _toTextFunction(String? textField) {
