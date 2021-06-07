@@ -19,16 +19,22 @@ class ImageRenderer {
 
   /// renders the given tile to an image
   ///
+  ///
+  /// [zoomScaleFactor] the 1-dimensional scale at which the tile is being
+  ///        rendered. If the tile is being rendered at twice it's normal size
+  ///        along the x-axis, the zoomScaleFactor would be 2. 1.0 indicates that
+  ///        no scaling is being applied.
   /// [zoom] the current zoom level, which is used to filter theme layers
   ///        via `minzoom` and `maxzoom`. Value if provided must be >= 0 and <= 24
-  Future<Image> render(VectorTile tile, {required double zoom}) {
+  Future<Image> render(VectorTile tile,
+      {double zoomScaleFactor = 1.0, required double zoom}) {
     final recorder = PictureRecorder();
     int size = scale * tileSize;
     final canvas =
         Canvas(recorder, Rect.fromLTRB(0, 0, size.toDouble(), size.toDouble()));
     canvas.scale(scale.toDouble(), scale.toDouble());
     Renderer(theme: theme, logger: logger)
-        .render(canvas, tile, zoomScaleFactor: 1.0, zoom: zoom);
+        .render(canvas, tile, zoomScaleFactor: zoomScaleFactor, zoom: zoom);
     return recorder.endRecording().toImage(size, size);
   }
 }
