@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
@@ -11,7 +13,7 @@ void main() {
         theme: ProvidedThemes.lightTheme(logger: testLogger),
         scale: 4,
         logger: testLogger);
-    final image = await renderer.render(tile, zoom: zoom);
+    final image = await renderer.render(tile, zoomScaleFactor: 4, zoom: zoom);
     final imageBytes = await image.toPng();
     final file = await writeTestFile(imageBytes, 'rendered-tile-zoom$zoom.png');
     final stat = await file.stat();
