@@ -10,7 +10,7 @@ import 'themes/theme.dart';
 class ImageRenderer {
   final Logger logger;
   final Theme theme;
-  final int scale;
+  final double scale;
 
   ImageRenderer({required this.theme, required this.scale, Logger? logger})
       : this.logger = logger ?? Logger.noop() {
@@ -29,12 +29,11 @@ class ImageRenderer {
   Future<Image> render(VectorTile tile,
       {double zoomScaleFactor = 1.0, required double zoom}) {
     final recorder = PictureRecorder();
-    int size = scale * tileSize;
-    final canvas =
-        Canvas(recorder, Rect.fromLTRB(0, 0, size.toDouble(), size.toDouble()));
+    double size = scale * tileSize;
+    final canvas = Canvas(recorder, Rect.fromLTRB(0, 0, size, size));
     canvas.scale(scale.toDouble(), scale.toDouble());
     Renderer(theme: theme, logger: logger)
         .render(canvas, tile, zoomScaleFactor: zoomScaleFactor, zoom: zoom);
-    return recorder.endRecording().toImage(size, size);
+    return recorder.endRecording().toImage(size.floor(), size.floor());
   }
 }
