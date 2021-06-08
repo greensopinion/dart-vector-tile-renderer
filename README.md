@@ -11,10 +11,7 @@ An example of output:
 
 ## Known Issues
 
-* Text rendering to an image results in blocks of color (works fine in a widget)
-* Label sizing and collisions (overlap)
 * Theme layer types not implemented: raster, circle, fill-extrusion, heatmap, hillshade, sky
-* Color base and stops [style-spec](https://docs.mapbox.com/mapbox-gl-js/style-spec/other/)
 
 ## Development
 

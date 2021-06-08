@@ -1,3 +1,6 @@
+## 0.1.12
+
+* support fractional scale values for image size
 ## 0.1.11
 
 * support text-halo-width and text-halo-color
