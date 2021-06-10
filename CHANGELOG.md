@@ -1,3 +1,6 @@
+## 0.1.13
+
+* reduce memory usage
 ## 0.1.12
 
 * support fractional scale values for image size

@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:vector_tile/vector_tile_feature.dart';
+
 import 'selector.dart';
 
 import '../constants.dart';
@@ -23,8 +25,14 @@ class DefaultLayer extends ThemeLayer {
     selector.select(context.tile.layers).forEach((layer) {
       selector.features(layer.features).forEach((feature) {
         context.featureRenderer.render(context, type, style, layer, feature);
+        _releaseMemory(feature);
       });
     });
+  }
+
+  void _releaseMemory(VectorTileFeature feature) {
+    feature.properties = null;
+    feature.geometry = null;
   }
 }
 
