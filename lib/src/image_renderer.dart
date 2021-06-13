@@ -30,7 +30,9 @@ class ImageRenderer {
       {double zoomScaleFactor = 1.0, required double zoom}) {
     final recorder = PictureRecorder();
     double size = scale * tileSize;
-    final canvas = Canvas(recorder, Rect.fromLTRB(0, 0, size, size));
+    final rect = Rect.fromLTRB(0, 0, size, size);
+    final canvas = Canvas(recorder, rect);
+    canvas.clipRect(rect);
     canvas.scale(scale.toDouble(), scale.toDouble());
     Renderer(theme: theme, logger: logger)
         .render(canvas, tile, zoomScaleFactor: zoomScaleFactor, zoom: zoom);
