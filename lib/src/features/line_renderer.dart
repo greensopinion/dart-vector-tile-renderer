@@ -43,6 +43,9 @@ class LineRenderer extends FeatureRenderer {
           }
         });
       });
+      if (!_isWithinClip(context, path)) {
+        return;
+      }
       var effectivePaint = style.linePaint!.paint(zoom: context.zoom);
       if (effectivePaint != null) {
         if (context.zoomScaleFactor > 1.0) {
@@ -53,4 +56,7 @@ class LineRenderer extends FeatureRenderer {
       }
     }
   }
+
+  bool _isWithinClip(Context context, Path path) =>
+      context.tileClip.overlaps(path.getBounds());
 }

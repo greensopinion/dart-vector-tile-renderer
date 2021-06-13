@@ -1,6 +1,7 @@
-## 0.1.13
+## 0.1.14
 
 * reduce memory usage
+* enable rendering within a clip to avoid using excessive raster cache
 ## 0.1.12
 
 * support fractional scale values for image size

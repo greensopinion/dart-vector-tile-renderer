@@ -63,6 +63,9 @@ class PolygonRenderer extends FeatureRenderer {
         }
       });
     });
+    if (!_isWithinClip(context, path)) {
+      return;
+    }
     final fillPaint = style.fillPaint == null
         ? null
         : style.fillPaint!.paint(zoom: context.zoom);
@@ -76,4 +79,7 @@ class PolygonRenderer extends FeatureRenderer {
       context.canvas.drawPath(path, outlinePaint);
     }
   }
+
+  bool _isWithinClip(Context context, Path path) =>
+      context.tileClip.overlaps(path.getBounds());
 }

@@ -25,7 +25,7 @@ class TextRenderer {
       x += _translation!.dx;
       y += _translation!.dy;
     }
-    return Rect.fromLTRB(x, y, x + _painter!.width, y + _painter!.height);
+    return Rect.fromLTWH(x, y, _painter!.width, _painter!.height);
   }
 
   void render(Offset offset) {
