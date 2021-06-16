@@ -1,12 +1,15 @@
 import '../context.dart';
 
 class Theme {
+  final String id;
   final List<ThemeLayer> layers;
-  Theme(this.layers);
+  Theme({required this.id, required this.layers});
 
   Theme atZoom(double zoom) {
     return Theme(
-        this.layers.where((layer) => _matchesZoom(zoom, layer)).toList());
+        id: this.id,
+        layers:
+            this.layers.where((layer) => _matchesZoom(zoom, layer)).toList());
   }
 
   bool _matchesZoom(double zoom, ThemeLayer layer) =>

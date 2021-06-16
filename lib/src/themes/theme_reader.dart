@@ -24,12 +24,13 @@ class ThemeReader {
   }
 
   Theme read(Map<String, dynamic> json) {
+    final id = json['id'] ?? 'default';
     final layers = json['layers'] as List<dynamic>;
     final themeLayers = layers
         .map((layer) => _toThemeLayer(layer))
         .whereType<ThemeLayer>()
         .toList();
-    return Theme(themeLayers);
+    return Theme(id: id, layers: themeLayers);
   }
 
   ThemeLayer? _toThemeLayer(jsonLayer) {
