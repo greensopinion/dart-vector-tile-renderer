@@ -1,3 +1,6 @@
+## 1.0.0
+
+* expose ID on themes
 ## 0.1.14
 
 * reduce memory usage
