@@ -63,9 +63,14 @@ class TextRenderer {
           foreground: foreground,
           fontSize: textSize,
           letterSpacing: spacing,
-          shadows: shadows);
+          shadows: shadows,
+          fontFamily: style.textLayout?.fontFamily,
+          fontStyle: style.textLayout?.fontStyle);
+      final textTransform = style.textLayout?.textTransform;
+      final transformedText =
+          textTransform == null ? text : textTransform(text);
       return TextPainter(
-          text: TextSpan(style: textStyle, text: text),
+          text: TextSpan(style: textStyle, text: transformedText),
           textAlign: TextAlign.center,
           textDirection: TextDirection.ltr)
         ..layout();

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/widgets.dart';
 import 'package:vector_tile_renderer/src/themes/paint_factory.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
@@ -8,6 +9,7 @@ import '../extensions.dart';
 typedef DoubleZoomFunction = double? Function(double zoom);
 typedef ColorZoomFunction = Color? Function(double zoom);
 typedef TextHaloFunction = List<Shadow>? Function(double zoom);
+typedef TextTransformFunction = String? Function(String? text);
 
 class Style {
   final PaintStyle? fillPaint;
@@ -57,13 +59,19 @@ class TextLayout {
   final FeatureTextFunction text;
   final DoubleZoomFunction textSize;
   final DoubleZoomFunction? textLetterSpacing;
+  final FontStyle? fontStyle;
+  final String? fontFamily;
+  final TextTransformFunction? textTransform;
 
   TextLayout(
       {required this.placement,
       required this.anchor,
       required this.text,
       required this.textSize,
-      required this.textLetterSpacing});
+      required this.textLetterSpacing,
+      required this.fontFamily,
+      required this.fontStyle,
+      required this.textTransform});
 }
 
 typedef FeatureTextFunction = String? Function(VectorTileFeature);

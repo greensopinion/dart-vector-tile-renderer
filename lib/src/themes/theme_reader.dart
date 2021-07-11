@@ -127,12 +127,31 @@ class ThemeReader {
         LayoutPlacement.fromName(layout?['symbol-placement'] as String?);
     final anchor = LayoutAnchor.fromName(layout?['text-anchor'] as String?);
     final textFunction = _toTextFunction(layout?['text-field']);
+    final font = layout?['text-font'];
+    String? fontFamily;
+    FontStyle? fontStyle;
+    if (font is List<dynamic>) {
+      fontFamily = font[0];
+      if (fontFamily != null && fontFamily.toLowerCase().contains("italic")) {
+        fontStyle = FontStyle.italic;
+      }
+    }
+    final transform = layout?['text-transform'];
+    TextTransformFunction? textTransform;
+    if (transform == 'uppercase') {
+      textTransform = (s) => s?.toUpperCase();
+    } else if (transform == 'lowercase') {
+      textTransform = (s) => s?.toLowerCase();
+    }
     return TextLayout(
         placement: placement,
         anchor: anchor,
         text: textFunction,
         textSize: textSize,
-        textLetterSpacing: textLetterSpacing);
+        textLetterSpacing: textLetterSpacing,
+        fontFamily: fontFamily,
+        fontStyle: fontStyle,
+        textTransform: textTransform);
   }
 
   TextHaloFunction? _toTextHalo(jsonLayer) {

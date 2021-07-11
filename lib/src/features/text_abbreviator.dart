@@ -9,7 +9,8 @@ class TextAbbreviator {
     'Crescent': 'Cres',
     'Place': 'Pl',
     'Road': 'Rd',
-    'Square': 'Sq'
+    'Square': 'Sq',
+    'Highway': 'Hwy'
   };
   factory TextAbbreviator() => _instance;
   TextAbbreviator._();
