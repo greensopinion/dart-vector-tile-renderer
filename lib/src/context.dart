@@ -14,8 +14,9 @@ class Context {
   final double zoomScaleFactor;
   final double zoom;
   final Rect tileClip;
-  final LabelSpace labelSpace = LabelSpace();
+  late final LabelSpace labelSpace;
 
   Context(this.logger, this.canvas, this.featureRenderer, this.tile,
-      this.zoomScaleFactor, this.zoom, this.tileClip);
+      this.zoomScaleFactor, this.zoom, this.tileClip)
+      : labelSpace = LabelSpace(tileClip);
 }

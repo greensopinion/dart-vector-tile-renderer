@@ -132,11 +132,9 @@ class SymbolLineRenderer extends FeatureRenderer {
           final size = max(box.width, box.height);
           box = Rect.fromLTWH(box.left, box.top, size, size);
         }
-        if (!context.labelSpace.isOccupied(box)) {
-          if (context.tileClip.overlaps(box)) {
-            context.labelSpace.occupy(box);
-            return tangent;
-          }
+        if (context.labelSpace.canOccupy(box)) {
+          context.labelSpace.occupy(box);
+          return tangent;
         }
       }
     }

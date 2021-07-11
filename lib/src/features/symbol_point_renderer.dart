@@ -43,11 +43,9 @@ class SymbolPointRenderer extends FeatureRenderer {
             final x = (point[0] / layer.extent) * tileSize;
             final y = (point[1] / layer.extent) * tileSize;
             final box = textRenderer.labelBox(Offset(x, y));
-            if (box != null && !context.labelSpace.isOccupied(box)) {
-              if (context.tileClip.overlaps(box)) {
-                context.labelSpace.occupy(box);
-                textRenderer.render(Offset(x, y));
-              }
+            if (box != null && context.labelSpace.canOccupy(box)) {
+              context.labelSpace.occupy(box);
+              textRenderer.render(Offset(x, y));
             }
           });
         });
