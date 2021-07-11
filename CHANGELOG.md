@@ -1,3 +1,7 @@
+## 1.0.1
+
+* improve text support with font family, italic, and text-transform
+* avoid placing text on tile boundaries
 ## 1.0.0
 
 * expose ID on themes
