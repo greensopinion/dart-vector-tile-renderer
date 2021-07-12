@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import 'package:vector_tile_renderer/src/themes/paint_factory.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
+import '../../vector_tile_renderer.dart';
 import '../extensions.dart';
+import 'paint_factory.dart';
 
 typedef DoubleZoomFunction = double? Function(double zoom);
 typedef ColorZoomFunction = Color? Function(double zoom);

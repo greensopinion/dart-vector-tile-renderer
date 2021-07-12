@@ -1,5 +1,5 @@
 import 'package:vector_tile/vector_tile.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart';
+import '../../vector_tile_renderer.dart';
 
 import '../context.dart';
 import 'symbol_line_renderer.dart';

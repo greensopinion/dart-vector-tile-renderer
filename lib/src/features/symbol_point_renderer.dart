@@ -1,8 +1,8 @@
 import 'package:flutter/rendering.dart';
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
-import 'package:vector_tile_renderer/src/features/text_abbreviator.dart';
-import 'package:vector_tile_renderer/src/features/text_renderer.dart';
+import 'text_abbreviator.dart';
+import 'text_renderer.dart';
 
 import 'dart:ui';
 

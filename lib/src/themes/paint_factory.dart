@@ -1,12 +1,10 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/themes/theme_function.dart';
-import 'package:vector_tile_renderer/src/themes/theme_function_model.dart';
-
-import 'color_parser.dart';
-
 import '../logger.dart';
+import 'color_parser.dart';
 import 'style.dart';
+import 'theme_function.dart';
+import 'theme_function_model.dart';
 
 class PaintStyle {
   final String id;

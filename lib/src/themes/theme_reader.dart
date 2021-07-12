@@ -1,18 +1,18 @@
+import 'dart:core';
+
 import 'package:flutter/painting.dart';
-import 'package:vector_tile_renderer/src/themes/text_halo_factory.dart';
 
 import '../logger.dart';
+import '../vector_tile_extensions.dart';
 import 'color_parser.dart';
 import 'paint_factory.dart';
 import 'selector_factory.dart';
 import 'style.dart';
+import 'text_halo_factory.dart';
 import 'theme.dart';
-import 'dart:core';
-
 import 'theme_function.dart';
 import 'theme_function_model.dart';
 import 'theme_layers.dart';
-import '../vector_tile_extensions.dart';
 
 class ThemeReader {
   final Logger logger;

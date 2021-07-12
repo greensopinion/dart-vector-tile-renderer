@@ -1,10 +1,8 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
-import 'package:vector_tile_renderer/src/features/text_renderer.dart';
-
-import 'dart:ui';
 
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
@@ -14,6 +12,7 @@ import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
 import 'text_abbreviator.dart';
+import 'text_renderer.dart';
 
 class SymbolLineRenderer extends FeatureRenderer {
   final Logger logger;

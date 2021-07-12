@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/themes/style.dart';
+import 'style.dart';
 
 class TextHaloFactory {
   static TextHaloFunction? toHaloFunction(

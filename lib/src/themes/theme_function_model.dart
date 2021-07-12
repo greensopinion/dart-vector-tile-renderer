@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/themes/color_parser.dart';
+import 'color_parser.dart';
 
 class FunctionModel<T> {
   final T? base;

@@ -2,10 +2,9 @@ import 'dart:ui';
 
 import 'package:vector_tile/vector_tile_feature.dart';
 
-import 'selector.dart';
-
 import '../constants.dart';
 import '../context.dart';
+import 'selector.dart';
 import 'style.dart';
 import 'theme.dart';
 

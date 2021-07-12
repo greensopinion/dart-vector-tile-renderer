@@ -1,15 +1,15 @@
+import 'dart:ui';
+
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
-
-import 'dart:ui';
 
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
 import '../context.dart';
 import '../logger.dart';
 import '../themes/style.dart';
-import 'feature_renderer.dart';
 import 'feature_geometry.dart';
+import 'feature_renderer.dart';
 
 class LineRenderer extends FeatureRenderer {
   final Logger logger;
@@ -24,6 +24,9 @@ class LineRenderer extends FeatureRenderer {
       logger.warn(() =>
           'line does not have a line paint for vector tile layer ${layer.name}');
       return;
+    }
+    if (layer.name == 'boundary') {
+      print('layer: ${layer.name}');
     }
     final lines = geometry.decodeLines(feature);
     if (lines != null) {
@@ -51,6 +54,10 @@ class LineRenderer extends FeatureRenderer {
         if (context.zoomScaleFactor > 1.0) {
           effectivePaint.strokeWidth =
               effectivePaint.strokeWidth / context.zoomScaleFactor;
+        }
+
+        if (layer.name == 'boundary') {
+          print('break');
         }
         context.canvas.drawPath(path, effectivePaint);
       }
