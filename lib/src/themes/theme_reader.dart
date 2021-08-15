@@ -34,7 +34,7 @@ class ThemeReader {
   }
 
   ThemeLayer? _toThemeLayer(jsonLayer) {
-    final visibility = jsonLayer['visibility'];
+    final visibility = jsonLayer['layout']?['visibility'];
     if (visibility == 'none') {
       return null;
     }

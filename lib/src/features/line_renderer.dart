@@ -25,9 +25,6 @@ class LineRenderer extends FeatureRenderer {
           'line does not have a line paint for vector tile layer ${layer.name}');
       return;
     }
-    if (layer.name == 'boundary') {
-      print('layer: ${layer.name}');
-    }
     final lines = geometry.decodeLines(feature);
     if (lines != null) {
       logger.log(() => 'rendering linestring');
@@ -54,10 +51,6 @@ class LineRenderer extends FeatureRenderer {
         if (context.zoomScaleFactor > 1.0) {
           effectivePaint.strokeWidth =
               effectivePaint.strokeWidth / context.zoomScaleFactor;
-        }
-
-        if (layer.name == 'boundary') {
-          print('break');
         }
         context.canvas.drawPath(path, effectivePaint);
       }
