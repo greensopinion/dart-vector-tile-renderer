@@ -1,3 +1,6 @@
+## 1.0.2
+
+* fix support for visibility=none layout
 ## 1.0.1
 
 * improve text support with font family, italic, and text-transform
