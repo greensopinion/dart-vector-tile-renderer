@@ -1,3 +1,6 @@
+## 1.0.5
+
+* add theme versioning
 ## 1.0.4
 
 * add abbreviations for place names
