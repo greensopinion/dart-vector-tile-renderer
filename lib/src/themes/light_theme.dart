@@ -70,7 +70,8 @@ Map<String, dynamic> lightThemeData() {
       "maputnik:license":
           "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
       "maputnik:renderer": "mbgljs",
-      "openmaptiles:version": "3.x"
+      "openmaptiles:version": "3.x",
+      "version": "2021-08-22"
     },
     "sources": {
       "openmaptiles": {

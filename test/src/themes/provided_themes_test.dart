@@ -5,5 +5,6 @@ void main() {
   test('provides a light theme', () {
     final theme = ProvidedThemes.lightTheme();
     expect(theme.id, 'osm-liberty');
+    expect(theme.version, '2021-08-22');
   });
 }
