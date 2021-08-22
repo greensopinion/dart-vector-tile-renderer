@@ -13,10 +13,11 @@ class Context {
   final VectorTile tile;
   final double zoomScaleFactor;
   final double zoom;
+  final Rect tileSpace;
   final Rect tileClip;
   late final LabelSpace labelSpace;
 
   Context(this.logger, this.canvas, this.featureRenderer, this.tile,
-      this.zoomScaleFactor, this.zoom, this.tileClip)
-      : labelSpace = LabelSpace(tileClip);
+      this.zoomScaleFactor, this.zoom, this.tileSpace, this.tileClip)
+      : labelSpace = LabelSpace(tileSpace);
 }

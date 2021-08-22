@@ -1,18 +1,18 @@
+import 'dart:ui';
+
 import 'package:flutter/rendering.dart';
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
-import 'text_abbreviator.dart';
-import 'text_renderer.dart';
-
-import 'dart:ui';
 
 import '../../vector_tile_renderer.dart';
+import '../constants.dart';
 import '../context.dart';
 import '../logger.dart';
-import '../constants.dart';
 import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
+import 'text_abbreviator.dart';
+import 'text_renderer.dart';
 
 class SymbolPointRenderer extends FeatureRenderer {
   final Logger logger;
@@ -42,9 +42,10 @@ class SymbolPointRenderer extends FeatureRenderer {
             }
             final x = (point[0] / layer.extent) * tileSize;
             final y = (point[1] / layer.extent) * tileSize;
-            final box = textRenderer.labelBox(Offset(x, y));
-            if (box != null && context.labelSpace.canOccupy(box)) {
-              context.labelSpace.occupy(box);
+            final box = textRenderer.labelBox(Offset(x, y), translated: true);
+            if (box != null &&
+                context.labelSpace.canOccupy(textRenderer.text, box)) {
+              context.labelSpace.occupy(textRenderer.text, box);
               textRenderer.render(Offset(x, y));
             }
           });

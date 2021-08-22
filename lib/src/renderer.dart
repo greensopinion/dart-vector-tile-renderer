@@ -27,13 +27,13 @@ class Renderer {
   ///        via `minzoom` and `maxzoom`. Value must be >= 0 and <= 24
   void render(Canvas canvas, VectorTile tile,
       {Rect? clip, required double zoomScaleFactor, required double zoom}) {
+    final tileSpace =
+        Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
     canvas.save();
-    canvas.clipRect(
-        Rect.fromLTRB(0, 0, tileSize.toDouble(), tileSize.toDouble()));
-    final tileClip =
-        clip ?? Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
-    final context = Context(
-        logger, canvas, featureRenderer, tile, zoomScaleFactor, zoom, tileClip);
+    canvas.clipRect(tileSpace);
+    final tileClip = clip ?? tileSpace;
+    final context = Context(logger, canvas, featureRenderer, tile,
+        zoomScaleFactor, zoom, tileSpace, tileClip);
     final effectiveTheme = theme.atZoom(zoom);
     effectiveTheme.layers.forEach((themeLayer) {
       logger.log(() => 'rendering theme layer ${themeLayer.id}');

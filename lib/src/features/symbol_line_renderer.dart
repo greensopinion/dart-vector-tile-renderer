@@ -54,8 +54,9 @@ class SymbolLineRenderer extends FeatureRenderer {
         if (metrics.length > 0) {
           final abbreviated = TextAbbreviator().abbreviate(text);
           final renderer = TextRenderer(context, style, abbreviated);
-          final tangent = _findMiddleMetric(context, metrics, renderer);
-          if (tangent != null) {
+          final renderBox = _findMiddleMetric(context, metrics, renderer);
+          if (renderBox != null) {
+            final tangent = renderBox.tangent;
             final rotate = (tangent.angle >= 0.01 || tangent.angle <= -0.01);
             if (rotate) {
               context.canvas.save();
@@ -75,74 +76,79 @@ class SymbolLineRenderer extends FeatureRenderer {
     }
   }
 
-  Tangent? _findMiddleMetric(
+  _RenderBox? _findMiddleMetric(
       Context context, List<PathMetric> metrics, TextRenderer renderer) {
     final midpoint = metrics.length ~/ 2;
     for (int x = 0; x <= (midpoint + 1); ++x) {
       int lower = midpoint - x;
       if (lower >= 0 && metrics[lower].length > _minPathMetricSize) {
-        final tangent = _occupyLabelSpace(context, renderer, metrics[lower]);
-        if (tangent != null) {
-          return tangent;
+        final renderBox = _occupyLabelSpace(context, renderer, metrics[lower]);
+        if (renderBox != null) {
+          return renderBox;
         }
       }
       int upper = midpoint + x;
       if (upper != lower &&
           upper < metrics.length &&
           metrics[upper].length > _minPathMetricSize) {
-        final tangent = _occupyLabelSpace(context, renderer, metrics[upper]);
-        if (tangent != null) {
-          return tangent;
+        final renderBox = _occupyLabelSpace(context, renderer, metrics[upper]);
+        if (renderBox != null) {
+          return renderBox;
         }
       }
     }
     return _occupyLabelSpace(context, renderer, metrics[midpoint]);
   }
 
-  Tangent? _occupyLabelSpace(
+  _RenderBox? _occupyLabelSpace(
       Context context, TextRenderer renderer, PathMetric metric) {
     Tangent? tangent = metric.getTangentForOffset(metric.length / 2);
+    _RenderBox? renderBox;
     if (tangent != null) {
-      tangent = _occupyLabelSpaceAtTangent(context, renderer, tangent);
-      if (tangent == null) {
+      renderBox = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+      if (renderBox == null) {
         tangent = metric.getTangentForOffset(metric.length / 4);
         if (tangent != null) {
-          tangent = _occupyLabelSpaceAtTangent(context, renderer, tangent);
-          if (tangent == null) {
+          renderBox = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+          if (renderBox == null) {
             tangent = metric.getTangentForOffset(metric.length * 3 / 4);
             if (tangent != null) {
-              tangent = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+              renderBox =
+                  _occupyLabelSpaceAtTangent(context, renderer, tangent);
             }
           }
         }
       }
     }
-    return tangent;
+    return renderBox;
   }
 
-  Tangent? _occupyLabelSpaceAtTangent(
+  _RenderBox? _occupyLabelSpaceAtTangent(
       Context context, TextRenderer renderer, Tangent tangent) {
-    Rect? box = renderer.labelBox(tangent.position);
+    Rect? box = renderer.labelBox(tangent.position, translated: false);
     if (box != null) {
-      if (tangent.angle != 0) {
-        if (_isApproximatelyVertical(tangent.angle)) {
-          box = Rect.fromLTWH(box.left, box.top, box.height, box.width);
-        } else {
-          final size = max(box.width, box.height);
-          box = Rect.fromLTWH(box.left, box.top, size, size);
-        }
-        if (context.labelSpace.canOccupy(box)) {
-          context.labelSpace.occupy(box);
-          return tangent;
-        }
+      final angle = _rightSideUpAngle(tangent.angle);
+      final hWidth = (box.height * cos(angle + _ninetyDegrees)).abs();
+      final width = hWidth + (box.width * cos(angle)).abs();
+      final wHeight = (box.width * sin(angle)).abs();
+      final height = (box.height * sin(angle + _ninetyDegrees)).abs() + wHeight;
+      var xOffset = 0.0;
+      var yOffset = 0.0;
+      final translation = renderer.translation;
+      if (translation != null) {
+        xOffset = translation.dx * cos(angle) -
+            (translation.dy * cos(angle + _ninetyDegrees)).abs();
+        yOffset = (translation.dy * sin(angle + _ninetyDegrees)) -
+            (translation.dx * sin(angle)).abs();
+      }
+      Rect textSpace =
+          Rect.fromLTWH(box.left + xOffset, box.top + yOffset, width, height);
+      if (context.labelSpace.canOccupy(renderer.text, textSpace)) {
+        context.labelSpace.occupy(renderer.text, textSpace);
+        return _RenderBox(textSpace, tangent);
       }
     }
     return null;
-  }
-
-  bool _isApproximatelyVertical(double radians) {
-    return (radians >= 1.5 && radians <= 1.65) ||
-        (radians >= 4.6 && radians <= 4.8);
   }
 
   double _rightSideUpAngle(double radians) {
@@ -153,6 +159,13 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 }
 
+class _RenderBox {
+  final Rect box;
+  final Tangent tangent;
+
+  _RenderBox(this.box, this.tangent);
+}
+
 final _minPathMetricSize = 100.0;
 
 final _degToRad = pi / 180.0;
@@ -160,3 +173,4 @@ final _rotationOfershot = 3;
 final _rotationShiftUpper = (90 + _rotationOfershot) * _degToRad;
 final _rotationShiftLower = -(90 + _rotationOfershot) * _degToRad;
 final _rotationShift = (180 * _degToRad);
+final _ninetyDegrees = 90 * _degToRad;

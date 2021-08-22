@@ -8,22 +8,26 @@ import '../context.dart';
 class TextRenderer {
   final Context context;
   final Style style;
+  final String text;
   late final TextPainter? _painter;
   late final Offset? _translation;
-  TextRenderer(this.context, this.style, String text) {
+  TextRenderer(this.context, this.style, this.text) {
     _painter = _createTextPainter(context, style, text);
     _translation = _layout();
   }
 
-  Rect? labelBox(Offset offset) {
+  double get textHeight => _painter!.height;
+  Offset? get translation => _translation;
+
+  Rect? labelBox(Offset offset, {required bool translated}) {
     if (_painter == null) {
       return null;
     }
     double x = offset.dx;
     double y = offset.dy;
-    if (_translation != null) {
-      x += _translation!.dx;
-      y += _translation!.dy;
+    if (_translation != null && translated) {
+      x += (_translation!.dx);
+      y += (_translation!.dy);
     }
     return Rect.fromLTWH(x, y, _painter!.width, _painter!.height);
   }
@@ -33,6 +37,7 @@ class TextRenderer {
     if (painter == null) {
       return;
     }
+
     if (_translation != null) {
       context.canvas.save();
       context.canvas.translate(_translation!.dx, _translation!.dy);
