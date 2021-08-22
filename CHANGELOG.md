@@ -1,3 +1,6 @@
+## 1.0.4
+
+* add abbreviations for place names
 ## 1.0.3
 
 * improve label collision detection
