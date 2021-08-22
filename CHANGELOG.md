@@ -1,3 +1,7 @@
+## 1.0.3
+
+* improve label collision detection
+
 ## 1.0.2
 
 * fix support for visibility=none layout
