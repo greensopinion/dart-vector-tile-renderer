@@ -1,3 +1,6 @@
+## 1.0.7
+
+* only abbreviate place names that appear at the end of text
 ## 1.0.6
 
 * add theme versioning

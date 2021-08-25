@@ -54,7 +54,13 @@ class TextAbbreviator {
 
   String abbreviate(String text) {
     final parts = text.split(RegExp(r'\s+'));
-    return parts.map((e) => _replace(e)).join(' ');
+    if (parts.isEmpty) {
+      return text;
+    }
+    final last = parts.last;
+    parts.removeLast();
+    parts.add(_replace(last));
+    return parts.join(' ');
   }
 
   String _replace(String word) {
