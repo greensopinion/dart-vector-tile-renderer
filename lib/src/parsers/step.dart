@@ -5,10 +5,20 @@ import 'package:vector_tile_renderer/src/extensions.dart';
 import 'parser.dart';
 import 'parsers.dart' as Parsers;
 
-class StepParser<T> extends Parser<T> {
+class StepParser<T> extends ExpressionParser<T> {
   @override
-  Expression<T>? parseSpecial(data) {
+  Expression<T>? parse(data) {
     if (data is! List) return null;
+
+    assert(
+      data.length >= 3 && data.length.isOdd,
+      'Case expressions must have an odd amount of fields and be at least 3 '
+      'fields long: The string literal "step", followed by a numeric value '
+      'expression as input, followed by the baseline output, followed by pairs '
+      'of input-steps and their respective output values.\n'
+      'See https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/#step for more information.\n'
+      'Failed parsing on expression $data',
+    );
 
     final input = Parsers.parse<double>(data[1])!;
 

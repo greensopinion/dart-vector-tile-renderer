@@ -15,7 +15,7 @@ class SelectorFactory {
       }
       return LayerSelector.composite([selector, _createFilter(filter)]);
     }
-    logger.warn(() => 'theme layer has no source-layer: ${themeLayer["id"]}');
+    logger.warn(() => 'theme layer has no source-layer: ${themeLayer['id']}');
     return LayerSelector.none();
   }
 
@@ -50,7 +50,7 @@ class SelectorFactory {
         }
         throw Exception('unexpected all filter: $f');
       }).toList());
-    } else if ((op == ">=" || op == "<=" || op == "<" || op == ">") &&
+    } else if ((op == '>=' || op == '<=' || op == '<' || op == '>') &&
         filter.length == 3 &&
         filter[2] is num) {
       return _numericComparisonSelector(filter, op);
@@ -97,13 +97,13 @@ class SelectorFactory {
 
 ComparisonOperator _toComparisonOperator(String op) {
   switch (op) {
-    case "<=":
+    case '<=':
       return ComparisonOperator.LESS_THAN_OR_EQUAL_TO;
-    case ">=":
+    case '>=':
       return ComparisonOperator.GREATER_THAN_OR_EQUAL_TO;
-    case "<":
+    case '<':
       return ComparisonOperator.LESS_THAN;
-    case ">":
+    case '>':
       return ComparisonOperator.GREATER_THAN;
     default:
       throw Exception(op);

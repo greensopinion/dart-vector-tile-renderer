@@ -7,8 +7,11 @@ extension IterableExtension<T> on Iterable<T> {
     final List<List<T>> chunks = [];
     final list = toList();
 
-    for (var i = 0; i < list.length; i += 2) {
-      final chunk = list.sublist(i, i + 2 > list.length ? list.length : i + 2);
+    for (var i = 0; i < list.length; i += chunkSize) {
+      final chunk = list.sublist(
+        i,
+        i + chunkSize > list.length ? list.length : i + chunkSize,
+      );
       chunks.add(chunk);
     }
 

@@ -27,7 +27,7 @@ void main() {
     };
     final model = DoubleFunctionModelFactory().create(definition);
     expect(model, isNotNull);
-    expect(model!.base, 1.4);
+    expect(model!.base!.evaluate({}), 1.4);
     expect(model.stops, hasLength(2));
     expect(model.stops[0].zoom, 8);
     expect(model.stops[0].value, 1);

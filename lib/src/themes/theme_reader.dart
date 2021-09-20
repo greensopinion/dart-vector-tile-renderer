@@ -132,7 +132,7 @@ class ThemeReader {
     FontStyle? fontStyle;
     if (font is List<dynamic>) {
       fontFamily = font[0];
-      if (fontFamily != null && fontFamily.toLowerCase().contains("italic")) {
+      if (fontFamily != null && fontFamily.toLowerCase().contains('italic')) {
         fontStyle = FontStyle.italic;
       }
     }

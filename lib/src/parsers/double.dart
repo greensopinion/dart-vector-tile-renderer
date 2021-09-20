@@ -7,9 +7,9 @@ import 'package:vector_tile_renderer/src/themes/theme_function_model.dart';
 import 'interpolation.dart';
 import 'parser.dart';
 
-class DoubleParser extends Parser<double> {
+class DoubleParser extends ExpressionParser<double> {
   @override
-  Expression<double>? parseSpecial(data) {
+  Expression<double>? parse(data) {
     if (data is num) {
       return ValueExpression(data.toDouble());
     }
@@ -22,7 +22,7 @@ class DoubleParser extends Parser<double> {
     if (data is List) {
       switch (data[0]) {
         case 'interpolate':
-          return InterpolationParser<double>().parseSpecial(data);
+          return InterpolationParser<double>().parse(data);
         default:
           return null;
       }

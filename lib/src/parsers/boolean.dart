@@ -3,10 +3,10 @@ import 'package:vector_tile_renderer/src/expressions/value_expression.dart';
 
 import 'parser.dart';
 
-class BooleanParser extends Parser<bool> {
+class BooleanParser extends ExpressionParser<bool> {
   @override
-  Expression<bool>? parseSpecial(data) {
-    if (data == "true") return ValueExpression(true);
-    if (data == "false") return ValueExpression(false);
+  Expression<bool>? parse(data) {
+    if (data == 'true') return ValueExpression(true);
+    if (data == 'false') return ValueExpression(false);
   }
 }

@@ -10,9 +10,9 @@ import 'package:vector_tile_renderer/src/themes/theme_function_model.dart';
 import 'interpolation.dart';
 import 'parser.dart';
 
-class ColorParser extends Parser<Color> {
+class ColorParser extends ExpressionParser<Color> {
   @override
-  Expression<Color>? parseSpecial(data) {
+  Expression<Color>? parse(data) {
     if (data is String) {
       return ValueExpression(parseString(data));
     }
@@ -20,7 +20,7 @@ class ColorParser extends Parser<Color> {
     if (data is List) {
       switch (data[0]) {
         case 'interpolate':
-          return InterpolationParser<Color>().parseSpecial(data);
+          return InterpolationParser<Color>().parse(data);
         default:
           return null;
       }
@@ -40,14 +40,14 @@ class ColorParser extends Parser<Color> {
 
   @visibleForTesting
   Color parseString(String color) {
-    if (color.startsWith("#") && color.length == 7) {
+    if (color.startsWith('#') && color.length == 7) {
       return Color.fromARGB(
           0xff,
           int.parse(color.substring(1, 3), radix: 16),
           int.parse(color.substring(3, 5), radix: 16),
           int.parse(color.substring(5, 7), radix: 16));
     }
-    if (color.startsWith("#") && color.length == 4) {
+    if (color.startsWith('#') && color.length == 4) {
       String r = color.substring(1, 2) + color.substring(1, 2);
       String g = color.substring(2, 3) + color.substring(2, 3);
       String b = color.substring(3, 4) + color.substring(3, 4);
@@ -58,8 +58,8 @@ class ColorParser extends Parser<Color> {
     if ((color.startsWith('hsla(') || color.startsWith('hsl(')) &&
         color.endsWith(')')) {
       final components = color
-          .replaceAll(RegExp(r"hsla?\("), '')
-          .replaceAll(RegExp(r"\)"), '')
+          .replaceAll(RegExp(r'hsla?\('), '')
+          .replaceAll(RegExp(r'\)'), '')
           .split(',')
           .map((s) => s.trim().replaceAll(RegExp(r'%'), ''))
           .toList();
@@ -84,8 +84,8 @@ class ColorParser extends Parser<Color> {
     if ((color.startsWith('rgba(') || color.startsWith('rgb(')) &&
         color.endsWith(')')) {
       final components = color
-          .replaceAll(RegExp(r"rgba?\("), '')
-          .replaceAll(RegExp(r"\)"), '')
+          .replaceAll(RegExp(r'rgba?\('), '')
+          .replaceAll(RegExp(r'\)'), '')
           .split(',')
           .map((s) => s.trim())
           .toList();

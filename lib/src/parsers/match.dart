@@ -5,14 +5,25 @@ import 'package:vector_tile_renderer/src/extensions.dart';
 import 'parser.dart';
 import 'parsers.dart' as Parsers;
 
-class MatchParser<T> extends Parser<T> {
+class MatchParser<T> extends ExpressionParser<T> {
   @override
-  Expression<T>? parseSpecial(data) {
+  Expression<T>? parse(data) {
     if (data is! List) {
       return null;
     }
 
     final copy = [...data];
+
+    assert(
+      copy.length.isOdd && copy.length >= 5,
+      'Match expressions must have an odd amount of fields: The string '
+      'literal "match" followed by an expression describing the input value, '
+      'followed by pairs of input (or list of inputs) to be matched against '
+      'and their respective output and lastly the default return value.\n'
+      'See https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/#match for more information.\n'
+      'Failed parsing on expression $data',
+    );
+
     final inputType = _findInputType(copy);
 
     if (inputType == double) {
@@ -58,10 +69,10 @@ class MatchParser<T> extends Parser<T> {
     }
 
     throw ArgumentError(
-      "$data does not appear to contain a valid match "
-      "expression. Make sure that the input labels are either literal numbers"
-      " or strings or lists of one of the two. "
-      "See https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/#match",
+      '$data does not appear to contain a valid match '
+      'expression. Make sure that the input labels are either literal numbers '
+      'or strings or lists of one of the two. '
+      'See https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/#match',
     );
   }
 }

@@ -4,9 +4,9 @@ import 'package:vector_tile_renderer/src/expressions/expression.dart';
 import 'parser.dart';
 import 'parsers.dart' as Parsers;
 
-class CoalesceParser<T> extends Parser<T> {
+class CoalesceParser<T> extends ExpressionParser<T> {
   @override
-  Expression<T>? parseSpecial(data) {
+  Expression<T>? parse(data) {
     if (data is! List) return null;
 
     final delegates =
