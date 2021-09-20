@@ -2,6 +2,18 @@ import 'dart:ui';
 
 extension IterableExtension<T> on Iterable<T> {
   T? firstOrNull() => isEmpty ? null : first;
+
+  List<List<T>> chunk(int chunkSize) {
+    final List<List<T>> chunks = [];
+    final list = toList();
+
+    for (var i = 0; i < list.length; i += 2) {
+      final chunk = list.sublist(i, i + 2 > list.length ? list.length : i + 2);
+      chunks.add(chunk);
+    }
+
+    return chunks;
+  }
 }
 
 extension PaintExtension on Paint {

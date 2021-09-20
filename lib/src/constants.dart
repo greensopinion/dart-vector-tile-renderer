@@ -1,1 +1,1 @@
-final int tileSize = 256;
+const int tileSize = 256;

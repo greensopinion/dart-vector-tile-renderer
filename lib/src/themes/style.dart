@@ -1,14 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
+import 'package:vector_tile_renderer/src/expressions/expression.dart';
 
 import '../../vector_tile_renderer.dart';
 import '../extensions.dart';
 import 'paint_factory.dart';
 
-typedef DoubleZoomFunction = double? Function(double zoom);
-typedef ColorZoomFunction = Color? Function(double zoom);
-typedef TextHaloFunction = List<Shadow>? Function(double zoom);
 typedef TextTransformFunction = String? Function(String? text);
 
 class Style {
@@ -16,7 +14,7 @@ class Style {
   final PaintStyle? linePaint;
   final PaintStyle? textPaint;
   final TextLayout? textLayout;
-  final TextHaloFunction? textHalo;
+  final Expression<List<Shadow>>? textHalo;
   final PaintStyle? outlinePaint;
 
   Style(
@@ -55,10 +53,10 @@ class LayoutAnchor {
 
 class TextLayout {
   final LayoutPlacement placement;
-  final LayoutAnchor anchor;
-  final FeatureTextFunction text;
-  final DoubleZoomFunction textSize;
-  final DoubleZoomFunction? textLetterSpacing;
+  final Expression<String>? anchor;
+  final Expression<String> text;
+  final Expression<double> textSize;
+  final Expression<double>? textLetterSpacing;
   final FontStyle? fontStyle;
   final String? fontFamily;
   final TextTransformFunction? textTransform;

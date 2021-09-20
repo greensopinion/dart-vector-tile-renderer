@@ -1,17 +1,16 @@
 import 'dart:core';
 
 import 'package:flutter/painting.dart';
+import 'package:vector_tile_renderer/src/expressions/expression.dart';
+import 'package:vector_tile_renderer/src/expressions/value_expression.dart';
+import 'package:vector_tile_renderer/src/parsers/parsers.dart';
 
+import '../expressions/text_halo_expression.dart';
 import '../logger.dart';
-import '../vector_tile_extensions.dart';
-import 'color_parser.dart';
 import 'paint_factory.dart';
 import 'selector_factory.dart';
 import 'style.dart';
-import 'text_halo_factory.dart';
 import 'theme.dart';
-import 'theme_function.dart';
-import 'theme_function_model.dart';
 import 'theme_layers.dart';
 
 class ThemeReader {
@@ -55,7 +54,7 @@ class ThemeReader {
 
   ThemeLayer? _toBackgroundTheme(jsonLayer) {
     final backgroundColor =
-        ColorParser.toColor(jsonLayer['paint']?['background-color']);
+        parse<Color>(jsonLayer['paint']?['background-color']);
     if (backgroundColor != null) {
       return BackgroundLayer(jsonLayer['id'] ?? _unknownId, backgroundColor);
     }
@@ -122,12 +121,12 @@ class ThemeReader {
   TextLayout _toTextLayout(jsonLayer) {
     final layout = jsonLayer['layout'];
     final textSize = _toTextSize(layout);
-    final textLetterSpacing =
-        _toDoubleZoomFunction(layout?['text-letter-spacing']);
+    final textLetterSpacing = parse<double>(layout?['text-letter-spacing']);
     final placement =
         LayoutPlacement.fromName(layout?['symbol-placement'] as String?);
-    final anchor = LayoutAnchor.fromName(layout?['text-anchor'] as String?);
-    final textFunction = _toTextFunction(layout?['text-field']);
+    final anchor = parse<String>(layout?['text-anchor']);
+    final textFunction = parse<String>(layout?['text-field'])!;
+
     final font = layout?['text-font'];
     String? fontFamily;
     FontStyle? fontStyle;
@@ -145,61 +144,31 @@ class ThemeReader {
       textTransform = (s) => s?.toLowerCase();
     }
     return TextLayout(
-        placement: placement,
-        anchor: anchor,
-        text: textFunction,
-        textSize: textSize,
-        textLetterSpacing: textLetterSpacing,
-        fontFamily: fontFamily,
-        fontStyle: fontStyle,
-        textTransform: textTransform);
+      placement: placement,
+      anchor: anchor,
+      text: textFunction,
+      textSize: textSize,
+      textLetterSpacing: textLetterSpacing,
+      fontFamily: fontFamily,
+      fontStyle: fontStyle,
+      textTransform: textTransform,
+    );
   }
 
-  TextHaloFunction? _toTextHalo(jsonLayer) {
+  TextHaloExpression? _toTextHalo(jsonLayer) {
     final paint = jsonLayer['paint'];
     if (paint != null) {
       final haloWidth = (paint['text-halo-width'] as num?)?.toDouble();
-      final colorFunction = ColorParser.parse(paint['text-halo-color']);
+      final colorFunction = parse<Color>(paint['text-halo-color']);
       if (haloWidth != null && colorFunction != null) {
-        return TextHaloFactory.toHaloFunction(colorFunction, haloWidth);
+        return TextHaloExpression(colorFunction, haloWidth);
       }
     }
   }
-
-  FeatureTextFunction _toTextFunction(String? textField) {
-    if (textField != null) {
-      final match = RegExp(r'\{(.+?)\}').firstMatch(textField);
-      if (match != null) {
-        final fieldName = match.group(1);
-        if (fieldName != null) {
-          return (feature) => feature.stringProperty(fieldName);
-        }
-      }
-    }
-    return (feature) => feature.stringProperty('name');
-  }
 }
 
-DoubleZoomFunction _toTextSize(layout) {
-  final function = _toDoubleZoomFunction(layout?['text-size']);
-
-  return (function != null) ? function : (zoom) => 16.0;
-}
-
-DoubleZoomFunction? _toDoubleZoomFunction(layoutProperty) {
-  if (layoutProperty == null) {
-    return null;
-  }
-  if (layoutProperty is Map) {
-    final model = DoubleFunctionModelFactory().create(layoutProperty);
-    if (model != null) {
-      return (zoom) => DoubleThemeFunction().exponential(model, zoom);
-    }
-  } else if (layoutProperty is num) {
-    final size = layoutProperty.toDouble();
-    return (zoom) => size;
-  }
-  return null;
+Expression<double> _toTextSize(layout) {
+  return parse<double>(layout?['text-size']) ?? ValueExpression(16.0);
 }
 
 ThemeLayerType _toLayerType(jsonLayer) {

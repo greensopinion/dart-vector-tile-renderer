@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:vector_tile/vector_tile.dart';
-import 'constants.dart';
 
+import 'constants.dart';
 import 'context.dart';
 import 'features/feature_renderer.dart';
-import 'themes/theme.dart';
 import 'logger.dart';
+import 'themes/theme.dart';
 
 class Renderer {
   final Theme theme;

@@ -1,17 +1,18 @@
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/expressions/expression.dart';
+import 'package:vector_tile_renderer/src/expressions/function_expression.dart';
+import 'package:vector_tile_renderer/src/expressions/value_expression.dart';
+import 'package:vector_tile_renderer/src/parsers/parsers.dart';
+
 import '../logger.dart';
-import 'color_parser.dart';
-import 'style.dart';
-import 'theme_function.dart';
-import 'theme_function_model.dart';
 
 class PaintStyle {
   final String id;
   final PaintingStyle paintingStyle;
-  final DoubleZoomFunction opacity;
-  final DoubleZoomFunction strokeWidth;
-  final ColorZoomFunction color;
+  final Expression<double>? opacity;
+  final Expression<double>? strokeWidth;
+  final Expression<Color> color;
 
   PaintStyle(
       {required this.id,
@@ -20,12 +21,12 @@ class PaintStyle {
       required this.strokeWidth,
       required this.color});
 
-  Paint? paint({required double zoom}) {
-    final color = this.color(zoom);
+  Paint? paint(Map<String, dynamic> args) {
+    final color = this.color.evaluate(args);
     if (color == null) {
       return null;
     }
-    final opacity = this.opacity(zoom);
+    final opacity = this.opacity?.evaluate(args);
     if (opacity != null && opacity <= 0) {
       return null;
     }
@@ -36,7 +37,7 @@ class PaintStyle {
       paint.color = color.withOpacity(opacity);
     }
     if (paintingStyle == PaintingStyle.stroke) {
-      final strokeWidth = this.strokeWidth(zoom);
+      final strokeWidth = this.strokeWidth?.evaluate(args);
       if (strokeWidth == null) {
         return null;
       }
@@ -55,31 +56,23 @@ class PaintFactory {
     if (paint == null) {
       return null;
     }
-    final color = ColorParser.parse(paint['$prefix-color']);
+    final color = parse<Color>(paint['$prefix-color']);
+
     if (color == null) {
       return null;
     }
-    final opacity = _toDouble(paint['$prefix-opacity']);
-    final strokeWidth = _toDouble(paint['$prefix-width']);
-    return PaintStyle(
-        id: id,
-        paintingStyle: style,
-        opacity: opacity,
-        strokeWidth: (zoom) => strokeWidth(zoom) ?? defaultStrokeWidth,
-        color: color);
-  }
+    final opacity = parse<double>(paint['$prefix-opacity']);
+    final strokeWidth = parse<double>(paint['$prefix-width']) ??
+        ValueExpression(defaultStrokeWidth);
 
-  DoubleZoomFunction _toDouble(doubleSpec) {
-    if (doubleSpec is num) {
-      final value = doubleSpec.toDouble();
-      return (zoom) => value;
-    }
-    if (doubleSpec is Map) {
-      final model = DoubleFunctionModelFactory().create(doubleSpec);
-      if (model != null) {
-        return (zoom) => DoubleThemeFunction().exponential(model, zoom);
-      }
-    }
-    return (_) => null;
+    return PaintStyle(
+      id: id,
+      paintingStyle: style,
+      opacity: opacity,
+      strokeWidth: FunctionExpression(
+        (args) => strokeWidth.evaluate(args) ?? defaultStrokeWidth,
+      ),
+      color: color,
+    );
   }
 }

@@ -1,13 +1,14 @@
-import 'package:vector_tile/vector_tile.dart';
-import 'package:vector_tile/vector_tile_feature.dart';
-
 import 'dart:ui';
 
+import 'package:vector_tile/vector_tile.dart';
+import 'package:vector_tile/vector_tile_feature.dart';
+import 'package:vector_tile_renderer/src/features/to_args_map.dart';
+
 import '../../vector_tile_renderer.dart';
+import '../constants.dart';
 import '../context.dart';
 import '../logger.dart';
 import '../themes/style.dart';
-import '../constants.dart';
 import 'feature_renderer.dart';
 
 class PolygonRenderer extends FeatureRenderer {
@@ -28,13 +29,13 @@ class PolygonRenderer extends FeatureRenderer {
         final polygon = geometry as GeometryPolygon;
         logger.log(() => 'rendering polygon');
         final coordinates = polygon.coordinates;
-        _renderPolygon(context, style, layer, coordinates);
+        _renderPolygon(context, style, layer, feature, coordinates);
       } else if (geometry.type == GeometryType.MultiPolygon) {
         final multiPolygon = geometry as GeometryMultiPolygon;
         logger.log(() => 'rendering multi-polygon');
         final polygons = multiPolygon.coordinates;
         polygons?.forEach((coordinates) {
-          _renderPolygon(context, style, layer, coordinates);
+          _renderPolygon(context, style, layer, feature, coordinates);
         });
       } else {
         logger.warn(
@@ -44,7 +45,7 @@ class PolygonRenderer extends FeatureRenderer {
   }
 
   void _renderPolygon(Context context, Style style, VectorTileLayer layer,
-      List<List<List<double>>> coordinates) {
+      VectorTileFeature feature, List<List<List<double>>> coordinates) {
     final path = Path();
     coordinates.forEach((ring) {
       ring.asMap().forEach((index, point) {
@@ -66,15 +67,15 @@ class PolygonRenderer extends FeatureRenderer {
     if (!_isWithinClip(context, path)) {
       return;
     }
-    final fillPaint = style.fillPaint == null
-        ? null
-        : style.fillPaint!.paint(zoom: context.zoom);
+    final args = toArgsMap(context, feature);
+
+    final fillPaint =
+        style.fillPaint == null ? null : style.fillPaint!.paint(args);
     if (fillPaint != null) {
       context.canvas.drawPath(path, fillPaint);
     }
-    final outlinePaint = style.outlinePaint == null
-        ? null
-        : style.outlinePaint!.paint(zoom: context.zoom);
+    final outlinePaint =
+        style.outlinePaint == null ? null : style.outlinePaint!.paint(args);
     if (outlinePaint != null) {
       context.canvas.drawPath(path, outlinePaint);
     }

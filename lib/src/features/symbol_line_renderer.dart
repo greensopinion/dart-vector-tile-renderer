@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
+import 'package:vector_tile_renderer/src/features/to_args_map.dart';
 
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
@@ -33,7 +34,7 @@ class SymbolLineRenderer extends FeatureRenderer {
     final lines = geometry.decodeLines(feature);
     if (lines != null) {
       logger.log(() => 'rendering linestring symbol');
-      final text = textLayout.text(feature);
+      final text = textLayout.text.evaluate(toArgsMap(context, feature));
       if (text != null) {
         final path = Path();
         lines.forEach((line) {
@@ -53,7 +54,7 @@ class SymbolLineRenderer extends FeatureRenderer {
         final metrics = path.computeMetrics().toList();
         if (metrics.length > 0) {
           final abbreviated = TextAbbreviator().abbreviate(text);
-          final renderer = TextRenderer(context, style, abbreviated);
+          final renderer = TextRenderer(context, style, abbreviated, feature);
           final renderBox = _findMiddleMetric(context, metrics, renderer);
           if (renderBox != null) {
             final tangent = renderBox.tangent;

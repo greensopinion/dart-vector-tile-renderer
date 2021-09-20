@@ -10,6 +10,7 @@ import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
+import 'to_args_map.dart';
 
 class LineRenderer extends FeatureRenderer {
   final Logger logger;
@@ -46,7 +47,7 @@ class LineRenderer extends FeatureRenderer {
       if (!_isWithinClip(context, path)) {
         return;
       }
-      var effectivePaint = style.linePaint!.paint(zoom: context.zoom);
+      var effectivePaint = style.linePaint!.paint(toArgsMap(context, feature));
       if (effectivePaint != null) {
         if (context.zoomScaleFactor > 1.0) {
           effectivePaint.strokeWidth =

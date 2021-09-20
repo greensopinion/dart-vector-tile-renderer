@@ -1,6 +1,5 @@
-import 'selector.dart';
-
 import '../logger.dart';
+import 'selector.dart';
 
 class SelectorFactory {
   final Logger logger;
@@ -65,7 +64,9 @@ class SelectorFactory {
     if (filter.length != 3) {
       throw Exception('unexpected filter $filter');
     }
-    final propertyName = filter[1];
+    final propertyNameField = filter[1];
+    final propertyName =
+        propertyNameField is List ? propertyNameField.last : propertyNameField;
     final propertyValue = filter[2];
     return LayerSelector.withProperty(propertyName,
         values: [propertyValue], negated: negated);
@@ -85,7 +86,9 @@ class SelectorFactory {
 
   LayerSelector _numericComparisonSelector(List<dynamic> filter, String op) {
     ComparisonOperator comparison = _toComparisonOperator(op);
-    final propertyName = filter[1] as String;
+    final propertyNameField = filter[1];
+    final propertyName =
+        propertyNameField is List ? propertyNameField.last : propertyNameField;
     final propertyValue = filter[2] as num;
     return LayerSelector.comparingProperty(
         propertyName, comparison, propertyValue);

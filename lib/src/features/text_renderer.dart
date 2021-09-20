@@ -1,17 +1,23 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
+import 'package:vector_tile/vector_tile_feature.dart';
+import 'package:vector_tile_renderer/src/expressions/expression.dart';
 
-import '../themes/style.dart';
 import '../context.dart';
+import '../themes/style.dart';
+import 'to_args_map.dart';
 
 class TextRenderer {
   final Context context;
   final Style style;
   final String text;
+  final VectorTileFeature feature;
+
   late final TextPainter? _painter;
   late final Offset? _translation;
-  TextRenderer(this.context, this.style, this.text) {
+
+  TextRenderer(this.context, this.style, this.text, this.feature) {
     _painter = _createTextPainter(context, style, text);
     _translation = _layout();
   }
@@ -49,21 +55,23 @@ class TextRenderer {
   }
 
   TextPainter? _createTextPainter(Context context, Style style, String text) {
-    final foreground = style.textPaint!.paint(zoom: context.zoom);
+    final args = toArgsMap(context, feature);
+
+    final foreground = style.textPaint!.paint(args);
     if (foreground == null) {
       return null;
     }
-    double? textSize = style.textLayout!.textSize(context.zoom);
+    double? textSize = style.textLayout!.textSize.evaluate(args);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
       }
       double? spacing;
-      DoubleZoomFunction? spacingFunction = style.textLayout!.textLetterSpacing;
+      Expression<double>? spacingFunction = style.textLayout!.textLetterSpacing;
       if (spacingFunction != null) {
-        spacing = spacingFunction(context.zoom);
+        spacing = spacingFunction.evaluate(args);
       }
-      final shadows = style.textHalo?.call(context.zoom);
+      final shadows = style.textHalo?.evaluate(args);
       final textStyle = TextStyle(
           foreground: foreground,
           fontSize: textSize,
@@ -86,7 +94,10 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    final anchor = style.textLayout!.anchor;
+    final anchorString = style.textLayout!.anchor?.evaluate(
+      toArgsMap(context, feature),
+    );
+    final anchor = LayoutAnchor.fromName(anchorString);
     final size = _painter!.size;
     switch (anchor) {
       case LayoutAnchor.center:
