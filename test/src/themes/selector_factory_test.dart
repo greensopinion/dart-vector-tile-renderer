@@ -9,10 +9,10 @@ void main() {
     final tile = await readTestTile();
     final transportationLayer =
         tile.layers.where((layer) => layer.name == 'transportation').first;
-    expect(
-        selector.select(tile.layers).toList(), contains(transportationLayer));
+    expect(selector.layerSelector.select(tile.layers).toList(),
+        contains(transportationLayer));
     final selectedFeatures =
-        selector.features(transportationLayer.features).toList();
+        selector.layerSelector.features(transportationLayer.features).toList();
     expect(selectedFeatures, isNotEmpty);
     expect(selectedFeatures.length, 206);
   });

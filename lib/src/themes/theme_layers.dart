@@ -9,7 +9,7 @@ import 'style.dart';
 import 'theme.dart';
 
 class DefaultLayer extends ThemeLayer {
-  final LayerSelector selector;
+  final TileLayerSelector selector;
   final Style style;
 
   DefaultLayer(String id, ThemeLayerType type,
@@ -21,8 +21,8 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void render(Context context) {
-    selector.select(context.tile.layers).forEach((layer) {
-      selector.features(layer.features).forEach((feature) {
+    selector.select(context).forEach((layer) {
+      selector.layerSelector.features(layer.features).forEach((feature) {
         context.featureRenderer.render(context, type, style, layer, feature);
         _releaseMemory(feature);
       });

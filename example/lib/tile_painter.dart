@@ -15,7 +15,7 @@ class TilePainter extends CustomPainter {
     final theme = ProvidedThemes.lightTheme();
     canvas.save();
     canvas.scale(scale.toDouble(), scale.toDouble());
-    Renderer(theme: theme).render(canvas, tile,
+    Renderer(theme: theme).render(canvas, {'openmaptiles': tile},
         zoomScaleFactor: pow(2, scale).toDouble(), zoom: 15);
     canvas.restore();
   }

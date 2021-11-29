@@ -1,3 +1,6 @@
+## 2.0.0
+
+* support multiple source tiles so that it's possible to have multiple data sources, for exmaple when rendering hillshade
 ## 1.0.7
 
 * only abbreviate place names that appear at the end of text
