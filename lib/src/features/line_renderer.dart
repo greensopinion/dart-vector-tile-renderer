@@ -30,18 +30,18 @@ class LineRenderer extends FeatureRenderer {
       logger.log(() => 'rendering linestring');
       final path = Path();
       lines.forEach((line) {
-        line.asMap().forEach((index, point) {
+        final points = line.map((point) {
           if (point.length < 2) {
             throw Exception('invalid point ${point.length}');
           }
+
           final x = (point[0] / layer.extent) * tileSize;
           final y = (point[1] / layer.extent) * tileSize;
-          if (index == 0) {
-            path.moveTo(x, y);
-          } else {
-            path.lineTo(x, y);
-          }
-        });
+
+          return Offset(x, y);
+        }).toList(growable: false);
+
+        path.addPolygon(points, false);
       });
       if (!_isWithinClip(context, path)) {
         return;

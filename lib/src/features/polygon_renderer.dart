@@ -47,22 +47,20 @@ class PolygonRenderer extends FeatureRenderer {
       List<List<List<double>>> coordinates) {
     final path = Path();
     coordinates.forEach((ring) {
-      ring.asMap().forEach((index, point) {
+      final points = ring.map((point) {
         if (point.length < 2) {
           throw Exception('invalid point ${point.length}');
         }
+
         final x = (point[0] / layer.extent) * tileSize;
         final y = (point[1] / layer.extent) * tileSize;
-        if (index == 0) {
-          path.moveTo(x, y);
-        } else {
-          path.lineTo(x, y);
-        }
-        if (index == (ring.length - 1)) {
-          path.close();
-        }
-      });
+
+        return Offset(x, y);
+      }).toList(growable: false);
+
+      path.addPolygon(points, true);
     });
+
     if (!_isWithinClip(context, path)) {
       return;
     }

@@ -37,19 +37,20 @@ class SymbolLineRenderer extends FeatureRenderer {
       if (text != null) {
         final path = Path();
         lines.forEach((line) {
-          line.asMap().forEach((index, point) {
+          final points = line.map((point) {
             if (point.length < 2) {
               throw Exception('invalid point ${point.length}');
             }
+
             final x = (point[0] / layer.extent) * tileSize;
             final y = (point[1] / layer.extent) * tileSize;
-            if (index == 0) {
-              path.moveTo(x, y);
-            } else {
-              path.lineTo(x, y);
-            }
-          });
+
+            return Offset(x, y);
+          }).toList(growable: false);
+
+          path.addPolygon(points, false);
         });
+
         final metrics = path.computeMetrics().toList();
         if (metrics.length > 0) {
           final abbreviated = TextAbbreviator().abbreviate(text);
