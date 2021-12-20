@@ -41,8 +41,8 @@ class SymbolLineRenderer extends FeatureRenderer {
           path.addPolygon(line.toPoints(layer.extent, tileSize), false);
         });
         final metrics = path.computeMetrics().toList();
-        if (metrics.length > 0) {
-          final abbreviated = TextAbbreviator().abbreviate(text);
+        final abbreviated = TextAbbreviator().abbreviate(text);
+        if (metrics.length > 0 && context.labelSpace.canAccept(abbreviated)) {
           final renderer = TextRenderer(context, style, abbreviated);
           final renderBox = _findMiddleMetric(context, metrics, renderer);
           if (renderBox != null) {

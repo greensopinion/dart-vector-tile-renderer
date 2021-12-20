@@ -7,8 +7,10 @@ class LabelSpace {
 
   LabelSpace(this.space);
 
+  bool canAccept(String? text) => text != null && !texts.contains(text);
+
   bool canOccupy(String text, Rect rect) =>
-      !texts.contains(text) &&
+      canAccept(text) &&
       space.containsCompletely(rect) &&
       !occupied.any((existing) => existing.space.overlaps(rect));
 
