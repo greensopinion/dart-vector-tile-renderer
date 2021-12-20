@@ -1,3 +1,6 @@
+## 2.0.1
+
+* reduced memory overhead when rendering to a Canvas that is scaled and clipped
 ## 2.0.0
 
 * support multiple source tiles so that it's possible to have multiple data sources, for exmaple when rendering hillshade
