@@ -1,14 +1,15 @@
+import 'dart:ui';
+
 import 'package:vector_tile/vector_tile.dart';
 import 'package:vector_tile/vector_tile_feature.dart';
 
-import 'dart:ui';
-
 import '../../vector_tile_renderer.dart';
+import '../constants.dart';
 import '../context.dart';
 import '../logger.dart';
 import '../themes/style.dart';
-import '../constants.dart';
 import 'feature_renderer.dart';
+import 'points_extension.dart';
 
 class PolygonRenderer extends FeatureRenderer {
   final Logger logger;
@@ -47,36 +48,24 @@ class PolygonRenderer extends FeatureRenderer {
       List<List<List<double>>> coordinates) {
     final path = Path();
     coordinates.forEach((ring) {
-      ring.asMap().forEach((index, point) {
-        if (point.length < 2) {
-          throw Exception('invalid point ${point.length}');
-        }
-        final x = (point[0] / layer.extent) * tileSize;
-        final y = (point[1] / layer.extent) * tileSize;
-        if (index == 0) {
-          path.moveTo(x, y);
-        } else {
-          path.lineTo(x, y);
-        }
-        if (index == (ring.length - 1)) {
-          path.close();
-        }
-      });
+      path.addPolygon(ring.toPoints(layer.extent, tileSize), true);
     });
     if (!_isWithinClip(context, path)) {
       return;
     }
+    final clipPath = Path()..addRect(context.tileClip.inflate(20));
+    final clippedPath = Path.combine(PathOperation.intersect, path, clipPath);
     final fillPaint = style.fillPaint == null
         ? null
         : style.fillPaint!.paint(zoom: context.zoom);
     if (fillPaint != null) {
-      context.canvas.drawPath(path, fillPaint);
+      context.canvas.drawPath(clippedPath, fillPaint);
     }
     final outlinePaint = style.outlinePaint == null
         ? null
         : style.outlinePaint!.paint(zoom: context.zoom);
     if (outlinePaint != null) {
-      context.canvas.drawPath(path, outlinePaint);
+      context.canvas.drawPath(clippedPath, outlinePaint);
     }
   }
 

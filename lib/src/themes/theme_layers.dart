@@ -47,7 +47,6 @@ class BackgroundLayer extends ThemeLayer {
     final paint = Paint()
       ..style = PaintingStyle.fill
       ..color = fillColor;
-    context.canvas.drawRect(
-        Rect.fromLTRB(0, 0, tileSize.toDouble(), tileSize.toDouble()), paint);
+    context.canvas.drawRect(context.tileClip, paint);
   }
 }

@@ -11,6 +11,7 @@ import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
+import 'points_extension.dart';
 import 'text_abbreviator.dart';
 import 'text_renderer.dart';
 
@@ -37,18 +38,7 @@ class SymbolLineRenderer extends FeatureRenderer {
       if (text != null) {
         final path = Path();
         lines.forEach((line) {
-          line.asMap().forEach((index, point) {
-            if (point.length < 2) {
-              throw Exception('invalid point ${point.length}');
-            }
-            final x = (point[0] / layer.extent) * tileSize;
-            final y = (point[1] / layer.extent) * tileSize;
-            if (index == 0) {
-              path.moveTo(x, y);
-            } else {
-              path.lineTo(x, y);
-            }
-          });
+          path.addPolygon(line.toPoints(layer.extent, tileSize), false);
         });
         final metrics = path.computeMetrics().toList();
         if (metrics.length > 0) {
