@@ -3,10 +3,57 @@ import 'package:flutter/widgets.dart';
 import '../themes/style.dart';
 import '../context.dart';
 
+class TextApproximation {
+  final Context context;
+  final Style style;
+  final String text;
+  Offset? _translation;
+  Size? _size;
+  TextRenderer? _renderer;
+
+  TextApproximation(this.context, this.style, this.text) {
+    double? textSize = style.textLayout!.textSize(context.zoom);
+    if (textSize != null) {
+      if (context.zoomScaleFactor > 1.0) {
+        textSize = textSize / context.zoomScaleFactor;
+      }
+      final approximateWidth =
+          (textSize / 2 * (text.length + 1)).roundToDouble();
+      final approximateHeight = (textSize * 1.25).roundToDouble();
+      final size = Size(approximateWidth, approximateHeight);
+      _size = size;
+      _translation = _offset(size, style.textLayout!.anchor);
+    }
+  }
+
+  Size? get size => _size;
+  Offset? get translation => _translation;
+
+  bool get hasRenderer => _renderer != null;
+
+  TextRenderer get renderer {
+    var result = _renderer;
+    if (result == null) {
+      result = TextRenderer(context, style, text);
+      _renderer = result;
+    }
+    return result;
+  }
+
+  Rect? labelBox(Offset offset, {required bool translated}) {
+    if (size == null) {
+      return null;
+    }
+    return _labelBox(offset, _translation, size!.width, size!.height,
+        translated: translated);
+  }
+}
+
 class TextRenderer {
   final Context context;
   final Style style;
   final String text;
+
   late final TextPainter? _painter;
   late final Offset? _translation;
   TextRenderer(this.context, this.style, this.text) {
@@ -21,13 +68,8 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    double x = offset.dx;
-    double y = offset.dy;
-    if (_translation != null && translated) {
-      x += (_translation!.dx);
-      y += (_translation!.dy);
-    }
-    return Rect.fromLTWH(x, y, _painter!.width, _painter!.height);
+    return _labelBox(offset, _translation, _painter!.width, _painter!.height,
+        translated: translated);
   }
 
   void render(Offset offset) {
@@ -84,13 +126,26 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    final anchor = style.textLayout!.anchor;
-    final size = _painter!.size;
-    switch (anchor) {
-      case LayoutAnchor.center:
-        return Offset(-size.width / 2, -size.height / 2);
-      case LayoutAnchor.top:
-        return Offset(-size.width / 2, 0);
-    }
+    return _offset(_painter!.size, style.textLayout!.anchor);
   }
+}
+
+Offset? _offset(Size size, LayoutAnchor anchor) {
+  switch (anchor) {
+    case LayoutAnchor.center:
+      return Offset(-size.width / 2, -size.height / 2);
+    case LayoutAnchor.top:
+      return Offset(-size.width / 2, 0);
+  }
+}
+
+Rect? _labelBox(Offset offset, Offset? translation, double width, double height,
+    {required bool translated}) {
+  double x = offset.dx;
+  double y = offset.dy;
+  if (translation != null && translated) {
+    x += (translation.dx);
+    y += (translation.dy);
+  }
+  return Rect.fromLTWH(x, y, width, height);
 }

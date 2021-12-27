@@ -39,8 +39,8 @@ class SymbolLineRenderer extends FeatureRenderer {
         final metrics = path.computeMetrics().toList();
         final abbreviated = TextAbbreviator().abbreviate(text);
         if (metrics.length > 0 && context.labelSpace.canAccept(abbreviated)) {
-          final renderer = TextRenderer(context, style, abbreviated);
-          final renderBox = _findMiddleMetric(context, metrics, renderer);
+          final text = TextApproximation(context, style, abbreviated);
+          final renderBox = _findMiddleMetric(context, metrics, text);
           if (renderBox != null) {
             final tangent = renderBox.tangent;
             final rotate = (tangent.angle >= 0.01 || tangent.angle <= -0.01);
@@ -52,7 +52,7 @@ class SymbolLineRenderer extends FeatureRenderer {
               context.canvas
                   .translate(-tangent.position.dx, -tangent.position.dy);
             }
-            renderer.render(tangent.position);
+            text.renderer.render(tangent.position);
             if (rotate) {
               context.canvas.restore();
             }
@@ -63,12 +63,12 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 
   _RenderBox? _findMiddleMetric(
-      Context context, List<PathMetric> metrics, TextRenderer renderer) {
+      Context context, List<PathMetric> metrics, TextApproximation text) {
     final midpoint = metrics.length ~/ 2;
     for (int x = 0; x <= (midpoint + 1); ++x) {
       int lower = midpoint - x;
       if (lower >= 0 && metrics[lower].length > _minPathMetricSize) {
-        final renderBox = _occupyLabelSpace(context, renderer, metrics[lower]);
+        final renderBox = _occupyLabelSpace(context, text, metrics[lower]);
         if (renderBox != null) {
           return renderBox;
         }
@@ -77,30 +77,29 @@ class SymbolLineRenderer extends FeatureRenderer {
       if (upper != lower &&
           upper < metrics.length &&
           metrics[upper].length > _minPathMetricSize) {
-        final renderBox = _occupyLabelSpace(context, renderer, metrics[upper]);
+        final renderBox = _occupyLabelSpace(context, text, metrics[upper]);
         if (renderBox != null) {
           return renderBox;
         }
       }
     }
-    return _occupyLabelSpace(context, renderer, metrics[midpoint]);
+    return _occupyLabelSpace(context, text, metrics[midpoint]);
   }
 
   _RenderBox? _occupyLabelSpace(
-      Context context, TextRenderer renderer, PathMetric metric) {
+      Context context, TextApproximation text, PathMetric metric) {
     Tangent? tangent = metric.getTangentForOffset(metric.length / 2);
     _RenderBox? renderBox;
     if (tangent != null) {
-      renderBox = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+      renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
       if (renderBox == null) {
         tangent = metric.getTangentForOffset(metric.length / 4);
         if (tangent != null) {
-          renderBox = _occupyLabelSpaceAtTangent(context, renderer, tangent);
+          renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
           if (renderBox == null) {
             tangent = metric.getTangentForOffset(metric.length * 3 / 4);
             if (tangent != null) {
-              renderBox =
-                  _occupyLabelSpaceAtTangent(context, renderer, tangent);
+              renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
             }
           }
         }
@@ -110,31 +109,28 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 
   _RenderBox? _occupyLabelSpaceAtTangent(
-      Context context, TextRenderer renderer, Tangent tangent) {
-    Rect? box = renderer.labelBox(tangent.position, translated: false);
+      Context context, TextApproximation text, Tangent tangent) {
+    final box = text.labelBox(tangent.position, translated: false);
     if (box != null) {
-      final angle = _rightSideUpAngle(tangent.angle);
-      final hWidth = (box.height * cos(angle + _ninetyDegrees)).abs();
-      final width = hWidth + (box.width * cos(angle)).abs();
-      final wHeight = (box.width * sin(angle)).abs();
-      final height = (box.height * sin(angle + _ninetyDegrees)).abs() + wHeight;
-      var xOffset = 0.0;
-      var yOffset = 0.0;
-      final translation = renderer.translation;
-      if (translation != null) {
-        xOffset = translation.dx * cos(angle) -
-            (translation.dy * cos(angle + _ninetyDegrees)).abs();
-        yOffset = (translation.dy * sin(angle + _ninetyDegrees)) -
-            (translation.dx * sin(angle)).abs();
+      final textSpace = _textSpace(box, text.translation, tangent);
+      if (context.labelSpace.canOccupy(text.text, textSpace)) {
+        return _preciselyOccupyLabelSpaceAtTangent(
+            context, text.renderer, tangent);
       }
-      Rect textSpace =
-          Rect.fromLTWH(box.left + xOffset, box.top + yOffset, width, height);
+    }
+    return null;
+  }
+
+  _RenderBox? _preciselyOccupyLabelSpaceAtTangent(
+      Context context, TextRenderer renderer, Tangent tangent) {
+    final box = renderer.labelBox(tangent.position, translated: false);
+    if (box != null) {
+      final textSpace = _textSpace(box, renderer.translation, tangent);
       if (context.labelSpace.canOccupy(renderer.text, textSpace)) {
         context.labelSpace.occupy(renderer.text, textSpace);
         return _RenderBox(textSpace, tangent);
       }
     }
-    return null;
   }
 
   double _rightSideUpAngle(double radians) {
@@ -142,6 +138,23 @@ class SymbolLineRenderer extends FeatureRenderer {
       return radians + _rotationShift;
     }
     return radians;
+  }
+
+  Rect _textSpace(Rect box, Offset? translation, Tangent tangent) {
+    final angle = _rightSideUpAngle(tangent.angle);
+    final hWidth = (box.height * cos(angle + _ninetyDegrees)).abs();
+    final width = hWidth + (box.width * cos(angle)).abs();
+    final wHeight = (box.width * sin(angle)).abs();
+    final height = (box.height * sin(angle + _ninetyDegrees)).abs() + wHeight;
+    var xOffset = 0.0;
+    var yOffset = 0.0;
+    if (translation != null) {
+      xOffset = translation.dx * cos(angle) -
+          (translation.dy * cos(angle + _ninetyDegrees)).abs();
+      yOffset = (translation.dy * sin(angle + _ninetyDegrees)) -
+          (translation.dx * sin(angle)).abs();
+    }
+    return Rect.fromLTWH(box.left + xOffset, box.top + yOffset, width, height);
   }
 }
 
