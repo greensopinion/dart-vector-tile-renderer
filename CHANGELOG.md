@@ -1,4 +1,7 @@
 
+## 2.1.4
+
+* reduce CPU overhead of text rendering
 ## 2.1.3
 
 * introduce tileset preprocessing to reduce CPU overhead while rendering
