@@ -11,8 +11,8 @@ void main() {
         theme: ProvidedThemes.lightTheme(logger: testLogger),
         scale: 4,
         logger: testLogger);
-    final image = await renderer
-        .render({'openmaptiles': tile}, zoomScaleFactor: 4, zoom: zoom);
+    final image = await renderer.render(Tileset({'openmaptiles': tile}),
+        zoomScaleFactor: 4, zoom: zoom);
     final imageBytes = await image.toPng();
     final file = await writeTestFile(imageBytes, 'rendered-tile-zoom$zoom.png');
     final stat = await file.stat();

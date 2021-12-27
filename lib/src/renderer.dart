@@ -1,12 +1,11 @@
 import 'dart:ui';
 
-import 'package:vector_tile/vector_tile.dart';
 import 'constants.dart';
-
 import 'context.dart';
 import 'features/feature_renderer.dart';
-import 'themes/theme.dart';
 import 'logger.dart';
+import 'themes/theme.dart';
+import 'tileset.dart';
 
 class Renderer {
   final Theme theme;
@@ -25,15 +24,17 @@ class Renderer {
   ///        no scaling is being applied.
   /// [zoom] the current zoom level, which is used to filter theme layers
   ///        via `minzoom` and `maxzoom`. Value must be >= 0 and <= 24
-  /// [tiles] vector tiles by `'source'` ID, as defined by the theme
-  void render(Canvas canvas, Map<String, VectorTile> tiles,
+  /// [tileset] the tileset having tiles by source id
+  /// [clip] the optional clip to constrain tile rendering, used to limit drawing
+  ///        so that a portion of a tile can be rendered to a canvas
+  void render(Canvas canvas, Tileset tileset,
       {Rect? clip, required double zoomScaleFactor, required double zoom}) {
     final tileSpace =
         Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
     canvas.save();
     canvas.clipRect(tileSpace);
     final tileClip = clip ?? tileSpace;
-    final context = Context(logger, canvas, featureRenderer, tiles,
+    final context = Context(logger, canvas, featureRenderer, tileset,
         zoomScaleFactor, zoom, tileSpace, tileClip);
     final effectiveTheme = theme.atZoom(zoom);
     effectiveTheme.layers.forEach((themeLayer) {

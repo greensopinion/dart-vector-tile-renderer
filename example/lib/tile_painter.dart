@@ -1,21 +1,19 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart';
+import 'package:vector_tile_renderer/vector_tile_renderer.dart' as vt;
 
 class TilePainter extends CustomPainter {
-  final Uint8List tileBytes;
+  final vt.Tileset tileset;
+  final vt.Theme theme;
   final int scale;
-  TilePainter(this.tileBytes, {required this.scale});
+  TilePainter(this.tileset, this.theme, {required this.scale});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final tile = VectorTileReader().read(tileBytes);
-    final theme = ProvidedThemes.lightTheme();
     canvas.save();
     canvas.scale(scale.toDouble(), scale.toDouble());
-    Renderer(theme: theme).render(canvas, {'openmaptiles': tile},
+    vt.Renderer(theme: theme).render(canvas, tileset,
         zoomScaleFactor: pow(2, scale).toDouble(), zoom: 15);
     canvas.restore();
   }

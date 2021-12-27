@@ -1,13 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:vector_tile/vector_tile.dart';
-import 'package:vector_tile/vector_tile_feature.dart';
-
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
 import '../context.dart';
-import '../logger.dart';
 import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';

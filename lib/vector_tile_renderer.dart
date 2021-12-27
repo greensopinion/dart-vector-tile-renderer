@@ -9,4 +9,5 @@ export 'src/renderer.dart';
 export 'src/themes/provided_themes.dart';
 export 'src/themes/theme.dart';
 export 'src/themes/theme_reader.dart';
+export 'src/tileset.dart';
 export 'src/vector_tile_reader.dart';

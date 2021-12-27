@@ -1,4 +1,3 @@
-import 'package:vector_tile/vector_tile.dart';
 import '../../vector_tile_renderer.dart';
 
 import '../context.dart';
@@ -6,7 +5,6 @@ import 'symbol_line_renderer.dart';
 import 'symbol_point_renderer.dart';
 import 'polygon_renderer.dart';
 import 'line_renderer.dart';
-import '../logger.dart';
 import '../themes/style.dart';
 
 abstract class FeatureRenderer {

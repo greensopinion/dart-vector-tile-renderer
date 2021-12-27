@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:vector_tile/vector_tile_feature.dart';
 
-import '../constants.dart';
 import '../context.dart';
 import 'selector.dart';
 import 'style.dart';
@@ -21,10 +20,12 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void render(Context context) {
-    selector.select(context).forEach((layer) {
+    selector.select(context.tileset).forEach((layer) {
       selector.layerSelector.features(layer.features).forEach((feature) {
         context.featureRenderer.render(context, type, style, layer, feature);
-        _releaseMemory(feature);
+        if (!context.tileset.preprocessed) {
+          _releaseMemory(feature);
+        }
       });
     });
   }

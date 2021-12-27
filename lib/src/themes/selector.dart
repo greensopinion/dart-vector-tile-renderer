@@ -1,6 +1,4 @@
-import 'package:vector_tile/vector_tile.dart';
-
-import '../context.dart';
+import '../../vector_tile_renderer.dart';
 
 class TileLayerSelector {
   final TileSelector tileSelector;
@@ -8,8 +6,8 @@ class TileLayerSelector {
 
   TileLayerSelector(this.tileSelector, this.layerSelector);
 
-  Iterable<VectorTileLayer> select(Context context) {
-    final tile = tileSelector.select(context);
+  Iterable<VectorTileLayer> select(Tileset tileset) {
+    final tile = tileSelector.select(tileset);
     return tile == null ? [] : layerSelector.select(tile.layers);
   }
 }
@@ -21,7 +19,7 @@ class TileSelector {
 
   factory TileSelector.none() = _NoneTileSelector;
 
-  VectorTile? select(Context context) => context.tile(source);
+  VectorTile? select(Tileset tileset) => tileset.tile(source);
 }
 
 abstract class LayerSelector {

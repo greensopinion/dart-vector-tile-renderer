@@ -1,3 +1,7 @@
+
+## 2.1.3
+
+* introduce tileset preprocessing to reduce CPU overhead while rendering
 ## 2.0.2
 
 * reduced memory overhead when rendering to a Canvas that is scaled and clipped

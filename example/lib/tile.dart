@@ -1,7 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:example/tile_painter.dart';
 import 'package:flutter/material.dart';
+import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 class Tile extends StatefulWidget {
   @override
@@ -11,31 +10,38 @@ class Tile extends StatefulWidget {
 }
 
 class _TileState extends State<Tile> {
-  Uint8List? tileBytes;
+  Tileset? tileset;
+  final theme = ProvidedThemes.lightTheme();
 
   @override
   void initState() {
     super.initState();
-    DefaultAssetBundle.of(context)
-        .load('assets/sample_tile.pbf')
-        .then((tileData) {
-      setState(() {
-        this.tileBytes = tileData.buffer
-            .asUint8List(tileData.offsetInBytes, tileData.lengthInBytes);
-      });
-    });
+    _loadTileset();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (tileBytes == null) {
+    if (tileset == null) {
       return CircularProgressIndicator();
     }
     return Container(
         decoration: BoxDecoration(color: Colors.black45),
         child: CustomPaint(
           size: Size(512, 512),
-          painter: TilePainter(tileBytes!, scale: 2),
+          painter: TilePainter(tileset!, theme, scale: 2),
         ));
+  }
+
+  void _loadTileset() async {
+    final tileData =
+        await DefaultAssetBundle.of(context).load('assets/sample_tile.pbf');
+    final tileBytes = tileData.buffer
+        .asUint8List(tileData.offsetInBytes, tileData.lengthInBytes);
+    final tile = VectorTileReader().read(tileBytes);
+    final tileset =
+        TilesetPreprocessor(theme).preprocess(Tileset({'openmaptiles': tile}));
+    setState(() {
+      this.tileset = tileset;
+    });
   }
 }
