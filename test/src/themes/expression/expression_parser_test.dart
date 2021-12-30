@@ -30,6 +30,24 @@ void main() {
     expect((expression as UnsupportedExpression).json, equals(json));
   });
 
+  test('supports operators', () {
+    expect(
+        _parser.supportedOperators().toList()..sort(),
+        equals([
+          '!',
+          '!=',
+          '!in',
+          '<',
+          '<=',
+          '==',
+          '>',
+          '>=',
+          'get',
+          'has',
+          'in'
+        ]));
+  });
+
   group('literal expressions:', () {
     void _assertLiteral(dynamic value) {
       final expression = _parser.parse(value);
@@ -122,6 +140,11 @@ void main() {
       expect(expression.evaluate(_context), equals(expected));
     }
 
+    void _assertExpression(dynamic jsonExpression, bool expected) {
+      final expression = _parser.parse(jsonExpression);
+      expect(expression.evaluate(_context), equals(expected));
+    }
+
     test('parses a ! expression', () {
       _assertNotExpression(['get', 'a-bool'], false);
       _assertNotExpression(['get', 'a-false-bool'], true);
@@ -145,6 +168,46 @@ void main() {
       _assertNotEqualsExpression(33, ['get', 'an-int'], false);
       _assertNotEqualsExpression(1, 1, false);
       _assertNotEqualsExpression(1, 2, true);
+    });
+
+    test('parses a > expression', () {
+      _assertExpression(['>', 1, 2], false);
+      _assertExpression(['>', 1, 1], false);
+      _assertExpression(['>', 2, 1], true);
+      _assertExpression(['>', null, 1], false);
+      _assertExpression(['>', 'an-int', 32], true);
+      _assertExpression(['>', 'an-int', 33], false);
+      _assertExpression(['>', 'an-int', 34], false);
+    });
+
+    test('parses a >= expression', () {
+      _assertExpression(['>=', 1, 2], false);
+      _assertExpression(['>=', 1, 1], true);
+      _assertExpression(['>=', 2, 1], true);
+      _assertExpression(['>=', null, 1], false);
+      _assertExpression(['>=', 'an-int', 32], true);
+      _assertExpression(['>=', 'an-int', 33], true);
+      _assertExpression(['>=', 'an-int', 34], false);
+    });
+
+    test('parses a < expression', () {
+      _assertExpression(['<', 1, 2], true);
+      _assertExpression(['<', 1, 1], false);
+      _assertExpression(['<', 2, 1], false);
+      _assertExpression(['<', null, 1], false);
+      _assertExpression(['<', 'an-int', 32], false);
+      _assertExpression(['<', 'an-int', 33], false);
+      _assertExpression(['<', 'an-int', 34], true);
+    });
+
+    test('parses a <= expression', () {
+      _assertExpression(['<=', 1, 2], true);
+      _assertExpression(['<=', 1, 1], true);
+      _assertExpression(['<=', 2, 1], false);
+      _assertExpression(['<=', null, 1], false);
+      _assertExpression(['<=', 'an-int', 32], false);
+      _assertExpression(['<=', 'an-int', 33], true);
+      _assertExpression(['<=', 'an-int', 34], true);
     });
   });
 }

@@ -1,3 +1,4 @@
+import 'package:vector_tile_renderer/src/themes/expression/comparison_expression.dart';
 import 'package:vector_tile_renderer/src/themes/expression/property_expression.dart';
 
 import '../../logger.dart';
@@ -17,7 +18,17 @@ class ExpressionParser {
     _register(_NotExpressionParser(this));
     _register(_EqualsExpressionParser(this));
     _register(_NotEqualsExpressionParser(this));
+    _register(_ComparisonExpressionParser(
+        this, '<', (first, second) => first < second));
+    _register(_ComparisonExpressionParser(
+        this, '>', (first, second) => first > second));
+    _register(_ComparisonExpressionParser(
+        this, '<=', (first, second) => first <= second));
+    _register(_ComparisonExpressionParser(
+        this, '>=', (first, second) => first >= second));
   }
+
+  Set<String> supportedOperators() => _parserByOperator.keys.toSet();
 
   Expression parse(dynamic json) {
     final expression = parseOptional(json);
@@ -185,6 +196,34 @@ class _NotEqualsExpressionParser extends _ExpressionParser {
     final delegate = parser.parseOptional(['==', json[1], json[2]]);
     if (delegate != null) {
       return NotExpression(delegate);
+    }
+  }
+}
+
+class _ComparisonExpressionParser extends _ExpressionParser {
+  final bool Function(num, num) _comparison;
+
+  _ComparisonExpressionParser(
+      ExpressionParser parser, String operator, this._comparison)
+      : super(parser, operator);
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length == 3;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final firstOperand = json[1];
+    final secondOperand = json[2];
+    final first;
+    if (firstOperand is String) {
+      first = parser.parseOptional(['get', firstOperand]);
+    } else {
+      first = parser.parseOptional(firstOperand);
+    }
+    final second = parser.parseOptional(secondOperand);
+    if (first != null && second != null) {
+      return ComparisonExpression(_comparison, first, second);
     }
   }
 }
