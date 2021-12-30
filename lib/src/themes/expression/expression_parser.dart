@@ -13,6 +13,7 @@ class ExpressionParser {
   ExpressionParser(this.logger) {
     _register(_GetExpressionParser(this));
     _register(_HasExpressionParser(this));
+    _register(_NotHasExpressionParser(this));
     _register(_InExpressionParser(this));
     _register(_NotInExpressionParser(this));
     _register(_NotExpressionParser(this));
@@ -101,6 +102,22 @@ class _HasExpressionParser extends _ExpressionParser {
     final getExpression = parser.parseOptional(['get', json[1]]);
     if (getExpression != null) {
       return NotNullExpression(getExpression);
+    }
+  }
+}
+
+class _NotHasExpressionParser extends _ExpressionParser {
+  _NotHasExpressionParser(ExpressionParser parser) : super(parser, '!has');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length >= 2 && json[1] is String;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final getExpression = parser.parseOptional(['get', json[1]]);
+    if (getExpression != null) {
+      return NotExpression(NotNullExpression(getExpression));
     }
   }
 }
