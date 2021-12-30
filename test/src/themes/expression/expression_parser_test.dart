@@ -43,6 +43,8 @@ void main() {
           '==',
           '>',
           '>=',
+          'all',
+          'any',
           'get',
           'has',
           'in'
@@ -221,6 +223,18 @@ void main() {
       _assertExpression(['<=', 'an-int', 32], false);
       _assertExpression(['<=', 'an-int', 33], true);
       _assertExpression(['<=', 'an-int', 34], true);
+    });
+
+    test('parses an all expression', () {
+      _assertExpression(['all', true, false], false);
+      _assertExpression(['all', false, true], false);
+      _assertExpression(['all', true, true], true);
+    });
+    test('parses an any expression', () {
+      _assertExpression(['any', true, false], true);
+      _assertExpression(['any', false, true], true);
+      _assertExpression(['any', true, true], true);
+      _assertExpression(['any', false, false], false);
     });
   });
 }

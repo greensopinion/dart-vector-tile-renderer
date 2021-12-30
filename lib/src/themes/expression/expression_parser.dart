@@ -27,6 +27,8 @@ class ExpressionParser {
         this, '<=', (first, second) => first <= second));
     _register(_ComparisonExpressionParser(
         this, '>=', (first, second) => first >= second));
+    _register(_AllExpressionParser(this));
+    _register(_AnyExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -242,5 +244,39 @@ class _ComparisonExpressionParser extends _ExpressionParser {
     if (first != null && second != null) {
       return ComparisonExpression(_comparison, first, second);
     }
+  }
+}
+
+class _AllExpressionParser extends _ExpressionParser {
+  _AllExpressionParser(ExpressionParser parser) : super(parser, 'all');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length >= 2;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final delegates = json.sublist(1).map((e) => parser.parseOptional(e));
+    if (delegates.any((e) => e == null)) {
+      return null;
+    }
+    return AllExpression(delegates.whereType<Expression>().toList());
+  }
+}
+
+class _AnyExpressionParser extends _ExpressionParser {
+  _AnyExpressionParser(ExpressionParser parser) : super(parser, 'any');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length >= 2;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final delegates = json.sublist(1).map((e) => parser.parseOptional(e));
+    if (delegates.any((e) => e == null)) {
+      return null;
+    }
+    return AnyExpression(delegates.whereType<Expression>().toList());
   }
 }
