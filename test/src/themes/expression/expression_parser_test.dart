@@ -4,7 +4,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 void main() {
-  final _parser = ExpressionParser();
+  final _parser = ExpressionParser(Logger.noop());
 
   final _properties = [
     {
@@ -21,6 +21,7 @@ void main() {
     }
   ];
   final _context = EvaluationContext(() => _properties, Logger.noop());
+
   test('parses an unsupported expression', () {
     final json = {'not-supported': true};
     final expression = _parser.parse(json);

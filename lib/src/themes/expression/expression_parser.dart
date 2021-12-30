@@ -1,13 +1,15 @@
 import 'package:vector_tile_renderer/src/themes/expression/property_expression.dart';
 
+import '../../logger.dart';
 import 'expression.dart';
 import 'literal_expression.dart';
 
 // https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/
 
 class ExpressionParser {
+  final Logger logger;
   Map<String, _ExpressionParser> _parserByOperator = {};
-  ExpressionParser() {
+  ExpressionParser(this.logger) {
     _register(_GetExpressionParser());
     _register(_HasExpressionParser());
     _register(_NotExpressionParser());
@@ -21,9 +23,13 @@ class ExpressionParser {
       final operator = json[0];
       final delegate = _parserByOperator[operator];
       if (delegate != null && delegate.matches(json)) {
-        return delegate.parse(json) ?? UnsupportedExpression(json);
+        final expression = delegate.parse(json);
+        if (expression != null) {
+          return expression;
+        }
       }
     }
+    logger.warn(() => 'Unsupported expression syntax: $json');
     return UnsupportedExpression(json);
   }
 
