@@ -10,12 +10,23 @@ class ExpressionParser {
   final Logger logger;
   Map<String, _ExpressionParser> _parserByOperator = {};
   ExpressionParser(this.logger) {
-    _register(_GetExpressionParser());
-    _register(_HasExpressionParser());
-    _register(_NotExpressionParser());
+    _register(_GetExpressionParser(this));
+    _register(_HasExpressionParser(this));
+    _register(_NotExpressionParser(this));
+    _register(_EqualsExpressionParser(this));
+    _register(_NotEqualsExpressionParser(this));
   }
 
   Expression parse(dynamic json) {
+    final expression = parseOptional(json);
+    if (expression == null) {
+      logger.warn(() => 'Unsupported expression syntax: $json');
+      return UnsupportedExpression(json);
+    }
+    return expression;
+  }
+
+  Expression? parseOptional(dynamic json) {
     if (json is String || json is num || json is bool || json == null) {
       return LiteralExpression(json);
     }
@@ -29,8 +40,6 @@ class ExpressionParser {
         }
       }
     }
-    logger.warn(() => 'Unsupported expression syntax: $json');
-    return UnsupportedExpression(json);
   }
 
   void _register(_ExpressionParser delegate) {
@@ -42,9 +51,10 @@ class ExpressionParser {
 }
 
 abstract class _ExpressionParser {
+  final ExpressionParser parser;
   final String operator;
 
-  _ExpressionParser(this.operator);
+  _ExpressionParser(this.parser, this.operator);
 
   bool matches(List<dynamic> json) {
     return json.length > 0 && json[0] == operator;
@@ -54,7 +64,7 @@ abstract class _ExpressionParser {
 }
 
 class _GetExpressionParser extends _ExpressionParser {
-  _GetExpressionParser() : super('get');
+  _GetExpressionParser(ExpressionParser parser) : super(parser, 'get');
 
   @override
   bool matches(List<dynamic> json) {
@@ -67,7 +77,7 @@ class _GetExpressionParser extends _ExpressionParser {
 }
 
 class _HasExpressionParser extends _ExpressionParser {
-  _HasExpressionParser() : super('has');
+  _HasExpressionParser(ExpressionParser parser) : super(parser, 'has');
 
   @override
   bool matches(List<dynamic> json) {
@@ -75,7 +85,7 @@ class _HasExpressionParser extends _ExpressionParser {
   }
 
   Expression? parse(List<dynamic> json) {
-    final getExpression = _GetExpressionParser().parse(json);
+    final getExpression = parser.parseOptional(['get', json[1]]);
     if (getExpression != null) {
       return NotNullExpression(getExpression);
     }
@@ -83,7 +93,7 @@ class _HasExpressionParser extends _ExpressionParser {
 }
 
 class _NotExpressionParser extends _ExpressionParser {
-  _NotExpressionParser() : super('!');
+  _NotExpressionParser(ExpressionParser parser) : super(parser, '!');
 
   @override
   bool matches(List<dynamic> json) {
@@ -91,9 +101,54 @@ class _NotExpressionParser extends _ExpressionParser {
   }
 
   Expression? parse(List<dynamic> json) {
-    final getExpression = _GetExpressionParser().parse(json[1]);
-    if (getExpression != null) {
-      return NotExpression(getExpression);
+    Expression? second;
+    if (json[1] is String) {
+      second = parser.parseOptional(['get', json[1]]);
+    } else {
+      second = parser.parseOptional(json[1]);
+    }
+    if (second != null) {
+      return NotExpression(second);
+    }
+  }
+}
+
+class _EqualsExpressionParser extends _ExpressionParser {
+  _EqualsExpressionParser(ExpressionParser parser) : super(parser, '==');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length == 3;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final firstOperand = json[1];
+    final secondOperand = json[2];
+    Expression? first;
+    if (firstOperand is String) {
+      first = parser.parseOptional(['get', firstOperand]);
+    } else {
+      first = parser.parseOptional(firstOperand);
+    }
+    Expression? second = parser.parseOptional(secondOperand);
+    if (first != null && second != null) {
+      return EqualsExpression(first, second);
+    }
+  }
+}
+
+class _NotEqualsExpressionParser extends _ExpressionParser {
+  _NotEqualsExpressionParser(ExpressionParser parser) : super(parser, '!=');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length == 3;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final delegate = parser.parseOptional(['==', json[1], json[2]]);
+    if (delegate != null) {
+      return NotExpression(delegate);
     }
   }
 }

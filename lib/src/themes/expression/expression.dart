@@ -63,3 +63,15 @@ class NotExpression extends Expression {
     return null;
   }
 }
+
+class EqualsExpression extends Expression {
+  final Expression _first;
+  final Expression _second;
+
+  EqualsExpression(this._first, this._second);
+
+  @override
+  evaluate(EvaluationContext context) {
+    return _first.evaluate(context) == _second.evaluate(context);
+  }
+}

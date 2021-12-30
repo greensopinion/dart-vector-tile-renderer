@@ -91,9 +91,40 @@ void main() {
       expect(expression.evaluate(_context), equals(expected));
     }
 
+    void _assertEqualsExpression(dynamic first, dynamic second, bool expected) {
+      final expression = _parser.parse(['==', first, second]);
+      expect(expression.evaluate(_context), equals(expected));
+    }
+
+    void _assertNotEqualsExpression(
+        dynamic first, dynamic second, bool expected) {
+      final expression = _parser.parse(['!=', first, second]);
+      expect(expression.evaluate(_context), equals(expected));
+    }
+
     test('parses a ! expression', () {
       _assertNotExpression(['get', 'a-bool'], false);
       _assertNotExpression(['get', 'a-false-bool'], true);
+      _assertNotExpression('a-bool', false);
+      _assertNotExpression('a-false-bool', true);
+    });
+
+    test('parses a == expression', () {
+      _assertEqualsExpression(['get', 'a-bool'], false, false);
+      _assertEqualsExpression(['get', 'a-bool'], true, true);
+      _assertEqualsExpression('a-bool', true, true);
+      _assertEqualsExpression(33, ['get', 'an-int'], true);
+      _assertEqualsExpression(1, 1, true);
+      _assertEqualsExpression(1, 2, false);
+    });
+
+    test('parses a != expression', () {
+      _assertNotEqualsExpression(['get', 'a-bool'], false, true);
+      _assertNotEqualsExpression(['get', 'a-bool'], true, false);
+      _assertNotEqualsExpression('a-bool', true, false);
+      _assertNotEqualsExpression(33, ['get', 'an-int'], false);
+      _assertNotEqualsExpression(1, 1, false);
+      _assertNotEqualsExpression(1, 2, true);
     });
   });
 }
