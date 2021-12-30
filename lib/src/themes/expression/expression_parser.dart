@@ -46,7 +46,7 @@ class ExpressionParser {
     if (json is String || json is num || json is bool || json == null) {
       return LiteralExpression(json);
     }
-    if (json is List && json.length > 1) {
+    if (json is List && json.length > 0) {
       final operator = json[0];
       final delegate = _parserByOperator[operator];
       if (delegate != null && delegate.matches(json)) {
@@ -250,11 +250,6 @@ class _ComparisonExpressionParser extends _ExpressionParser {
 class _AllExpressionParser extends _ExpressionParser {
   _AllExpressionParser(ExpressionParser parser) : super(parser, 'all');
 
-  @override
-  bool matches(List<dynamic> json) {
-    return super.matches(json) && json.length >= 2;
-  }
-
   Expression? parse(List<dynamic> json) {
     final delegates = json.sublist(1).map((e) => parser.parseOptional(e));
     if (delegates.any((e) => e == null)) {
@@ -266,11 +261,6 @@ class _AllExpressionParser extends _ExpressionParser {
 
 class _AnyExpressionParser extends _ExpressionParser {
   _AnyExpressionParser(ExpressionParser parser) : super(parser, 'any');
-
-  @override
-  bool matches(List<dynamic> json) {
-    return super.matches(json) && json.length >= 2;
-  }
 
   Expression? parse(List<dynamic> json) {
     final delegates = json.sublist(1).map((e) => parser.parseOptional(e));

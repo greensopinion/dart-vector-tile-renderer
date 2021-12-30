@@ -235,11 +235,20 @@ void main() {
       _assertExpression(['all', false, true], false);
       _assertExpression(['all', true, true], true);
     });
+
+    test('parses an all expression with no arguments', () {
+      _assertExpression(['all'], true);
+    });
+
     test('parses an any expression', () {
       _assertExpression(['any', true, false], true);
       _assertExpression(['any', false, true], true);
       _assertExpression(['any', true, true], true);
       _assertExpression(['any', false, false], false);
+    });
+
+    test('parses an any expression with no arguments', () {
+      _assertExpression(['any'], false);
     });
   });
 }
