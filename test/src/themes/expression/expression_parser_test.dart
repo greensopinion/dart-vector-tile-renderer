@@ -20,7 +20,8 @@ void main() {
       'a-double': VectorTileValue(doubleValue: 13.2)
     }
   ];
-  final _context = EvaluationContext(() => _properties, Logger.noop());
+  final _context = EvaluationContext(
+      () => _properties, () => VectorTileGeomType.LINESTRING, Logger.noop());
 
   test('parses an unsupported expression', () {
     final json = {'not-supported': true};
@@ -135,6 +136,10 @@ void main() {
       _assertNotInProperty(
           'a-string', ['first-value', 'a-string-value'], false);
       _assertNotInProperty('a-string', ['first-value', 'second-value'], true);
+    });
+
+    test('parses \$type', () {
+      _assertGetProperty('\$type', 'LineString');
     });
   });
 

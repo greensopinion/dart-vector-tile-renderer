@@ -6,11 +6,15 @@ import '../../logger.dart';
 
 class EvaluationContext {
   final List<Map<String, VectorTileValue>> Function() _properties;
+  final VectorTileGeomType? Function() _geometryType;
   final Logger logger;
 
-  EvaluationContext(this._properties, this.logger);
+  EvaluationContext(this._properties, this._geometryType, this.logger);
 
   getProperty(String name) {
+    if (name == '\$type') {
+      return _typeName();
+    }
     final properties = _properties();
     for (final property in properties) {
       final value = property[name];
@@ -20,6 +24,20 @@ class EvaluationContext {
             value.dartDoubleValue ??
             value.dartBoolValue;
       }
+    }
+  }
+
+  _typeName() {
+    switch (_geometryType()) {
+      case VectorTileGeomType.POINT:
+        return 'Point';
+      case VectorTileGeomType.LINESTRING:
+        return 'LineString';
+      case VectorTileGeomType.POLYGON:
+        return 'Polygon';
+      case VectorTileGeomType.UNKNOWN:
+      case null:
+        return null;
     }
   }
 }
