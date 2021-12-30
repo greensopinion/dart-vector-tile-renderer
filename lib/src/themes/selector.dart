@@ -1,4 +1,4 @@
-import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
+import 'expression/expression.dart';
 
 import '../../vector_tile_renderer.dart';
 

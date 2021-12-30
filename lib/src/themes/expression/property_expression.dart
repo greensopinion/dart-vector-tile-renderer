@@ -1,4 +1,4 @@
-import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
+import 'expression.dart';
 
 class GetPropertyExpression extends Expression {
   final _propertyName;

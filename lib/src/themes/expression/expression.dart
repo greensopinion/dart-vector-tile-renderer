@@ -1,8 +1,8 @@
-export 'expression_parser.dart';
-
 import 'package:vector_tile/vector_tile.dart';
 
 import '../../logger.dart';
+
+export 'expression_parser.dart';
 
 class EvaluationContext {
   final List<Map<String, VectorTileValue>> Function() _properties;

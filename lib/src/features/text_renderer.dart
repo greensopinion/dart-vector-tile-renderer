@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../themes/style.dart';
 import '../context.dart';
+import '../themes/style.dart';
 
 class TextApproximation {
   final Context context;

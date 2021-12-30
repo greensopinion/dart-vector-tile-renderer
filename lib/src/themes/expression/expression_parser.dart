@@ -1,5 +1,5 @@
-import 'package:vector_tile_renderer/src/themes/expression/comparison_expression.dart';
-import 'package:vector_tile_renderer/src/themes/expression/property_expression.dart';
+import 'comparison_expression.dart';
+import 'property_expression.dart';
 
 import '../../logger.dart';
 import 'expression.dart';
