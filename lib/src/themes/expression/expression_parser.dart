@@ -12,6 +12,8 @@ class ExpressionParser {
   ExpressionParser(this.logger) {
     _register(_GetExpressionParser(this));
     _register(_HasExpressionParser(this));
+    _register(_InExpressionParser(this));
+    _register(_NotInExpressionParser(this));
     _register(_NotExpressionParser(this));
     _register(_EqualsExpressionParser(this));
     _register(_NotEqualsExpressionParser(this));
@@ -88,6 +90,40 @@ class _HasExpressionParser extends _ExpressionParser {
     final getExpression = parser.parseOptional(['get', json[1]]);
     if (getExpression != null) {
       return NotNullExpression(getExpression);
+    }
+  }
+}
+
+class _InExpressionParser extends _ExpressionParser {
+  _InExpressionParser(ExpressionParser parser) : super(parser, 'in');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length >= 3 && json[1] is String;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final getExpression = parser.parseOptional(['get', json[1]]);
+    if (getExpression != null) {
+      final values = json.sublist(2);
+      return InExpression(getExpression, values);
+    }
+  }
+}
+
+class _NotInExpressionParser extends _ExpressionParser {
+  _NotInExpressionParser(ExpressionParser parser) : super(parser, '!in');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length >= 3 && json[1] is String;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final getExpression = parser.parseOptional(['get', json[1]]);
+    if (getExpression != null) {
+      final values = json.sublist(2);
+      return NotExpression(InExpression(getExpression, values));
     }
   }
 }

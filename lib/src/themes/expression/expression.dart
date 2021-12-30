@@ -75,3 +75,16 @@ class EqualsExpression extends Expression {
     return _first.evaluate(context) == _second.evaluate(context);
   }
 }
+
+class InExpression extends Expression {
+  final Expression _first;
+  final List _values;
+
+  InExpression(this._first, this._values);
+
+  @override
+  evaluate(EvaluationContext context) {
+    final first = _first.evaluate(context);
+    return _values.any((e) => first == e);
+  }
+}

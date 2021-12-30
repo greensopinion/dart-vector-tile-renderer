@@ -66,6 +66,16 @@ void main() {
       expect(expression.evaluate(_context), equals(isPresent));
     }
 
+    void _assertInProperty(String property, List values, bool expected) {
+      final expression = _parser.parse(['in', property, ...values]);
+      expect(expression.evaluate(_context), equals(expected));
+    }
+
+    void _assertNotInProperty(String property, List values, bool expected) {
+      final expression = _parser.parse(['!in', property, ...values]);
+      expect(expression.evaluate(_context), equals(expected));
+    }
+
     test('parses a get property', () {
       _assertGetProperty('a-string', 'a-string-value');
       _assertGetProperty('another-string', 'another-string-value');
@@ -82,6 +92,16 @@ void main() {
       _assertHasProperty('a-false-bool', true);
       _assertHasProperty('a-double', true);
       _assertHasProperty('no-such-value', false);
+    });
+
+    test('parses a in property', () {
+      _assertInProperty('a-string', ['first-value', 'a-string-value'], true);
+      _assertInProperty('a-string', ['first-value', 'second-value'], false);
+    });
+    test('parses a !in property', () {
+      _assertNotInProperty(
+          'a-string', ['first-value', 'a-string-value'], false);
+      _assertNotInProperty('a-string', ['first-value', 'second-value'], true);
     });
   });
 
