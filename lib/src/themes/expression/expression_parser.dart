@@ -356,31 +356,39 @@ class _MatchExpressionParser extends _ExpressionParser {
 
   @override
   bool matches(List<dynamic> json) {
-    return super.matches(json) && json.length >= 3;
+    return super.matches(json) && json.length > 3;
   }
 
   Expression? parse(List<dynamic> json) {
     final firstOperand = json[1];
-    final secondOperand = json[2];
     final input = parser.parseOptional(firstOperand);
-    List<Expression?> second = [];
-    if (secondOperand is num || secondOperand is String) {
-      second.add(parser.parseOptional(secondOperand));
-    } else if (secondOperand is List) {
-      second.addAll(secondOperand.map((e) => parser.parseOptional(e)));
-    }
-    if (second.isEmpty || second.any((e) => e == null)) {
+    if (input == null) {
       return null;
     }
-    final values = second.whereType<Expression>();
-    final remaining = json.sublist(3).map((e) => parser.parseOptional(e));
-    if (remaining.isEmpty || remaining.any((e) => e == null)) {
-      return null;
+    List<List<Expression>> values = [];
+    List<Expression> outputs = [];
+    for (int x = 2; x < json.length; x += 2) {
+      if (x + 1 < json.length) {
+        final jsonValues = json[x];
+        final matchValues = jsonValues is List
+            ? jsonValues.map((e) => parser.parseOptional(e)).toList()
+            : [parser.parseOptional(jsonValues)];
+        final output = parser.parseOptional(json[x + 1]);
+        if (matchValues.any((e) => e == null) || output == null) {
+          return null;
+        }
+        values.add(matchValues.whereType<Expression>().toList());
+        outputs.add(output);
+      } else {
+        final output = parser.parseOptional(json[x]);
+        if (output == null) {
+          return null;
+        }
+        outputs.add(output);
+      }
     }
-    final outputs = remaining.whereType<Expression>();
-    if (input != null) {
-      return MatchExpression(input, values.toList(), outputs.toList());
-    }
+
+    return MatchExpression(input, values, outputs);
   }
 }
 

@@ -275,22 +275,14 @@ void main() {
         'match',
         ['get', 'a-string'],
         ['no-match-value', 'a-string-value'],
-        false,
         true
       ], true);
       _assertExpression([
         'match',
-        ['get', 'another-string'],
-        ['no-match-value', 'a-string-value'],
+        ['get', 'a-string'],
+        'no-match-value',
         false,
-        true
-      ], null);
-      _assertExpression([
-        'match',
-        ['get', 'another-string'],
-        ['no-match-value', 'a-string-value'],
-        false,
-        true,
+        'a-string-value',
         true
       ], true);
     });
@@ -299,8 +291,7 @@ void main() {
         'match',
         ['get', 'another-string'],
         ['no-match-value', 'a-string-value'],
-        false,
-        true
+        false
       ], null);
     });
     test('parses a match with a fallback', () {
@@ -309,7 +300,8 @@ void main() {
         ['get', 'another-string'],
         ['no-match-value', 'a-string-value'],
         false,
-        true,
+        ['another-no-match-value'],
+        false,
         true
       ], true);
     });

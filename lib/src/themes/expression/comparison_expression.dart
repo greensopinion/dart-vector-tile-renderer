@@ -20,7 +20,7 @@ class ComparisonExpression extends Expression {
 
 class MatchExpression extends Expression {
   final Expression _input;
-  final List<Expression> _values;
+  final List<List<Expression>> _values;
   final List<Expression> _outputs;
 
   MatchExpression(this._input, this._values, this._outputs);
@@ -32,8 +32,7 @@ class MatchExpression extends Expression {
       for (int index = 0;
           index < _values.length && index < _outputs.length;
           ++index) {
-        final value = _values[index].evaluate(context);
-        if (value == input) {
+        if (_values[index].any((e) => e.evaluate(context) == input)) {
           return _outputs[index].evaluate(context);
         }
       }
