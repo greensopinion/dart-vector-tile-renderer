@@ -11,23 +11,25 @@ class DefaultLayer extends ThemeLayer {
   final TileLayerSelector selector;
   final Style style;
 
-  DefaultLayer(String id, ThemeLayerType type,
-      {required this.selector,
-      required this.style,
-      required double? minzoom,
-      required double? maxzoom})
-      : super(id, type, minzoom: minzoom, maxzoom: maxzoom);
+  DefaultLayer(
+    String id,
+    ThemeLayerType type, {
+    required this.selector,
+    required this.style,
+    required double? minzoom,
+    required double? maxzoom,
+  }) : super(id, type, minzoom: minzoom, maxzoom: maxzoom);
 
   @override
   void render(Context context) {
-    selector.select(context.tileset).forEach((layer) {
-      selector.layerSelector.features(layer.features).forEach((feature) {
-        context.featureRenderer.render(context, type, style, layer, feature);
-        if (!context.tileset.preprocessed) {
-          _releaseMemory(feature);
-        }
-      });
-    });
+    for (final feature
+        in context.tileset.themeLayerFeatureResolver.resolveFeatures(this)) {
+      context.featureRenderer
+          .render(context, type, style, feature.layer, feature.feature);
+      if (!context.tileset.preprocessed) {
+        _releaseMemory(feature.feature);
+      }
+    }
   }
 
   void _releaseMemory(VectorTileFeature feature) {
