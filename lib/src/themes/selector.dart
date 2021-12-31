@@ -82,8 +82,8 @@ class _ExpressionLayerSelector extends LayerSelector {
   @override
   Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
     return features.where((feature) {
-      final context = EvaluationContext(
-          () => feature.decodeProperties(), () => feature.type, Logger.noop());
+      final context = EvaluationContext(() => feature.decodeProperties(),
+          () => feature.type, () => 1.0, Logger.noop());
       final result = _expression.evaluate(context);
       return result is bool && result;
     });

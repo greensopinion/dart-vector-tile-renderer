@@ -20,8 +20,19 @@ void main() {
       'a-double': VectorTileValue(doubleValue: 13.2)
     }
   ];
-  final _context = EvaluationContext(
-      () => _properties, () => VectorTileGeomType.LINESTRING, Logger.noop());
+  var zoom = 1.0;
+  final _context = EvaluationContext(() => _properties,
+      () => VectorTileGeomType.LINESTRING, () => zoom, Logger.noop());
+
+  void _assertExpression(dynamic jsonExpression, expected) {
+    final expression = _parser.parse(jsonExpression);
+    final result = expression.evaluate(_context);
+    if (result is double && expected is double) {
+      expect(result, closeTo(expected, 0.001));
+    } else {
+      expect(result, equals(expected));
+    }
+  }
 
   test('parses an unsupported expression', () {
     final json = {'not-supported': true};
@@ -48,7 +59,8 @@ void main() {
           'any',
           'get',
           'has',
-          'in'
+          'in',
+          'interpolate'
         ]));
   });
 
@@ -160,11 +172,6 @@ void main() {
       expect(expression.evaluate(_context), equals(expected));
     }
 
-    void _assertExpression(dynamic jsonExpression, bool expected) {
-      final expression = _parser.parse(jsonExpression);
-      expect(expression.evaluate(_context), equals(expected));
-    }
-
     test('parses a ! expression', () {
       _assertNotExpression(['get', 'a-bool'], false);
       _assertNotExpression(['get', 'a-false-bool'], true);
@@ -249,6 +256,64 @@ void main() {
 
     test('parses an any expression with no arguments', () {
       _assertExpression(['any'], false);
+    });
+  });
+
+  group('interpolate expressions:', () {
+    group('linear interpolation:', () {
+      final expression = [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        9,
+        8.5,
+        15,
+        12,
+        22,
+        28
+      ];
+
+      test('provides a value below the upper bound', () {
+        zoom = 1;
+        _assertExpression(expression, null);
+      });
+      test('provides a linear progression', () {
+        zoom = 9;
+        _assertExpression(expression, 8.5);
+        zoom = 10;
+        _assertExpression(expression, 9.083);
+        zoom = 11;
+        _assertExpression(expression, 9.667);
+        zoom = 12;
+        _assertExpression(expression, 10.25);
+        zoom = 13;
+        _assertExpression(expression, 10.833);
+        zoom = 14;
+        _assertExpression(expression, 11.417);
+        zoom = 15;
+        _assertExpression(expression, 12);
+      });
+
+      test('provides a value above the upper bound', () {
+        zoom = 25;
+        _assertExpression(expression, 28);
+      });
+
+      test('provides a linear interpolation from map syntax', () {
+        final expression = {
+          'base': 1,
+          'stops': [
+            [13, 12],
+            [14, 13]
+          ]
+        };
+        zoom = 1;
+        _assertExpression(expression, null);
+        zoom = 13;
+        _assertExpression(expression, 12);
+        zoom = 14;
+        _assertExpression(expression, 13);
+      });
     });
   });
 }

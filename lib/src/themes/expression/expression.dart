@@ -7,13 +7,17 @@ export 'expression_parser.dart';
 class EvaluationContext {
   final List<Map<String, VectorTileValue>> Function() _properties;
   final VectorTileGeomType? Function() _geometryType;
+  final double Function() _zoom;
   final Logger logger;
 
-  EvaluationContext(this._properties, this._geometryType, this.logger);
+  EvaluationContext(
+      this._properties, this._geometryType, this._zoom, this.logger);
 
   getProperty(String name) {
     if (name == '\$type') {
       return _typeName();
+    } else if (name == 'zoom') {
+      return _zoom();
     }
     final properties = _properties();
     for (final property in properties) {
