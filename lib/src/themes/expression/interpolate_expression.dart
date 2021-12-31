@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'expression.dart';
 
 class InterpolationStop {
@@ -59,17 +61,56 @@ class InterpolateLinearExpression extends InterpolateExpression {
           valueAbove is num &&
           belowOutput is num &&
           aboveOutput is num) {
-        var difference = valueAbove - valueBelow;
-        var progress = input - valueBelow;
-        if (difference == 0 || progress == 0) {
-          return belowOutput;
-        } else {
-          final factor = progress / difference;
-          final outputDifference = aboveOutput - belowOutput;
-          final exact = belowOutput + (factor * outputDifference);
-          return (exact * 1000).roundToDouble() / 1000;
+        return _exponentialInterpolation(
+            input, 1, valueBelow, valueAbove, belowOutput, aboveOutput);
+      }
+    }
+  }
+}
+
+class InterpolateExponentialExpression extends InterpolateExpression {
+  Expression base;
+
+  InterpolateExponentialExpression(
+      Expression input, this.base, List<InterpolationStop> stops)
+      : super(input, stops);
+
+  @override
+  interpolate(EvaluationContext context, input, valueBelow,
+      InterpolationStop? stopBelow, valueAbove, InterpolationStop? stopAbove) {
+    if (input is num) {
+      final belowOutput = stopBelow?.output.evaluate(context);
+      final aboveOutput = stopAbove?.output.evaluate(context);
+      if (aboveOutput == null) {
+        return belowOutput;
+      } else if (belowOutput == null) {
+        return null;
+      } else if (valueBelow is num &&
+          valueAbove is num &&
+          belowOutput is num &&
+          aboveOutput is num) {
+        final baseValue = base.evaluate(context);
+        if (baseValue is num) {
+          return _exponentialInterpolation(input, baseValue, valueBelow,
+              valueAbove, belowOutput, aboveOutput);
         }
       }
     }
   }
+}
+
+num _exponentialInterpolation(num input, num base, num lowValue, num highValue,
+    num lowOutput, num highOutput) {
+  var difference = highValue - lowValue;
+  var progress = input - lowValue;
+  if (difference <= 0.001 || progress <= 0) {
+    return lowOutput;
+  }
+  double factor;
+  if (base >= 0.99 && base <= 1.01) {
+    factor = progress / difference;
+  } else {
+    factor = (pow(base, progress) - 1) / (pow(base, difference) - 1);
+  }
+  return (lowOutput * (1 - factor)) + (highOutput * factor);
 }

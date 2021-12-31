@@ -337,6 +337,14 @@ class _InterpolateExpressionParser extends _ExpressionParser {
         interpolationType[0] == 'linear') {
       return InterpolateLinearExpression(inputExpression, stops);
     }
+    if (interpolationType is List &&
+        interpolationType.length == 2 &&
+        interpolationType[0] == 'exponential') {
+      final base = parser.parseOptional(interpolationType[1]);
+      if (base != null) {
+        return InterpolateExponentialExpression(inputExpression, base, stops);
+      }
+    }
   }
 
   Expression? _praseInputExpression(List json) {

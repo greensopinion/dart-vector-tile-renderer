@@ -315,5 +315,56 @@ void main() {
         _assertExpression(expression, 13);
       });
     });
+
+    group('exponential interpolation:', () {
+      final expression = [
+        "interpolate",
+        ["exponential", 1.2],
+        ["zoom"],
+        9,
+        8.5,
+        15,
+        12
+      ];
+
+      test('provides a value below the upper bound', () {
+        zoom = 1;
+        _assertExpression(expression, null);
+      });
+      test('provides an exponential progression', () {
+        zoom = 9;
+        _assertExpression(expression, 8.5);
+        zoom = 10;
+        _assertExpression(expression, 8.852);
+        zoom = 11;
+        _assertExpression(expression, 9.275);
+        zoom = 12;
+        _assertExpression(expression, 9.783);
+        zoom = 13;
+        _assertExpression(expression, 10.392);
+        zoom = 14;
+        _assertExpression(expression, 11.123);
+        zoom = 15;
+        _assertExpression(expression, 12);
+      });
+
+      test('provides exponential interpolation from map syntax', () {
+        final expression = {
+          'base': 2,
+          'stops': [
+            [13, 12],
+            [14, 13]
+          ]
+        };
+        zoom = 1;
+        _assertExpression(expression, null);
+        zoom = 13;
+        _assertExpression(expression, 12);
+        zoom = 13.5;
+        _assertExpression(expression, 12.414);
+        zoom = 14;
+        _assertExpression(expression, 13);
+      });
+    });
   });
 }
