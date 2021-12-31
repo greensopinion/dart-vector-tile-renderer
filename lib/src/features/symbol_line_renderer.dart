@@ -4,6 +4,7 @@ import 'dart:ui';
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
 import '../context.dart';
+import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
@@ -39,7 +40,12 @@ class SymbolLineRenderer extends FeatureRenderer {
         final metrics = path.computeMetrics().toList();
         final abbreviated = TextAbbreviator().abbreviate(text);
         if (metrics.length > 0 && context.labelSpace.canAccept(abbreviated)) {
-          final text = TextApproximation(context, style, abbreviated);
+          final text = TextApproximation(
+              context,
+              EvaluationContext(() => feature.decodeProperties(), feature.type,
+                  context.zoom, logger),
+              style,
+              abbreviated);
           final renderBox = _findMiddleMetric(context, metrics, text);
           if (renderBox != null) {
             final tangent = renderBox.tangent;

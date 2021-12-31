@@ -11,7 +11,7 @@ class Tile extends StatefulWidget {
 
 class _TileState extends State<Tile> {
   Tileset? tileset;
-  final theme = ProvidedThemes.lightTheme();
+  final theme = ProvidedThemes.lightTheme(logger: Logger.console());
 
   @override
   void initState() {

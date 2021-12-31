@@ -1,4 +1,4 @@
-import 'package:vector_tile_renderer/src/themes/expression/interpolate_expression.dart';
+import 'interpolate_expression.dart';
 
 import 'comparison_expression.dart';
 import 'property_expression.dart';
@@ -8,6 +8,8 @@ import 'expression.dart';
 import 'literal_expression.dart';
 
 // https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/
+
+typedef ExpressionFunction = Expression Function();
 
 class ExpressionParser {
   final Logger logger;
@@ -36,7 +38,10 @@ class ExpressionParser {
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
 
-  Expression parse(dynamic json) {
+  Expression parse(dynamic json, {ExpressionFunction? whenNull}) {
+    if (json == null && whenNull != null) {
+      return whenNull();
+    }
     final expression = parseOptional(json);
     return _expressionChecked(expression, json);
   }

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'theme_function_model.dart';
@@ -48,36 +47,6 @@ class _ZoomValue<T> {
     }
     final difference = (zoom - this.zoom).abs();
     return difference < 0.02;
-  }
-}
-
-DoubleThemeFunction _doubleFunction = DoubleThemeFunction._();
-
-class DoubleThemeFunction extends ThemeFunction<double> {
-  DoubleThemeFunction._();
-  factory DoubleThemeFunction() => _doubleFunction;
-
-  @override
-  double? interpolate(
-      double? base, FunctionStop lower, FunctionStop upper, double zoom) {
-    if (base == null) {
-      base = 1.0;
-    }
-    final factor = interpolationFactor(base, lower.zoom, upper.zoom, zoom);
-    return (lower.value * (1 - factor)) + (upper.value * factor);
-  }
-
-  double interpolationFactor(
-      double base, double lower, double upper, double input) {
-    final difference = upper - lower;
-    if (difference <= 1.0) {
-      return 0;
-    }
-    final progress = input - lower;
-    if (base <= 1.05 && base >= 0.95) {
-      return progress / difference;
-    }
-    return (pow(base, progress) - 1) / (pow(base, difference) - 1);
   }
 }
 

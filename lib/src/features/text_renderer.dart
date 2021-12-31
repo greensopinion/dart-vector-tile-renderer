@@ -1,18 +1,21 @@
 import 'package:flutter/widgets.dart';
+import '../themes/expression/expression.dart';
 
 import '../context.dart';
 import '../themes/style.dart';
 
 class TextApproximation {
   final Context context;
+  final EvaluationContext evaluationContext;
   final Style style;
   final String text;
   Offset? _translation;
   Size? _size;
   TextRenderer? _renderer;
 
-  TextApproximation(this.context, this.style, this.text) {
-    double? textSize = style.textLayout!.textSize(context.zoom);
+  TextApproximation(
+      this.context, this.evaluationContext, this.style, this.text) {
+    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
@@ -34,7 +37,7 @@ class TextApproximation {
   TextRenderer get renderer {
     var result = _renderer;
     if (result == null) {
-      result = TextRenderer(context, style, text);
+      result = TextRenderer(context, evaluationContext, style, text);
       _renderer = result;
     }
     return result;
@@ -56,8 +59,9 @@ class TextRenderer {
 
   late final TextPainter? _painter;
   late final Offset? _translation;
-  TextRenderer(this.context, this.style, this.text) {
-    _painter = _createTextPainter(context, style, text);
+  TextRenderer(this.context, EvaluationContext evaluationContext, this.style,
+      this.text) {
+    _painter = _createTextPainter(context, evaluationContext, style, text);
     _translation = _layout();
   }
 
@@ -88,21 +92,19 @@ class TextRenderer {
     }
   }
 
-  TextPainter? _createTextPainter(Context context, Style style, String text) {
-    final foreground = style.textPaint!.paint(zoom: context.zoom);
+  TextPainter? _createTextPainter(Context context,
+      EvaluationContext evaluationContext, Style style, String text) {
+    final foreground = style.textPaint!.paint(evaluationContext);
     if (foreground == null) {
       return null;
     }
-    double? textSize = style.textLayout!.textSize(context.zoom);
+    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
       }
-      double? spacing;
-      DoubleZoomFunction? spacingFunction = style.textLayout!.textLetterSpacing;
-      if (spacingFunction != null) {
-        spacing = spacingFunction(context.zoom);
-      }
+      double? spacing =
+          style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
       final shadows = style.textHalo?.call(context.zoom);
       final textStyle = TextStyle(
           foreground: foreground,

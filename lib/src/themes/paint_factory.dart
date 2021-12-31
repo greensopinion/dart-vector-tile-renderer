@@ -1,16 +1,17 @@
 import 'dart:ui';
 
+import 'expression/expression.dart';
+import 'expression/literal_expression.dart';
+
 import '../logger.dart';
 import 'color_parser.dart';
 import 'style.dart';
-import 'theme_function.dart';
-import 'theme_function_model.dart';
 
 class PaintStyle {
   final String id;
   final PaintingStyle paintingStyle;
-  final DoubleZoomFunction opacity;
-  final DoubleZoomFunction strokeWidth;
+  final DoubleExpression opacity;
+  final DoubleExpression strokeWidth;
   final ColorZoomFunction color;
 
   PaintStyle(
@@ -20,12 +21,12 @@ class PaintStyle {
       required this.strokeWidth,
       required this.color});
 
-  Paint? paint({required double zoom}) {
-    final color = this.color(zoom);
+  Paint? paint(EvaluationContext context) {
+    final color = this.color(context.zoom);
     if (color == null) {
       return null;
     }
-    final opacity = this.opacity(zoom);
+    final opacity = this.opacity.evaluate(context);
     if (opacity != null && opacity <= 0) {
       return null;
     }
@@ -36,7 +37,7 @@ class PaintStyle {
       paint.color = color.withOpacity(opacity);
     }
     if (paintingStyle == PaintingStyle.stroke) {
-      final strokeWidth = this.strokeWidth(zoom);
+      final strokeWidth = this.strokeWidth.evaluate(context);
       if (strokeWidth == null) {
         return null;
       }
@@ -48,7 +49,8 @@ class PaintStyle {
 
 class PaintFactory {
   final Logger logger;
-  PaintFactory(this.logger);
+  final ExpressionParser expressionParser;
+  PaintFactory(this.logger) : expressionParser = ExpressionParser(logger);
 
   PaintStyle? create(String id, PaintingStyle style, String prefix, paint,
       {double? defaultStrokeWidth = 1.0}) {
@@ -59,27 +61,15 @@ class PaintFactory {
     if (color == null) {
       return null;
     }
-    final opacity = _toDouble(paint['$prefix-opacity']);
-    final strokeWidth = _toDouble(paint['$prefix-width']);
+    final opacity = expressionParser.parse(paint['$prefix-opacity'],
+        whenNull: () => LiteralExpression(1.0));
+    final strokeWidth = expressionParser.parse(paint['$prefix-width'],
+        whenNull: () => LiteralExpression(defaultStrokeWidth));
     return PaintStyle(
         id: id,
         paintingStyle: style,
-        opacity: opacity,
-        strokeWidth: (zoom) => strokeWidth(zoom) ?? defaultStrokeWidth,
+        opacity: opacity.asDoubleExpression(),
+        strokeWidth: strokeWidth.asDoubleExpression(),
         color: color);
-  }
-
-  DoubleZoomFunction _toDouble(doubleSpec) {
-    if (doubleSpec is num) {
-      final value = doubleSpec.toDouble();
-      return (zoom) => value;
-    }
-    if (doubleSpec is Map) {
-      final model = DoubleFunctionModelFactory().create(doubleSpec);
-      if (model != null) {
-        return (zoom) => DoubleThemeFunction().exponential(model, zoom);
-      }
-    }
-    return (_) => null;
   }
 }

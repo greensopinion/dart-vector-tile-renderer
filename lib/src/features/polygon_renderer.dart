@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import '../themes/expression/expression.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
 import '../context.dart';
@@ -21,17 +23,19 @@ class PolygonRenderer extends FeatureRenderer {
     }
     final geometry = feature.decodeGeometry();
     if (geometry != null) {
+      final evaluationContext = EvaluationContext(
+          () => feature.decodeProperties(), feature.type, context.zoom, logger);
       if (geometry.type == GeometryType.Polygon) {
         final polygon = geometry as GeometryPolygon;
         logger.log(() => 'rendering polygon');
         final coordinates = polygon.coordinates;
-        _renderPolygon(context, style, layer, coordinates);
+        _renderPolygon(context, evaluationContext, style, layer, coordinates);
       } else if (geometry.type == GeometryType.MultiPolygon) {
         final multiPolygon = geometry as GeometryMultiPolygon;
         logger.log(() => 'rendering multi-polygon');
         final polygons = multiPolygon.coordinates;
         polygons?.forEach((coordinates) {
-          _renderPolygon(context, style, layer, coordinates);
+          _renderPolygon(context, evaluationContext, style, layer, coordinates);
         });
       } else {
         logger.warn(
@@ -40,7 +44,11 @@ class PolygonRenderer extends FeatureRenderer {
     }
   }
 
-  void _renderPolygon(Context context, Style style, VectorTileLayer layer,
+  void _renderPolygon(
+      Context context,
+      EvaluationContext evaluationContext,
+      Style style,
+      VectorTileLayer layer,
       List<List<List<double>>> coordinates) {
     final path = Path();
     coordinates.forEach((ring) {
@@ -49,11 +57,11 @@ class PolygonRenderer extends FeatureRenderer {
     if (!_isWithinClip(context, path)) {
       return;
     }
-    final fillPaint = style.fillPaint?.paint(zoom: context.zoom);
+    final fillPaint = style.fillPaint?.paint(evaluationContext);
     if (fillPaint != null) {
       context.canvas.drawPath(path, fillPaint);
     }
-    final outlinePaint = style.outlinePaint?.paint(zoom: context.zoom);
+    final outlinePaint = style.outlinePaint?.paint(evaluationContext);
     if (outlinePaint != null) {
       context.canvas.drawPath(path, outlinePaint);
     }

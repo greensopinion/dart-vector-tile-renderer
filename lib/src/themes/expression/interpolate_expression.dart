@@ -110,7 +110,40 @@ num _exponentialInterpolation(num input, num base, num lowValue, num highValue,
   if (base >= 0.99 && base <= 1.01) {
     factor = progress / difference;
   } else {
-    factor = (pow(base, progress) - 1) / (pow(base, difference) - 1);
+    factor = _factorCalculator.calculate(base, progress, difference);
   }
   return (lowOutput * (1 - factor)) + (highOutput * factor);
+}
+
+final _factorCalculator = _PowFactorCalculator();
+
+class _PowFactorCalculator {
+  final _results = <_PowFactorResult>[];
+  final _maxResults = 5;
+
+  double calculate(num base, num progress, num difference) {
+    for (final result in _results) {
+      if (result.base == base &&
+          result.progress == progress &&
+          result.difference == difference) {
+        return result.result;
+      }
+    }
+    final result = _PowFactorResult(base, progress, difference,
+        (pow(base, progress) - 1) / (pow(base, difference) - 1));
+    if (_results.length >= _maxResults) {
+      _results.removeAt(0);
+    }
+    _results.insert(0, result);
+    return result.result;
+  }
+}
+
+class _PowFactorResult {
+  final num base;
+  final num progress;
+  final num difference;
+  final double result;
+
+  _PowFactorResult(this.base, this.progress, this.difference, this.result);
 }

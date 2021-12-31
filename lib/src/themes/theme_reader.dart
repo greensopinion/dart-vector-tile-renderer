@@ -1,6 +1,8 @@
 import 'dart:core';
 
 import 'package:flutter/painting.dart';
+import 'expression/expression.dart';
+import 'expression/literal_expression.dart';
 
 import '../logger.dart';
 import '../vector_tile_extensions.dart';
@@ -10,17 +12,17 @@ import 'selector_factory.dart';
 import 'style.dart';
 import 'text_halo_factory.dart';
 import 'theme.dart';
-import 'theme_function.dart';
-import 'theme_function_model.dart';
 import 'theme_layers.dart';
 
 class ThemeReader {
   final Logger logger;
   late final SelectorFactory selectorFactory;
   late final PaintFactory paintFactory;
+  late final ExpressionParser expressionParser;
   ThemeReader({Logger? logger}) : this.logger = logger ?? Logger.noop() {
     selectorFactory = SelectorFactory(this.logger);
     paintFactory = PaintFactory(this.logger);
+    expressionParser = ExpressionParser(this.logger);
   }
 
   Theme read(Map<String, dynamic> json) {
@@ -123,7 +125,7 @@ class ThemeReader {
     final layout = jsonLayer['layout'];
     final textSize = _toTextSize(layout);
     final textLetterSpacing =
-        _toDoubleZoomFunction(layout?['text-letter-spacing']);
+        _toDoubleExpression(layout?['text-letter-spacing']);
     final placement =
         LayoutPlacement.fromName(layout?['symbol-placement'] as String?);
     final anchor = LayoutAnchor.fromName(layout?['text-anchor'] as String?);
@@ -178,28 +180,19 @@ class ThemeReader {
     }
     return (feature) => feature.stringProperty('name');
   }
-}
 
-DoubleZoomFunction _toTextSize(layout) {
-  final function = _toDoubleZoomFunction(layout?['text-size']);
-
-  return (function != null) ? function : (zoom) => 16.0;
-}
-
-DoubleZoomFunction? _toDoubleZoomFunction(layoutProperty) {
-  if (layoutProperty == null) {
-    return null;
+  DoubleExpression _toTextSize(layout) {
+    return expressionParser
+        .parse(layout?['text-size'], whenNull: () => LiteralExpression(16.0))
+        .asDoubleExpression();
   }
-  if (layoutProperty is Map) {
-    final model = DoubleFunctionModelFactory().create(layoutProperty);
-    if (model != null) {
-      return (zoom) => DoubleThemeFunction().exponential(model, zoom);
+
+  DoubleExpression? _toDoubleExpression(layoutProperty) {
+    if (layoutProperty == null) {
+      return null;
     }
-  } else if (layoutProperty is num) {
-    final size = layoutProperty.toDouble();
-    return (zoom) => size;
+    return expressionParser.parse(layoutProperty).asDoubleExpression();
   }
-  return null;
 }
 
 ThemeLayerType _toLayerType(jsonLayer) {

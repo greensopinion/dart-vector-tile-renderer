@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
 import '../context.dart';
+import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_geometry.dart';
 import 'feature_renderer.dart';
@@ -34,7 +35,12 @@ class SymbolPointRenderer extends FeatureRenderer {
       if (text != null &&
           context.labelSpace.canAccept(abbreviated) &&
           abbreviated != null) {
-        final text = TextApproximation(context, style, abbreviated);
+        final text = TextApproximation(
+            context,
+            EvaluationContext(() => feature.decodeProperties(), feature.type,
+                context.zoom, logger),
+            style,
+            abbreviated);
         points.forEach((point) {
           points.forEach((point) {
             if (point.length < 2) {

@@ -343,10 +343,10 @@ packages:
   vector_tile:
     dependency: "direct main"
     description:
-      name: vector_tile
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.2"
+      path: "../dart-vector-tile"
+      relative: true
+    source: path
+    version: "0.3.0"
   vm_service:
     dependency: transitive
     description:

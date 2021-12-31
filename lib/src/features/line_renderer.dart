@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import '../themes/expression/expression.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../constants.dart';
 import '../context.dart';
@@ -32,7 +34,11 @@ class LineRenderer extends FeatureRenderer {
       if (!_isWithinClip(context, path)) {
         return;
       }
-      var effectivePaint = style.linePaint!.paint(zoom: context.zoom);
+      var effectivePaint = style.linePaint!.paint(EvaluationContext(
+          () => feature.decodeProperties(),
+          feature.type,
+          context.zoom,
+          logger));
       if (effectivePaint != null) {
         if (context.zoomScaleFactor > 1.0) {
           effectivePaint.strokeWidth =

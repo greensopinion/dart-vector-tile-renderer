@@ -6,27 +6,21 @@ import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 void main() {
   final _parser = ExpressionParser(Logger.noop());
 
-  final _properties = [
-    {
-      'a-string': VectorTileValue(stringValue: 'a-string-value'),
-      'another-string': VectorTileValue(stringValue: 'another-string-value')
-    },
-    {
-      'a-bool': VectorTileValue(boolValue: true),
-      'a-false-bool': VectorTileValue(boolValue: false)
-    },
-    {
-      'an-int': VectorTileValue(intValue: Int64(33)),
-      'a-double': VectorTileValue(doubleValue: 13.2)
-    }
-  ];
+  final _properties = {
+    'a-string': VectorTileValue(stringValue: 'a-string-value'),
+    'another-string': VectorTileValue(stringValue: 'another-string-value'),
+    'a-bool': VectorTileValue(boolValue: true),
+    'a-false-bool': VectorTileValue(boolValue: false),
+    'an-int': VectorTileValue(intValue: Int64(33)),
+    'a-double': VectorTileValue(doubleValue: 13.2)
+  };
   var zoom = 1.0;
-  final _context = EvaluationContext(() => _properties,
-      () => VectorTileGeomType.LINESTRING, () => zoom, Logger.noop());
+  _context() => EvaluationContext(
+      () => _properties, VectorTileGeomType.LINESTRING, zoom, Logger.noop());
 
   void _assertExpression(dynamic jsonExpression, expected) {
     final expression = _parser.parse(jsonExpression);
-    final result = expression.evaluate(_context);
+    final result = expression.evaluate(_context());
     if (result is double && expected is double) {
       expect(result, closeTo(expected, 0.001));
     } else {
@@ -38,7 +32,7 @@ void main() {
     final json = {'not-supported': true};
     final expression = _parser.parse(json);
     expect(expression, isA<UnsupportedExpression>());
-    expect(expression.evaluate(_context), isNull);
+    expect(expression.evaluate(_context()), isNull);
     expect((expression as UnsupportedExpression).json, equals(json));
   });
 
@@ -67,7 +61,7 @@ void main() {
   group('literal expressions:', () {
     void _assertLiteral(dynamic value) {
       final expression = _parser.parse(value);
-      expect(expression.evaluate(_context), equals(value));
+      expect(expression.evaluate(_context()), equals(value));
     }
 
     test('parses a string', () {
@@ -92,27 +86,27 @@ void main() {
   group('property expressions:', () {
     void _assertGetProperty(String property, dynamic value) {
       final expression = _parser.parse(['get', property]);
-      expect(expression.evaluate(_context), equals(value));
+      expect(expression.evaluate(_context()), equals(value));
     }
 
     void _assertHasProperty(String property, bool isPresent) {
       final expression = _parser.parse(['has', property]);
-      expect(expression.evaluate(_context), equals(isPresent));
+      expect(expression.evaluate(_context()), equals(isPresent));
     }
 
     void _assertNotHasProperty(String property, bool expected) {
       final expression = _parser.parse(['!has', property]);
-      expect(expression.evaluate(_context), equals(expected));
+      expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertInProperty(String property, List values, bool expected) {
       final expression = _parser.parse(['in', property, ...values]);
-      expect(expression.evaluate(_context), equals(expected));
+      expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertNotInProperty(String property, List values, bool expected) {
       final expression = _parser.parse(['!in', property, ...values]);
-      expect(expression.evaluate(_context), equals(expected));
+      expect(expression.evaluate(_context()), equals(expected));
     }
 
     test('parses a get property', () {
@@ -158,18 +152,18 @@ void main() {
   group('boolean expressions:', () {
     void _assertNotExpression(dynamic delegateExpression, bool expected) {
       final expression = _parser.parse(['!', delegateExpression]);
-      expect(expression.evaluate(_context), equals(expected));
+      expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertEqualsExpression(dynamic first, dynamic second, bool expected) {
       final expression = _parser.parse(['==', first, second]);
-      expect(expression.evaluate(_context), equals(expected));
+      expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertNotEqualsExpression(
         dynamic first, dynamic second, bool expected) {
       final expression = _parser.parse(['!=', first, second]);
-      expect(expression.evaluate(_context), equals(expected));
+      expect(expression.evaluate(_context()), equals(expected));
     }
 
     test('parses a ! expression', () {

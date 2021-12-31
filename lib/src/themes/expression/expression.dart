@@ -5,34 +5,33 @@ import '../../logger.dart';
 export 'expression_parser.dart';
 
 class EvaluationContext {
-  final List<Map<String, VectorTileValue>> Function() _properties;
-  final VectorTileGeomType? Function() _geometryType;
-  final double Function() _zoom;
+  final Map<String, VectorTileValue> Function() _properties;
+  final VectorTileGeomType _geometryType;
+  final double zoom;
   final Logger logger;
 
-  EvaluationContext(
-      this._properties, this._geometryType, this._zoom, this.logger);
+  EvaluationContext(this._properties, VectorTileGeomType? geometryType,
+      this.zoom, this.logger)
+      : _geometryType = geometryType ?? VectorTileGeomType.UNKNOWN;
 
   getProperty(String name) {
     if (name == '\$type') {
       return _typeName();
     } else if (name == 'zoom') {
-      return _zoom();
+      return zoom;
     }
     final properties = _properties();
-    for (final property in properties) {
-      final value = property[name];
-      if (value != null) {
-        return value.dartStringValue ??
-            value.dartIntValue?.toInt() ??
-            value.dartDoubleValue ??
-            value.dartBoolValue;
-      }
+    final value = properties[name];
+    if (value != null) {
+      return value.dartStringValue ??
+          value.dartIntValue?.toInt() ??
+          value.dartDoubleValue ??
+          value.dartBoolValue;
     }
   }
 
   _typeName() {
-    switch (_geometryType()) {
+    switch (_geometryType) {
       case VectorTileGeomType.POINT:
         return 'Point';
       case VectorTileGeomType.LINESTRING:
@@ -40,7 +39,6 @@ class EvaluationContext {
       case VectorTileGeomType.POLYGON:
         return 'Polygon';
       case VectorTileGeomType.UNKNOWN:
-      case null:
         return null;
     }
   }
@@ -48,6 +46,23 @@ class EvaluationContext {
 
 abstract class Expression {
   evaluate(EvaluationContext context);
+
+  DoubleExpression asDoubleExpression() => DoubleExpression(this);
+}
+
+class DoubleExpression {
+  final Expression _delegate;
+
+  DoubleExpression(this._delegate);
+
+  double? evaluate(EvaluationContext context) {
+    final result = _delegate.evaluate(context);
+    if (result is num) {
+      return result.toDouble();
+    } else if (result == null) {
+      context.logger.warn(() => 'expected double but got $result');
+    }
+  }
 }
 
 class UnsupportedExpression extends Expression {
