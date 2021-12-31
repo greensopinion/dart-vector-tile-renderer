@@ -35,6 +35,7 @@ class ExpressionParser {
     _register(_AnyExpressionParser(this));
     _register(_InterpolateExpressionParser(this));
     _register(_ToStringExpressionParser(this));
+    _register(_MatchExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -333,6 +334,39 @@ class _AnyExpressionParser extends _ExpressionParser {
       return null;
     }
     return AnyExpression(delegates.whereType<Expression>().toList());
+  }
+}
+
+class _MatchExpressionParser extends _ExpressionParser {
+  _MatchExpressionParser(ExpressionParser parser) : super(parser, 'match');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length >= 3;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final firstOperand = json[1];
+    final secondOperand = json[2];
+    final input = parser.parseOptional(firstOperand);
+    List<Expression?> second = [];
+    if (secondOperand is num || secondOperand is String) {
+      second.add(parser.parseOptional(secondOperand));
+    } else if (secondOperand is List) {
+      second.addAll(secondOperand.map((e) => parser.parseOptional(e)));
+    }
+    if (second.isEmpty || second.any((e) => e == null)) {
+      return null;
+    }
+    final values = second.whereType<Expression>();
+    final remaining = json.sublist(3).map((e) => parser.parseOptional(e));
+    if (remaining.isEmpty || remaining.any((e) => e == null)) {
+      return null;
+    }
+    final outputs = remaining.whereType<Expression>();
+    if (input != null) {
+      return MatchExpression(input, values.toList(), outputs.toList());
+    }
   }
 }
 

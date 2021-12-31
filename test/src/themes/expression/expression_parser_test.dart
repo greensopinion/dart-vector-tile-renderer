@@ -55,6 +55,7 @@ void main() {
           'has',
           'in',
           'interpolate',
+          'match',
           'to-string'
         ]));
   });
@@ -263,6 +264,50 @@ void main() {
 
     test('parses an any expression with no arguments', () {
       _assertExpression(['any'], false);
+    });
+
+    test('parses a match expression', () {
+      _assertExpression([
+        'match',
+        ['get', 'a-string'],
+        ['no-match-value', 'a-string-value'],
+        false,
+        true
+      ], true);
+      _assertExpression([
+        'match',
+        ['get', 'another-string'],
+        ['no-match-value', 'a-string-value'],
+        false,
+        true
+      ], null);
+      _assertExpression([
+        'match',
+        ['get', 'another-string'],
+        ['no-match-value', 'a-string-value'],
+        false,
+        true,
+        true
+      ], true);
+    });
+    test('parses a match without a fallback', () {
+      _assertExpression([
+        'match',
+        ['get', 'another-string'],
+        ['no-match-value', 'a-string-value'],
+        false,
+        true
+      ], null);
+    });
+    test('parses a match with a fallback', () {
+      _assertExpression([
+        'match',
+        ['get', 'another-string'],
+        ['no-match-value', 'a-string-value'],
+        false,
+        true,
+        true
+      ], true);
     });
   });
 
