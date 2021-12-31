@@ -34,6 +34,7 @@ class ExpressionParser {
     _register(_AllExpressionParser(this));
     _register(_AnyExpressionParser(this));
     _register(_InterpolateExpressionParser(this));
+    _register(_ToStringExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -150,6 +151,24 @@ class _GetExpressionParser extends _ExpressionParser {
 
   Expression? parse(List<dynamic> json) {
     return GetPropertyExpression(json[1]);
+  }
+}
+
+class _ToStringExpressionParser extends _ExpressionParser {
+  _ToStringExpressionParser(ExpressionParser parser)
+      : super(parser, 'to-string');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length == 2;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final delegate = parser.parseOptional(json[1]);
+    if (delegate == null) {
+      return null;
+    }
+    return ToStringExpression(delegate);
   }
 }
 

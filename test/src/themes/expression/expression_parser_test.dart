@@ -54,7 +54,8 @@ void main() {
           'get',
           'has',
           'in',
-          'interpolate'
+          'interpolate',
+          'to-string'
         ]));
   });
 
@@ -80,6 +81,18 @@ void main() {
     test('parses an integer', () {
       _assertLiteral(2);
       _assertLiteral(35);
+    });
+  });
+  group('type expressions:', () {
+    test('parses to-string', () {
+      _assertExpression(['to-string', true], 'true');
+      _assertExpression(['to-string', false], 'false');
+      _assertExpression(['to-string', 1234], '1234');
+      _assertExpression(['to-string', null], '');
+      _assertExpression([
+        'to-string',
+        ['get', 'a-string']
+      ], 'a-string-value');
     });
   });
 

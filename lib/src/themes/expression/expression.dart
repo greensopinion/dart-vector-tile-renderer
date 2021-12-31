@@ -163,3 +163,13 @@ class AllExpression extends Expression {
     return true;
   }
 }
+
+class ToStringExpression extends Expression {
+  final Expression _delegate;
+
+  ToStringExpression(this._delegate);
+
+  @override
+  evaluate(EvaluationContext context) =>
+      _delegate.evaluate(context)?.toString() ?? '';
+}
