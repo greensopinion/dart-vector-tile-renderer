@@ -70,7 +70,6 @@ void main() {
       _assertLiteral('a string');
       _assertLiteral('another string');
     });
-
     test('parses a boolean', () {
       _assertLiteral(true);
       _assertLiteral(false);
@@ -122,6 +121,11 @@ void main() {
       final expression = _parser.parse(['!in', property, ...values]);
       expect(expression.evaluate(_context()), equals(expected));
     }
+
+    test('parses a formatted string', () {
+      _assertExpression('{a-string}', 'a-string-value');
+      _assertExpression('{no-match}', null);
+    });
 
     test('parses a get property', () {
       _assertGetProperty('a-string', 'a-string-value');

@@ -29,18 +29,16 @@ class SymbolPointRenderer extends FeatureRenderer {
     final points = geometry.decodePoints(feature);
     if (points != null) {
       logger.log(() => 'rendering points');
-      final text = textLayout.text(feature);
+      final evaluationContext = EvaluationContext(
+          () => feature.decodeProperties(), feature.type, context.zoom, logger);
+      final text = textLayout.text.evaluate(evaluationContext);
       final abbreviated =
           text == null ? null : TextAbbreviator().abbreviate(text);
       if (text != null &&
           context.labelSpace.canAccept(abbreviated) &&
           abbreviated != null) {
-        final text = TextApproximation(
-            context,
-            EvaluationContext(() => feature.decodeProperties(), feature.type,
-                context.zoom, logger),
-            style,
-            abbreviated);
+        final text =
+            TextApproximation(context, evaluationContext, style, abbreviated);
         points.forEach((point) {
           points.forEach((point) {
             if (point.length < 2) {

@@ -49,7 +49,10 @@ class ExpressionParser {
   }
 
   Expression? parseOptional(dynamic json) {
-    if (json is String || json is num || json is bool || json == null) {
+    if (json is String) {
+      return _parseString(json);
+    }
+    if (json is num || json is bool || json == null) {
       return LiteralExpression(json);
     }
     if (json is List && json.length > 0) {
@@ -126,6 +129,17 @@ class ExpressionParser {
       return UnsupportedExpression(json);
     }
     return expression;
+  }
+
+  Expression? _parseString(String json) {
+    final match = RegExp(r'\{(.+?)\}').firstMatch(json);
+    if (match != null) {
+      final propertyName = match.group(1);
+      if (propertyName != null) {
+        return GetPropertyExpression(propertyName);
+      }
+    }
+    return LiteralExpression(json);
   }
 }
 

@@ -129,7 +129,7 @@ class ThemeReader {
     final placement =
         LayoutPlacement.fromName(layout?['symbol-placement'] as String?);
     final anchor = LayoutAnchor.fromName(layout?['text-anchor'] as String?);
-    final textFunction = _toTextFunction(layout?['text-field']);
+    final textFunction = expressionParser.parse(layout?['text-field']);
     final font = layout?['text-font'];
     String? fontFamily;
     FontStyle? fontStyle;
@@ -166,19 +166,6 @@ class ThemeReader {
         return TextHaloFactory.toHaloFunction(colorFunction, haloWidth);
       }
     }
-  }
-
-  FeatureTextFunction _toTextFunction(String? textField) {
-    if (textField != null) {
-      final match = RegExp(r'\{(.+?)\}').firstMatch(textField);
-      if (match != null) {
-        final fieldName = match.group(1);
-        if (fieldName != null) {
-          return (feature) => feature.stringProperty(fieldName);
-        }
-      }
-    }
-    return (feature) => feature.stringProperty('name');
   }
 
   DoubleExpression _toTextSize(layout) {

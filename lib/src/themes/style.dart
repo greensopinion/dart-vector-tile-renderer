@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'expression/expression.dart';
 
-import '../../vector_tile_renderer.dart';
 import '../extensions.dart';
 import 'paint_factory.dart';
 
@@ -56,7 +55,7 @@ class LayoutAnchor {
 class TextLayout {
   final LayoutPlacement placement;
   final LayoutAnchor anchor;
-  final FeatureTextFunction text;
+  final Expression text;
   final DoubleExpression textSize;
   final DoubleExpression? textLetterSpacing;
   final FontStyle? fontStyle;
@@ -73,5 +72,3 @@ class TextLayout {
       required this.fontStyle,
       required this.textTransform});
 }
-
-typedef FeatureTextFunction = String? Function(VectorTileFeature);

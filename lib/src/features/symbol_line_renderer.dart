@@ -31,7 +31,9 @@ class SymbolLineRenderer extends FeatureRenderer {
     final lines = geometry.decodeLines(feature);
     if (lines != null) {
       logger.log(() => 'rendering linestring symbol');
-      final text = textLayout.text(feature);
+      final evaluationContext = EvaluationContext(
+          () => feature.decodeProperties(), feature.type, context.zoom, logger);
+      final text = textLayout.text.evaluate(evaluationContext);
       if (text != null) {
         final path = Path();
         lines.forEach((line) {
@@ -40,12 +42,8 @@ class SymbolLineRenderer extends FeatureRenderer {
         final metrics = path.computeMetrics().toList();
         final abbreviated = TextAbbreviator().abbreviate(text);
         if (metrics.length > 0 && context.labelSpace.canAccept(abbreviated)) {
-          final text = TextApproximation(
-              context,
-              EvaluationContext(() => feature.decodeProperties(), feature.type,
-                  context.zoom, logger),
-              style,
-              abbreviated);
+          final text =
+              TextApproximation(context, evaluationContext, style, abbreviated);
           final renderBox = _findMiddleMetric(context, metrics, text);
           if (renderBox != null) {
             final tangent = renderBox.tangent;
