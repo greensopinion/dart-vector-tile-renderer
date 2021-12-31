@@ -59,7 +59,7 @@ class DoubleExpression {
     final result = _delegate.evaluate(context);
     if (result is num) {
       return result.toDouble();
-    } else if (result == null) {
+    } else if (result != null) {
       context.logger.warn(() => 'expected double but got $result');
     }
   }
