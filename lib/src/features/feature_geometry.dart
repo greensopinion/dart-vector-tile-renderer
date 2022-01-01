@@ -11,12 +11,10 @@ class FeatureGeometry {
   List<List<List<double>>>? decodeLines(VectorTileFeature feature) {
     final geometry = feature.decodeGeometry();
     if (geometry != null) {
-      if (geometry.type == GeometryType.LineString) {
-        final linestring = geometry as GeometryLineString;
-        return [linestring.coordinates];
-      } else if (geometry.type == GeometryType.MultiLineString) {
-        final linestring = geometry as GeometryMultiLineString;
-        return linestring.coordinates;
+      if (geometry is GeometryLineString) {
+        return [geometry.coordinates];
+      } else if (geometry is GeometryMultiLineString) {
+        return geometry.coordinates;
       } else {
         logger.warn(() =>
             'linestring geometryType=${geometry.type} is not implemented');
@@ -29,12 +27,10 @@ class FeatureGeometry {
   List<List<double>>? decodePoints(VectorTileFeature feature) {
     final geometry = feature.decodeGeometry();
     if (geometry != null) {
-      if (geometry.type == GeometryType.Point) {
-        final point = geometry as GeometryPoint;
-        return [point.coordinates];
-      } else if (geometry.type == GeometryType.MultiPoint) {
-        final multiPoint = geometry as GeometryMultiPoint;
-        return multiPoint.coordinates;
+      if (geometry is GeometryPoint) {
+        return [geometry.coordinates];
+      } else if (geometry is GeometryMultiPoint) {
+        return geometry.coordinates;
       } else {
         logger.warn(
             () => 'point geometryType=${geometry.type} is not implemented');
@@ -42,5 +38,19 @@ class FeatureGeometry {
       }
     }
     return null;
+  }
+
+  List<List<List<List<double>>>>? decodePolygons(VectorTileFeature feature) {
+    final geometry = feature.decodeGeometry();
+    if (geometry != null) {
+      if (geometry is GeometryPolygon) {
+        return [geometry.coordinates];
+      } else if (geometry is GeometryMultiPolygon) {
+        return geometry.coordinates;
+      } else {
+        logger.warn(
+            () => 'polygon geometryType=${geometry.type} is not implemented');
+      }
+    }
   }
 }
