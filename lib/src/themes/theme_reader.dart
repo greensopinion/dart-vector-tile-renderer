@@ -1,12 +1,11 @@
 import 'dart:core';
 
 import 'package:flutter/painting.dart';
-import 'expression/expression.dart';
-import 'expression/literal_expression.dart';
 
 import '../logger.dart';
-import '../vector_tile_extensions.dart';
 import 'color_parser.dart';
+import 'expression/expression.dart';
+import 'expression/literal_expression.dart';
 import 'paint_factory.dart';
 import 'selector_factory.dart';
 import 'style.dart';
