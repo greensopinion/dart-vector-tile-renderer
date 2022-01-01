@@ -1,12 +1,13 @@
-import '../../vector_tile_renderer.dart';
-import 'theme_layers.dart';
+import 'package:vector_tile_renderer/src/themes/selector.dart';
 
-/// Resolver for resolving the [VectorTileFeature]s a [ThemeLayer] should
+import '../../vector_tile_renderer.dart';
+
+/// Resolver for resolving the [LayerFeature]s, that a [ThemeLayer] should
 /// render.
 abstract class ThemeLayerFeatureResolver {
-  /// Resolves and returns the [VectorTileFeature]s that the given [themeLayer]
-  /// should render.
-  Iterable<ResolvedThemeLayerFeature> resolveFeatures(DefaultLayer themeLayer);
+  /// Resolves and returns the [LayerFeature]s that the given [selector]
+  /// selects for a [ThemeLayer].
+  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector);
 }
 
 /// Default implementation of [ThemeLayerFeatureResolver] that resolves the
@@ -14,17 +15,14 @@ abstract class ThemeLayerFeatureResolver {
 class DefaultThemeLayerFeatureResolver implements ThemeLayerFeatureResolver {
   DefaultThemeLayerFeatureResolver(this.tileset);
 
-  /// The [Tileset] from which to resolves [VectorTileFeature]s.
+  /// The [Tileset] from which to resolves [LayerFeature]s.
   final Tileset tileset;
 
   @override
-  Iterable<ResolvedThemeLayerFeature> resolveFeatures(
-    DefaultLayer themeLayer,
-  ) sync* {
-    for (final layer in themeLayer.selector.select(tileset)) {
-      for (final feature
-          in themeLayer.selector.layerSelector.features(layer.features)) {
-        yield ResolvedThemeLayerFeature(layer, feature);
+  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) sync* {
+    for (final layer in selector.select(tileset)) {
+      for (final feature in selector.layerSelector.features(layer.features)) {
+        yield LayerFeature(layer, feature);
       }
     }
   }
@@ -38,21 +36,20 @@ class CachingThemeLayerFeatureResolver implements ThemeLayerFeatureResolver {
   /// The resolver whose results will be cached.
   final ThemeLayerFeatureResolver resolver;
 
-  final _cache = <DefaultLayer, List<ResolvedThemeLayerFeature>>{};
+  final _cache = <TileLayerSelector, List<LayerFeature>>{};
 
   @override
-  Iterable<ResolvedThemeLayerFeature> resolveFeatures(DefaultLayer themeLayer) {
+  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) {
     return _cache.putIfAbsent(
-      themeLayer,
-      () => resolver.resolveFeatures(themeLayer).toList(),
+      selector,
+      () => resolver.resolveFeatures(selector).toList(),
     );
   }
 }
 
-/// Wrapper around [VectorTileFeature] that includes the containing
-/// [VectorTileLayer].
-class ResolvedThemeLayerFeature {
-  ResolvedThemeLayerFeature(this.layer, this.feature);
+/// A feature that is rendered by a [ThemeLayer].
+class LayerFeature {
+  LayerFeature(this.layer, this.feature);
 
   final VectorTileLayer layer;
   final VectorTileFeature feature;

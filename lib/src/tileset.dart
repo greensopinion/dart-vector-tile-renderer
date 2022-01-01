@@ -9,17 +9,17 @@ import 'themes/theme_layers.dart';
 class Tileset {
   final bool preprocessed;
   final Map<String, VectorTile> tiles;
-  late final ThemeLayerFeatureResolver themeLayerFeatureResolver;
+  late final ThemeLayerFeatureResolver resolver;
 
   Tileset(this.tiles) : this.preprocessed = false {
-    themeLayerFeatureResolver = DefaultThemeLayerFeatureResolver(this);
+    resolver = DefaultThemeLayerFeatureResolver(this);
   }
 
   Tileset._preprocessed(
     Tileset original,
     ThemeLayerFeatureResolver themeLayerFeatureResolver,
   )   : this.tiles = original.tiles,
-        this.themeLayerFeatureResolver = themeLayerFeatureResolver,
+        this.resolver = themeLayerFeatureResolver,
         this.preprocessed = true;
 
   VectorTile? tile(String sourceId) => tiles[sourceId];
@@ -36,22 +36,19 @@ class TilesetPreprocessor {
   /// Pre-processes a tileset to eliminate some expensive processing from
   /// the rendering stage.
   ///
-  /// The [themeLayerFeatures] options controls whether for each theme layer,
-  /// the features it will render are pre-processed.
-  ///
   /// Returns a pre-processed tileset.
-  Tileset preprocess(Tileset tileset, {bool themeLayerFeatures = true}) {
-    final themeLayerFeatureResolver = themeLayerFeatures
-        ? CachingThemeLayerFeatureResolver(tileset.themeLayerFeatureResolver)
-        : tileset.themeLayerFeatureResolver;
+  Tileset preprocess(Tileset tileset) {
+    final featureResolver = tileset.resolver is CachingThemeLayerFeatureResolver
+        ? tileset.resolver
+        : CachingThemeLayerFeatureResolver(tileset.resolver);
 
     for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
       for (final feature
-          in themeLayerFeatureResolver.resolveFeatures(themeLayer)) {
+          in featureResolver.resolveFeatures(themeLayer.selector)) {
         feature.feature.decodeGeometry();
       }
     }
 
-    return Tileset._preprocessed(tileset, themeLayerFeatureResolver);
+    return Tileset._preprocessed(tileset, featureResolver);
   }
 }

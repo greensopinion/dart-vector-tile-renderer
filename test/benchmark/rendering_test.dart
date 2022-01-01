@@ -37,11 +37,9 @@ class RenderPicture extends BenchmarkBase {
   RenderPicture({
     required this.zoom,
     this.preprocessTile = false,
-    this.preprocessThemeLayerFeatures = false,
   }) : super('RenderPicture('
             'zoom: $zoom, '
-            'preprocessTile: $preprocessTile, '
-            'preprocessThemeLayerFeatures: $preprocessThemeLayerFeatures'
+            'preprocessTile: $preprocessTile'
             ')');
 
   static Future<void> setupAll() async {
@@ -52,7 +50,6 @@ class RenderPicture extends BenchmarkBase {
 
   final double zoom;
   final bool preprocessTile;
-  final bool preprocessThemeLayerFeatures;
 
   late final Theme theme;
   late final Tileset tileset;
@@ -63,10 +60,7 @@ class RenderPicture extends BenchmarkBase {
     final tileset = Tileset({'openmaptiles': testTile});
 
     this.tileset = preprocessTile
-        ? TilesetPreprocessor(theme).preprocess(
-            tileset,
-            themeLayerFeatures: preprocessThemeLayerFeatures,
-          )
+        ? TilesetPreprocessor(theme).preprocess(tileset)
         : tileset;
   }
 
@@ -86,16 +80,6 @@ Future<void> main() async {
     for (final zoom in <double>[0, 12, 24]) ...[
       RenderPicture(zoom: zoom, preprocessTile: false),
       RenderPicture(zoom: zoom, preprocessTile: true),
-      RenderPicture(
-        zoom: zoom,
-        preprocessTile: false,
-        preprocessThemeLayerFeatures: false,
-      ),
-      RenderPicture(
-        zoom: zoom,
-        preprocessTile: true,
-        preprocessThemeLayerFeatures: true,
-      ),
     ]
   ];
 
