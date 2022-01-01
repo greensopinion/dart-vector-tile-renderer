@@ -2,20 +2,19 @@ import 'package:vector_tile_renderer/src/themes/selector.dart';
 
 import '../../vector_tile_renderer.dart';
 
-/// Resolver for resolving the [LayerFeature]s, that a [ThemeLayer] should
-/// render.
-abstract class ThemeLayerFeatureResolver {
-  /// Resolves and returns the [LayerFeature]s that the given [selector]
-  /// selects for a [ThemeLayer].
+/// Resolver for resolving the features, that are selected by a
+/// [TileLayerSelector].
+abstract class LayerFeatureResolver {
+  /// Resolves and returns the features that the given [selector] selects.
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector);
 }
 
-/// Default implementation of [ThemeLayerFeatureResolver] that resolves the
-/// features contained in a specific [tileset] for a [ThemeLayer].
-class DefaultThemeLayerFeatureResolver implements ThemeLayerFeatureResolver {
+/// Default implementation of [LayerFeatureResolver] that resolves
+/// features from a [tileset].
+class DefaultThemeLayerFeatureResolver implements LayerFeatureResolver {
   DefaultThemeLayerFeatureResolver(this.tileset);
 
-  /// The [Tileset] from which to resolves [LayerFeature]s.
+  /// The [Tileset] from which to resolves features.
   final Tileset tileset;
 
   @override
@@ -28,13 +27,11 @@ class DefaultThemeLayerFeatureResolver implements ThemeLayerFeatureResolver {
   }
 }
 
-/// A [ThemeLayerFeatureResolver] that uses another [resolver] and caches
-/// its results.
-class CachingThemeLayerFeatureResolver implements ThemeLayerFeatureResolver {
-  CachingThemeLayerFeatureResolver(this.resolver);
+/// A [LayerFeatureResolver] that uses another resolver and caches its results.
+class CachingThemeLayerFeatureResolver implements LayerFeatureResolver {
+  CachingThemeLayerFeatureResolver(this._resolver);
 
-  /// The resolver whose results will be cached.
-  final ThemeLayerFeatureResolver resolver;
+  final LayerFeatureResolver _resolver;
 
   final _cache = <TileLayerSelector, List<LayerFeature>>{};
 
@@ -42,12 +39,11 @@ class CachingThemeLayerFeatureResolver implements ThemeLayerFeatureResolver {
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) {
     return _cache.putIfAbsent(
       selector,
-      () => resolver.resolveFeatures(selector).toList(),
+      () => _resolver.resolveFeatures(selector).toList(),
     );
   }
 }
 
-/// A feature that is rendered by a [ThemeLayer].
 class LayerFeature {
   LayerFeature(this.layer, this.feature);
 

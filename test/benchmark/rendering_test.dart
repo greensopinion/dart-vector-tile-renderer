@@ -36,7 +36,7 @@ Picture _renderPicture({
 class RenderPicture extends BenchmarkBase {
   RenderPicture({
     required this.zoom,
-    this.preprocessTile = false,
+    required this.preprocessTile,
   }) : super('RenderPicture('
             'zoom: $zoom, '
             'preprocessTile: $preprocessTile'

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:vector_tile/vector_tile_feature.dart';
 
 import '../context.dart';
+import '../tileset.dart';
 import 'selector.dart';
 import 'style.dart';
 import 'theme.dart';

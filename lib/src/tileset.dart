@@ -9,20 +9,21 @@ import 'themes/theme_layers.dart';
 class Tileset {
   final bool preprocessed;
   final Map<String, VectorTile> tiles;
-  late final ThemeLayerFeatureResolver resolver;
+  late final LayerFeatureResolver _resolver;
 
   Tileset(this.tiles) : this.preprocessed = false {
-    resolver = DefaultThemeLayerFeatureResolver(this);
+    _resolver = DefaultThemeLayerFeatureResolver(this);
   }
 
-  Tileset._preprocessed(
-    Tileset original,
-    ThemeLayerFeatureResolver themeLayerFeatureResolver,
-  )   : this.tiles = original.tiles,
-        this.resolver = themeLayerFeatureResolver,
+  Tileset._preprocessed(Tileset original, this._resolver)
+      : this.tiles = original.tiles,
         this.preprocessed = true;
 
   VectorTile? tile(String sourceId) => tiles[sourceId];
+}
+
+extension InternalTileset on Tileset {
+  LayerFeatureResolver get resolver => _resolver;
 }
 
 /// A pre-processor for [Tileset]s. A pre-processing is an optional step
