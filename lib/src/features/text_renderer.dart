@@ -21,8 +21,8 @@ class TextApproximation {
         textSize = textSize / context.zoomScaleFactor;
       }
       final approximateWidth =
-          (textSize / 2 * (text.length + 1)).roundToDouble();
-      final approximateHeight = (textSize * 1.25).roundToDouble();
+          (textSize / 1.9 * (text.length + 1)).ceilToDouble();
+      final approximateHeight = (textSize * 1.28).ceilToDouble();
       final size = Size(approximateWidth, approximateHeight);
       _size = size;
       _translation = _offset(size, style.textLayout!.anchor);
