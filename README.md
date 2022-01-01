@@ -15,6 +15,12 @@ An example of output:
 
 ## Development
 
+### Continuous Integration
+
+CI with GitHub Actions:
+
+[![CI status](https://github.com/greensopinion/dart-vector-tile-renderer/actions/workflows/CI.yaml/badge.svg)](https://github.com/greensopinion/dart-vector-tile-renderer/actions)
+
 ### Resources
 
 * [Maputnik Style Editor](https://maputnik.github.io/)
