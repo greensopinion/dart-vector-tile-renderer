@@ -20,7 +20,7 @@ class Context {
 
   Context(this.logger, this.canvas, this.featureRenderer, this.tileset,
       this.zoomScaleFactor, this.zoom, this.tileSpace, this.tileClip)
-      : labelSpace = LabelSpace(tileSpace);
+      : labelSpace = LabelSpace(tileClip);
 
   VectorTile? tile(String sourceId) => tileset.tiles[sourceId];
 }
