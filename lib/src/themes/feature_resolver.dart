@@ -5,21 +5,20 @@ import '../../vector_tile_renderer.dart';
 /// Resolver for resolving the features, that are selected by a
 /// [TileLayerSelector].
 abstract class LayerFeatureResolver {
-  /// Resolves and returns the features that the given [selector] selects.
+  /// Provides the features resolved using the given [selector].
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector);
 }
 
 /// Default implementation of [LayerFeatureResolver] that resolves
 /// features from a [tileset].
-class DefaultThemeLayerFeatureResolver implements LayerFeatureResolver {
-  DefaultThemeLayerFeatureResolver(this.tileset);
+class DefaultLayerFeatureResolver implements LayerFeatureResolver {
+  DefaultLayerFeatureResolver(this._tileset);
 
-  /// The [Tileset] from which to resolves features.
-  final Tileset tileset;
+  final Tileset _tileset;
 
   @override
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) sync* {
-    for (final layer in selector.select(tileset)) {
+    for (final layer in selector.select(_tileset)) {
       for (final feature in selector.layerSelector.features(layer.features)) {
         yield LayerFeature(layer, feature);
       }
@@ -28,10 +27,10 @@ class DefaultThemeLayerFeatureResolver implements LayerFeatureResolver {
 }
 
 /// A [LayerFeatureResolver] that uses another resolver and caches its results.
-class CachingThemeLayerFeatureResolver implements LayerFeatureResolver {
-  CachingThemeLayerFeatureResolver(this._resolver);
+class CachingLayerFeatureResolver implements LayerFeatureResolver {
+  CachingLayerFeatureResolver(this._delegate);
 
-  final LayerFeatureResolver _resolver;
+  final LayerFeatureResolver _delegate;
 
   final _cache = <TileLayerSelector, List<LayerFeature>>{};
 
@@ -39,7 +38,7 @@ class CachingThemeLayerFeatureResolver implements LayerFeatureResolver {
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) {
     return _cache.putIfAbsent(
       selector,
-      () => _resolver.resolveFeatures(selector).toList(),
+      () => _delegate.resolveFeatures(selector).toList(),
     );
   }
 }

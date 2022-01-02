@@ -12,7 +12,7 @@ class Tileset {
   late final LayerFeatureResolver _resolver;
 
   Tileset(this.tiles) : this.preprocessed = false {
-    _resolver = DefaultThemeLayerFeatureResolver(this);
+    _resolver = DefaultLayerFeatureResolver(this);
   }
 
   Tileset._preprocessed(Tileset original, this._resolver)
@@ -39,9 +39,9 @@ class TilesetPreprocessor {
   ///
   /// Returns a pre-processed tileset.
   Tileset preprocess(Tileset tileset) {
-    final featureResolver = tileset.resolver is CachingThemeLayerFeatureResolver
+    final featureResolver = tileset.resolver is CachingLayerFeatureResolver
         ? tileset.resolver
-        : CachingThemeLayerFeatureResolver(tileset.resolver);
+        : CachingLayerFeatureResolver(tileset.resolver);
 
     for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
       for (final feature
