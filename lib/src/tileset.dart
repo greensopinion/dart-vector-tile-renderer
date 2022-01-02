@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:vector_tile/vector_tile.dart';
 
+import 'profiling.dart';
 import 'themes/feature_resolver.dart';
 import 'themes/theme.dart';
 import 'themes/theme_layers.dart';
@@ -39,17 +42,19 @@ class TilesetPreprocessor {
   ///
   /// Returns a pre-processed tileset.
   Tileset preprocess(Tileset tileset) {
-    final featureResolver = tileset.resolver is CachingLayerFeatureResolver
-        ? tileset.resolver
-        : CachingLayerFeatureResolver(tileset.resolver);
+    return Timeline.timeSync('$timelinePrefix::PreprocessTileset', () {
+      final featureResolver = tileset.resolver is CachingLayerFeatureResolver
+          ? tileset.resolver
+          : CachingLayerFeatureResolver(tileset.resolver);
 
-    for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
-      for (final feature
-          in featureResolver.resolveFeatures(themeLayer.selector)) {
-        feature.feature.decodeGeometry();
+      for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
+        for (final feature
+            in featureResolver.resolveFeatures(themeLayer.selector)) {
+          feature.feature.decodeGeometry();
+        }
       }
-    }
 
-    return Tileset._preprocessed(tileset, featureResolver);
+      return Tileset._preprocessed(tileset, featureResolver);
+    });
   }
 }

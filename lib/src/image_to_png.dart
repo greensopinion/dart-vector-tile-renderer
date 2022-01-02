@@ -7,6 +7,6 @@ extension ImageToPng on Image {
     if (bytes == null) {
       throw Exception('Cannot encode as png');
     }
-    return bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+    return Uint8List.sublistView(bytes);
   }
 }
