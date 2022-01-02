@@ -40,22 +40,20 @@ class SymbolPointRenderer extends FeatureRenderer {
         final text =
             TextApproximation(context, evaluationContext, style, abbreviated);
         points.forEach((point) {
-          points.forEach((point) {
-            if (point.length < 2) {
-              throw Exception('invalid point ${point.length}');
-            }
-            final x = (point[0] / layer.extent) * tileSize;
-            final y = (point[1] / layer.extent) * tileSize;
-            final offset = Offset(x, y);
-            var box = text.labelBox(offset, translated: true);
+          if (point.length < 2) {
+            throw Exception('invalid point ${point.length}');
+          }
+          final x = (point[0] / layer.extent) * tileSize;
+          final y = (point[1] / layer.extent) * tileSize;
+          final offset = Offset(x, y);
+          var box = text.labelBox(offset, translated: true);
+          if (box != null && context.labelSpace.canOccupy(text.text, box)) {
+            box = text.renderer.labelBox(offset, translated: true);
             if (box != null && context.labelSpace.canOccupy(text.text, box)) {
-              box = text.renderer.labelBox(offset, translated: true);
-              if (box != null && context.labelSpace.canOccupy(text.text, box)) {
-                context.labelSpace.occupy(text.text, box);
-                text.renderer.render(Offset(x, y));
-              }
+              context.labelSpace.occupy(text.text, box);
+              text.renderer.render(Offset(x, y));
             }
-          });
+          }
         });
       } else {
         logger.warn(() => 'point with no text');
