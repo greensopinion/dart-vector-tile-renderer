@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:vector_tile/vector_tile_feature.dart';
 
 import '../context.dart';
+import '../tileset.dart';
 import 'selector.dart';
 import 'style.dart';
 import 'theme.dart';
@@ -11,23 +12,25 @@ class DefaultLayer extends ThemeLayer {
   final TileLayerSelector selector;
   final Style style;
 
-  DefaultLayer(String id, ThemeLayerType type,
-      {required this.selector,
-      required this.style,
-      required double? minzoom,
-      required double? maxzoom})
-      : super(id, type, minzoom: minzoom, maxzoom: maxzoom);
+  DefaultLayer(
+    String id,
+    ThemeLayerType type, {
+    required this.selector,
+    required this.style,
+    required double? minzoom,
+    required double? maxzoom,
+  }) : super(id, type, minzoom: minzoom, maxzoom: maxzoom);
 
   @override
   void render(Context context) {
-    selector.select(context.tileset).forEach((layer) {
-      selector.layerSelector.features(layer.features).forEach((feature) {
-        context.featureRenderer.render(context, type, style, layer, feature);
-        if (!context.tileset.preprocessed) {
-          _releaseMemory(feature);
-        }
-      });
-    });
+    for (final feature
+        in context.tileset.resolver.resolveFeatures(this.selector)) {
+      context.featureRenderer
+          .render(context, type, style, feature.layer, feature.feature);
+      if (!context.tileset.preprocessed) {
+        _releaseMemory(feature.feature);
+      }
+    }
   }
 
   void _releaseMemory(VectorTileFeature feature) {

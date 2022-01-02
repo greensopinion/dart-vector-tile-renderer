@@ -1,5 +1,6 @@
 import 'package:vector_tile/vector_tile.dart';
 
+import 'themes/feature_resolver.dart';
 import 'themes/theme.dart';
 import 'themes/theme_layers.dart';
 
@@ -8,14 +9,21 @@ import 'themes/theme_layers.dart';
 class Tileset {
   final bool preprocessed;
   final Map<String, VectorTile> tiles;
+  late final LayerFeatureResolver _resolver;
 
-  Tileset(this.tiles) : this.preprocessed = false;
+  Tileset(this.tiles) : this.preprocessed = false {
+    _resolver = DefaultThemeLayerFeatureResolver(this);
+  }
 
-  Tileset._preprocessed(Tileset original)
+  Tileset._preprocessed(Tileset original, this._resolver)
       : this.tiles = original.tiles,
         this.preprocessed = true;
 
   VectorTile? tile(String sourceId) => tiles[sourceId];
+}
+
+extension InternalTileset on Tileset {
+  LayerFeatureResolver get resolver => _resolver;
 }
 
 /// A pre-processor for [Tileset]s. A pre-processing is an optional step
@@ -29,17 +37,19 @@ class TilesetPreprocessor {
   /// Pre-processes a tileset to eliminate some expensive processing from
   /// the rendering stage.
   ///
-  /// returns a pre-processed tileset
+  /// Returns a pre-processed tileset.
   Tileset preprocess(Tileset tileset) {
-    theme.layers.whereType<DefaultLayer>().forEach((themeLayer) {
-      themeLayer.selector.select(tileset).forEach((layer) {
-        themeLayer.selector.layerSelector
-            .features(layer.features)
-            .forEach((feature) {
-          feature.decodeGeometry();
-        });
-      });
-    });
-    return Tileset._preprocessed(tileset);
+    final featureResolver = tileset.resolver is CachingThemeLayerFeatureResolver
+        ? tileset.resolver
+        : CachingThemeLayerFeatureResolver(tileset.resolver);
+
+    for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
+      for (final feature
+          in featureResolver.resolveFeatures(themeLayer.selector)) {
+        feature.feature.decodeGeometry();
+      }
+    }
+
+    return Tileset._preprocessed(tileset, featureResolver);
   }
 }
