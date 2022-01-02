@@ -1,4 +1,12 @@
 
+
+## 2.1.5
+
+* improve support for theme expressions
+* improve support for linear/exponential interpolation
+* improve label placement to have fewer unlabelled roads
+* improve efficiency of rendering by moving more calculations into the `TilesetPreprocessor`
+* improve efficiency of rendering with a change to the `vector_tile` dependency
 ## 2.1.4
 
 * reduce CPU overhead of text rendering
