@@ -1,4 +1,5 @@
 import 'package:vector_tile/vector_tile.dart';
+import 'package:fixnum/fixnum.dart';
 
 import '../../logger.dart';
 
@@ -21,13 +22,11 @@ class EvaluationContext {
       return zoom;
     }
     final properties = _properties();
-    final value = properties[name];
-    if (value != null) {
-      return value.dartStringValue ??
-          value.dartIntValue?.toInt() ??
-          value.dartDoubleValue ??
-          value.dartBoolValue;
+    final value = properties[name]?.value;
+    if (value is Int64) {
+      return value.toInt();
     }
+    return value;
   }
 
   _typeName() {
