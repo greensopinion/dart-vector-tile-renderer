@@ -1,8 +1,10 @@
 import 'dart:core';
+import 'dart:developer';
 
 import 'package:flutter/painting.dart';
 
 import '../logger.dart';
+import '../profiling.dart';
 import 'color_parser.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
@@ -18,6 +20,7 @@ class ThemeReader {
   late final SelectorFactory selectorFactory;
   late final PaintFactory paintFactory;
   late final ExpressionParser expressionParser;
+
   ThemeReader({Logger? logger}) : this.logger = logger ?? Logger.noop() {
     selectorFactory = SelectorFactory(this.logger);
     paintFactory = PaintFactory(this.logger);
@@ -25,14 +28,16 @@ class ThemeReader {
   }
 
   Theme read(Map<String, dynamic> json) {
-    final id = json['id'] ?? 'default';
-    final version = json['metadata']?['version']?.toString() ?? 'none';
-    final layers = json['layers'] as List<dynamic>;
-    final themeLayers = layers
-        .map((layer) => _toThemeLayer(layer))
-        .whereType<ThemeLayer>()
-        .toList();
-    return Theme(id: id, version: version, layers: themeLayers);
+    return Timeline.timeSync('$timelinePrefix::ReadTheme', () {
+      final id = json['id'] ?? 'default';
+      final version = json['metadata']?['version']?.toString() ?? 'none';
+      final layers = json['layers'] as List<dynamic>;
+      final themeLayers = layers
+          .map((layer) => _toThemeLayer(layer))
+          .whereType<ThemeLayer>()
+          .toList();
+      return Theme(id: id, version: version, layers: themeLayers);
+    });
   }
 
   ThemeLayer? _toThemeLayer(jsonLayer) {

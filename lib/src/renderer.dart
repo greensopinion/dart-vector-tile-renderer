@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'constants.dart';
 import 'context.dart';
 import 'features/feature_renderer.dart';
 import 'logger.dart';
+import 'profiling.dart';
 import 'themes/theme.dart';
 import 'tileset.dart';
 
@@ -29,18 +31,20 @@ class Renderer {
   ///        so that a portion of a tile can be rendered to a canvas
   void render(Canvas canvas, Tileset tileset,
       {Rect? clip, required double zoomScaleFactor, required double zoom}) {
-    final tileSpace =
-        Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
-    canvas.save();
-    canvas.clipRect(tileSpace);
-    final tileClip = clip ?? tileSpace;
-    final context = Context(logger, canvas, featureRenderer, tileset,
-        zoomScaleFactor, zoom, tileSpace, tileClip);
-    final effectiveTheme = theme.atZoom(zoom);
-    effectiveTheme.layers.forEach((themeLayer) {
-      logger.log(() => 'rendering theme layer ${themeLayer.id}');
-      themeLayer.render(context);
+    Timeline.timeSync('$timelinePrefix::Render', () {
+      final tileSpace =
+          Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
+      canvas.save();
+      canvas.clipRect(tileSpace);
+      final tileClip = clip ?? tileSpace;
+      final context = Context(logger, canvas, featureRenderer, tileset,
+          zoomScaleFactor, zoom, tileSpace, tileClip);
+      final effectiveTheme = theme.atZoom(zoom);
+      effectiveTheme.layers.forEach((themeLayer) {
+        logger.log(() => 'rendering theme layer ${themeLayer.id}');
+        themeLayer.render(context);
+      });
+      canvas.restore();
     });
-    canvas.restore();
   }
 }
