@@ -13,14 +13,19 @@ const _timelineTaskFilterKey = 'VectorTileRenderer';
 const _timelinePrefix = 'VTR';
 
 T profileSync<T>(String name, TimelineSyncFunction<T> function) {
-  return Timeline.timeSync('$_timelinePrefix::$name', function);
+  return Timeline.timeSync(_name(name), function);
 }
 
 T profileAsync<T>(String name, TimelineSyncFunction<T> function) {
-  final task = TimelineTask(filterKey: _timelineTaskFilterKey)..start(name);
+  final task = TimelineTask(filterKey: _timelineTaskFilterKey)
+    ..start(_name(name));
   try {
     return function();
   } finally {
     task.finish();
   }
+}
+
+String _name(String name) {
+  return '$_timelinePrefix::$name';
 }
