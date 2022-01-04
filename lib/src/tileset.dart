@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:vector_tile/vector_tile.dart';
 
 import 'profiling.dart';
@@ -42,7 +40,7 @@ class TilesetPreprocessor {
   ///
   /// Returns a pre-processed tileset.
   Tileset preprocess(Tileset tileset) {
-    return Timeline.timeSync('$timelinePrefix::PreprocessTileset', () {
+    return profileSync('PreprocessTileset', () {
       final featureResolver = tileset.resolver is CachingLayerFeatureResolver
           ? tileset.resolver
           : CachingLayerFeatureResolver(tileset.resolver);

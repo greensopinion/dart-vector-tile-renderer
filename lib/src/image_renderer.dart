@@ -1,10 +1,9 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/profiling.dart';
-
 import 'constants.dart';
 import 'logger.dart';
+import 'profiling.dart';
 import 'renderer.dart';
 import 'themes/theme.dart';
 import 'tileset.dart';
@@ -31,10 +30,7 @@ class ImageRenderer {
   /// [tileset] the tileset, having vector tiles by `'source'` ID as defined by the theme
   Future<Image> render(Tileset tileset,
       {double zoomScaleFactor = 1.0, required double zoom}) {
-    final task = TimelineTask(filterKey: timelineTaskFilterKey)
-      ..start('RenderImage');
-
-    try {
+    return profileAsync('RenderImage', () {
       final recorder = PictureRecorder();
       double size = scale * tileSize;
       final rect = Rect.fromLTRB(0, 0, size, size);
@@ -44,8 +40,6 @@ class ImageRenderer {
       Renderer(theme: theme, logger: logger).render(canvas, tileset,
           zoomScaleFactor: zoomScaleFactor, zoom: zoom);
       return recorder.endRecording().toImage(size.floor(), size.floor());
-    } finally {
-      task.finish();
-    }
+    });
   }
 }

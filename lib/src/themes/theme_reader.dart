@@ -28,7 +28,7 @@ class ThemeReader {
   }
 
   Theme read(Map<String, dynamic> json) {
-    return Timeline.timeSync('$timelinePrefix::ReadTheme', () {
+    return profileSync('ReadTheme', () {
       final id = json['id'] ?? 'default';
       final version = json['metadata']?['version']?.toString() ?? 'none';
       final layers = json['layers'] as List<dynamic>;

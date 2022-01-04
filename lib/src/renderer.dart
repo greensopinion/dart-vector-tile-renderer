@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'constants.dart';
@@ -31,7 +30,7 @@ class Renderer {
   ///        so that a portion of a tile can be rendered to a canvas
   void render(Canvas canvas, Tileset tileset,
       {Rect? clip, required double zoomScaleFactor, required double zoom}) {
-    Timeline.timeSync('$timelinePrefix::Render', () {
+    profileSync('Render', () {
       final tileSpace =
           Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
       canvas.save();
