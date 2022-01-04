@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import '../themes/expression/expression.dart';
 
 import '../context.dart';
+import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 
 class TextApproximation {
@@ -118,7 +118,6 @@ class TextRenderer {
           textTransform == null ? text : textTransform(text);
       return TextPainter(
           text: TextSpan(style: textStyle, text: transformedText),
-          textAlign: TextAlign.center,
           textDirection: TextDirection.ltr)
         ..layout();
     }
