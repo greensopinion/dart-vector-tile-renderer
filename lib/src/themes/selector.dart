@@ -5,8 +5,11 @@ import '../../vector_tile_renderer.dart';
 class TileLayerSelector {
   final TileSelector tileSelector;
   final LayerSelector layerSelector;
+  late final String cacheKey;
 
-  TileLayerSelector(this.tileSelector, this.layerSelector);
+  TileLayerSelector(this.tileSelector, this.layerSelector) {
+    cacheKey = '${tileSelector.cacheKey}/${layerSelector.cacheKey}';
+  }
 
   Iterable<VectorTileLayer> select(Tileset tileset) {
     final tile = tileSelector.select(tileset);
@@ -17,6 +20,7 @@ class TileLayerSelector {
 class TileSelector {
   final String source;
 
+  String get cacheKey => source;
   TileSelector(this.source);
 
   factory TileSelector.none() = _NoneTileSelector;
@@ -25,7 +29,8 @@ class TileSelector {
 }
 
 abstract class LayerSelector {
-  LayerSelector._();
+  final String cacheKey;
+  LayerSelector._(this.cacheKey);
 
   factory LayerSelector.none() = _NoneLayerSelector;
   factory LayerSelector.composite(List<LayerSelector> selectors) =
@@ -42,7 +47,9 @@ abstract class LayerSelector {
 
 class _CompositeSelector extends LayerSelector {
   final List<LayerSelector> delegates;
-  _CompositeSelector(this.delegates) : super._();
+
+  _CompositeSelector(this.delegates)
+      : super._(delegates.map((e) => e.cacheKey).join(','));
 
   @override
   Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) {
@@ -64,7 +71,7 @@ class _CompositeSelector extends LayerSelector {
 
 class _NamedLayerSelector extends LayerSelector {
   final String name;
-  _NamedLayerSelector(this.name) : super._();
+  _NamedLayerSelector(this.name) : super._('named($name)');
 
   @override
   Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) =>
@@ -77,7 +84,8 @@ class _NamedLayerSelector extends LayerSelector {
 class _ExpressionLayerSelector extends LayerSelector {
   final Expression _expression;
 
-  _ExpressionLayerSelector(this._expression) : super._();
+  _ExpressionLayerSelector(this._expression)
+      : super._('matching(${_expression.cacheKey})');
 
   @override
   Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
@@ -95,7 +103,7 @@ class _ExpressionLayerSelector extends LayerSelector {
 }
 
 class _NoneLayerSelector extends LayerSelector {
-  _NoneLayerSelector() : super._();
+  _NoneLayerSelector() : super._('none');
 
   @override
   Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) =>

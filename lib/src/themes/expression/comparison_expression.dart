@@ -5,7 +5,9 @@ class ComparisonExpression extends Expression {
   final Expression _second;
   final bool Function(num, num) _comparison;
 
-  ComparisonExpression(this._comparison, this._first, this._second);
+  ComparisonExpression(
+      this._comparison, String comparisonKey, this._first, this._second)
+      : super('(${_first.cacheKey} $comparisonKey ${_second.cacheKey})');
 
   @override
   evaluate(EvaluationContext context) {
@@ -23,7 +25,9 @@ class MatchExpression extends Expression {
   final List<List<Expression>> _values;
   final List<Expression> _outputs;
 
-  MatchExpression(this._input, this._values, this._outputs);
+  MatchExpression(this._input, this._values, this._outputs)
+      : super(
+            'match(${_input.cacheKey},${_values.map((e) => "[${e.map((i) => i.cacheKey).join(',')}]").join(',')},${_outputs.map((e) => e.cacheKey).join(',')})');
 
   @override
   evaluate(EvaluationContext context) {

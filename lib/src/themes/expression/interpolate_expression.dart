@@ -5,15 +5,19 @@ import 'expression.dart';
 class InterpolationStop {
   final Expression value;
   final Expression output;
+  final String cacheKey;
 
-  InterpolationStop({required this.value, required this.output});
+  InterpolationStop({required this.value, required this.output})
+      : cacheKey = 'stop(${value.cacheKey},${output.cacheKey})';
 }
 
 abstract class InterpolateExpression extends Expression {
   final Expression _input;
   final List<InterpolationStop> _stops;
 
-  InterpolateExpression(this._input, this._stops);
+  InterpolateExpression(this._input, String interpolation, this._stops)
+      : super(
+            'interpolate(${_input.cacheKey},$interpolation,[${_stops.map((e) => e.cacheKey).join(',')}])');
 
   @override
   evaluate(EvaluationContext context) {
@@ -45,7 +49,7 @@ abstract class InterpolateExpression extends Expression {
 
 class InterpolateLinearExpression extends InterpolateExpression {
   InterpolateLinearExpression(Expression input, List<InterpolationStop> stops)
-      : super(input, stops);
+      : super(input, 'linear', stops);
 
   @override
   interpolate(EvaluationContext context, input, valueBelow,
@@ -73,7 +77,7 @@ class InterpolateExponentialExpression extends InterpolateExpression {
 
   InterpolateExponentialExpression(
       Expression input, this.base, List<InterpolationStop> stops)
-      : super(input, stops);
+      : super(input, 'exponential(${base.cacheKey})', stops);
 
   @override
   interpolate(EvaluationContext context, input, valueBelow,

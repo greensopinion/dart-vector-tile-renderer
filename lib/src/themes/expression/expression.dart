@@ -44,9 +44,16 @@ class EvaluationContext {
 }
 
 abstract class Expression {
+  final String cacheKey;
+
+  Expression(this.cacheKey);
+
   evaluate(EvaluationContext context);
 
   DoubleExpression asDoubleExpression() => DoubleExpression(this);
+
+  @override
+  String toString() => cacheKey;
 }
 
 class DoubleExpression {
@@ -67,7 +74,7 @@ class DoubleExpression {
 class UnsupportedExpression extends Expression {
   final dynamic _json;
 
-  UnsupportedExpression(this._json);
+  UnsupportedExpression(this._json) : super('unsupported');
 
   get json => _json;
 
@@ -78,7 +85,7 @@ class UnsupportedExpression extends Expression {
 class NotNullExpression extends Expression {
   final Expression _delegate;
 
-  NotNullExpression(this._delegate);
+  NotNullExpression(this._delegate) : super('notNull(${_delegate.cacheKey})');
 
   @override
   evaluate(EvaluationContext context) => _delegate.evaluate(context) != null;
@@ -87,7 +94,7 @@ class NotNullExpression extends Expression {
 class NotExpression extends Expression {
   final Expression _delegate;
 
-  NotExpression(this._delegate);
+  NotExpression(this._delegate) : super('!${_delegate.cacheKey}');
 
   @override
   evaluate(EvaluationContext context) {
@@ -104,7 +111,8 @@ class EqualsExpression extends Expression {
   final Expression _first;
   final Expression _second;
 
-  EqualsExpression(this._first, this._second);
+  EqualsExpression(this._first, this._second)
+      : super('equals(${_first.cacheKey},${_second.cacheKey})');
 
   @override
   evaluate(EvaluationContext context) {
@@ -116,7 +124,8 @@ class InExpression extends Expression {
   final Expression _first;
   final List _values;
 
-  InExpression(this._first, this._values);
+  InExpression(this._first, this._values)
+      : super('(${_first.cacheKey} in [${_values.join(',')}])');
 
   @override
   evaluate(EvaluationContext context) {
@@ -128,7 +137,8 @@ class InExpression extends Expression {
 class AnyExpression extends Expression {
   final List<Expression> _delegates;
 
-  AnyExpression(this._delegates);
+  AnyExpression(this._delegates)
+      : super('(any [${_delegates.map((e) => e.cacheKey).join(',')}])');
 
   @override
   evaluate(EvaluationContext context) {
@@ -147,7 +157,8 @@ class AnyExpression extends Expression {
 class AllExpression extends Expression {
   final List<Expression> _delegates;
 
-  AllExpression(this._delegates);
+  AllExpression(this._delegates)
+      : super('(all [${_delegates.map((e) => e.cacheKey).join(',')}])');
 
   @override
   evaluate(EvaluationContext context) {
@@ -166,7 +177,7 @@ class AllExpression extends Expression {
 class ToStringExpression extends Expression {
   final Expression _delegate;
 
-  ToStringExpression(this._delegate);
+  ToStringExpression(this._delegate) : super('toString(${_delegate.cacheKey})');
 
   @override
   evaluate(EvaluationContext context) =>

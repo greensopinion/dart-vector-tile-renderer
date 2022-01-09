@@ -32,12 +32,12 @@ class CachingLayerFeatureResolver implements LayerFeatureResolver {
 
   final LayerFeatureResolver _delegate;
 
-  final _cache = <TileLayerSelector, List<LayerFeature>>{};
+  final _cache = <String, List<LayerFeature>>{};
 
   @override
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) {
     return _cache.putIfAbsent(
-      selector,
+      selector.cacheKey,
       () => _delegate.resolveFeatures(selector).toList(),
     );
   }

@@ -322,7 +322,7 @@ class _ComparisonExpressionParser extends _ExpressionParser {
     final first = parser._parseOptionalPropertyOrExpression(firstOperand);
     final second = parser.parseOptional(secondOperand);
     if (first != null && second != null) {
-      return ComparisonExpression(_comparison, first, second);
+      return ComparisonExpression(_comparison, operator, first, second);
     }
   }
 }

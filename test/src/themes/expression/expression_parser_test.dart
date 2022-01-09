@@ -18,7 +18,7 @@ void main() {
   _context() => EvaluationContext(
       () => _properties, VectorTileGeomType.LINESTRING, zoom, Logger.noop());
 
-  void _assertExpression(dynamic jsonExpression, expected) {
+  void _assertExpression(dynamic jsonExpression, String cacheKey, expected) {
     final expression = _parser.parse(jsonExpression);
     final result = expression.evaluate(_context());
     if (result is double && expected is double) {
@@ -26,6 +26,7 @@ void main() {
     } else {
       expect(result, equals(expected));
     }
+    expect(expression.cacheKey, cacheKey);
   }
 
   test('parses an unsupported expression', () {
@@ -34,6 +35,7 @@ void main() {
     expect(expression, isA<UnsupportedExpression>());
     expect(expression.evaluate(_context()), isNull);
     expect((expression as UnsupportedExpression).json, equals(json));
+    expect(expression.cacheKey, 'unsupported');
   });
 
   test('supports operators', () {
@@ -64,6 +66,7 @@ void main() {
     void _assertLiteral(dynamic value) {
       final expression = _parser.parse(value);
       expect(expression.evaluate(_context()), equals(value));
+      expect(expression.cacheKey, 'literal($value)');
     }
 
     test('parses a string', () {
@@ -85,14 +88,15 @@ void main() {
   });
   group('type expressions:', () {
     test('parses to-string', () {
-      _assertExpression(['to-string', true], 'true');
-      _assertExpression(['to-string', false], 'false');
-      _assertExpression(['to-string', 1234], '1234');
-      _assertExpression(['to-string', null], '');
+      _assertExpression(['to-string', true], 'toString(literal(true))', 'true');
+      _assertExpression(
+          ['to-string', false], 'toString(literal(false))', 'false');
+      _assertExpression(['to-string', 1234], 'toString(literal(1234))', '1234');
+      _assertExpression(['to-string', null], 'toString(literal(null))', '');
       _assertExpression([
         'to-string',
         ['get', 'a-string']
-      ], 'a-string-value');
+      ], 'toString(get(a-string))', 'a-string-value');
     });
   });
 
@@ -123,8 +127,8 @@ void main() {
     }
 
     test('parses a formatted string', () {
-      _assertExpression('{a-string}', 'a-string-value');
-      _assertExpression('{no-match}', null);
+      _assertExpression('{a-string}', 'get(a-string)', 'a-string-value');
+      _assertExpression('{no-match}', 'get(no-match)', null);
     });
 
     test('parses a get property', () {
@@ -210,64 +214,85 @@ void main() {
     });
 
     test('parses a > expression', () {
-      _assertExpression(['>', 1, 2], false);
-      _assertExpression(['>', 1, 1], false);
-      _assertExpression(['>', 2, 1], true);
-      _assertExpression(['>', null, 1], false);
-      _assertExpression(['>', 'an-int', 32], true);
-      _assertExpression(['>', 'an-int', 33], false);
-      _assertExpression(['>', 'an-int', 34], false);
+      _assertExpression(['>', 1, 2], '(literal(1) > literal(2))', false);
+      _assertExpression(['>', 1, 1], '(literal(1) > literal(1))', false);
+      _assertExpression(['>', 2, 1], '(literal(2) > literal(1))', true);
+      _assertExpression(['>', null, 1], '(literal(null) > literal(1))', false);
+      _assertExpression(
+          ['>', 'an-int', 32], '(get(an-int) > literal(32))', true);
+      _assertExpression(
+          ['>', 'an-int', 33], '(get(an-int) > literal(33))', false);
+      _assertExpression(
+          ['>', 'an-int', 34], '(get(an-int) > literal(34))', false);
     });
 
     test('parses a >= expression', () {
-      _assertExpression(['>=', 1, 2], false);
-      _assertExpression(['>=', 1, 1], true);
-      _assertExpression(['>=', 2, 1], true);
-      _assertExpression(['>=', null, 1], false);
-      _assertExpression(['>=', 'an-int', 32], true);
-      _assertExpression(['>=', 'an-int', 33], true);
-      _assertExpression(['>=', 'an-int', 34], false);
+      _assertExpression(['>=', 1, 2], '(literal(1) >= literal(2))', false);
+      _assertExpression(['>=', 1, 1], '(literal(1) >= literal(1))', true);
+      _assertExpression(['>=', 2, 1], '(literal(2) >= literal(1))', true);
+      _assertExpression(
+          ['>=', null, 1], '(literal(null) >= literal(1))', false);
+      _assertExpression(
+          ['>=', 'an-int', 32], '(get(an-int) >= literal(32))', true);
+      _assertExpression(
+          ['>=', 'an-int', 33], '(get(an-int) >= literal(33))', true);
+      _assertExpression(
+          ['>=', 'an-int', 34], '(get(an-int) >= literal(34))', false);
     });
 
     test('parses a < expression', () {
-      _assertExpression(['<', 1, 2], true);
-      _assertExpression(['<', 1, 1], false);
-      _assertExpression(['<', 2, 1], false);
-      _assertExpression(['<', null, 1], false);
-      _assertExpression(['<', 'an-int', 32], false);
-      _assertExpression(['<', 'an-int', 33], false);
-      _assertExpression(['<', 'an-int', 34], true);
+      _assertExpression(['<', 1, 2], '(literal(1) < literal(2))', true);
+      _assertExpression(['<', 1, 1], '(literal(1) < literal(1))', false);
+      _assertExpression(['<', 2, 1], '(literal(2) < literal(1))', false);
+      _assertExpression(['<', null, 1], '(literal(null) < literal(1))', false);
+      _assertExpression(
+          ['<', 'an-int', 32], '(get(an-int) < literal(32))', false);
+      _assertExpression(
+          ['<', 'an-int', 33], '(get(an-int) < literal(33))', false);
+      _assertExpression(
+          ['<', 'an-int', 34], '(get(an-int) < literal(34))', true);
     });
 
     test('parses a <= expression', () {
-      _assertExpression(['<=', 1, 2], true);
-      _assertExpression(['<=', 1, 1], true);
-      _assertExpression(['<=', 2, 1], false);
-      _assertExpression(['<=', null, 1], false);
-      _assertExpression(['<=', 'an-int', 32], false);
-      _assertExpression(['<=', 'an-int', 33], true);
-      _assertExpression(['<=', 'an-int', 34], true);
+      _assertExpression(['<=', 1, 2], '(literal(1) <= literal(2))', true);
+      _assertExpression(['<=', 1, 1], '(literal(1) <= literal(1))', true);
+      _assertExpression(['<=', 2, 1], '(literal(2) <= literal(1))', false);
+      _assertExpression(
+          ['<=', null, 1], '(literal(null) <= literal(1))', false);
+      _assertExpression(
+          ['<=', 'an-int', 32], '(get(an-int) <= literal(32))', false);
+      _assertExpression(
+          ['<=', 'an-int', 33], '(get(an-int) <= literal(33))', true);
+      _assertExpression(
+          ['<=', 'an-int', 34], '(get(an-int) <= literal(34))', true);
     });
 
     test('parses an all expression', () {
-      _assertExpression(['all', true, false], false);
-      _assertExpression(['all', false, true], false);
-      _assertExpression(['all', true, true], true);
+      _assertExpression(
+          ['all', true, false], '(all [literal(true),literal(false)])', false);
+      _assertExpression(
+          ['all', false, true], '(all [literal(false),literal(true)])', false);
+      _assertExpression(
+          ['all', true, true], '(all [literal(true),literal(true)])', true);
     });
 
     test('parses an all expression with no arguments', () {
-      _assertExpression(['all'], true);
+      _assertExpression(['all'], '(all [])', true);
     });
 
     test('parses an any expression', () {
-      _assertExpression(['any', true, false], true);
-      _assertExpression(['any', false, true], true);
-      _assertExpression(['any', true, true], true);
-      _assertExpression(['any', false, false], false);
+      _assertExpression(
+          ['any', true, false], '(any [literal(true),literal(false)])', true);
+      _assertExpression(
+          ['any', false, true], '(any [literal(false),literal(true)])', true);
+      _assertExpression(
+          ['any', true, true], '(any [literal(true),literal(true)])', true);
+      _assertExpression(['any', false, false],
+          '(any [literal(false),literal(false)])', false);
     });
 
     test('parses an any expression with no arguments', () {
-      _assertExpression(['any'], false);
+      _assertExpression(['any'], '(any [])', false);
     });
 
     test('parses a match expression', () {
@@ -276,7 +301,8 @@ void main() {
         ['get', 'a-string'],
         ['no-match-value', 'a-string-value'],
         true
-      ], true);
+      ], 'match(get(a-string),[literal(no-match-value),literal(a-string-value)],literal(true))',
+          true);
       _assertExpression([
         'match',
         ['get', 'a-string'],
@@ -284,7 +310,8 @@ void main() {
         false,
         'a-string-value',
         true
-      ], true);
+      ], 'match(get(a-string),[literal(no-match-value)],[literal(a-string-value)],literal(false),literal(true))',
+          true);
     });
     test('parses a match without a fallback', () {
       _assertExpression([
@@ -292,7 +319,8 @@ void main() {
         ['get', 'another-string'],
         ['no-match-value', 'a-string-value'],
         false
-      ], null);
+      ], 'match(get(another-string),[literal(no-match-value),literal(a-string-value)],literal(false))',
+          null);
     });
     test('parses a match with a fallback', () {
       _assertExpression([
@@ -303,7 +331,8 @@ void main() {
         ['another-no-match-value'],
         false,
         true
-      ], true);
+      ], 'match(get(another-string),[literal(no-match-value),literal(a-string-value)],[literal(another-no-match-value)],literal(false),literal(false),literal(true))',
+          true);
     });
   });
 
@@ -320,31 +349,33 @@ void main() {
         22,
         28
       ];
+      final expectedCacheKey =
+          'interpolate(get(zoom),linear,[stop(literal(9),literal(8.5)),stop(literal(15),literal(12)),stop(literal(22),literal(28))])';
 
       test('provides a value below the upper bound', () {
         zoom = 1;
-        _assertExpression(expression, null);
+        _assertExpression(expression, expectedCacheKey, null);
       });
       test('provides a linear progression', () {
         zoom = 9;
-        _assertExpression(expression, 8.5);
+        _assertExpression(expression, expectedCacheKey, 8.5);
         zoom = 10;
-        _assertExpression(expression, 9.083);
+        _assertExpression(expression, expectedCacheKey, 9.083);
         zoom = 11;
-        _assertExpression(expression, 9.667);
+        _assertExpression(expression, expectedCacheKey, 9.667);
         zoom = 12;
-        _assertExpression(expression, 10.25);
+        _assertExpression(expression, expectedCacheKey, 10.25);
         zoom = 13;
-        _assertExpression(expression, 10.833);
+        _assertExpression(expression, expectedCacheKey, 10.833);
         zoom = 14;
-        _assertExpression(expression, 11.417);
+        _assertExpression(expression, expectedCacheKey, 11.417);
         zoom = 15;
-        _assertExpression(expression, 12);
+        _assertExpression(expression, expectedCacheKey, 12);
       });
 
       test('provides a value above the upper bound', () {
         zoom = 25;
-        _assertExpression(expression, 28);
+        _assertExpression(expression, expectedCacheKey, 28);
       });
 
       test('provides a linear interpolation from map syntax', () {
@@ -355,12 +386,15 @@ void main() {
             [14, 13]
           ]
         };
+        final expectedCacheKey =
+            'interpolate(get(zoom),linear,[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
+
         zoom = 1;
-        _assertExpression(expression, null);
+        _assertExpression(expression, expectedCacheKey, null);
         zoom = 13;
-        _assertExpression(expression, 12);
+        _assertExpression(expression, expectedCacheKey, 12);
         zoom = 14;
-        _assertExpression(expression, 13);
+        _assertExpression(expression, expectedCacheKey, 13);
       });
     });
 
@@ -374,26 +408,28 @@ void main() {
         15,
         12
       ];
+      final expectedCacheKey =
+          'interpolate(get(zoom),exponential(literal(1.2)),[stop(literal(9),literal(8.5)),stop(literal(15),literal(12))])';
 
       test('provides a value below the upper bound', () {
         zoom = 1;
-        _assertExpression(expression, null);
+        _assertExpression(expression, expectedCacheKey, null);
       });
       test('provides an exponential progression', () {
         zoom = 9;
-        _assertExpression(expression, 8.5);
+        _assertExpression(expression, expectedCacheKey, 8.5);
         zoom = 10;
-        _assertExpression(expression, 8.852);
+        _assertExpression(expression, expectedCacheKey, 8.852);
         zoom = 11;
-        _assertExpression(expression, 9.275);
+        _assertExpression(expression, expectedCacheKey, 9.275);
         zoom = 12;
-        _assertExpression(expression, 9.783);
+        _assertExpression(expression, expectedCacheKey, 9.783);
         zoom = 13;
-        _assertExpression(expression, 10.392);
+        _assertExpression(expression, expectedCacheKey, 10.392);
         zoom = 14;
-        _assertExpression(expression, 11.123);
+        _assertExpression(expression, expectedCacheKey, 11.123);
         zoom = 15;
-        _assertExpression(expression, 12);
+        _assertExpression(expression, expectedCacheKey, 12);
       });
 
       test('provides exponential interpolation from map syntax', () {
@@ -404,14 +440,16 @@ void main() {
             [14, 13]
           ]
         };
+        final cacheKey =
+            'interpolate(get(zoom),exponential(literal(2)),[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
         zoom = 1;
-        _assertExpression(expression, null);
+        _assertExpression(expression, cacheKey, null);
         zoom = 13;
-        _assertExpression(expression, 12);
+        _assertExpression(expression, cacheKey, 12);
         zoom = 13.5;
-        _assertExpression(expression, 12.414);
+        _assertExpression(expression, cacheKey, 12.414);
         zoom = 14;
-        _assertExpression(expression, 13);
+        _assertExpression(expression, cacheKey, 13);
       });
     });
   });
