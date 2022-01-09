@@ -1,5 +1,8 @@
 
 
+## 2.1.6
+
+* make tileset compatible with passing between isolates
 ## 2.1.5
 
 * improve support for theme expressions
