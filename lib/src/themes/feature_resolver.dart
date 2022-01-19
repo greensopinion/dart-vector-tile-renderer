@@ -1,6 +1,6 @@
-import 'package:vector_tile_renderer/src/themes/selector.dart';
-
-import '../../vector_tile_renderer.dart';
+import '../model/tile_model.dart';
+import '../tileset.dart';
+import 'selector.dart';
 
 /// Resolver for resolving the features, that are selected by a
 /// [TileLayerSelector].
@@ -38,7 +38,7 @@ class CachingLayerFeatureResolver implements LayerFeatureResolver {
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) {
     return _cache.putIfAbsent(
       selector.cacheKey,
-      () => _delegate.resolveFeatures(selector).toList(),
+      () => _delegate.resolveFeatures(selector).toList(growable: false),
     );
   }
 }
@@ -46,6 +46,6 @@ class CachingLayerFeatureResolver implements LayerFeatureResolver {
 class LayerFeature {
   LayerFeature(this.layer, this.feature);
 
-  final VectorTileLayer layer;
-  final VectorTileFeature feature;
+  final TileLayer layer;
+  final TileFeature feature;
 }

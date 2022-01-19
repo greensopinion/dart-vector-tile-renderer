@@ -1,12 +1,14 @@
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/themes/selector_factory.dart';
+import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 import '../test_logger.dart';
 import '../test_tile.dart';
 
 void main() {
   test('matches features with a selector', () async {
     final selector = SelectorFactory(testLogger).create(_minorRoadThemeLayer);
-    final tile = await readTestTile();
+    final tile =
+        await readTestTile(ProvidedThemes.lightTheme(logger: testLogger));
     final transportationLayer =
         tile.layers.where((layer) => layer.name == 'transportation').first;
     expect(selector.layerSelector.select(tile.layers).toList(),

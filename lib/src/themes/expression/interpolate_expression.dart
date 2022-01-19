@@ -45,6 +45,16 @@ abstract class InterpolateExpression extends Expression {
 
   interpolate(EvaluationContext context, input, valueBelow,
       InterpolationStop? stopBelow, valueAbove, InterpolationStop? stopAbove);
+
+  @override
+  Set<String> properties() {
+    final accumulator = {..._input.properties()};
+    for (final stop in _stops) {
+      accumulator.addAll(stop.value.properties());
+      accumulator.addAll(stop.output.properties());
+    }
+    return accumulator;
+  }
 }
 
 class InterpolateLinearExpression extends InterpolateExpression {

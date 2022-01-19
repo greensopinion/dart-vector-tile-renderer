@@ -21,3 +21,13 @@ extension PaintExtension on Paint {
     ..strokeWidth = this.strokeWidth
     ..style = this.style;
 }
+
+extension StringSetsExtension on Iterable<Set<String>> {
+  Set<String> flatSet() {
+    final values = <String>{};
+    for (final set in this) {
+      values.addAll(set);
+    }
+    return values;
+  }
+}

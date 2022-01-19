@@ -335,7 +335,8 @@ class _AllExpressionParser extends _ExpressionParser {
     if (delegates.any((e) => e == null)) {
       return null;
     }
-    return AllExpression(delegates.whereType<Expression>().toList());
+    return AllExpression(
+        delegates.whereType<Expression>().toList(growable: false));
   }
 }
 
@@ -347,7 +348,8 @@ class _AnyExpressionParser extends _ExpressionParser {
     if (delegates.any((e) => e == null)) {
       return null;
     }
-    return AnyExpression(delegates.whereType<Expression>().toList());
+    return AnyExpression(
+        delegates.whereType<Expression>().toList(growable: false));
   }
 }
 
@@ -377,7 +379,7 @@ class _MatchExpressionParser extends _ExpressionParser {
         if (matchValues.any((e) => e == null) || output == null) {
           return null;
         }
-        values.add(matchValues.whereType<Expression>().toList());
+        values.add(matchValues.whereType<Expression>().toList(growable: false));
         outputs.add(output);
       } else {
         final output = parser.parseOptional(json[x]);

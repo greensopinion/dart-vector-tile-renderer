@@ -43,10 +43,10 @@ class RenderPicture extends BenchmarkBase {
             ')');
 
   static Future<void> setupAll() async {
-    testTile = await readTestTile();
+    testTile = await readTestTile(ThemeReader().read(lightThemeData()));
   }
 
-  static late final VectorTile testTile;
+  static late final Tile testTile;
 
   final double zoom;
   final bool preprocessTile;

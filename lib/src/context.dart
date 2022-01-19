@@ -1,10 +1,9 @@
 import 'dart:ui';
 
-import 'package:vector_tile/vector_tile.dart';
-
 import 'features/feature_renderer.dart';
 import 'features/label_space.dart';
 import 'logger.dart';
+import 'model/tile_model.dart';
 import 'tileset.dart';
 
 class Context {
@@ -22,5 +21,5 @@ class Context {
       this.zoomScaleFactor, this.zoom, this.tileSpace, this.tileClip)
       : labelSpace = LabelSpace(tileClip);
 
-  VectorTile? tile(String sourceId) => tileset.tiles[sourceId];
+  Tile? tile(String sourceId) => tileset.tiles[sourceId];
 }

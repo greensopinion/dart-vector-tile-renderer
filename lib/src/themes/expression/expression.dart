@@ -1,19 +1,16 @@
-import 'package:vector_tile/vector_tile.dart';
-import 'package:fixnum/fixnum.dart';
-
 import '../../logger.dart';
+import '../../model/tile_model.dart';
 
 export 'expression_parser.dart';
 
 class EvaluationContext {
-  final Map<String, VectorTileValue> Function() _properties;
-  final VectorTileGeomType _geometryType;
+  final Map<String, dynamic> Function() _properties;
+  final TileFeatureType _featureType;
   final double zoom;
   final Logger logger;
 
-  EvaluationContext(this._properties, VectorTileGeomType? geometryType,
-      this.zoom, this.logger)
-      : _geometryType = geometryType ?? VectorTileGeomType.UNKNOWN;
+  EvaluationContext(
+      this._properties, this._featureType, this.zoom, this.logger);
 
   getProperty(String name) {
     if (name == '\$type') {
@@ -22,23 +19,17 @@ class EvaluationContext {
       return zoom;
     }
     final properties = _properties();
-    final value = properties[name]?.value;
-    if (value is Int64) {
-      return value.toInt();
-    }
-    return value;
+    return properties[name];
   }
 
   _typeName() {
-    switch (_geometryType) {
-      case VectorTileGeomType.POINT:
+    switch (_featureType) {
+      case TileFeatureType.point:
         return 'Point';
-      case VectorTileGeomType.LINESTRING:
+      case TileFeatureType.linestring:
         return 'LineString';
-      case VectorTileGeomType.POLYGON:
+      case TileFeatureType.polygon:
         return 'Polygon';
-      case VectorTileGeomType.UNKNOWN:
-        return null;
     }
   }
 }
@@ -54,12 +45,15 @@ abstract class Expression {
 
   @override
   String toString() => cacheKey;
+
+  /// the names of properties accessed by this expression
+  Set<String> properties();
 }
 
-class DoubleExpression {
+class DoubleExpression extends Expression {
   final Expression _delegate;
 
-  DoubleExpression(this._delegate);
+  DoubleExpression(this._delegate) : super('double(${_delegate.cacheKey})');
 
   double? evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
@@ -69,6 +63,9 @@ class DoubleExpression {
       context.logger.warn(() => 'expected double but got $result');
     }
   }
+
+  @override
+  Set<String> properties() => _delegate.properties();
 }
 
 class UnsupportedExpression extends Expression {
@@ -80,6 +77,9 @@ class UnsupportedExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) => null;
+
+  @override
+  Set<String> properties() => {};
 }
 
 class NotNullExpression extends Expression {
@@ -89,6 +89,9 @@ class NotNullExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) => _delegate.evaluate(context) != null;
+
+  @override
+  Set<String> properties() => _delegate.properties();
 }
 
 class NotExpression extends Expression {
@@ -105,6 +108,9 @@ class NotExpression extends Expression {
     context.logger.warn(() => 'NotExpression expected bool but got $operand');
     return null;
   }
+
+  @override
+  Set<String> properties() => _delegate.properties();
 }
 
 class EqualsExpression extends Expression {
@@ -118,6 +124,9 @@ class EqualsExpression extends Expression {
   evaluate(EvaluationContext context) {
     return _first.evaluate(context) == _second.evaluate(context);
   }
+
+  @override
+  Set<String> properties() => {..._first.properties(), ..._second.properties()};
 }
 
 class InExpression extends Expression {
@@ -132,6 +141,9 @@ class InExpression extends Expression {
     final first = _first.evaluate(context);
     return _values.any((e) => first == e);
   }
+
+  @override
+  Set<String> properties() => _first.properties();
 }
 
 class AnyExpression extends Expression {
@@ -151,6 +163,15 @@ class AnyExpression extends Expression {
       }
     }
     return false;
+  }
+
+  @override
+  Set<String> properties() {
+    final accumulator = <String>{};
+    for (final delegate in _delegates) {
+      accumulator.addAll(delegate.properties());
+    }
+    return accumulator;
   }
 }
 
@@ -172,6 +193,15 @@ class AllExpression extends Expression {
     }
     return true;
   }
+
+  @override
+  Set<String> properties() {
+    final accumulator = <String>{};
+    for (final delegate in _delegates) {
+      accumulator.addAll(delegate.properties());
+    }
+    return accumulator;
+  }
 }
 
 class ToStringExpression extends Expression {
@@ -182,4 +212,7 @@ class ToStringExpression extends Expression {
   @override
   evaluate(EvaluationContext context) =>
       _delegate.evaluate(context)?.toString() ?? '';
+
+  @override
+  Set<String> properties() => _delegate.properties();
 }
