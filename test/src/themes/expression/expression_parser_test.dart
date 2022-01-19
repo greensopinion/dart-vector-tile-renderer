@@ -1,22 +1,21 @@
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 void main() {
   final _parser = ExpressionParser(Logger.noop());
 
   final _properties = {
-    'a-string': VectorTileValue(stringValue: 'a-string-value'),
-    'another-string': VectorTileValue(stringValue: 'another-string-value'),
-    'a-bool': VectorTileValue(boolValue: true),
-    'a-false-bool': VectorTileValue(boolValue: false),
-    'an-int': VectorTileValue(intValue: Int64(33)),
-    'a-double': VectorTileValue(doubleValue: 13.2)
+    'a-string': 'a-string-value',
+    'another-string': 'another-string-value',
+    'a-bool': true,
+    'a-false-bool': false,
+    'an-int': 33,
+    'a-double': 13.2
   };
   var zoom = 1.0;
   _context() => EvaluationContext(
-      () => _properties, VectorTileGeomType.LINESTRING, zoom, Logger.noop());
+      () => _properties, TileFeatureType.linestring, zoom, Logger.noop());
 
   void _assertExpression(dynamic jsonExpression, String cacheKey, expected) {
     final expression = _parser.parse(jsonExpression);

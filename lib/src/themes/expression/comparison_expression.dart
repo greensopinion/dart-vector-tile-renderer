@@ -18,6 +18,9 @@ class ComparisonExpression extends Expression {
     }
     return false;
   }
+
+  @override
+  Set<String> properties() => {..._first.properties(), ..._second.properties()};
 }
 
 class MatchExpression extends Expression {
@@ -44,5 +47,19 @@ class MatchExpression extends Expression {
         return _outputs[_values.length].evaluate(context);
       }
     }
+  }
+
+  @override
+  Set<String> properties() {
+    final accumulator = {..._input.properties()};
+    for (final value in _values) {
+      for (final delegate in value) {
+        accumulator.addAll(delegate.properties());
+      }
+    }
+    for (final output in _outputs) {
+      accumulator.addAll(output.properties());
+    }
+    return accumulator;
   }
 }

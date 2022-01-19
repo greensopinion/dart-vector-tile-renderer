@@ -1,5 +1,4 @@
-import 'package:vector_tile/vector_tile.dart';
-
+import 'model/tile_model.dart';
 import 'profiling.dart';
 import 'themes/feature_resolver.dart';
 import 'themes/theme.dart';
@@ -9,7 +8,7 @@ import 'themes/theme_layers.dart';
 /// as defined by the theme
 class Tileset {
   final bool preprocessed;
-  final Map<String, VectorTile> tiles;
+  final Map<String, Tile> tiles;
   late final LayerFeatureResolver _resolver;
 
   Tileset(this.tiles) : this.preprocessed = false {
@@ -20,7 +19,7 @@ class Tileset {
       : this.tiles = original.tiles,
         this.preprocessed = true;
 
-  VectorTile? tile(String sourceId) => tiles[sourceId];
+  Tile? tile(String sourceId) => tiles[sourceId];
 }
 
 extension InternalTileset on Tileset {
@@ -46,12 +45,8 @@ class TilesetPreprocessor {
           : CachingLayerFeatureResolver(tileset.resolver);
 
       for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
-        for (final feature
-            in featureResolver.resolveFeatures(themeLayer.selector)) {
-          feature.feature.decodeGeometry();
-        }
+        featureResolver.resolveFeatures(themeLayer.selector);
       }
-
       return Tileset._preprocessed(tileset, featureResolver);
     });
   }

@@ -98,7 +98,8 @@ class _TileState extends State<Tile> {
         await DefaultAssetBundle.of(context).load('assets/sample_tile.pbf');
     final tileBytes = tileData.buffer
         .asUint8List(tileData.offsetInBytes, tileData.lengthInBytes);
-    final tile = VectorTileReader().read(tileBytes);
+    final tile = TileFactory(theme, Logger.noop())
+        .create(VectorTileReader().read(tileBytes));
     final tileset =
         TilesetPreprocessor(theme).preprocess(Tileset({'openmaptiles': tile}));
     setState(() {

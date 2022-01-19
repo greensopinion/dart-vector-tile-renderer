@@ -6,7 +6,7 @@ import 'test_logger.dart';
 import 'test_tile.dart';
 
 void main() {
-  Future<void> assertImageWith(VectorTile tile, {required double zoom}) async {
+  Future<void> assertImageWith(Tile tile, {required double zoom}) async {
     final renderer = ImageRenderer(
         theme: ProvidedThemes.lightTheme(logger: testLogger),
         scale: 4,
@@ -22,7 +22,8 @@ void main() {
   }
 
   test('renders a vector tile', () async {
-    final tile = await readTestTile();
+    final tile =
+        await readTestTile(ProvidedThemes.lightTheme(logger: testLogger));
     await assertImageWith(tile, zoom: 6);
     await assertImageWith(tile, zoom: 13);
     await assertImageWith(tile, zoom: 15);

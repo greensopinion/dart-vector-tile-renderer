@@ -1,9 +1,11 @@
 import 'dart:ui';
 
-extension PointsExtension on List<List<double>> {
+import '../model/tile_model.dart';
+
+extension PointsExtension on List<Point> {
   List<Offset> toPoints(int extent, int tileSize) => map((point) {
-        final x = (point[0] / extent) * tileSize;
-        final y = (point[1] / extent) * tileSize;
+        final x = (point.x / extent) * tileSize;
+        final y = (point.y / extent) * tileSize;
         return Offset(x, y);
-      }).toList();
+      }).toList(growable: false);
 }

@@ -13,8 +13,10 @@ class Theme {
     return Theme(
         id: this.id,
         version: this.version,
-        layers:
-            this.layers.where((layer) => _matchesZoom(zoom, layer)).toList());
+        layers: this
+            .layers
+            .where((layer) => _matchesZoom(zoom, layer))
+            .toList(growable: false));
   }
 
   bool _matchesZoom(double zoom, ThemeLayer layer) =>

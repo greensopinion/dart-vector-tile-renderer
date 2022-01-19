@@ -1,6 +1,7 @@
+import '../logger.dart';
+import '../model/tile_model.dart';
+import '../tileset.dart';
 import 'expression/expression.dart';
-
-import '../../vector_tile_renderer.dart';
 
 class TileLayerSelector {
   final TileSelector tileSelector;
@@ -11,7 +12,7 @@ class TileLayerSelector {
     cacheKey = '${tileSelector.cacheKey}/${layerSelector.cacheKey}';
   }
 
-  Iterable<VectorTileLayer> select(Tileset tileset) {
+  Iterable<TileLayer> select(Tileset tileset) {
     final tile = tileSelector.select(tileset);
     return tile == null ? [] : layerSelector.select(tile.layers);
   }
@@ -25,7 +26,7 @@ class TileSelector {
 
   factory TileSelector.none() = _NoneTileSelector;
 
-  VectorTile? select(Tileset tileset) => tileset.tile(source);
+  Tile? select(Tileset tileset) => tileset.tile(source);
 }
 
 abstract class LayerSelector {
@@ -40,9 +41,12 @@ abstract class LayerSelector {
   factory LayerSelector.expression(Expression expression) =>
       _ExpressionLayerSelector(expression);
 
-  Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers);
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers);
 
-  Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features);
+  Iterable<TileFeature> features(Iterable<TileFeature> features);
+
+  Set<String> propertyNames();
+  Set<String> layerNames();
 }
 
 class _CompositeSelector extends LayerSelector {
@@ -52,20 +56,38 @@ class _CompositeSelector extends LayerSelector {
       : super._(delegates.map((e) => e.cacheKey).join(','));
 
   @override
-  Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) {
-    Iterable<VectorTileLayer> result = tileLayers;
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) {
+    Iterable<TileLayer> result = tileLayers;
     delegates.forEach((delegate) {
       result = delegate.select(result);
     });
     return result;
   }
 
-  Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
-    Iterable<VectorTileFeature> result = features;
+  Iterable<TileFeature> features(Iterable<TileFeature> features) {
+    Iterable<TileFeature> result = features;
     delegates.forEach((delegate) {
       result = delegate.features(result);
     });
     return result;
+  }
+
+  @override
+  Set<String> propertyNames() {
+    final names = <String>{};
+    for (final delegate in delegates) {
+      names.addAll(delegate.propertyNames());
+    }
+    return names;
+  }
+
+  @override
+  Set<String> layerNames() {
+    final names = <String>{};
+    for (final delegate in delegates) {
+      names.addAll(delegate.layerNames());
+    }
+    return names;
   }
 }
 
@@ -74,11 +96,16 @@ class _NamedLayerSelector extends LayerSelector {
   _NamedLayerSelector(this.name) : super._('named($name)');
 
   @override
-  Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) =>
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) =>
       tileLayers.where((layer) => layer.name == name);
 
-  Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) =>
-      features;
+  Iterable<TileFeature> features(Iterable<TileFeature> features) => features;
+
+  @override
+  Set<String> propertyNames() => {};
+
+  @override
+  Set<String> layerNames() => {name};
 }
 
 class _ExpressionLayerSelector extends LayerSelector {
@@ -88,29 +115,39 @@ class _ExpressionLayerSelector extends LayerSelector {
       : super._('matching(${_expression.cacheKey})');
 
   @override
-  Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) {
+  Iterable<TileFeature> features(Iterable<TileFeature> features) {
     return features.where((feature) {
       final context = EvaluationContext(
-          () => feature.decodeProperties(), feature.type, 1.0, Logger.noop());
+          () => feature.properties, feature.type, 1.0, Logger.noop());
       final result = _expression.evaluate(context);
       return result is bool && result;
     });
   }
 
   @override
-  Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) =>
-      tileLayers;
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) => tileLayers;
+
+  @override
+  Set<String> propertyNames() => _expression.properties();
+
+  @override
+  Set<String> layerNames() => {};
 }
 
 class _NoneLayerSelector extends LayerSelector {
   _NoneLayerSelector() : super._('none');
 
   @override
-  Iterable<VectorTileFeature> features(Iterable<VectorTileFeature> features) =>
-      [];
+  Iterable<TileFeature> features(Iterable<TileFeature> features) => [];
 
   @override
-  Iterable<VectorTileLayer> select(Iterable<VectorTileLayer> tileLayers) => [];
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) => [];
+
+  @override
+  Set<String> propertyNames() => {};
+
+  @override
+  Set<String> layerNames() => {};
 }
 
 class _NoneTileSelector extends TileSelector {
