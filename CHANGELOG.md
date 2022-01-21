@@ -1,5 +1,7 @@
 
+## 2.2.7
 
+* reduce memory overhead by filtering tile data with the theme
 ## 2.1.6
 
 * make tileset compatible with passing between isolates
