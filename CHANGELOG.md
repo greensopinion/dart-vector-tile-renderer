@@ -1,4 +1,7 @@
 
+## 2.2.8
+
+* add theme copy function
 ## 2.2.7
 
 * reduce memory overhead by filtering tile data with the theme
