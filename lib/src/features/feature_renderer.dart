@@ -9,8 +9,13 @@ import 'symbol_line_renderer.dart';
 import 'symbol_point_renderer.dart';
 
 abstract class FeatureRenderer {
-  void render(Context context, ThemeLayerType layerType, Style style,
-      TileLayer layer, TileFeature feature);
+  void render(
+    Context context,
+    ThemeLayerType layerType,
+    Style style,
+    TileLayer layer,
+    TileFeature feature,
+  );
 }
 
 class FeatureDispatcher extends FeatureRenderer {
@@ -22,8 +27,13 @@ class FeatureDispatcher extends FeatureRenderer {
       : typeToRenderer = createDispatchMapping(logger),
         symbolTypeToRenderer = createSymbolDispatchMapping(logger);
 
-  void render(Context context, ThemeLayerType layerType, Style style,
-      TileLayer layer, TileFeature feature) {
+  void render(
+    Context context,
+    ThemeLayerType layerType,
+    Style style,
+    TileLayer layer,
+    TileFeature feature,
+  ) {
     final rendererMapping = layerType == ThemeLayerType.symbol
         ? symbolTypeToRenderer
         : typeToRenderer;

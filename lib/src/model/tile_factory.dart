@@ -6,7 +6,6 @@ import '../logger.dart';
 import '../themes/paint_factory.dart';
 import '../themes/theme.dart';
 import '../themes/theme_layers.dart';
-import 'tile_features.dart';
 import 'tile_model.dart';
 
 class TileFactory {
@@ -47,60 +46,23 @@ class TileFactory {
       return null;
     }
     if (type == VectorTileGeomType.POINT) {
-      final coordinates = vectorFeature.decodePoint();
-      if (coordinates.length == 1) {
-        return PointTileFeature(
-            type: TileFeatureType.point,
-            properties: _decodeProperties(vectorFeature),
-            coordinate: coordinates[0].toPoint());
-      } else {
-        return LineTileFeature(
-            type: TileFeatureType.point,
-            properties: _decodeProperties(vectorFeature),
-            coordinates:
-                coordinates.map((e) => e.toPoint()).toList(growable: false));
-      }
+      return TileFeature(
+        type: TileFeatureType.point,
+        properties: _decodeProperties(vectorFeature),
+        geometry: vectorFeature.geometryList!,
+      );
     } else if (type == VectorTileGeomType.LINESTRING) {
-      final lines = vectorFeature.decodeLineString();
-      if (lines.length == 1) {
-        return LineTileFeature(
-            type: TileFeatureType.linestring,
-            properties: _decodeProperties(vectorFeature),
-            coordinates:
-                lines[0].map((e) => e.toPoint()).toList(growable: false));
-      } else {
-        return MultiLineTileFeature(
-            type: TileFeatureType.linestring,
-            properties: _decodeProperties(vectorFeature),
-            coordinates: lines
-                .map((line) => line
-                    .map((point) => point.toPoint())
-                    .toList(growable: false))
-                .toList(growable: false));
-      }
+      return TileFeature(
+        type: TileFeatureType.linestring,
+        properties: _decodeProperties(vectorFeature),
+        geometry: vectorFeature.geometryList!,
+      );
     } else if (type == VectorTileGeomType.POLYGON) {
-      final polygons = vectorFeature.decodePolygon();
-      if (polygons.length == 1) {
-        return MultiLineTileFeature(
-            type: TileFeatureType.polygon,
-            properties: _decodeProperties(vectorFeature),
-            coordinates: polygons[0]
-                .map((line) => line
-                    .map((point) => point.toPoint())
-                    .toList(growable: false))
-                .toList(growable: false));
-      } else {
-        return MultiMultiLineTileFeature(
-            type: TileFeatureType.polygon,
-            properties: _decodeProperties(vectorFeature),
-            coordinates: polygons
-                .map((lines) => lines
-                    .map((line) => line
-                        .map((point) => point.toPoint())
-                        .toList(growable: false))
-                    .toList(growable: false))
-                .toList(growable: false));
-      }
+      return TileFeature(
+        type: TileFeatureType.polygon,
+        properties: _decodeProperties(vectorFeature),
+        geometry: vectorFeature.geometryList!,
+      );
     }
     return null;
   }
@@ -118,12 +80,6 @@ class TileFactory {
       return v.toInt();
     }
     return v;
-  }
-}
-
-extension _ListPointExtension on List<int> {
-  Point toPoint() {
-    return Point(this[0], this[1]);
   }
 }
 

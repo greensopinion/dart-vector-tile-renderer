@@ -1,11 +1,7 @@
-import 'dart:ui';
-
 import '../../vector_tile_renderer.dart';
-import '../constants.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
-import 'points_extension.dart';
 import 'feature_renderer.dart';
 
 class PolygonRenderer extends FeatureRenderer {
@@ -13,21 +9,29 @@ class PolygonRenderer extends FeatureRenderer {
   PolygonRenderer(this.logger);
 
   @override
-  void render(Context context, ThemeLayerType layerType, Style style,
-      TileLayer layer, TileFeature feature) {
+  void render(
+    Context context,
+    ThemeLayerType layerType,
+    Style style,
+    TileLayer layer,
+    TileFeature feature,
+  ) {
     if (style.fillPaint == null && style.outlinePaint == null) {
       logger
           .warn(() => 'polygon does not have a fill paint or an outline paint');
       return;
     }
 
-    final polygons = feature.polygons;
     final evaluationContext = EvaluationContext(
       () => feature.properties,
       feature.type,
       context.zoom,
       logger,
     );
+    final fillPaint = style.fillPaint?.paint(evaluationContext);
+    final outlinePaint = style.outlinePaint?.paint(evaluationContext);
+
+    final polygons = feature.paths;
 
     if (polygons.length == 1) {
       logger.log(() => 'rendering polygon');
@@ -35,25 +39,18 @@ class PolygonRenderer extends FeatureRenderer {
       logger.log(() => 'rendering multi-polygon');
     }
 
-    for (final polygon in feature.polygons) {
-      final path = Path();
-      for (final ring in polygon) {
-        path.addPolygon(ring.toPoints(layer.extent, tileSize), true);
-      }
-      if (!_isWithinClip(context, path)) {
+    for (final polygon in polygons) {
+      if (!context.tileSpaceMapper.isPathWithinTileClip(polygon)) {
         continue;
       }
-      final fillPaint = style.fillPaint?.paint(evaluationContext);
+
       if (fillPaint != null) {
-        context.canvas.drawPath(path, fillPaint);
+        context.canvas.drawPath(polygon, fillPaint);
       }
-      final outlinePaint = style.outlinePaint?.paint(evaluationContext);
+
       if (outlinePaint != null) {
-        context.canvas.drawPath(path, outlinePaint);
+        context.canvas.drawPath(polygon, outlinePaint);
       }
     }
   }
-
-  bool _isWithinClip(Context context, Path path) =>
-      context.tileClip.overlaps(path.getBounds());
 }

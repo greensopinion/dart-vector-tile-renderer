@@ -1,6 +1,9 @@
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/constants.dart';
+
 import '../context.dart';
+import '../features/tile_space_mapper.dart';
 import '../tileset.dart';
 import 'selector.dart';
 import 'style.dart';
@@ -21,11 +24,41 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void render(Context context) {
-    for (final feature
-        in context.tileset.resolver.resolveFeatures(this.selector)) {
-      context.featureRenderer
-          .render(context, type, style, feature.layer, feature.feature);
+    final layers = selector.select(context.tileset).toList(growable: false);
+    assert(layers.length <= 1);
+
+    if (layers.isEmpty) {
+      return;
     }
+
+    final features = context.tileset.resolver
+        .resolveFeatures(this.selector)
+        .toList(growable: false);
+
+    if (features.isEmpty) {
+      return;
+    }
+
+    final layer = layers.first;
+
+    context.tileSpaceMapper = TileSpaceMapper(
+      context.canvas,
+      context.tileClip,
+      tileSize,
+      layer.extent,
+    );
+
+    context.tileSpaceMapper.drawInTileSpace(() {
+      for (final feature in features) {
+        context.featureRenderer.render(
+          context,
+          type,
+          style,
+          feature.layer,
+          feature.feature,
+        );
+      }
+    });
   }
 }
 
