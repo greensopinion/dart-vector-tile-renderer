@@ -102,6 +102,7 @@ class TileFactory {
                 .toList(growable: false));
       }
     }
+    return null;
   }
 
   Map<String, dynamic> _decodeProperties(VectorTileFeature feature) {

@@ -17,6 +17,7 @@ class ColorParser {
         return (zoom) => ColorThemeFunction().exponential(model, zoom);
       }
     }
+    return null;
   }
 
   static Color? toColor(String? color) {

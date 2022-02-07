@@ -1,11 +1,9 @@
-import 'interpolate_expression.dart';
-
-import 'comparison_expression.dart';
-import 'property_expression.dart';
-
 import '../../logger.dart';
+import 'comparison_expression.dart';
 import 'expression.dart';
+import 'interpolate_expression.dart';
 import 'literal_expression.dart';
+import 'property_expression.dart';
 
 // https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/
 
@@ -86,6 +84,7 @@ class ExpressionParser {
         }
       }
     }
+    return null;
   }
 
   List _flattenStops(List stops) {
@@ -200,6 +199,7 @@ class _HasExpressionParser extends _ExpressionParser {
     if (getExpression != null) {
       return NotNullExpression(getExpression);
     }
+    return null;
   }
 }
 
@@ -216,6 +216,7 @@ class _NotHasExpressionParser extends _ExpressionParser {
     if (getExpression != null) {
       return NotExpression(NotNullExpression(getExpression));
     }
+    return null;
   }
 }
 
@@ -233,6 +234,7 @@ class _InExpressionParser extends _ExpressionParser {
       final values = json.sublist(2);
       return InExpression(getExpression, values);
     }
+    return null;
   }
 }
 
@@ -250,6 +252,7 @@ class _NotInExpressionParser extends _ExpressionParser {
       final values = json.sublist(2);
       return NotExpression(InExpression(getExpression, values));
     }
+    return null;
   }
 }
 
@@ -266,6 +269,7 @@ class _NotExpressionParser extends _ExpressionParser {
     if (second != null) {
       return NotExpression(second);
     }
+    return null;
   }
 }
 
@@ -285,6 +289,7 @@ class _EqualsExpressionParser extends _ExpressionParser {
     if (first != null && second != null) {
       return EqualsExpression(first, second);
     }
+    return null;
   }
 }
 
@@ -301,6 +306,7 @@ class _NotEqualsExpressionParser extends _ExpressionParser {
     if (delegate != null) {
       return NotExpression(delegate);
     }
+    return null;
   }
 }
 
@@ -324,6 +330,7 @@ class _ComparisonExpressionParser extends _ExpressionParser {
     if (first != null && second != null) {
       return ComparisonExpression(_comparison, operator, first, second);
     }
+    return null;
   }
 }
 
@@ -427,6 +434,7 @@ class _InterpolateExpressionParser extends _ExpressionParser {
         return InterpolateExponentialExpression(inputExpression, base, stops);
       }
     }
+    return null;
   }
 
   Expression? _praseInputExpression(List json) {
@@ -434,6 +442,7 @@ class _InterpolateExpressionParser extends _ExpressionParser {
     if (input is List && input.length == 1) {
       return parser._parseOptionalPropertyOrExpression(input[0]);
     }
+    return null;
   }
 
   List<InterpolationStop> _parseStops(List json) {

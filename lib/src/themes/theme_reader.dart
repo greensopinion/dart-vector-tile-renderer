@@ -83,6 +83,7 @@ class ThemeReader {
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
+    return null;
   }
 
   ThemeLayer? _toLineTheme(jsonLayer) {
@@ -98,6 +99,7 @@ class ThemeReader {
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
+    return null;
   }
 
   String _layerId(jsonLayer) => jsonLayer['id'] as String? ?? '<none>';
@@ -119,6 +121,7 @@ class ThemeReader {
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
+    return null;
   }
 
   double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
@@ -169,6 +172,7 @@ class ThemeReader {
         return TextHaloFactory.toHaloFunction(colorFunction, haloWidth);
       }
     }
+    return null;
   }
 
   DoubleExpression _toTextSize(layout) {
