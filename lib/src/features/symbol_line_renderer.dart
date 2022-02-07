@@ -2,12 +2,9 @@ import 'dart:math';
 import 'dart:ui';
 
 import '../../vector_tile_renderer.dart';
-import '../constants.dart';
-import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
-import 'points_extension.dart';
 import 'text_abbreviator.dart';
 import 'text_renderer.dart';
 
@@ -17,8 +14,13 @@ class SymbolLineRenderer extends FeatureRenderer {
   SymbolLineRenderer(this.logger);
 
   @override
-  void render(Context context, ThemeLayerType layerType, Style style,
-      TileLayer layer, TileFeature feature) {
+  void render(
+    FeatureRendererContext context,
+    ThemeLayerType layerType,
+    Style style,
+    TileLayer layer,
+    TileFeature feature,
+  ) {
     final textPaint = style.textPaint;
     final textLayout = style.textLayout;
     if (textPaint == null || textLayout == null) {
@@ -26,46 +28,66 @@ class SymbolLineRenderer extends FeatureRenderer {
       return;
     }
 
-    final lines = feature.lines;
-    logger.log(() => 'rendering linestring symbol');
-    final evaluationContext = EvaluationContext(
-        () => feature.properties, feature.type, context.zoom, logger);
-    final text = textLayout.text.evaluate(evaluationContext);
-    if (text != null) {
-      final path = Path();
-      for (final line in lines) {
-        path.addPolygon(line.toPoints(layer.extent, tileSize), false);
-      }
-      if (!_isWithinClip(context, path)) {
-        return;
-      }
-      final metrics = path.computeMetrics().toList();
-      final abbreviated = TextAbbreviator().abbreviate(text);
-      if (metrics.length > 0 && context.labelSpace.canAccept(abbreviated)) {
-        final text =
-            TextApproximation(context, evaluationContext, style, abbreviated);
-        final renderBox = _findMiddleMetric(context, metrics, text);
-        if (renderBox != null) {
-          final tangent = renderBox.tangent;
-          final rotate = (tangent.angle >= 0.01 || tangent.angle <= -0.01);
-          if (rotate) {
-            context.canvas.save();
-            context.canvas.translate(tangent.position.dx, tangent.position.dy);
-            context.canvas.rotate(-_rightSideUpAngle(tangent.angle));
-            context.canvas
-                .translate(-tangent.position.dx, -tangent.position.dy);
-          }
-          text.renderer.render(tangent.position);
-          if (rotate) {
-            context.canvas.restore();
-          }
-        }
-      }
+    // What if the feature has multiple paths?
+    final path = feature.paths.first;
+    if (!context.isPathWithinTileClip(path)) {
+      return;
     }
+
+    final metrics = path.computeMetrics().toList();
+    if (metrics.length == 0) {
+      return;
+    }
+
+    final evaluationContext = EvaluationContext(
+      () => feature.properties,
+      feature.type,
+      context.zoom,
+      logger,
+    );
+
+    final text = textLayout.text.evaluate(evaluationContext);
+    if (text == null) {
+      return;
+    }
+
+    final textAbbr = TextAbbreviator().abbreviate(text);
+    if (!context.labelSpace.canAccept(textAbbr)) {
+      return;
+    }
+
+    final textApprox =
+        TextApproximation(context, evaluationContext, style, textAbbr);
+
+    final renderBox = _findMiddleMetric(context, metrics, textApprox);
+    if (renderBox == null) {
+      return;
+    }
+
+    logger.log(() => 'rendering symbol linestring');
+
+    context.drawInPixelSpace(() {
+      final tangentPosition = renderBox.tangent.position;
+      final tangentAngle = renderBox.tangent.angle;
+      final rotate = (tangentAngle >= 0.01 || tangentAngle <= -0.01);
+      if (rotate) {
+        context.canvas.save();
+        context.canvas.translate(tangentPosition.dx, tangentPosition.dy);
+        context.canvas.rotate(-_rightSideUpAngle(tangentAngle));
+        context.canvas.translate(-tangentPosition.dx, -tangentPosition.dy);
+      }
+      textApprox.renderer.render(tangentPosition);
+      if (rotate) {
+        context.canvas.restore();
+      }
+    });
   }
 
   _RenderBox? _findMiddleMetric(
-      Context context, List<PathMetric> metrics, TextApproximation text) {
+    FeatureRendererContext context,
+    List<PathMetric> metrics,
+    TextApproximation text,
+  ) {
     final midpoint = metrics.length ~/ 2;
     for (int x = 0; x <= (midpoint + 1); ++x) {
       int lower = midpoint - x;
@@ -89,17 +111,31 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 
   _RenderBox? _occupyLabelSpace(
-      Context context, TextApproximation text, PathMetric metric) {
-    Tangent? tangent = metric.getTangentForOffset(metric.length / 2);
+    FeatureRendererContext context,
+    TextApproximation text,
+    PathMetric metric,
+  ) {
+    Tangent? _getTangentForOffsetInPixels(double distance) {
+      final tangent = metric.getTangentForOffset(distance);
+      if (tangent != null) {
+        return Tangent.fromAngle(
+          context.pointFromTileToPixels(tangent.position),
+          -tangent.angle,
+        );
+      }
+      return null;
+    }
+
+    Tangent? tangent = _getTangentForOffsetInPixels(metric.length / 2);
     _RenderBox? renderBox;
     if (tangent != null) {
       renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
       if (renderBox == null) {
-        tangent = metric.getTangentForOffset(metric.length / 4);
+        tangent = _getTangentForOffsetInPixels(metric.length / 4);
         if (tangent != null) {
           renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
           if (renderBox == null) {
-            tangent = metric.getTangentForOffset(metric.length * 3 / 4);
+            tangent = _getTangentForOffsetInPixels(metric.length * 3 / 4);
             if (tangent != null) {
               renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
             }
@@ -111,7 +147,10 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 
   _RenderBox? _occupyLabelSpaceAtTangent(
-      Context context, TextApproximation text, Tangent tangent) {
+    FeatureRendererContext context,
+    TextApproximation text,
+    Tangent tangent,
+  ) {
     final box = text.labelBox(tangent.position, translated: false);
     if (box != null) {
       final textSpace = _textSpace(box, text.translation, tangent);
@@ -124,7 +163,10 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 
   _RenderBox? _preciselyOccupyLabelSpaceAtTangent(
-      Context context, TextRenderer renderer, Tangent tangent) {
+    FeatureRendererContext context,
+    TextRenderer renderer,
+    Tangent tangent,
+  ) {
     final box = renderer.labelBox(tangent.position, translated: false);
     if (box != null) {
       final textSpace = _textSpace(box, renderer.translation, tangent);
@@ -159,9 +201,6 @@ class SymbolLineRenderer extends FeatureRenderer {
     }
     return Rect.fromLTWH(box.left + xOffset, box.top + yOffset, width, height);
   }
-
-  bool _isWithinClip(Context context, Path path) =>
-      context.tileClip.overlaps(path.getBounds());
 }
 
 class _RenderBox {
@@ -174,8 +213,8 @@ class _RenderBox {
 final _minPathMetricSize = 100.0;
 
 final _degToRad = pi / 180.0;
-final _rotationOfershot = 3;
-final _rotationShiftUpper = (90 + _rotationOfershot) * _degToRad;
-final _rotationShiftLower = -(90 + _rotationOfershot) * _degToRad;
+final _rotationOvershot = 3;
+final _rotationShiftUpper = (90 + _rotationOvershot) * _degToRad;
+final _rotationShiftLower = -(90 + _rotationOvershot) * _degToRad;
 final _rotationShift = (180 * _degToRad);
 final _ninetyDegrees = 90 * _degToRad;

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class Tile {
   final List<TileLayer> layers;
 
@@ -12,15 +14,19 @@ class TileLayer {
   TileLayer({required this.name, required this.extent, required this.features});
 }
 
-abstract class TileFeature {
+class TileFeature {
   final TileFeatureType type;
   final Map<String, dynamic> properties;
+  final List<Path> paths;
+  final List<Offset> points;
 
-  TileFeature(this.type, this.properties);
-
-  List<List<Point>> get lines => [];
-  List<Point> get points => [];
-  List<List<List<Point>>> get polygons => [];
+  TileFeature({
+    required this.type,
+    required this.properties,
+    List<Path>? paths,
+    List<Offset>? points,
+  })  : paths = paths ?? const [],
+        points = points ?? const [];
 }
 
 enum TileFeatureType { point, linestring, polygon }

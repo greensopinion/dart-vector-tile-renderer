@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/constants.dart';
+import 'package:vector_tile_renderer/src/features/feature_renderer.dart';
+
 import '../context.dart';
 import '../tileset.dart';
 import 'selector.dart';
@@ -21,11 +24,39 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void render(Context context) {
-    for (final feature
-        in context.tileset.resolver.resolveFeatures(this.selector)) {
-      context.featureRenderer
-          .render(context, type, style, feature.layer, feature.feature);
+    final layers = selector.select(context.tileset).toList(growable: false);
+    assert(layers.length <= 1);
+
+    if (layers.isEmpty) {
+      return;
     }
+
+    final features = context.tileset.resolver
+        .resolveFeatures(this.selector)
+        .toList(growable: false);
+
+    if (features.isEmpty) {
+      return;
+    }
+
+    final layer = layers.first;
+    final extent = layer.extent;
+    final pixelsPerTileUnit = 1 / extent * tileSize;
+
+    final featureRendererContext =
+        FeatureRendererContext(context, pixelsPerTileUnit);
+
+    featureRendererContext.drawInTileSpace(() {
+      for (final feature in features) {
+        context.featureRenderer.render(
+          featureRendererContext,
+          type,
+          style,
+          feature.layer,
+          feature.feature,
+        );
+      }
+    });
   }
 }
 
