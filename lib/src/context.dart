@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'features/feature_renderer.dart';
 import 'features/label_space.dart';
+import 'features/tile_space_mapper.dart';
 import 'logger.dart';
 import 'model/tile_model.dart';
 import 'tileset.dart';
@@ -15,7 +16,8 @@ class Context {
   final double zoom;
   final Rect tileSpace;
   final Rect tileClip;
-  late final LabelSpace labelSpace;
+  final LabelSpace labelSpace;
+  late TileSpaceMapper tileSpaceMapper;
 
   Context(this.logger, this.canvas, this.featureRenderer, this.tileset,
       this.zoomScaleFactor, this.zoom, this.tileSpace, this.tileClip)

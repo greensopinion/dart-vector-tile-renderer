@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import '../../vector_tile_renderer.dart';
+import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
@@ -13,7 +14,7 @@ class SymbolPointRenderer extends FeatureRenderer {
 
   @override
   void render(
-    FeatureRendererContext context,
+    Context context,
     ThemeLayerType layerType,
     Style style,
     TileLayer layer,
@@ -39,31 +40,31 @@ class SymbolPointRenderer extends FeatureRenderer {
       return;
     }
 
-    final textAbbr = TextAbbreviator().abbreviate(text);
-    if (!context.labelSpace.canAccept(textAbbr)) {
+    final textAbbreviation = TextAbbreviator().abbreviate(text);
+    if (!context.labelSpace.canAccept(textAbbreviation)) {
       return;
     }
 
     logger.log(() => 'rendering symbol points');
 
-    final textApprox =
-        TextApproximation(context, evaluationContext, style, textAbbr);
+    final textApproximation =
+        TextApproximation(context, evaluationContext, style, textAbbreviation);
 
     for (final point in feature.points) {
-      final offset = context.pointFromTileToPixels(point);
+      final offset = context.tileSpaceMapper.pointFromTileToPixels(point);
 
-      if (!_occupyLabelSpaceAtOffset(context, textApprox, offset)) {
+      if (!_occupyLabelSpaceAtOffset(context, textApproximation, offset)) {
         continue;
       }
 
-      context.drawInPixelSpace(() {
-        textApprox.renderer.render(offset);
+      context.tileSpaceMapper.drawInPixelSpace(() {
+        textApproximation.renderer.render(offset);
       });
     }
   }
 
   bool _occupyLabelSpaceAtOffset(
-    FeatureRendererContext context,
+    Context context,
     TextApproximation text,
     Offset offset,
   ) {
@@ -80,7 +81,7 @@ class SymbolPointRenderer extends FeatureRenderer {
   }
 
   bool _preciselyOccupyLabelSpaceAtOffset(
-    FeatureRendererContext context,
+    Context context,
     TextApproximation text,
     Offset offset,
   ) {

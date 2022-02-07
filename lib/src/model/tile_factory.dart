@@ -57,14 +57,14 @@ class TileFactory {
       return TileFeature(
         type: TileFeatureType.linestring,
         properties: _decodeProperties(vectorFeature),
-        paths: decodeLineStringsWithCursor(vectorFeature.geometryList!)
+        paths: decodeLineStringsWithPoints(vectorFeature.geometryList!)
             .toList(growable: false),
       );
     } else if (type == VectorTileGeomType.POLYGON) {
       return TileFeature(
         type: TileFeatureType.polygon,
         properties: _decodeProperties(vectorFeature),
-        paths: decodePolygonsWithCursor(vectorFeature.geometryList!)
+        paths: decodePolygonsWithPoints(vectorFeature.geometryList!)
             .toList(growable: false),
       );
     }

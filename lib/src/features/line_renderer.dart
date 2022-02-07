@@ -1,4 +1,5 @@
 import '../../vector_tile_renderer.dart';
+import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
@@ -10,7 +11,7 @@ class LineRenderer extends FeatureRenderer {
 
   @override
   void render(
-    FeatureRendererContext context,
+    Context context,
     ThemeLayerType layerType,
     Style style,
     TileLayer layer,
@@ -29,7 +30,7 @@ class LineRenderer extends FeatureRenderer {
       logger,
     );
 
-    final effectivePaint = style.linePaint!.paint(evaluationContext);
+    final effectivePaint = style.linePaint?.paint(evaluationContext);
     if (effectivePaint == null) {
       return;
     }
@@ -41,7 +42,8 @@ class LineRenderer extends FeatureRenderer {
 
     // Since we are rendering in tile space, we need to render lines with
     // a stroke width in tile space.
-    effectivePaint.strokeWidth = context.widthFromPixelToTile(strokeWidth);
+    effectivePaint.strokeWidth =
+        context.tileSpaceMapper.widthFromPixelToTile(strokeWidth);
 
     final lines = feature.paths;
 
@@ -52,7 +54,7 @@ class LineRenderer extends FeatureRenderer {
     }
 
     for (final line in lines) {
-      if (!context.isPathWithinTileClip(line)) {
+      if (!context.tileSpaceMapper.isPathWithinTileClip(line)) {
         continue;
       }
 

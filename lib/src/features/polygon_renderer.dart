@@ -1,4 +1,5 @@
 import '../../vector_tile_renderer.dart';
+import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
@@ -9,7 +10,7 @@ class PolygonRenderer extends FeatureRenderer {
 
   @override
   void render(
-    FeatureRendererContext context,
+    Context context,
     ThemeLayerType layerType,
     Style style,
     TileLayer layer,
@@ -39,7 +40,7 @@ class PolygonRenderer extends FeatureRenderer {
     }
 
     for (final polygon in polygons) {
-      if (!context.isPathWithinTileClip(polygon)) {
+      if (!context.tileSpaceMapper.isPathWithinTileClip(polygon)) {
         continue;
       }
 

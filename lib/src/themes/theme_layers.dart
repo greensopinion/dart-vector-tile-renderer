@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 import 'package:vector_tile_renderer/src/constants.dart';
-import 'package:vector_tile_renderer/src/features/feature_renderer.dart';
 
 import '../context.dart';
+import '../features/tile_space_mapper.dart';
 import '../tileset.dart';
 import 'selector.dart';
 import 'style.dart';
@@ -40,16 +40,18 @@ class DefaultLayer extends ThemeLayer {
     }
 
     final layer = layers.first;
-    final extent = layer.extent;
-    final pixelsPerTileUnit = 1 / extent * tileSize;
 
-    final featureRendererContext =
-        FeatureRendererContext(context, pixelsPerTileUnit);
+    context.tileSpaceMapper = TileSpaceMapper(
+      context.canvas,
+      context.tileClip,
+      layer.extent,
+      tileSize,
+    );
 
-    featureRendererContext.drawInTileSpace(() {
+    context.tileSpaceMapper.drawInTileSpace(() {
       for (final feature in features) {
         context.featureRenderer.render(
-          featureRendererContext,
+          context,
           type,
           style,
           feature.layer,
