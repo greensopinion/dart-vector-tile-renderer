@@ -133,6 +133,7 @@ class SymbolLineRenderer extends FeatureRenderer {
         return _RenderBox(textSpace, tangent);
       }
     }
+    return null;
   }
 
   double _rightSideUpAngle(double radians) {

@@ -121,6 +121,7 @@ class TextRenderer {
           textDirection: TextDirection.ltr)
         ..layout();
     }
+    return null;
   }
 
   Offset? _layout() {
@@ -138,6 +139,7 @@ Offset? _offset(Size size, LayoutAnchor anchor) {
     case LayoutAnchor.top:
       return Offset(-size.width / 2, 0);
   }
+  return null;
 }
 
 Rect? _labelBox(Offset offset, Offset? translation, double width, double height,

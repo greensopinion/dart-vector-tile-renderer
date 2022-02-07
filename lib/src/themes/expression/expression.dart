@@ -62,6 +62,7 @@ class DoubleExpression extends Expression {
     } else if (result != null) {
       context.logger.warn(() => 'expected double but got $result');
     }
+    return null;
   }
 
   @override
