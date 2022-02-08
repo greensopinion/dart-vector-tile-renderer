@@ -44,8 +44,8 @@ class DefaultLayer extends ThemeLayer {
     context.tileSpaceMapper = TileSpaceMapper(
       context.canvas,
       context.tileClip,
-      layer.extent,
       tileSize,
+      layer.extent,
     );
 
     context.tileSpaceMapper.drawInTileSpace(() {
