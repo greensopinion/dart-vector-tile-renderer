@@ -47,7 +47,7 @@ Iterable<Offset> decodePoints(List<int> geometry) sync* {
   }
 }
 
-Iterable<Path> decodeLineStringsWithPoints(List<int> geometry) sync* {
+Iterable<Path> decodeLineStrings(List<int> geometry) sync* {
   // Cursor point.
   // Note that it is never reset between line strings.
   var cx = 0;
@@ -90,7 +90,7 @@ Iterable<Path> decodeLineStringsWithPoints(List<int> geometry) sync* {
   }
 }
 
-Iterable<Path> decodePolygonsWithPoints(List<int> geometry) sync* {
+Iterable<Path> decodePolygons(List<int> geometry) sync* {
   Path? polygon;
 
   // Cursor point.
