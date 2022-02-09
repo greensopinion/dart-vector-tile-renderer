@@ -6,7 +6,6 @@ import '../logger.dart';
 import '../themes/paint_factory.dart';
 import '../themes/theme.dart';
 import '../themes/theme_layers.dart';
-import 'geometry_decoding.dart';
 import 'tile_model.dart';
 
 class TileFactory {
@@ -50,22 +49,19 @@ class TileFactory {
       return TileFeature(
         type: TileFeatureType.point,
         properties: _decodeProperties(vectorFeature),
-        points:
-            decodePoints(vectorFeature.geometryList!).toList(growable: false),
+        geometry: vectorFeature.geometryList!,
       );
     } else if (type == VectorTileGeomType.LINESTRING) {
       return TileFeature(
         type: TileFeatureType.linestring,
         properties: _decodeProperties(vectorFeature),
-        paths: decodeLineStrings(vectorFeature.geometryList!)
-            .toList(growable: false),
+        geometry: vectorFeature.geometryList!,
       );
     } else if (type == VectorTileGeomType.POLYGON) {
       return TileFeature(
         type: TileFeatureType.polygon,
         properties: _decodeProperties(vectorFeature),
-        paths:
-            decodePolygons(vectorFeature.geometryList!).toList(growable: false),
+        geometry: vectorFeature.geometryList!,
       );
     }
     return null;
