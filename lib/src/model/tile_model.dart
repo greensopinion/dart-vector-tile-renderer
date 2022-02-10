@@ -31,7 +31,7 @@ class TileFeature {
 
   List<Offset> get points {
     if (type != TileFeatureType.point) {
-      throw Exception('Feature does not have points');
+      throw StateError('Feature does not have points');
     }
 
     final geometry = _geometry;
