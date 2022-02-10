@@ -1,4 +1,6 @@
+## 2.3.0
 
+* performance improvements
 ## 2.2.8
 
 * add theme copy function
