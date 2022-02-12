@@ -1,6 +1,8 @@
 ## 2.3.0
 
 * performance improvements
+
+Thanks to Gabriel Terwesten for their contributions.
 ## 2.2.8
 
 * add theme copy function
