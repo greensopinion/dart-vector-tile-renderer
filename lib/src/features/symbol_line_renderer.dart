@@ -44,7 +44,8 @@ class SymbolLineRenderer extends FeatureRenderer {
       }
     }
 
-    if (!context.tileSpaceMapper.isPathWithinTileClip(path)) {
+    if (!context.optimizations.skipInBoundsChecks &&
+        !context.tileSpaceMapper.isPathWithinTileClip(path)) {
       return;
     }
 

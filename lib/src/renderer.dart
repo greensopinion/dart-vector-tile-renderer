@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/optimizations.dart';
+
 import 'constants.dart';
 import 'context.dart';
 import 'features/feature_renderer.dart';
@@ -12,7 +14,6 @@ class Renderer {
   final Theme theme;
   final Logger logger;
   final FeatureDispatcher featureRenderer;
-
   Renderer({required this.theme, Logger? logger})
       : this.logger = logger ?? Logger.noop(),
         featureRenderer = FeatureDispatcher(logger ?? Logger.noop());
@@ -36,8 +37,10 @@ class Renderer {
       canvas.save();
       canvas.clipRect(tileSpace);
       final tileClip = clip ?? tileSpace;
+      final optimizations = Optimizations(
+          skipInBoundsChecks: clip == null || tileClip == tileSpace);
       final context = Context(logger, canvas, featureRenderer, tileset,
-          zoomScaleFactor, zoom, tileSpace, tileClip);
+          zoomScaleFactor, zoom, tileSpace, tileClip, optimizations);
       final effectiveTheme = theme.atZoom(zoom);
       effectiveTheme.layers.forEach((themeLayer) {
         logger.log(() => 'rendering theme layer ${themeLayer.id}');

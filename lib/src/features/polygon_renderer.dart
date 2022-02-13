@@ -40,7 +40,8 @@ class PolygonRenderer extends FeatureRenderer {
     }
 
     for (final polygon in polygons) {
-      if (!context.tileSpaceMapper.isPathWithinTileClip(polygon)) {
+      if (!context.optimizations.skipInBoundsChecks &&
+          !context.tileSpaceMapper.isPathWithinTileClip(polygon)) {
         continue;
       }
 

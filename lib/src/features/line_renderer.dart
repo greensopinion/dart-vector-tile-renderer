@@ -54,7 +54,8 @@ class LineRenderer extends FeatureRenderer {
     }
 
     for (final line in lines) {
-      if (!context.tileSpaceMapper.isPathWithinTileClip(line)) {
+      if (!context.optimizations.skipInBoundsChecks &&
+          !context.tileSpaceMapper.isPathWithinTileClip(line)) {
         continue;
       }
 
