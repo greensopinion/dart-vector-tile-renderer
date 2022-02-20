@@ -21,30 +21,39 @@ abstract class InterpolateExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) {
-    final input = _input.evaluate(context);
-    if (input != null) {
+    var input = _input.evaluate(context);
+    if (input is num) {
+      final numericInput = input.toDouble();
       InterpolationStop? stopBelow;
       InterpolationStop? stopAbove;
-      var valueBelow;
-      var valueAbove;
+      double? valueBelow;
+      double? valueAbove;
       for (final stop in _stops) {
         final stopValue = stop.value.evaluate(context);
-        if (stopValue <= input) {
-          valueBelow = stopValue;
-          stopBelow = stop;
-        } else if (stopValue > input) {
-          valueAbove = stopValue;
-          stopAbove = stop;
-          break;
+        if (stopValue is num) {
+          final numericStopValue = stopValue.toDouble();
+          if (numericStopValue <= numericInput) {
+            valueBelow = numericStopValue;
+            stopBelow = stop;
+          } else if (numericStopValue > numericInput) {
+            valueAbove = numericStopValue;
+            stopAbove = stop;
+            break;
+          }
         }
       }
       return interpolate(
-          context, input, valueBelow, stopBelow, valueAbove, stopAbove);
+          context, numericInput, valueBelow, stopBelow, valueAbove, stopAbove);
     }
   }
 
-  interpolate(EvaluationContext context, input, valueBelow,
-      InterpolationStop? stopBelow, valueAbove, InterpolationStop? stopAbove);
+  interpolate(
+      EvaluationContext context,
+      double? input,
+      double? valueBelow,
+      InterpolationStop? stopBelow,
+      double? valueAbove,
+      InterpolationStop? stopAbove);
 
   @override
   Set<String> properties() {
@@ -62,21 +71,26 @@ class InterpolateLinearExpression extends InterpolateExpression {
       : super(input, 'linear', stops);
 
   @override
-  interpolate(EvaluationContext context, input, valueBelow,
-      InterpolationStop? stopBelow, valueAbove, InterpolationStop? stopAbove) {
-    if (input is num) {
+  interpolate(
+      EvaluationContext context,
+      double? input,
+      double? valueBelow,
+      InterpolationStop? stopBelow,
+      double? valueAbove,
+      InterpolationStop? stopAbove) {
+    if (input != null) {
       final belowOutput = stopBelow?.output.evaluate(context);
       final aboveOutput = stopAbove?.output.evaluate(context);
       if (aboveOutput == null) {
         return belowOutput;
       } else if (belowOutput == null) {
         return null;
-      } else if (valueBelow is num &&
-          valueAbove is num &&
+      } else if (valueBelow != null &&
+          valueAbove != null &&
           belowOutput is num &&
           aboveOutput is num) {
-        return _exponentialInterpolation(
-            input, 1, valueBelow, valueAbove, belowOutput, aboveOutput);
+        return _exponentialInterpolation(input, 1, valueBelow, valueAbove,
+            belowOutput.toDouble(), aboveOutput.toDouble());
       }
     }
   }
@@ -90,31 +104,41 @@ class InterpolateExponentialExpression extends InterpolateExpression {
       : super(input, 'exponential(${base.cacheKey})', stops);
 
   @override
-  interpolate(EvaluationContext context, input, valueBelow,
-      InterpolationStop? stopBelow, valueAbove, InterpolationStop? stopAbove) {
-    if (input is num) {
+  interpolate(
+      EvaluationContext context,
+      double? input,
+      double? valueBelow,
+      InterpolationStop? stopBelow,
+      double? valueAbove,
+      InterpolationStop? stopAbove) {
+    if (input != null) {
       final belowOutput = stopBelow?.output.evaluate(context);
       final aboveOutput = stopAbove?.output.evaluate(context);
       if (aboveOutput == null) {
         return belowOutput;
       } else if (belowOutput == null) {
         return null;
-      } else if (valueBelow is num &&
-          valueAbove is num &&
+      } else if (valueBelow != null &&
+          valueAbove != null &&
           belowOutput is num &&
           aboveOutput is num) {
         final baseValue = base.evaluate(context);
         if (baseValue is num) {
-          return _exponentialInterpolation(input, baseValue, valueBelow,
-              valueAbove, belowOutput, aboveOutput);
+          return _exponentialInterpolation(
+              input,
+              baseValue.toDouble(),
+              valueBelow,
+              valueAbove,
+              belowOutput.toDouble(),
+              aboveOutput.toDouble());
         }
       }
     }
   }
 }
 
-num _exponentialInterpolation(num input, num base, num lowValue, num highValue,
-    num lowOutput, num highOutput) {
+double _exponentialInterpolation(double input, double base, double lowValue,
+    double highValue, double lowOutput, double highOutput) {
   var difference = highValue - lowValue;
   var progress = input - lowValue;
   if (difference <= 0.001 || progress <= 0) {
@@ -135,18 +159,24 @@ class _PowFactorCalculator {
   final _results = <_PowFactorResult>[];
   final _maxResults = 5;
 
-  double calculate(num base, num progress, num difference) {
+  double calculate(double base, double progress, double difference) {
+    int offset = 0;
     for (final result in _results) {
       if (result.base == base &&
           result.progress == progress &&
           result.difference == difference) {
+        if (offset > 0) {
+          _results.remove(offset);
+          _results.insert(0, result);
+        }
         return result.result;
       }
+      ++offset;
     }
     final result = _PowFactorResult(base, progress, difference,
         (pow(base, progress) - 1) / (pow(base, difference) - 1));
     if (_results.length >= _maxResults) {
-      _results.removeAt(0);
+      _results.removeLast();
     }
     _results.insert(0, result);
     return result.result;
@@ -154,9 +184,9 @@ class _PowFactorCalculator {
 }
 
 class _PowFactorResult {
-  final num base;
-  final num progress;
-  final num difference;
+  final double base;
+  final double progress;
+  final double difference;
   final double result;
 
   _PowFactorResult(this.base, this.progress, this.difference, this.result);
