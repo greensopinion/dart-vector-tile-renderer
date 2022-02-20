@@ -52,6 +52,7 @@ void main() {
           '>=',
           'all',
           'any',
+          'geometry-type',
           'get',
           'has',
           'in',
@@ -167,6 +168,12 @@ void main() {
 
     test('parses \$type', () {
       _assertGetProperty('\$type', 'LineString');
+    });
+  });
+
+  group('other expressions:', () {
+    test('parses geometry-type', () {
+      _assertExpression(['geometry-type'], 'get(\$type)', 'LineString');
     });
   });
 
