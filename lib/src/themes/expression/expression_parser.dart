@@ -34,6 +34,7 @@ class ExpressionParser {
     _register(_InterpolateExpressionParser(this));
     _register(_ToStringExpressionParser(this));
     _register(_MatchExpressionParser(this));
+    _register(_GeometryTypeExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -453,5 +454,19 @@ class _InterpolateExpressionParser extends _ExpressionParser {
           output: parser.parse(json[x + 1])));
     }
     return stops;
+  }
+}
+
+class _GeometryTypeExpressionParser extends _ExpressionParser {
+  _GeometryTypeExpressionParser(ExpressionParser parser)
+      : super(parser, 'geometry-type');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length == 1;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    return GetPropertyExpression("\$type");
   }
 }
