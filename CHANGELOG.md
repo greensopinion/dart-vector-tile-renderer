@@ -1,3 +1,7 @@
+## 2.3.1
+
+* performance improvements
+* support for `geometry-type` expression
 ## 2.3.0
 
 * performance improvements
