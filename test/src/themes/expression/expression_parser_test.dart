@@ -58,6 +58,7 @@ void main() {
           'in',
           'interpolate',
           'match',
+          'step',
           'to-string'
         ]));
   });
@@ -339,6 +340,34 @@ void main() {
         true
       ], 'match(get(another-string),[literal(no-match-value),literal(a-string-value)],[literal(another-no-match-value)],literal(false),literal(false),literal(true))',
           true);
+    });
+  });
+
+  group('step expressions:', () {
+    final expression = [
+      'step',
+      ['zoom'],
+      0,
+      10,
+      1,
+      11,
+      1.5
+    ];
+    final expectedCacheKey =
+        'step(get(zoom),literal(0),[stop(literal(10),literal(1)),stop(literal(11),literal(1.5))])';
+    test('provides a cache key', () {
+      _assertExpression(expression, expectedCacheKey, 0);
+    });
+
+    test('provides a stepped value', () {
+      zoom = 10.0;
+      _assertExpression(expression, expectedCacheKey, 0);
+      zoom = 10.1;
+      _assertExpression(expression, expectedCacheKey, 1);
+      zoom = 11;
+      _assertExpression(expression, expectedCacheKey, 1);
+      zoom = 11.1;
+      _assertExpression(expression, expectedCacheKey, 1.5);
     });
   });
 
