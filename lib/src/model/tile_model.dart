@@ -66,4 +66,4 @@ class TileFeature {
   }
 }
 
-enum TileFeatureType { point, linestring, polygon }
+enum TileFeatureType { point, linestring, polygon, background }

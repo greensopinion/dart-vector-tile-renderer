@@ -5,6 +5,7 @@ import 'expression/literal_expression.dart';
 
 import '../logger.dart';
 import 'color_parser.dart';
+import 'expression/numeric_expression.dart';
 import 'style.dart';
 
 class PaintStyle {
