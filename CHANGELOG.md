@@ -1,3 +1,7 @@
+## 2.3.2
+
+* added support for more theme expressions: math, coalesce, step
+* theme background color and text anchor can now use expressions
 ## 2.3.1
 
 * performance improvements
