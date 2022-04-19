@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/constants.dart';
-import 'package:vector_tile_renderer/src/model/tile_model.dart';
-import 'package:vector_tile_renderer/src/themes/expression/color_expression.dart';
-import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
+import '../constants.dart';
+import '../model/tile_model.dart';
+import 'expression/color_expression.dart';
+import 'expression/expression.dart';
 
 import '../context.dart';
 import '../features/tile_space_mapper.dart';

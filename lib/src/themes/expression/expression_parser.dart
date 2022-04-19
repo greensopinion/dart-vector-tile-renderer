@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:vector_tile_renderer/src/themes/expression/step_expression.dart';
+import 'step_expression.dart';
 
 import '../../logger.dart';
 import 'coalesce_expression.dart';
