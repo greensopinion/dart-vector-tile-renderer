@@ -52,6 +52,7 @@ void main() {
           '>=',
           'all',
           'any',
+          'coalesce',
           'geometry-type',
           'get',
           'has',
@@ -343,6 +344,18 @@ void main() {
     });
   });
 
+  group('coalesce expressions:', () {
+    final expression = [
+      'coalesce',
+      ['get', 'an-unexpected-string'],
+      ['get', 'another-string']
+    ];
+    final expectedCacheKey =
+        'coalesce(get(an-unexpected-string),get(another-string))';
+    test('provides a cache key and value', () {
+      _assertExpression(expression, expectedCacheKey, "another-string-value");
+    });
+  });
   group('step expressions:', () {
     final expression = [
       'step',
