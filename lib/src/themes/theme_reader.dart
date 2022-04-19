@@ -5,8 +5,11 @@ import 'package:flutter/painting.dart';
 import '../logger.dart';
 import '../profiling.dart';
 import 'color_parser.dart';
+import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
+import 'expression/numeric_expression.dart';
+import 'expression/text_expression.dart';
 import 'paint_factory.dart';
 import 'selector_factory.dart';
 import 'style.dart';
@@ -59,9 +62,10 @@ class ThemeReader {
   }
 
   ThemeLayer? _toBackgroundTheme(jsonLayer) {
-    final backgroundColor =
-        ColorParser.toColor(jsonLayer['paint']?['background-color']);
-    if (backgroundColor != null) {
+    final styleBackgroundColor = jsonLayer['paint']?['background-color'];
+    if (styleBackgroundColor != null) {
+      final backgroundColor =
+          expressionParser.parse(styleBackgroundColor).asColorExpression();
       return BackgroundLayer(jsonLayer['id'] ?? _unknownId, backgroundColor);
     }
     return null;
@@ -132,9 +136,12 @@ class ThemeReader {
     final textSize = _toTextSize(layout);
     final textLetterSpacing =
         _toDoubleExpression(layout?['text-letter-spacing']);
-    final placement =
-        LayoutPlacement.fromName(layout?['symbol-placement'] as String?);
-    final anchor = LayoutAnchor.fromName(layout?['text-anchor'] as String?);
+    final placement = expressionParser
+        .parse(layout?['symbol-placement'])
+        .asLayoutPlacementExpression();
+    final anchor = expressionParser
+        .parse(layout?['text-anchor'])
+        .asLayoutAnchorExpression();
     final textFunction = expressionParser.parse(layout?['text-field']);
     final font = layout?['text-font'];
     String? fontFamily;

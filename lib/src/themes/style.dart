@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'expression/expression.dart';
 
 import '../extensions.dart';
+import 'expression/numeric_expression.dart';
+import 'expression/text_expression.dart';
 import 'paint_factory.dart';
 
 typedef ColorZoomFunction = Color? Function(double zoom);
@@ -33,11 +35,11 @@ class LayoutPlacement {
   static const point = LayoutPlacement._('point');
   static const line = LayoutPlacement._('line');
   static const line_center = LayoutPlacement._('line-center');
-  static const _DEFAULT = point;
+  static const DEFAULT = point;
 
   static List<LayoutPlacement> values() => [point, line, line_center];
   static LayoutPlacement fromName(String? name) =>
-      values().where((v) => v.name == name).firstOrNull() ?? _DEFAULT;
+      values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }
 
 class LayoutAnchor {
@@ -45,16 +47,16 @@ class LayoutAnchor {
   const LayoutAnchor._(this.name);
   static const center = LayoutAnchor._('center');
   static const top = LayoutAnchor._('top');
-  static const _DEFAULT = center;
+  static const DEFAULT = center;
 
   static List<LayoutAnchor> values() => [center, top];
   static LayoutAnchor fromName(String? name) =>
-      values().where((v) => v.name == name).firstOrNull() ?? _DEFAULT;
+      values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }
 
 class TextLayout {
-  final LayoutPlacement placement;
-  final LayoutAnchor anchor;
+  final LayoutPlacementExpression placement;
+  final LayoutAnchorExpression anchor;
   final Expression text;
   final DoubleExpression textSize;
   final DoubleExpression? textLetterSpacing;

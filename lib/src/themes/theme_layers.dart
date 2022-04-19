@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 import 'package:vector_tile_renderer/src/constants.dart';
+import 'package:vector_tile_renderer/src/model/tile_model.dart';
+import 'package:vector_tile_renderer/src/themes/expression/color_expression.dart';
+import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
 
 import '../context.dart';
 import '../features/tile_space_mapper.dart';
@@ -63,7 +66,7 @@ class DefaultLayer extends ThemeLayer {
 }
 
 class BackgroundLayer extends ThemeLayer {
-  final Color fillColor;
+  final ColorExpression fillColor;
 
   BackgroundLayer(String id, this.fillColor)
       : super(id, ThemeLayerType.background, minzoom: 0, maxzoom: 24);
@@ -71,9 +74,13 @@ class BackgroundLayer extends ThemeLayer {
   @override
   void render(Context context) {
     context.logger.log(() => 'rendering $id');
-    final paint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = fillColor;
-    context.canvas.drawRect(context.tileClip, paint);
+    final color = fillColor.evaluate(EvaluationContext(
+        () => {}, TileFeatureType.background, context.zoom, context.logger));
+    if (color != null) {
+      final paint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = color;
+      context.canvas.drawRect(context.tileClip, paint);
+    }
   }
 }

@@ -30,6 +30,8 @@ class EvaluationContext {
         return 'LineString';
       case TileFeatureType.polygon:
         return 'Polygon';
+      case TileFeatureType.background:
+        return 'Background';
     }
   }
 }
@@ -41,32 +43,11 @@ abstract class Expression {
 
   evaluate(EvaluationContext context);
 
-  DoubleExpression asDoubleExpression() => DoubleExpression(this);
-
   @override
   String toString() => cacheKey;
 
   /// the names of properties accessed by this expression
   Set<String> properties();
-}
-
-class DoubleExpression extends Expression {
-  final Expression _delegate;
-
-  DoubleExpression(this._delegate) : super('double(${_delegate.cacheKey})');
-
-  double? evaluate(EvaluationContext context) {
-    final result = _delegate.evaluate(context);
-    if (result is num) {
-      return result.toDouble();
-    } else if (result != null) {
-      context.logger.warn(() => 'expected double but got $result');
-    }
-    return null;
-  }
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }
 
 class UnsupportedExpression extends Expression {

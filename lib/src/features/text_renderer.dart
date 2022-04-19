@@ -25,7 +25,8 @@ class TextApproximation {
       final approximateHeight = (textSize * 1.28).ceilToDouble();
       final size = Size(approximateWidth, approximateHeight);
       _size = size;
-      _translation = _offset(size, style.textLayout!.anchor);
+      _translation =
+          _offset(size, style.textLayout!.anchor.evaluate(evaluationContext));
     }
   }
 
@@ -62,7 +63,7 @@ class TextRenderer {
   TextRenderer(this.context, EvaluationContext evaluationContext, this.style,
       this.text) {
     _painter = _createTextPainter(context, evaluationContext, style, text);
-    _translation = _layout();
+    _translation = _layout(evaluationContext);
   }
 
   double get textHeight => _painter!.height;
@@ -124,11 +125,11 @@ class TextRenderer {
     return null;
   }
 
-  Offset? _layout() {
+  Offset? _layout(EvaluationContext context) {
     if (_painter == null) {
       return null;
     }
-    return _offset(_painter!.size, style.textLayout!.anchor);
+    return _offset(_painter!.size, style.textLayout!.anchor.evaluate(context));
   }
 }
 
