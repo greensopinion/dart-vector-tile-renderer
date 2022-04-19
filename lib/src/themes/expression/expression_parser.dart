@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:vector_tile_renderer/src/themes/expression/step_expression.dart';
 
 import '../../logger.dart';
@@ -6,6 +8,7 @@ import 'comparison_expression.dart';
 import 'expression.dart';
 import 'interpolate_expression.dart';
 import 'literal_expression.dart';
+import 'math_expression.dart';
 import 'property_expression.dart';
 
 // https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/
@@ -40,6 +43,12 @@ class ExpressionParser {
     _register(_MatchExpressionParser(this));
     _register(_GeometryTypeExpressionParser(this));
     _register(_CoalesceExpressionParser(this));
+    _register(_NaryMathExpressionParser(this, '*', (a, b) => a * b));
+    _register(_NaryMathExpressionParser(this, '/', (a, b) => a / b));
+    _register(_NaryMathExpressionParser(this, '+', (a, b) => a + b));
+    _register(_NaryMathExpressionParser(this, '-', (a, b) => a - b));
+    _register(_NaryMathExpressionParser(this, '%', (a, b) => a % b));
+    _register(_NaryMathExpressionParser(this, '^', pow));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -540,5 +549,30 @@ class _GeometryTypeExpressionParser extends _ExpressionParser {
 
   Expression? parse(List<dynamic> json) {
     return GetPropertyExpression("\$type");
+  }
+}
+
+class _NaryMathExpressionParser extends _ExpressionParser {
+  String _operationName;
+  BinaryOperation _operation;
+  _NaryMathExpressionParser(
+      ExpressionParser parser, this._operationName, this._operation)
+      : super(parser, _operationName);
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length > 2;
+  }
+
+  Expression? parse(List<dynamic> json) {
+    final operands = json.sublist(1);
+    final operandExpressions = operands
+        .map((e) => parser.parseOptional(e))
+        .whereType<Expression>()
+        .toList(growable: false);
+    if (operands.length != operandExpressions.length) {
+      return null;
+    }
+    return NaryMathExpression(_operationName, _operation, operandExpressions);
   }
 }

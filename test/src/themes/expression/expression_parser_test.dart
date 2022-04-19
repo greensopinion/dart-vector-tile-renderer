@@ -45,11 +45,17 @@ void main() {
           '!=',
           '!has',
           '!in',
+          '%',
+          '*',
+          '+',
+          '-',
+          '/',
           '<',
           '<=',
           '==',
           '>',
           '>=',
+          '^',
           'all',
           'any',
           'coalesce',
@@ -341,6 +347,26 @@ void main() {
         true
       ], 'match(get(another-string),[literal(no-match-value),literal(a-string-value)],[literal(another-no-match-value)],literal(false),literal(false),literal(true))',
           true);
+    });
+  });
+  group('math expressions:', () {
+    test('provides % expression', () {
+      _assertExpression(['%', 3, 2], '(literal(3)%literal(2))', 1);
+    });
+    test('provides * expression', () {
+      _assertExpression(['*', 3, 2], '(literal(3)*literal(2))', 6);
+    });
+    test('provides + expression', () {
+      _assertExpression(['+', 3, 2], '(literal(3)+literal(2))', 5);
+    });
+    test('provides - expression', () {
+      _assertExpression(['-', 3, 2], '(literal(3)-literal(2))', 1);
+    });
+    test('provides / expression', () {
+      _assertExpression(['/', 3, 2], '(literal(3)/literal(2))', 1.5);
+    });
+    test('provides ^ expression', () {
+      _assertExpression(['^', 3, 2], '(literal(3)^literal(2))', 9);
     });
   });
 
