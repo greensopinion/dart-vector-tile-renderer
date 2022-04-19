@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/optimizations.dart';
+import 'optimizations.dart';
 
 import 'constants.dart';
 import 'context.dart';

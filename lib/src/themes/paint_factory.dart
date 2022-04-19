@@ -1,10 +1,9 @@
 import 'dart:ui';
 
-import 'expression/expression.dart';
-import 'expression/literal_expression.dart';
-
 import '../logger.dart';
 import 'color_parser.dart';
+import 'expression/expression.dart';
+import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
 import 'style.dart';
 
