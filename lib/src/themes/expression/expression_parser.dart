@@ -1,3 +1,5 @@
+import 'package:vector_tile_renderer/src/themes/expression/step_expression.dart';
+
 import '../../logger.dart';
 import 'comparison_expression.dart';
 import 'expression.dart';
@@ -32,6 +34,7 @@ class ExpressionParser {
     _register(_AllExpressionParser(this));
     _register(_AnyExpressionParser(this));
     _register(_InterpolateExpressionParser(this));
+    _register(_StepExpressionParser(this));
     _register(_ToStringExpressionParser(this));
     _register(_MatchExpressionParser(this));
     _register(_GeometryTypeExpressionParser(this));
@@ -85,6 +88,7 @@ class ExpressionParser {
         }
       }
     }
+    logger.warn(() => 'Unsupported expression syntax: $json');
     return null;
   }
 
@@ -125,7 +129,7 @@ class ExpressionParser {
 
   Expression _expressionChecked(Expression? expression, json) {
     if (expression == null) {
-      logger.warn(() => 'Unsupported expression syntax: $json');
+      logger.warn(() => 'Unsupported expression: $json');
       return UnsupportedExpression(json);
     }
     return expression;
@@ -413,7 +417,7 @@ class _InterpolateExpressionParser extends _ExpressionParser {
 
   @override
   Expression? parse(List json) {
-    final inputExpression = _praseInputExpression(json);
+    final inputExpression = _parseInputExpression(json);
     if (inputExpression == null) {
       return null;
     }
@@ -438,7 +442,7 @@ class _InterpolateExpressionParser extends _ExpressionParser {
     return null;
   }
 
-  Expression? _praseInputExpression(List json) {
+  Expression? _parseInputExpression(List json) {
     final input = json[2];
     if (input is List && input.length == 1) {
       return parser._parseOptionalPropertyOrExpression(input[0]);
@@ -452,6 +456,49 @@ class _InterpolateExpressionParser extends _ExpressionParser {
       stops.add(InterpolationStop(
           value: parser._parsePropertyOrExpression(json[x]),
           output: parser.parse(json[x + 1])));
+    }
+    return stops;
+  }
+}
+
+class _StepExpressionParser extends _ExpressionParser {
+  _StepExpressionParser(ExpressionParser parser) : super(parser, 'step');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length > 2;
+  }
+
+  @override
+  Expression? parse(List json) {
+    final inputExpression = _parseInputExpression(json);
+    if (inputExpression == null) {
+      return null;
+    }
+    final defaultValueExpression = parser.parseOptional(json[2]);
+    if (defaultValueExpression == null) {
+      return null;
+    }
+    final stops = _parseStops(json);
+    if (stops.isEmpty) {
+      return null;
+    }
+    return StepExpression(inputExpression, defaultValueExpression, stops);
+  }
+
+  Expression? _parseInputExpression(List json) {
+    final input = json[1];
+    if (input is List && input.length == 1) {
+      return parser._parseOptionalPropertyOrExpression(input[0]);
+    }
+    return parser.parseOptional(input);
+  }
+
+  List<StepStop> _parseStops(List json) {
+    final stops = <StepStop>[];
+    for (int x = 3; (x + 1 < json.length); x += 2) {
+      stops.add(StepStop(
+          value: parser.parse(json[x]), output: parser.parse(json[x + 1])));
     }
     return stops;
   }
