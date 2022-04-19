@@ -3,12 +3,11 @@ import 'expression.dart';
 typedef BinaryOperation = num Function(num, num);
 
 class NaryMathExpression extends Expression {
-  final String _operationName;
   final BinaryOperation _operation;
   final List<Expression> _operands;
 
-  NaryMathExpression(this._operationName, this._operation, this._operands)
-      : super('(${_operands.map((e) => e.cacheKey).join(_operationName)})');
+  NaryMathExpression(String operationName, this._operation, this._operands)
+      : super('(${_operands.map((e) => e.cacheKey).join(operationName)})');
 
   @override
   evaluate(EvaluationContext context) {
