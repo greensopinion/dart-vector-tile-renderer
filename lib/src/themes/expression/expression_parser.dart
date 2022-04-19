@@ -1,6 +1,7 @@
 import 'package:vector_tile_renderer/src/themes/expression/step_expression.dart';
 
 import '../../logger.dart';
+import 'coalesce_expression.dart';
 import 'comparison_expression.dart';
 import 'expression.dart';
 import 'interpolate_expression.dart';
@@ -38,6 +39,7 @@ class ExpressionParser {
     _register(_ToStringExpressionParser(this));
     _register(_MatchExpressionParser(this));
     _register(_GeometryTypeExpressionParser(this));
+    _register(_CoalesceExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -501,6 +503,29 @@ class _StepExpressionParser extends _ExpressionParser {
           value: parser.parse(json[x]), output: parser.parse(json[x + 1])));
     }
     return stops;
+  }
+}
+
+class _CoalesceExpressionParser extends _ExpressionParser {
+  _CoalesceExpressionParser(ExpressionParser parser)
+      : super(parser, 'coalesce');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length > 1;
+  }
+
+  @override
+  Expression? parse(List json) {
+    final values = json.sublist(1);
+    final valueExpressions = values
+        .map((e) => parser.parseOptional(e))
+        .whereType<Expression>()
+        .toList(growable: false);
+    if (values.length != valueExpressions.length) {
+      return null;
+    }
+    return CoalesceExpression(valueExpressions);
   }
 }
 
