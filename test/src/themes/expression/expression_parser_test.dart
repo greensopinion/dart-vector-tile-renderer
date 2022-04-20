@@ -64,9 +64,11 @@ void main() {
           'has',
           'in',
           'interpolate',
+          'let',
           'match',
           'step',
-          'to-string'
+          'to-string',
+          'var'
         ]));
   });
 
@@ -566,6 +568,23 @@ void main() {
         zoom = 14;
         _assertExpression(expression, cacheKey, 13);
       });
+    });
+  });
+  group('variables:', () {
+    final expression = [
+      "let",
+      "aVariable",
+      ["get", 'zoom'],
+      [
+        "*",
+        ['var', 'aVariable'],
+        2
+      ]
+    ];
+    final expectedCacheKey = '(get(zoom)*literal(2))';
+    test('provides variable expressions', () {
+      zoom = 3;
+      _assertExpression(expression, expectedCacheKey, zoom * 2);
     });
   });
 }
