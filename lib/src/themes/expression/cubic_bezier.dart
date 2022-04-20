@@ -2,7 +2,7 @@ import 'dart:math';
 
 const _epsilon = 1e-6;
 const _minX = 0.0;
-const _maxX = 0.0;
+const _maxX = 1.0;
 
 // based on https://github.com/WebKit/webkit/blob/main/Source/WebCore/platform/graphics/UnitBezier.h
 class CubicBezier {

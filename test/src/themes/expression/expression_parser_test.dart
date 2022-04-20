@@ -490,6 +490,11 @@ void main() {
         _assertExpression(expression, expectedCacheKey, 10.5);
       });
 
+      test('provides a value above the upper bound', () {
+        zoom = 18;
+        _assertExpression(expression, expectedCacheKey, 16);
+      });
+
       test('provides an cubic-bezier progression', () {
         zoom = 10;
         _assertExpression(expression, expectedCacheKey, 10.5);
