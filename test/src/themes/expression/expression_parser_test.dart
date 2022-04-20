@@ -428,7 +428,7 @@ void main() {
 
       test('provides a value below the upper bound', () {
         zoom = 1;
-        _assertExpression(expression, expectedCacheKey, null);
+        _assertExpression(expression, expectedCacheKey, 8.5);
       });
       test('provides a linear progression', () {
         zoom = 9;
@@ -464,11 +464,47 @@ void main() {
             'interpolate(get(zoom),linear,[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
 
         zoom = 1;
-        _assertExpression(expression, expectedCacheKey, null);
+        _assertExpression(expression, expectedCacheKey, 12);
         zoom = 13;
         _assertExpression(expression, expectedCacheKey, 12);
         zoom = 14;
         _assertExpression(expression, expectedCacheKey, 13);
+      });
+    });
+
+    group('cubic-bezier interpolation:', () {
+      final expression = [
+        "interpolate",
+        ["cubic-bezier", 0.5, 0, 1, 1],
+        ["zoom"],
+        11,
+        10.5,
+        15,
+        16
+      ];
+      final expectedCacheKey =
+          'interpolate(get(zoom),cubicBezier(0.5,0.0,1.0,1.0),[stop(literal(11),literal(10.5)),stop(literal(15),literal(16))])';
+
+      test('provides a value below the upper bound', () {
+        zoom = 1;
+        _assertExpression(expression, expectedCacheKey, 10.5);
+      });
+
+      test('provides an cubic-bezier progression', () {
+        zoom = 10;
+        _assertExpression(expression, expectedCacheKey, 10.5);
+        zoom = 11;
+        _assertExpression(expression, expectedCacheKey, 10.5);
+        zoom = 12;
+        _assertExpression(expression, expectedCacheKey, 10.914);
+        zoom = 13;
+        _assertExpression(expression, expectedCacheKey, 12.029);
+        zoom = 14;
+        _assertExpression(expression, expectedCacheKey, 13.725);
+        zoom = 15;
+        _assertExpression(expression, expectedCacheKey, 16.0);
+        zoom = 20;
+        _assertExpression(expression, expectedCacheKey, 16.0);
       });
     });
 
@@ -487,7 +523,7 @@ void main() {
 
       test('provides a value below the upper bound', () {
         zoom = 1;
-        _assertExpression(expression, expectedCacheKey, null);
+        _assertExpression(expression, expectedCacheKey, 8.5);
       });
       test('provides an exponential progression', () {
         zoom = 9;
@@ -517,7 +553,7 @@ void main() {
         final cacheKey =
             'interpolate(get(zoom),exponential(literal(2)),[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
         zoom = 1;
-        _assertExpression(expression, cacheKey, null);
+        _assertExpression(expression, cacheKey, 12);
         zoom = 13;
         _assertExpression(expression, cacheKey, 12);
         zoom = 13.5;

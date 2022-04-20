@@ -1,11 +1,10 @@
 import 'dart:ui';
 
-import 'optimizations.dart';
-
 import 'constants.dart';
 import 'context.dart';
 import 'features/feature_renderer.dart';
 import 'logger.dart';
+import 'optimizations.dart';
 import 'profiling.dart';
 import 'themes/theme.dart';
 import 'tileset.dart';
