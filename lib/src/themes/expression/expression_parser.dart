@@ -450,6 +450,21 @@ class _InterpolateExpressionParser extends _ExpressionParser {
         return InterpolateExponentialExpression(inputExpression, base, stops);
       }
     }
+    if (interpolationType is List &&
+        interpolationType.length == 5 &&
+        interpolationType[0] == 'cubic-bezier') {
+      final controlPointCoordinates =
+          interpolationType.sublist(1).whereType<num>().toList();
+      if (controlPointCoordinates.length == 4) {
+        final first = Point<double>(controlPointCoordinates[0].toDouble(),
+            controlPointCoordinates[1].toDouble());
+        final second = Point<double>(controlPointCoordinates[2].toDouble(),
+            controlPointCoordinates[3].toDouble());
+
+        return InterpolateCubicBezierExpression(
+            inputExpression, first, second, stops);
+      }
+    }
     return null;
   }
 

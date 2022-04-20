@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'cubic_bezier.dart';
 import 'expression.dart';
 
 class InterpolationStop {
@@ -42,18 +43,24 @@ abstract class InterpolateExpression extends Expression {
           }
         }
       }
-      return interpolate(
-          context, numericInput, valueBelow, stopBelow, valueAbove, stopAbove);
+      if (valueBelow != null && valueAbove != null) {
+        return interpolate(context, numericInput, valueBelow, stopBelow!,
+            valueAbove, stopAbove!);
+      } else if (valueBelow != null) {
+        return stopBelow?.output.evaluate(context);
+      } else {
+        return stopAbove?.output.evaluate(context);
+      }
     }
   }
 
   interpolate(
       EvaluationContext context,
       double? input,
-      double? valueBelow,
-      InterpolationStop? stopBelow,
-      double? valueAbove,
-      InterpolationStop? stopAbove);
+      double valueBelow,
+      InterpolationStop stopBelow,
+      double valueAbove,
+      InterpolationStop stopAbove);
 
   @override
   Set<String> properties() {
@@ -74,21 +81,18 @@ class InterpolateLinearExpression extends InterpolateExpression {
   interpolate(
       EvaluationContext context,
       double? input,
-      double? valueBelow,
-      InterpolationStop? stopBelow,
-      double? valueAbove,
-      InterpolationStop? stopAbove) {
+      double valueBelow,
+      InterpolationStop stopBelow,
+      double valueAbove,
+      InterpolationStop stopAbove) {
     if (input != null) {
-      final belowOutput = stopBelow?.output.evaluate(context);
-      final aboveOutput = stopAbove?.output.evaluate(context);
+      final belowOutput = stopBelow.output.evaluate(context);
+      final aboveOutput = stopAbove.output.evaluate(context);
       if (aboveOutput == null) {
         return belowOutput;
       } else if (belowOutput == null) {
         return null;
-      } else if (valueBelow != null &&
-          valueAbove != null &&
-          belowOutput is num &&
-          aboveOutput is num) {
+      } else if (belowOutput is num && aboveOutput is num) {
         return _exponentialInterpolation(input, 1, valueBelow, valueAbove,
             belowOutput.toDouble(), aboveOutput.toDouble());
       }
@@ -107,21 +111,18 @@ class InterpolateExponentialExpression extends InterpolateExpression {
   interpolate(
       EvaluationContext context,
       double? input,
-      double? valueBelow,
-      InterpolationStop? stopBelow,
-      double? valueAbove,
-      InterpolationStop? stopAbove) {
+      double valueBelow,
+      InterpolationStop stopBelow,
+      double valueAbove,
+      InterpolationStop stopAbove) {
     if (input != null) {
-      final belowOutput = stopBelow?.output.evaluate(context);
-      final aboveOutput = stopAbove?.output.evaluate(context);
+      final belowOutput = stopBelow.output.evaluate(context);
+      final aboveOutput = stopAbove.output.evaluate(context);
       if (aboveOutput == null) {
         return belowOutput;
       } else if (belowOutput == null) {
         return null;
-      } else if (valueBelow != null &&
-          valueAbove != null &&
-          belowOutput is num &&
-          aboveOutput is num) {
+      } else if (belowOutput is num && aboveOutput is num) {
         final baseValue = base.evaluate(context);
         if (baseValue is num) {
           return _exponentialInterpolation(
@@ -190,4 +191,42 @@ class _PowFactorResult {
   final double result;
 
   _PowFactorResult(this.base, this.progress, this.difference, this.result);
+}
+
+class InterpolateCubicBezierExpression extends InterpolateExpression {
+  final Point<double> _firstControlPoint;
+  final Point<double> _secondControlPoint;
+  late final CubicBezier _bezier;
+
+  InterpolateCubicBezierExpression(Expression input, this._firstControlPoint,
+      this._secondControlPoint, List<InterpolationStop> stops)
+      : super(
+            input,
+            'cubicBezier(${_firstControlPoint.x},${_firstControlPoint.y},${_secondControlPoint.x},${_secondControlPoint.y})',
+            stops) {
+    _bezier = CubicBezier(_firstControlPoint, _secondControlPoint);
+  }
+
+  @override
+  interpolate(
+      EvaluationContext context,
+      double? input,
+      double valueBelow,
+      InterpolationStop stopBelow,
+      double valueAbove,
+      InterpolationStop stopAbove) {
+    if (input != null) {
+      final difference = valueAbove - valueBelow;
+      final progress = input - valueBelow;
+      final factor = progress / difference;
+      final outputBelow = stopBelow.output.evaluate(context);
+      final outputAbove = stopAbove.output.evaluate(context);
+      if (outputBelow is num && outputAbove is num) {
+        final t = _bezier.solve(factor.toDouble());
+        return (outputBelow.toDouble() * (1 - t)) +
+            (outputAbove.toDouble() * t);
+      }
+    }
+    return null;
+  }
 }
