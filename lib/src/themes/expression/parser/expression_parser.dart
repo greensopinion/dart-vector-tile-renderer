@@ -10,6 +10,7 @@ import 'step_expression_parser.dart';
 import 'boolean_operator_expression_parser.dart';
 import 'interpolate_expression_parser.dart';
 import 'string_expression_parser.dart';
+import 'variable_expression_parser.dart';
 
 // https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/
 
@@ -49,6 +50,9 @@ class ExpressionParser {
     _register(NaryMathExpressionParser(this, '-', (a, b) => a - b));
     _register(NaryMathExpressionParser(this, '%', (a, b) => a % b));
     _register(NaryMathExpressionParser(this, '^', pow));
+    final varParser = VarExpressionParser(this);
+    _register(varParser);
+    _register(LetExpressionParser(this, varParser));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
