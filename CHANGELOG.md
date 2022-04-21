@@ -1,3 +1,9 @@
+## 2.3.3
+
+* improve support for color expressions
+* add support for case expressions
+* support let and var expressions
+* add support for cubic-bezier interpolation
 ## 2.3.2
 
 * added support for more theme expressions: math, coalesce, step
