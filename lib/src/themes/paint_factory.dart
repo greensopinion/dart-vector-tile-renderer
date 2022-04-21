@@ -56,8 +56,10 @@ class PaintFactory {
     if (paint == null) {
       return null;
     }
-    final color =
-        expressionParser.parse(paint['$prefix-color']).asColorExpression();
+    final color = expressionParser.parseOptional(paint['$prefix-color']);
+    if (color == null) {
+      return null;
+    }
     final opacity = expressionParser.parse(paint['$prefix-opacity'],
         whenNull: () => LiteralExpression(1.0));
     final strokeWidth = expressionParser.parse(paint['$prefix-width'],
@@ -67,6 +69,6 @@ class PaintFactory {
         paintingStyle: style,
         opacity: opacity.asDoubleExpression(),
         strokeWidth: strokeWidth.asDoubleExpression(),
-        color: color);
+        color: color.asColorExpression());
   }
 }
