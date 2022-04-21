@@ -1,18 +1,17 @@
 import 'dart:ui';
 
 import '../logger.dart';
-import 'color_parser.dart';
+import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
-import 'style.dart';
 
 class PaintStyle {
   final String id;
   final PaintingStyle paintingStyle;
   final DoubleExpression opacity;
   final DoubleExpression strokeWidth;
-  final ColorZoomFunction color;
+  final ColorExpression color;
 
   PaintStyle(
       {required this.id,
@@ -22,7 +21,7 @@ class PaintStyle {
       required this.color});
 
   Paint? paint(EvaluationContext context) {
-    final color = this.color(context.zoom);
+    final color = this.color.evaluate(context);
     if (color == null) {
       return null;
     }
@@ -57,10 +56,8 @@ class PaintFactory {
     if (paint == null) {
       return null;
     }
-    final color = ColorParser.parse(paint['$prefix-color']);
-    if (color == null) {
-      return null;
-    }
+    final color =
+        expressionParser.parse(paint['$prefix-color']).asColorExpression();
     final opacity = expressionParser.parse(paint['$prefix-opacity'],
         whenNull: () => LiteralExpression(1.0));
     final strokeWidth = expressionParser.parse(paint['$prefix-width'],

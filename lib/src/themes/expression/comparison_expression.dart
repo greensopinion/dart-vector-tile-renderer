@@ -43,9 +43,9 @@ class MatchExpression extends Expression {
           return _outputs[index].evaluate(context);
         }
       }
-      if (_outputs.length > _values.length) {
-        return _outputs[_values.length].evaluate(context);
-      }
+    }
+    if (_outputs.length > _values.length) {
+      return _outputs.last.evaluate(context);
     }
   }
 

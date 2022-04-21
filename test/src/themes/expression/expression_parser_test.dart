@@ -411,6 +411,24 @@ void main() {
       zoom = 11.1;
       _assertExpression(expression, expectedCacheKey, 1.5);
     });
+
+    test('provides another stepped value', () {
+      final expression = [
+        "step",
+        ["zoom"],
+        0,
+        14,
+        1
+      ];
+      final expectedCacheKey =
+          'step(get(zoom),literal(0),[stop(literal(14),literal(1))])';
+      zoom = 13;
+      _assertExpression(expression, expectedCacheKey, 0);
+      zoom = 14.1;
+      _assertExpression(expression, expectedCacheKey, 1);
+      zoom = 15;
+      _assertExpression(expression, expectedCacheKey, 1);
+    });
   });
 
   group('interpolate expressions:', () {
