@@ -40,6 +40,7 @@ class ExpressionParser {
     _register(AnyExpressionParser(this));
     _register(InterpolateExpressionParser(this));
     _register(StepExpressionParser(this));
+    _register(CaseExpressionParser(this));
     _register(ToStringExpressionParser(this));
     _register(MatchExpressionParser(this));
     _register(GeometryTypeExpressionParser(this));
