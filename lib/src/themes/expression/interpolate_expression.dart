@@ -95,6 +95,9 @@ class InterpolateLinearExpression extends InterpolateExpression {
       } else if (belowOutput is num && aboveOutput is num) {
         return _exponentialInterpolation(input, 1, valueBelow, valueAbove,
             belowOutput.toDouble(), aboveOutput.toDouble());
+      } else {
+        // could be a color, this is a stop-gap (e.g until we support hcl)
+        return belowOutput;
       }
     }
   }
