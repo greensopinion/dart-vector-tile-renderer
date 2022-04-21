@@ -58,6 +58,7 @@ void main() {
           '^',
           'all',
           'any',
+          'case',
           'coalesce',
           'geometry-type',
           'get',
@@ -585,6 +586,38 @@ void main() {
     test('provides variable expressions', () {
       zoom = 3;
       _assertExpression(expression, expectedCacheKey, zoom * 2);
+    });
+  });
+  group('case expression:', () {
+    final expression = [
+      "case",
+      [
+        '==',
+        3,
+        ["get", 'zoom']
+      ],
+      1,
+      [
+        '==',
+        4,
+        ["get", 'zoom']
+      ],
+      2,
+      3
+    ];
+    final expectedCacheKey =
+        'case(equals(literal(3),get(zoom)):literal(1);equals(literal(4),get(zoom)):literal(2);literal(true):literal(3))';
+    test('provides case expression that evaluates to a fallback', () {
+      zoom = 1;
+      _assertExpression(expression, expectedCacheKey, 3);
+    });
+    test('provides case expression that evaluates to a first case', () {
+      zoom = 3;
+      _assertExpression(expression, expectedCacheKey, 1);
+    });
+    test('provides case expression that evaluates to another case', () {
+      zoom = 4;
+      _assertExpression(expression, expectedCacheKey, 2);
     });
   });
 }

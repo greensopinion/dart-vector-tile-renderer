@@ -1,3 +1,6 @@
+import 'package:vector_tile_renderer/src/themes/expression/case_expression.dart';
+import 'package:vector_tile_renderer/src/themes/expression/literal_expression.dart';
+
 import 'expression_parser.dart';
 import '../comparison_expression.dart';
 import '../expression.dart';
@@ -214,5 +217,36 @@ class MatchExpressionParser extends ExpressionComponentParser {
     }
 
     return MatchExpression(input, values, outputs);
+  }
+}
+
+class CaseExpressionParser extends ExpressionComponentParser {
+  CaseExpressionParser(ExpressionParser parser) : super(parser, 'case');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length > 3 && json.length % 2 == 0;
+  }
+
+  @override
+  Expression? parse(List json) {
+    // ['case',condition,output,condition2,output2,fallbackOutput]
+    var params = json.sublist(1, json.length - 1);
+    var fallbackOutput = parser.parseOptional(json.last);
+    if (fallbackOutput == null) {
+      return null;
+    }
+    final cases = <ConditionOutputPair>[];
+    for (int x = 0; x < params.length; x += 2) {
+      final condition = parser.parseOptional(params[x]);
+      final output = parser.parseOptional(params[x + 1]);
+
+      if (condition == null || output == null) {
+        return null;
+      }
+      cases.add(ConditionOutputPair(condition, output));
+    }
+    cases.add(ConditionOutputPair(LiteralExpression(true), fallbackOutput));
+    return CaseExpression(cases);
   }
 }
