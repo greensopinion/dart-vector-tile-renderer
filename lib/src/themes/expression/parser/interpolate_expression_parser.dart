@@ -1,9 +1,8 @@
 import 'dart:math';
 
-import 'expression_parser.dart';
-
 import '../expression.dart';
 import '../interpolate_expression.dart';
+import 'expression_parser.dart';
 
 class InterpolateExpressionParser extends ExpressionComponentParser {
   InterpolateExpressionParser(ExpressionParser parser)

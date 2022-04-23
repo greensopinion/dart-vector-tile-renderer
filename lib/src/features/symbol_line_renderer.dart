@@ -66,8 +66,8 @@ class SymbolLineRenderer extends FeatureRenderer {
       return;
     }
 
-    final textApproximation =
-        TextApproximation(context, evaluationContext, style, textAbbreviation);
+    final textApproximation = TextApproximation(
+        context, evaluationContext, style, [textAbbreviation]);
 
     final metrics = path.computeMetrics().toList();
     final renderBox = _findMiddleMetric(context, metrics, textApproximation);

@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'expression/color_expression.dart';
-
 import 'style.dart';
 
 class TextHaloFactory {

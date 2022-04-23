@@ -158,12 +158,20 @@ class ThemeReader {
     } else if (transform == 'lowercase') {
       textTransform = (s) => s?.toLowerCase();
     }
+    final maxWidth = expressionParser
+        .parseOptional(layout?['text-max-width'])
+        ?.asDoubleExpression();
+    final justify = expressionParser
+        .parse(layout?['text-justify'])
+        .asLayoutJustifyExpression();
     return TextLayout(
         placement: placement,
         anchor: anchor,
+        justify: justify,
         text: textFunction,
         textSize: textSize,
         textLetterSpacing: textLetterSpacing,
+        maxWidth: maxWidth,
         fontFamily: fontFamily,
         fontStyle: fontStyle,
         textTransform: textTransform);
