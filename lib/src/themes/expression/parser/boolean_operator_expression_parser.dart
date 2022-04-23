@@ -1,5 +1,5 @@
-import 'package:vector_tile_renderer/src/themes/expression/case_expression.dart';
-import 'package:vector_tile_renderer/src/themes/expression/literal_expression.dart';
+import '../case_expression.dart';
+import '../literal_expression.dart';
 
 import 'expression_parser.dart';
 import '../comparison_expression.dart';

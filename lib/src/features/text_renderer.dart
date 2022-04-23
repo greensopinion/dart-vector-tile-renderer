@@ -106,7 +106,7 @@ class TextRenderer {
       }
       double? spacing =
           style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
-      final shadows = style.textHalo?.call(context.zoom);
+      final shadows = style.textHalo?.call(evaluationContext);
       final textStyle = TextStyle(
           foreground: foreground,
           fontSize: textSize,

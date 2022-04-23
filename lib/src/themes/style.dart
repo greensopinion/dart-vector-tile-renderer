@@ -9,7 +9,7 @@ import 'expression/text_expression.dart';
 import 'paint_factory.dart';
 
 typedef ColorZoomFunction = Color? Function(double zoom);
-typedef TextHaloFunction = List<Shadow>? Function(double zoom);
+typedef TextHaloFunction = List<Shadow>? Function(EvaluationContext context);
 typedef TextTransformFunction = String? Function(String? text);
 
 class Style {
