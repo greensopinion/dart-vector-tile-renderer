@@ -1,6 +1,5 @@
-import 'expression_parser.dart';
-
 import '../expression.dart';
+import 'expression_parser.dart';
 
 class LetExpressionParser extends ExpressionComponentParser {
   late final _VariableRegistry _registry;

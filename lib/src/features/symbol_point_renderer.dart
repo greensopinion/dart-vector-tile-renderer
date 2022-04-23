@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'text_wrapper.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
@@ -47,8 +49,10 @@ class SymbolPointRenderer extends FeatureRenderer {
 
     logger.log(() => 'rendering symbol points');
 
+    final lines = TextWrapper(textLayout).wrap(evaluationContext, text);
+
     final textApproximation =
-        TextApproximation(context, evaluationContext, style, textAbbreviation);
+        TextApproximation(context, evaluationContext, style, lines);
 
     for (final point in feature.points) {
       final offset = context.tileSpaceMapper.pointFromTileToPixels(point);

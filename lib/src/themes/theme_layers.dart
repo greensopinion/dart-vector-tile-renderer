@@ -1,13 +1,12 @@
 import 'dart:ui';
 
 import '../constants.dart';
-import '../model/tile_model.dart';
-import 'expression/color_expression.dart';
-import 'expression/expression.dart';
-
 import '../context.dart';
 import '../features/tile_space_mapper.dart';
+import '../model/tile_model.dart';
 import '../tileset.dart';
+import 'expression/color_expression.dart';
+import 'expression/expression.dart';
 import 'selector.dart';
 import 'style.dart';
 import 'theme.dart';

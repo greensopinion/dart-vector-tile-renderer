@@ -1,9 +1,8 @@
 import '../case_expression.dart';
-import '../literal_expression.dart';
-
-import 'expression_parser.dart';
 import '../comparison_expression.dart';
 import '../expression.dart';
+import '../literal_expression.dart';
+import 'expression_parser.dart';
 
 class HasExpressionParser extends ExpressionComponentParser {
   HasExpressionParser(ExpressionParser parser) : super(parser, 'has');

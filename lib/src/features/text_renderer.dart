@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/widgets.dart';
 
 import '../context.dart';
@@ -8,21 +10,27 @@ class TextApproximation {
   final Context context;
   final EvaluationContext evaluationContext;
   final Style style;
-  final String text;
+  final List<String> textLines;
+  late final String text;
   Offset? _translation;
   Size? _size;
   TextRenderer? _renderer;
 
   TextApproximation(
-      this.context, this.evaluationContext, this.style, this.text) {
+      this.context, this.evaluationContext, this.style, this.textLines) {
+    text = textLines.join('\n');
     double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
       }
+      final maxLineWidth = textLines.map((e) => e.length).reduce(max);
       final approximateWidth =
-          (textSize / 1.9 * (text.length + 1)).ceilToDouble();
-      final approximateHeight = (textSize * 1.28).ceilToDouble();
+          (textSize / 1.9 * (maxLineWidth + 1)).ceilToDouble();
+      final approximateLineHeight = (textSize * 1.28).ceilToDouble();
+      final approximateHeight = (textLines.length > 1)
+          ? (approximateLineHeight * (textSize / 2))
+          : approximateLineHeight;
       final size = Size(approximateWidth, approximateHeight);
       _size = size;
       _translation =
@@ -117,8 +125,10 @@ class TextRenderer {
       final textTransform = style.textLayout?.textTransform;
       final transformedText =
           textTransform == null ? text : textTransform(text);
+      final alignment = style.textLayout?.justify.evaluate(evaluationContext);
       return TextPainter(
           text: TextSpan(style: textStyle, text: transformedText),
+          textAlign: alignment?.toTextAlign() ?? TextAlign.center,
           textDirection: TextDirection.ltr)
         ..layout();
     }
@@ -152,4 +162,19 @@ Rect? _labelBox(Offset offset, Offset? translation, double width, double height,
     y += (translation.dy);
   }
   return Rect.fromLTWH(x, y, width, height);
+}
+
+extension _LayoutJustifyExtension on LayoutJustify {
+  TextAlign toTextAlign() {
+    if (this == LayoutJustify.center) {
+      return TextAlign.center;
+    }
+    if (this == LayoutJustify.left) {
+      return TextAlign.left;
+    }
+    if (this == LayoutJustify.right) {
+      return TextAlign.left;
+    }
+    return TextAlign.center;
+  }
 }

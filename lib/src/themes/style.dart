@@ -54,12 +54,28 @@ class LayoutAnchor {
       values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }
 
+class LayoutJustify {
+  final String name;
+  const LayoutJustify._(this.name);
+  static const center = LayoutJustify._('center');
+  static const left = LayoutJustify._('left');
+  static const right = LayoutJustify._('right');
+  static const auto = LayoutJustify._('auto');
+  static const DEFAULT = center;
+
+  static List<LayoutJustify> values() => [center, left, right, auto];
+  static LayoutJustify fromName(String? name) =>
+      values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
+}
+
 class TextLayout {
   final LayoutPlacementExpression placement;
   final LayoutAnchorExpression anchor;
+  final LayoutJustifyExpression justify;
   final Expression text;
   final DoubleExpression textSize;
   final DoubleExpression? textLetterSpacing;
+  final DoubleExpression? maxWidth;
   final FontStyle? fontStyle;
   final String? fontFamily;
   final TextTransformFunction? textTransform;
@@ -67,9 +83,11 @@ class TextLayout {
   TextLayout(
       {required this.placement,
       required this.anchor,
+      required this.justify,
       required this.text,
       required this.textSize,
       required this.textLetterSpacing,
+      required this.maxWidth,
       required this.fontFamily,
       required this.fontStyle,
       required this.textTransform});
