@@ -37,15 +37,19 @@ class TilesetPreprocessor {
   /// Pre-processes a tileset to eliminate some expensive processing from
   /// the rendering stage.
   ///
+  /// [zoom] the zoom level at which the tileset should be preprocessed. The
+  ///        zoom level may be referenced by expressions in the theme, for example
+  ///        as a layer filter.
+  ///
   /// Returns a pre-processed tileset.
-  Tileset preprocess(Tileset tileset) {
+  Tileset preprocess(Tileset tileset, {required double zoom}) {
     return profileSync('PreprocessTileset', () {
       final featureResolver = tileset.resolver is CachingLayerFeatureResolver
           ? tileset.resolver
           : CachingLayerFeatureResolver(tileset.resolver);
 
       for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
-        featureResolver.resolveFeatures(themeLayer.selector);
+        featureResolver.resolveFeatures(themeLayer.selector, zoom.truncate());
       }
       return Tileset._preprocessed(tileset, featureResolver);
     });

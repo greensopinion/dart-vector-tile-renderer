@@ -60,7 +60,7 @@ class RenderPicture extends BenchmarkBase {
     final tileset = Tileset({'openmaptiles': testTile});
 
     this.tileset = preprocessTile
-        ? TilesetPreprocessor(theme).preprocess(tileset)
+        ? TilesetPreprocessor(theme).preprocess(tileset, zoom: 1)
         : tileset;
   }
 

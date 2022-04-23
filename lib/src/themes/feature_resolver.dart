@@ -6,7 +6,7 @@ import 'selector.dart';
 /// [TileLayerSelector].
 abstract class LayerFeatureResolver {
   /// Provides the features resolved using the given [selector].
-  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector);
+  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector, int zoom);
 }
 
 /// Default implementation of [LayerFeatureResolver] that resolves
@@ -17,9 +17,11 @@ class DefaultLayerFeatureResolver implements LayerFeatureResolver {
   final Tileset _tileset;
 
   @override
-  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) sync* {
-    for (final layer in selector.select(_tileset)) {
-      for (final feature in selector.layerSelector.features(layer.features)) {
+  Iterable<LayerFeature> resolveFeatures(
+      TileLayerSelector selector, int zoom) sync* {
+    for (final layer in selector.select(_tileset, zoom)) {
+      for (final feature
+          in selector.layerSelector.features(layer.features, zoom)) {
         yield LayerFeature(layer, feature);
       }
     }
@@ -35,10 +37,10 @@ class CachingLayerFeatureResolver implements LayerFeatureResolver {
   final _cache = <String, List<LayerFeature>>{};
 
   @override
-  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector) {
+  Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector, int zoom) {
     return _cache.putIfAbsent(
-      selector.cacheKey,
-      () => _delegate.resolveFeatures(selector).toList(growable: false),
+      "$zoom:${selector.cacheKey}",
+      () => _delegate.resolveFeatures(selector, zoom).toList(growable: false),
     );
   }
 }

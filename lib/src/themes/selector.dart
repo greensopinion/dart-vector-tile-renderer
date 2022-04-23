@@ -12,9 +12,9 @@ class TileLayerSelector {
     cacheKey = '${tileSelector.cacheKey}/${layerSelector.cacheKey}';
   }
 
-  Iterable<TileLayer> select(Tileset tileset) {
+  Iterable<TileLayer> select(Tileset tileset, int zoom) {
     final tile = tileSelector.select(tileset);
-    return tile == null ? [] : layerSelector.select(tile.layers);
+    return tile == null ? [] : layerSelector.select(tile.layers, zoom);
   }
 }
 
@@ -41,9 +41,9 @@ abstract class LayerSelector {
   factory LayerSelector.expression(Expression expression) =>
       _ExpressionLayerSelector(expression);
 
-  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers);
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom);
 
-  Iterable<TileFeature> features(Iterable<TileFeature> features);
+  Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom);
 
   Set<String> propertyNames();
   Set<String> layerNames();
@@ -56,18 +56,19 @@ class _CompositeSelector extends LayerSelector {
       : super._(delegates.map((e) => e.cacheKey).join(','));
 
   @override
-  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) {
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom) {
     Iterable<TileLayer> result = tileLayers;
     delegates.forEach((delegate) {
-      result = delegate.select(result);
+      result = delegate.select(result, zoom);
     });
     return result;
   }
 
-  Iterable<TileFeature> features(Iterable<TileFeature> features) {
+  @override
+  Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) {
     Iterable<TileFeature> result = features;
     delegates.forEach((delegate) {
-      result = delegate.features(result);
+      result = delegate.features(result, zoom);
     });
     return result;
   }
@@ -96,10 +97,12 @@ class _NamedLayerSelector extends LayerSelector {
   _NamedLayerSelector(this.name) : super._('named($name)');
 
   @override
-  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) =>
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom) =>
       tileLayers.where((layer) => layer.name == name);
 
-  Iterable<TileFeature> features(Iterable<TileFeature> features) => features;
+  @override
+  Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) =>
+      features;
 
   @override
   Set<String> propertyNames() => {};
@@ -115,17 +118,18 @@ class _ExpressionLayerSelector extends LayerSelector {
       : super._('matching(${_expression.cacheKey})');
 
   @override
-  Iterable<TileFeature> features(Iterable<TileFeature> features) {
+  Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) {
     return features.where((feature) {
-      final context = EvaluationContext(
-          () => feature.properties, feature.type, 1.0, Logger.noop());
+      final context = EvaluationContext(() => feature.properties, feature.type,
+          zoom.toDouble(), Logger.noop());
       final result = _expression.evaluate(context);
       return result is bool && result;
     });
   }
 
   @override
-  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) => tileLayers;
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom) =>
+      tileLayers;
 
   @override
   Set<String> propertyNames() => _expression.properties();
@@ -138,10 +142,11 @@ class _NoneLayerSelector extends LayerSelector {
   _NoneLayerSelector() : super._('none');
 
   @override
-  Iterable<TileFeature> features(Iterable<TileFeature> features) => [];
+  Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) =>
+      [];
 
   @override
-  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers) => [];
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom) => [];
 
   @override
   Set<String> propertyNames() => {};

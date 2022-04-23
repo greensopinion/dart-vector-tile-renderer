@@ -27,7 +27,9 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void render(Context context) {
-    final layers = selector.select(context.tileset).toList(growable: false);
+    final layers = selector
+        .select(context.tileset, context.zoom.truncate())
+        .toList(growable: false);
     assert(layers.length <= 1);
 
     if (layers.isEmpty) {
@@ -35,7 +37,7 @@ class DefaultLayer extends ThemeLayer {
     }
 
     final features = context.tileset.resolver
-        .resolveFeatures(this.selector)
+        .resolveFeatures(this.selector, context.zoom.truncate())
         .toList(growable: false);
 
     if (features.isEmpty) {
