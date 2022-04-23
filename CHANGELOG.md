@@ -1,3 +1,7 @@
+## 2.4.0
+
+* bug fix to theme filters that reference zoom level
+* breaking API change, `TilesetPreprocessor` now requires a zoom level
 ## 2.3.3
 
 * improve support for color expressions
