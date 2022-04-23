@@ -100,8 +100,8 @@ class _TileState extends State<Tile> {
         .asUint8List(tileData.offsetInBytes, tileData.lengthInBytes);
     final tile = TileFactory(theme, Logger.noop())
         .create(VectorTileReader().read(tileBytes));
-    final tileset =
-        TilesetPreprocessor(theme).preprocess(Tileset({'openmaptiles': tile}));
+    final tileset = TilesetPreprocessor(theme)
+        .preprocess(Tileset({'openmaptiles': tile}), zoom: 14);
     setState(() {
       this.tileset = tileset;
     });

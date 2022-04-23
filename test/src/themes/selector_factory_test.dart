@@ -11,10 +11,11 @@ void main() {
         await readTestTile(ProvidedThemes.lightTheme(logger: testLogger));
     final transportationLayer =
         tile.layers.where((layer) => layer.name == 'transportation').first;
-    expect(selector.layerSelector.select(tile.layers).toList(),
+    expect(selector.layerSelector.select(tile.layers, 1).toList(),
         contains(transportationLayer));
-    final selectedFeatures =
-        selector.layerSelector.features(transportationLayer.features).toList();
+    final selectedFeatures = selector.layerSelector
+        .features(transportationLayer.features, 1)
+        .toList();
     expect(selectedFeatures, isNotEmpty);
     expect(selectedFeatures.length, 206);
   });
