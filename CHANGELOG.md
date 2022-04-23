@@ -1,5 +1,6 @@
 ## 2.4.0
 
+* text halo color can now use expressions
 * bug fix to theme filters that reference zoom level
 * breaking API change, `TilesetPreprocessor` now requires a zoom level
 ## 2.3.3
