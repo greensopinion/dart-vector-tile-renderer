@@ -174,9 +174,11 @@ class ThemeReader {
     final paint = jsonLayer['paint'];
     if (paint != null) {
       final haloWidth = (paint['text-halo-width'] as num?)?.toDouble();
-      final colorFunction = ColorParser.parse(paint['text-halo-color']);
-      if (haloWidth != null && colorFunction != null) {
-        return TextHaloFactory.toHaloFunction(colorFunction, haloWidth);
+      final haloColor = expressionParser
+          .parseOptional(paint['text-halo-color'])
+          ?.asColorExpression();
+      if (haloWidth != null && haloColor != null) {
+        return TextHaloFactory.toHaloFunction(haloColor, haloWidth);
       }
     }
     return null;
