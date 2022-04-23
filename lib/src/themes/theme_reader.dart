@@ -4,7 +4,6 @@ import 'package:flutter/painting.dart';
 
 import '../logger.dart';
 import '../profiling.dart';
-import 'color_parser.dart';
 import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
