@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-
 import 'expression.dart';
 
 class CachingExpression<T> extends Expression<T> {
@@ -20,10 +18,10 @@ class CachingExpression<T> extends Expression<T> {
     return value.value;
   }
 
-  String _createKey(EvaluationContext context) => properties()
-      .sorted()
-      .map((e) => '$e:${context.getProperty(e)}')
-      .join(',');
+  String _createKey(EvaluationContext context) {
+    final elements = [...properties()]..sort();
+    return elements.map((e) => '$e:${context.getProperty(e)}').join(',');
+  }
 }
 
 class _EntryCache<T> {
