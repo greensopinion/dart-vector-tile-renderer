@@ -1,3 +1,5 @@
+import 'line_styler.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
@@ -39,6 +41,7 @@ class LineRenderer extends FeatureRenderer {
     if (context.zoomScaleFactor > 1.0) {
       strokeWidth = effectivePaint.strokeWidth / context.zoomScaleFactor;
     }
+    LineStyler(style, evaluationContext).apply(effectivePaint);
 
     // Since we are rendering in tile space, we need to render lines with
     // a stroke width in tile space.

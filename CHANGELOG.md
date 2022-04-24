@@ -1,3 +1,6 @@
+## 2.4.1
+
+* add support for line-cap and line-join layout
 ## 2.4.0
 
 * text halo color can now use expressions
