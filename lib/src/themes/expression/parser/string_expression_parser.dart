@@ -1,8 +1,7 @@
-import 'expression_parser.dart';
-
 import '../coalesce_expression.dart';
 import '../expression.dart';
 import '../property_expression.dart';
+import 'expression_parser.dart';
 
 class ToStringExpressionParser extends ExpressionComponentParser {
   ToStringExpressionParser(ExpressionParser parser)

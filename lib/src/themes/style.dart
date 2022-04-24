@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
+import 'expression/line_expression.dart';
 import 'expression/expression.dart';
 
 import '../extensions.dart';
@@ -15,6 +16,7 @@ typedef TextTransformFunction = String? Function(String? text);
 class Style {
   final PaintStyle? fillPaint;
   final PaintStyle? linePaint;
+  final LineLayout? lineLayout;
   final PaintStyle? textPaint;
   final TextLayout? textLayout;
   final TextHaloFunction? textHalo;
@@ -24,6 +26,7 @@ class Style {
       {this.fillPaint,
       this.outlinePaint,
       this.linePaint,
+      this.lineLayout,
       this.textPaint,
       this.textLayout,
       this.textHalo});
@@ -91,4 +94,37 @@ class TextLayout {
       required this.fontFamily,
       required this.fontStyle,
       required this.textTransform});
+}
+
+class LineLayout {
+  final LineCapExpression lineCap;
+  final LineJoinExpression lineJoin;
+
+  LineLayout(this.lineCap, this.lineJoin);
+}
+
+class LineCap {
+  final String name;
+  const LineCap._(this.name);
+  static const butt = LineCap._('butt');
+  static const round = LineCap._('round');
+  static const square = LineCap._('square');
+  static const DEFAULT = butt;
+
+  static List<LineCap> values() => [butt, round, square];
+  static LineCap fromName(String? name) =>
+      values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
+}
+
+class LineJoin {
+  final String name;
+  const LineJoin._(this.name);
+  static const bevel = LineJoin._('bevel');
+  static const round = LineJoin._('round');
+  static const miter = LineJoin._('miter');
+  static const DEFAULT = miter;
+
+  static List<LineJoin> values() => [bevel, round, miter];
+  static LineJoin fromName(String? name) =>
+      values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }

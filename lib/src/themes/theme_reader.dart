@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:flutter/painting.dart';
+import 'expression/line_expression.dart';
 
 import '../logger.dart';
 import '../profiling.dart';
@@ -98,7 +99,8 @@ class ThemeReader {
       return DefaultLayer(
           jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
           selector: selector,
-          style: Style(linePaint: lineStyle),
+          style:
+              Style(linePaint: lineStyle, lineLayout: _toLineLayout(jsonLayer)),
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
@@ -175,6 +177,14 @@ class ThemeReader {
         fontFamily: fontFamily,
         fontStyle: fontStyle,
         textTransform: textTransform);
+  }
+
+  LineLayout _toLineLayout(jsonLayer) {
+    final layout = jsonLayer['layout'];
+    expressionParser.parse(layout?['line-cap']).asLineCapExpression();
+    return LineLayout(
+        expressionParser.parse(layout?['line-cap']).asLineCapExpression(),
+        expressionParser.parse(layout?['line-join']).asLineJoinExpression());
   }
 
   TextHaloFunction? _toTextHalo(jsonLayer) {
