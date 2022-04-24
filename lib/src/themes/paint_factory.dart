@@ -11,7 +11,7 @@ class PaintStyle {
   final PaintingStyle paintingStyle;
   final DoubleExpression opacity;
   final DoubleExpression strokeWidth;
-  final ColorExpression color;
+  final Expression<Color> color;
 
   PaintStyle(
       {required this.id,

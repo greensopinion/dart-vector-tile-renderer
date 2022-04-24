@@ -7,7 +7,8 @@ class ComparisonExpression extends Expression {
 
   ComparisonExpression(
       this._comparison, String comparisonKey, this._first, this._second)
-      : super('(${_first.cacheKey} $comparisonKey ${_second.cacheKey})');
+      : super('(${_first.cacheKey} $comparisonKey ${_second.cacheKey})',
+            {..._first.properties(), ..._second.properties()});
 
   @override
   evaluate(EvaluationContext context) {
@@ -18,9 +19,6 @@ class ComparisonExpression extends Expression {
     }
     return false;
   }
-
-  @override
-  Set<String> properties() => {..._first.properties(), ..._second.properties()};
 }
 
 class MatchExpression extends Expression {
@@ -30,7 +28,8 @@ class MatchExpression extends Expression {
 
   MatchExpression(this._input, this._values, this._outputs)
       : super(
-            'match(${_input.cacheKey},${_values.map((e) => "[${e.map((i) => i.cacheKey).join(',')}]").join(',')},${_outputs.map((e) => e.cacheKey).join(',')})');
+            'match(${_input.cacheKey},${_values.map((e) => "[${e.map((i) => i.cacheKey).join(',')}]").join(',')},${_outputs.map((e) => e.cacheKey).join(',')})',
+            _createProperties(_input, _values, _outputs));
 
   @override
   evaluate(EvaluationContext context) {
@@ -48,18 +47,19 @@ class MatchExpression extends Expression {
       return _outputs.last.evaluate(context);
     }
   }
+}
 
-  @override
-  Set<String> properties() {
-    final accumulator = {..._input.properties()};
-    for (final value in _values) {
-      for (final delegate in value) {
-        accumulator.addAll(delegate.properties());
-      }
+@override
+Set<String> _createProperties(Expression input,
+    final List<List<Expression>> values, final List<Expression> outputs) {
+  final accumulator = {...input.properties()};
+  for (final value in values) {
+    for (final delegate in value) {
+      accumulator.addAll(delegate.properties());
     }
-    for (final output in _outputs) {
-      accumulator.addAll(output.properties());
-    }
-    return accumulator;
   }
+  for (final output in outputs) {
+    accumulator.addAll(output.properties());
+  }
+  return accumulator;
 }

@@ -5,7 +5,7 @@ class LayoutAnchorExpression extends Expression {
   final Expression _delegate;
 
   LayoutAnchorExpression(this._delegate)
-      : super('layoutAnchor(${_delegate.cacheKey})');
+      : super('layoutAnchor(${_delegate.cacheKey})', _delegate.properties());
 
   LayoutAnchor evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
@@ -16,16 +16,13 @@ class LayoutAnchorExpression extends Expression {
     }
     return LayoutAnchor.DEFAULT;
   }
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }
 
 class LayoutPlacementExpression extends Expression {
   final Expression _delegate;
 
   LayoutPlacementExpression(this._delegate)
-      : super('layoutPlacement(${_delegate.cacheKey})');
+      : super('layoutPlacement(${_delegate.cacheKey})', _delegate.properties());
 
   LayoutPlacement evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
@@ -36,16 +33,13 @@ class LayoutPlacementExpression extends Expression {
     }
     return LayoutPlacement.DEFAULT;
   }
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }
 
 class LayoutJustifyExpression extends Expression {
   final Expression _delegate;
 
   LayoutJustifyExpression(this._delegate)
-      : super('justify(${_delegate.cacheKey})');
+      : super('justify(${_delegate.cacheKey})', _delegate.properties());
 
   LayoutJustify evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
@@ -56,9 +50,6 @@ class LayoutJustifyExpression extends Expression {
     }
     return LayoutJustify.DEFAULT;
   }
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }
 
 extension TextExpressionExtension on Expression {

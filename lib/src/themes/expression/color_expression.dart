@@ -1,12 +1,15 @@
 import 'dart:ui';
 
+import 'caching_expression.dart';
+
 import '../color_parser.dart';
 import 'expression.dart';
 
-class ColorExpression extends Expression {
+class ColorExpression extends Expression<Color> {
   final Expression _delegate;
 
-  ColorExpression(this._delegate) : super('color(${_delegate.cacheKey})');
+  ColorExpression(this._delegate)
+      : super('color(${_delegate.cacheKey})', _delegate.properties());
 
   Color? evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
@@ -17,11 +20,9 @@ class ColorExpression extends Expression {
     }
     return null;
   }
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }
 
 extension ColorExpressionExtension on Expression {
-  ColorExpression asColorExpression() => ColorExpression(this);
+  Expression<Color> asColorExpression() =>
+      CachingExpression<Color>(ColorExpression(this));
 }

@@ -1,5 +1,6 @@
 import '../../logger.dart';
 import '../../model/tile_model.dart';
+import 'property_accumulator.dart';
 
 export 'expression_parser.dart';
 
@@ -36,50 +37,49 @@ class EvaluationContext {
   }
 }
 
-abstract class Expression {
+abstract class Expression<T> {
   final String cacheKey;
+  late final Set<String> _properties;
 
-  Expression(this.cacheKey);
+  Expression(this.cacheKey, Set<String> properties) {
+    _properties = Set.unmodifiable(properties);
+  }
 
-  evaluate(EvaluationContext context);
+  T? evaluate(EvaluationContext context);
 
   @override
   String toString() => cacheKey;
 
   /// the names of properties accessed by this expression
-  Set<String> properties();
+  Set<String> properties() => _properties;
 }
 
 class UnsupportedExpression extends Expression {
   final dynamic _json;
 
-  UnsupportedExpression(this._json) : super('unsupported');
+  UnsupportedExpression(this._json) : super('unsupported', <String>{});
 
   get json => _json;
 
   @override
   evaluate(EvaluationContext context) => null;
-
-  @override
-  Set<String> properties() => {};
 }
 
 class NotNullExpression extends Expression {
   final Expression _delegate;
 
-  NotNullExpression(this._delegate) : super('notNull(${_delegate.cacheKey})');
+  NotNullExpression(this._delegate)
+      : super('notNull(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   evaluate(EvaluationContext context) => _delegate.evaluate(context) != null;
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }
 
 class NotExpression extends Expression {
   final Expression _delegate;
 
-  NotExpression(this._delegate) : super('!${_delegate.cacheKey}');
+  NotExpression(this._delegate)
+      : super('!${_delegate.cacheKey}', _delegate.properties());
 
   @override
   evaluate(EvaluationContext context) {
@@ -90,9 +90,6 @@ class NotExpression extends Expression {
     context.logger.warn(() => 'NotExpression expected bool but got $operand');
     return null;
   }
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }
 
 class EqualsExpression extends Expression {
@@ -100,15 +97,13 @@ class EqualsExpression extends Expression {
   final Expression _second;
 
   EqualsExpression(this._first, this._second)
-      : super('equals(${_first.cacheKey},${_second.cacheKey})');
+      : super('equals(${_first.cacheKey},${_second.cacheKey})',
+            {..._first.properties(), ..._second.properties()});
 
   @override
   evaluate(EvaluationContext context) {
     return _first.evaluate(context) == _second.evaluate(context);
   }
-
-  @override
-  Set<String> properties() => {..._first.properties(), ..._second.properties()};
 }
 
 class InExpression extends Expression {
@@ -116,23 +111,22 @@ class InExpression extends Expression {
   final List _values;
 
   InExpression(this._first, this._values)
-      : super('(${_first.cacheKey} in [${_values.join(',')}])');
+      : super('(${_first.cacheKey} in [${_values.join(',')}])',
+            _first.properties());
 
   @override
   evaluate(EvaluationContext context) {
     final first = _first.evaluate(context);
     return _values.any((e) => first == e);
   }
-
-  @override
-  Set<String> properties() => _first.properties();
 }
 
 class AnyExpression extends Expression {
   final List<Expression> _delegates;
 
   AnyExpression(this._delegates)
-      : super('(any [${_delegates.map((e) => e.cacheKey).join(',')}])');
+      : super('(any [${_delegates.map((e) => e.cacheKey).join(',')}])',
+            _delegates.joinProperties());
 
   @override
   evaluate(EvaluationContext context) {
@@ -146,22 +140,14 @@ class AnyExpression extends Expression {
     }
     return false;
   }
-
-  @override
-  Set<String> properties() {
-    final accumulator = <String>{};
-    for (final delegate in _delegates) {
-      accumulator.addAll(delegate.properties());
-    }
-    return accumulator;
-  }
 }
 
 class AllExpression extends Expression {
   final List<Expression> _delegates;
 
   AllExpression(this._delegates)
-      : super('(all [${_delegates.map((e) => e.cacheKey).join(',')}])');
+      : super('(all [${_delegates.map((e) => e.cacheKey).join(',')}])',
+            _delegates.joinProperties());
 
   @override
   evaluate(EvaluationContext context) {
@@ -175,26 +161,15 @@ class AllExpression extends Expression {
     }
     return true;
   }
-
-  @override
-  Set<String> properties() {
-    final accumulator = <String>{};
-    for (final delegate in _delegates) {
-      accumulator.addAll(delegate.properties());
-    }
-    return accumulator;
-  }
 }
 
 class ToStringExpression extends Expression {
   final Expression _delegate;
 
-  ToStringExpression(this._delegate) : super('toString(${_delegate.cacheKey})');
+  ToStringExpression(this._delegate)
+      : super('toString(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   evaluate(EvaluationContext context) =>
       _delegate.evaluate(context)?.toString() ?? '';
-
-  @override
-  Set<String> properties() => _delegate.properties();
 }

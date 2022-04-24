@@ -5,7 +5,6 @@ import '../context.dart';
 import '../features/tile_space_mapper.dart';
 import '../model/tile_model.dart';
 import '../tileset.dart';
-import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'selector.dart';
 import 'style.dart';
@@ -67,7 +66,7 @@ class DefaultLayer extends ThemeLayer {
 }
 
 class BackgroundLayer extends ThemeLayer {
-  final ColorExpression fillColor;
+  final Expression<Color> fillColor;
 
   BackgroundLayer(String id, this.fillColor)
       : super(id, ThemeLayerType.background, minzoom: 0, maxzoom: 24);

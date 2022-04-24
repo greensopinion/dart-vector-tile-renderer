@@ -18,7 +18,8 @@ abstract class InterpolateExpression extends Expression {
 
   InterpolateExpression(this._input, String interpolation, this._stops)
       : super(
-            'interpolate(${_input.cacheKey},$interpolation,[${_stops.map((e) => e.cacheKey).join(',')}])');
+            'interpolate(${_input.cacheKey},$interpolation,[${_stops.map((e) => e.cacheKey).join(',')}])',
+            _createProperties(_input, _stops));
 
   @override
   evaluate(EvaluationContext context) {
@@ -61,16 +62,16 @@ abstract class InterpolateExpression extends Expression {
       InterpolationStop stopBelow,
       double valueAbove,
       InterpolationStop stopAbove);
+}
 
-  @override
-  Set<String> properties() {
-    final accumulator = {..._input.properties()};
-    for (final stop in _stops) {
-      accumulator.addAll(stop.value.properties());
-      accumulator.addAll(stop.output.properties());
-    }
-    return accumulator;
+@override
+Set<String> _createProperties(Expression input, List<InterpolationStop> stops) {
+  final accumulator = {...input.properties()};
+  for (final stop in stops) {
+    accumulator.addAll(stop.value.properties());
+    accumulator.addAll(stop.output.properties());
   }
+  return accumulator;
 }
 
 class InterpolateLinearExpression extends InterpolateExpression {
@@ -152,48 +153,9 @@ double _exponentialInterpolation(double input, double base, double lowValue,
   if (base >= 0.99 && base <= 1.01) {
     factor = progress / difference;
   } else {
-    factor = _factorCalculator.calculate(base, progress, difference);
+    factor = (pow(base, progress) - 1) / (pow(base, difference) - 1);
   }
   return (lowOutput * (1 - factor)) + (highOutput * factor);
-}
-
-final _factorCalculator = _PowFactorCalculator();
-
-class _PowFactorCalculator {
-  final _results = <_PowFactorResult>[];
-  final _maxResults = 5;
-
-  double calculate(double base, double progress, double difference) {
-    int offset = 0;
-    for (final result in _results) {
-      if (result.base == base &&
-          result.progress == progress &&
-          result.difference == difference) {
-        if (offset > 0) {
-          _results.remove(offset);
-          _results.insert(0, result);
-        }
-        return result.result;
-      }
-      ++offset;
-    }
-    final result = _PowFactorResult(base, progress, difference,
-        (pow(base, progress) - 1) / (pow(base, difference) - 1));
-    if (_results.length >= _maxResults) {
-      _results.removeLast();
-    }
-    _results.insert(0, result);
-    return result.result;
-  }
-}
-
-class _PowFactorResult {
-  final double base;
-  final double progress;
-  final double difference;
-  final double result;
-
-  _PowFactorResult(this.base, this.progress, this.difference, this.result);
 }
 
 class InterpolateCubicBezierExpression extends InterpolateExpression {
