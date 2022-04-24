@@ -1,11 +1,11 @@
 import 'dart:ui';
 
-import 'expression/color_expression.dart';
+import 'expression/expression.dart';
 import 'style.dart';
 
 class TextHaloFactory {
   static TextHaloFunction? toHaloFunction(
-      ColorExpression colorExpression, double haloWidth) {
+      Expression<Color> colorExpression, double haloWidth) {
     return (context) {
       final color = colorExpression.evaluate(context);
       if (color == null) {

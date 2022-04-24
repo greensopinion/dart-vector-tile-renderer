@@ -1,7 +1,6 @@
-import 'expression_parser.dart';
-
 import '../expression.dart';
 import '../math_expression.dart';
+import 'expression_parser.dart';
 
 class NaryMathExpressionParser extends ExpressionComponentParser {
   String _operationName;

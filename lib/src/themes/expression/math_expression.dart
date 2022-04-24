@@ -1,4 +1,5 @@
 import 'expression.dart';
+import 'property_accumulator.dart';
 
 typedef BinaryOperation = num Function(num, num);
 
@@ -7,7 +8,8 @@ class NaryMathExpression extends Expression {
   final List<Expression> _operands;
 
   NaryMathExpression(String operationName, this._operation, this._operands)
-      : super('(${_operands.map((e) => e.cacheKey).join(operationName)})');
+      : super('(${_operands.map((e) => e.cacheKey).join(operationName)})',
+            _operands.joinProperties());
 
   @override
   evaluate(EvaluationContext context) {
@@ -21,14 +23,5 @@ class NaryMathExpression extends Expression {
       }
     }
     return previous;
-  }
-
-  @override
-  Set<String> properties() {
-    final accumulator = <String>{};
-    for (final expression in _operands) {
-      accumulator.addAll(expression.properties());
-    }
-    return accumulator;
   }
 }

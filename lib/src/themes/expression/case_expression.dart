@@ -12,7 +12,8 @@ class ConditionOutputPair {
 class CaseExpression extends Expression {
   final List<ConditionOutputPair> cases;
   CaseExpression(this.cases)
-      : super('case(${cases.map((e) => e.toCacheKey()).join(';')})');
+      : super('case(${cases.map((e) => e.toCacheKey()).join(';')})',
+            _createProperties(cases));
 
   @override
   evaluate(EvaluationContext context) {
@@ -24,14 +25,13 @@ class CaseExpression extends Expression {
     }
     return null;
   }
+}
 
-  @override
-  Set<String> properties() {
-    final accumulator = <String>{};
-    for (final aCase in cases) {
-      accumulator.addAll(aCase.condition.properties());
-      accumulator.addAll(aCase.output.properties());
-    }
-    return accumulator;
+Set<String> _createProperties(List<ConditionOutputPair> cases) {
+  final accumulator = <String>{};
+  for (final aCase in cases) {
+    accumulator.addAll(aCase.condition.properties());
+    accumulator.addAll(aCase.output.properties());
   }
+  return accumulator;
 }

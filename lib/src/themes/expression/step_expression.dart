@@ -16,7 +16,8 @@ class StepExpression extends Expression {
 
   StepExpression(this._input, this._defaultOutput, this._stops)
       : super(
-            'step(${_input.cacheKey},${_defaultOutput.cacheKey},[${_stops.map((e) => e.cacheKey).join(',')}])');
+            'step(${_input.cacheKey},${_defaultOutput.cacheKey},[${_stops.map((e) => e.cacheKey).join(',')}])',
+            _createProperties(_input, _defaultOutput, _stops));
 
   @override
   evaluate(EvaluationContext context) {
@@ -37,15 +38,15 @@ class StepExpression extends Expression {
       return candidateOutput.evaluate(context);
     }
   }
+}
 
-  @override
-  Set<String> properties() {
-    final accumulator = {..._input.properties()};
-    accumulator.addAll(_defaultOutput.properties());
-    for (final stop in _stops) {
-      accumulator.addAll(stop.value.properties());
-      accumulator.addAll(stop.output.properties());
-    }
-    return accumulator;
+Set<String> _createProperties(Expression input, final Expression defaultOutput,
+    final List<StepStop> stops) {
+  final accumulator = {...input.properties()};
+  accumulator.addAll(defaultOutput.properties());
+  for (final stop in stops) {
+    accumulator.addAll(stop.value.properties());
+    accumulator.addAll(stop.output.properties());
   }
+  return accumulator;
 }

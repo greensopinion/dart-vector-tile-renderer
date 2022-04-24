@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../../../logger.dart';
+import '../caching_expression.dart';
 import '../expression.dart';
 import '../literal_expression.dart';
 import '../property_expression.dart';
@@ -38,7 +39,7 @@ class ExpressionParser {
         this, '>=', (first, second) => first >= second));
     _register(AllExpressionParser(this));
     _register(AnyExpressionParser(this));
-    _register(InterpolateExpressionParser(this));
+    _register(InterpolateExpressionParser(this), caching: true);
     _register(StepExpressionParser(this));
     _register(CaseExpressionParser(this));
     _register(ToStringExpressionParser(this));
@@ -120,11 +121,12 @@ class ExpressionParser {
     return flat;
   }
 
-  void _register(ExpressionComponentParser delegate) {
+  void _register(ExpressionComponentParser delegate, {bool caching = false}) {
     if (_parserByOperator.containsKey(delegate.operator)) {
       throw Exception('duplicate operator ${delegate.operator}');
     }
-    _parserByOperator[delegate.operator] = delegate;
+    _parserByOperator[delegate.operator] =
+        caching ? _CacheParserWrapper(delegate) : delegate;
   }
 
   Expression? parseOptionalPropertyOrExpression(json) {
@@ -174,4 +176,23 @@ abstract class ExpressionComponentParser {
   }
 
   Expression? parse(List<dynamic> json);
+}
+
+class _CacheParserWrapper extends ExpressionComponentParser {
+  final ExpressionComponentParser _delegate;
+
+  _CacheParserWrapper(this._delegate)
+      : super(_delegate.parser, _delegate.operator);
+
+  @override
+  bool matches(List<dynamic> json) => _delegate.matches(json);
+
+  @override
+  Expression? parse(List json) {
+    final result = _delegate.parse(json);
+    if (result != null) {
+      return CachingExpression(result);
+    }
+    return null;
+  }
 }
