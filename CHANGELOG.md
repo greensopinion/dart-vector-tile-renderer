@@ -1,3 +1,6 @@
+## 2.4.2
+
+* improved performance with expression caching
 ## 2.4.1
 
 * add support for line-cap and line-join layout
