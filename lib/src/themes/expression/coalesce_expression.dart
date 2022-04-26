@@ -18,4 +18,7 @@ class CoalesceExpression extends Expression {
     }
     return null;
   }
+
+  @override
+  bool get isConstant => false;
 }

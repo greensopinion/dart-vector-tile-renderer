@@ -38,6 +38,9 @@ class StepExpression extends Expression {
       return candidateOutput.evaluate(context);
     }
   }
+
+  @override
+  bool get isConstant => false;
 }
 
 Set<String> _createProperties(Expression input, final Expression defaultOutput,

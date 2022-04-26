@@ -1,12 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import 'expression/line_expression.dart';
 import 'expression/expression.dart';
 
 import '../extensions.dart';
 import 'expression/numeric_expression.dart';
-import 'expression/text_expression.dart';
 import 'paint_factory.dart';
 
 typedef ColorZoomFunction = Color? Function(double zoom);
@@ -72,9 +70,9 @@ class LayoutJustify {
 }
 
 class TextLayout {
-  final LayoutPlacementExpression placement;
-  final LayoutAnchorExpression anchor;
-  final LayoutJustifyExpression justify;
+  final Expression<LayoutPlacement> placement;
+  final Expression<LayoutAnchor> anchor;
+  final Expression<LayoutJustify> justify;
   final Expression text;
   final DoubleExpression textSize;
   final DoubleExpression? textLetterSpacing;
@@ -97,8 +95,8 @@ class TextLayout {
 }
 
 class LineLayout {
-  final LineCapExpression lineCap;
-  final LineJoinExpression lineJoin;
+  final Expression<LineCap> lineCap;
+  final Expression<LineJoin> lineJoin;
 
   LineLayout(this.lineCap, this.lineJoin);
 }

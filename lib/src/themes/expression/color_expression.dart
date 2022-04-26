@@ -20,9 +20,11 @@ class ColorExpression extends Expression<Color> {
     }
     return null;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
 extension ColorExpressionExtension on Expression {
-  Expression<Color> asColorExpression() =>
-      CachingExpression<Color>(ColorExpression(this));
+  Expression<Color> asColorExpression() => cache(ColorExpression(this));
 }

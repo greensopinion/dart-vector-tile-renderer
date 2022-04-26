@@ -1,3 +1,7 @@
+## 2.4.3
+
+* improved performance with expression short-circuit for constant expressions
+
 ## 2.4.2
 
 * improved performance with expression caching

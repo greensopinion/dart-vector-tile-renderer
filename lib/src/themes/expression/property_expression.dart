@@ -8,4 +8,7 @@ class GetPropertyExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) => context.getProperty(_propertyName);
+
+  @override
+  bool get isConstant => false;
 }

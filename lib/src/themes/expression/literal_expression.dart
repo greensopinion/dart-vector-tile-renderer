@@ -7,4 +7,7 @@ class LiteralExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) => _literal;
+
+  @override
+  bool get isConstant => true;
 }
