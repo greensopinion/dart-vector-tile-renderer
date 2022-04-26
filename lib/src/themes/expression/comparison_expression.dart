@@ -19,6 +19,9 @@ class ComparisonExpression extends Expression {
     }
     return false;
   }
+
+  @override
+  bool get isConstant => _first.isConstant && _second.isConstant;
 }
 
 class MatchExpression extends Expression {
@@ -47,6 +50,9 @@ class MatchExpression extends Expression {
       return _outputs.last.evaluate(context);
     }
   }
+
+  @override
+  bool get isConstant => false;
 }
 
 @override

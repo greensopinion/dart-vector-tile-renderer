@@ -33,8 +33,10 @@ class TextApproximation {
           : approximateLineHeight;
       final size = Size(approximateWidth, approximateHeight);
       _size = size;
-      _translation =
-          _offset(size, style.textLayout!.anchor.evaluate(evaluationContext));
+      _translation = _offset(
+          size,
+          style.textLayout!.anchor.evaluate(evaluationContext) ??
+              LayoutAnchor.DEFAULT);
     }
   }
 
@@ -139,7 +141,8 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    return _offset(_painter!.size, style.textLayout!.anchor.evaluate(context));
+    return _offset(_painter!.size,
+        style.textLayout!.anchor.evaluate(context) ?? LayoutAnchor.DEFAULT);
   }
 }
 

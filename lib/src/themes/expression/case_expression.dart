@@ -25,6 +25,9 @@ class CaseExpression extends Expression {
     }
     return null;
   }
+
+  @override
+  bool get isConstant => false;
 }
 
 Set<String> _createProperties(List<ConditionOutputPair> cases) {

@@ -22,6 +22,9 @@ abstract class InterpolateExpression extends Expression {
             _createProperties(_input, _stops));
 
   @override
+  bool get isConstant => false;
+
+  @override
   evaluate(EvaluationContext context) {
     var input = _input.evaluate(context);
     if (input is num) {

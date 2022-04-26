@@ -15,6 +15,9 @@ class DoubleExpression extends Expression {
     }
     return null;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
 extension NumericExpressionExtension on Expression {

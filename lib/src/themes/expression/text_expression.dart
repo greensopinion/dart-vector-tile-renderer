@@ -1,7 +1,7 @@
 import '../style.dart';
 import 'expression.dart';
 
-class LayoutAnchorExpression extends Expression {
+class LayoutAnchorExpression extends Expression<LayoutAnchor> {
   final Expression _delegate;
 
   LayoutAnchorExpression(this._delegate)
@@ -16,9 +16,12 @@ class LayoutAnchorExpression extends Expression {
     }
     return LayoutAnchor.DEFAULT;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
-class LayoutPlacementExpression extends Expression {
+class LayoutPlacementExpression extends Expression<LayoutPlacement> {
   final Expression _delegate;
 
   LayoutPlacementExpression(this._delegate)
@@ -33,9 +36,12 @@ class LayoutPlacementExpression extends Expression {
     }
     return LayoutPlacement.DEFAULT;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
-class LayoutJustifyExpression extends Expression {
+class LayoutJustifyExpression extends Expression<LayoutJustify> {
   final Expression _delegate;
 
   LayoutJustifyExpression(this._delegate)
@@ -50,15 +56,18 @@ class LayoutJustifyExpression extends Expression {
     }
     return LayoutJustify.DEFAULT;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
 extension TextExpressionExtension on Expression {
-  LayoutAnchorExpression asLayoutAnchorExpression() =>
+  Expression<LayoutAnchor> asLayoutAnchorExpression() =>
       LayoutAnchorExpression(this);
 
-  LayoutPlacementExpression asLayoutPlacementExpression() =>
+  Expression<LayoutPlacement> asLayoutPlacementExpression() =>
       LayoutPlacementExpression(this);
 
-  LayoutJustifyExpression asLayoutJustifyExpression() =>
+  Expression<LayoutJustify> asLayoutJustifyExpression() =>
       LayoutJustifyExpression(this);
 }

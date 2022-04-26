@@ -52,6 +52,8 @@ abstract class Expression<T> {
 
   /// the names of properties accessed by this expression
   Set<String> properties() => _properties;
+
+  bool get isConstant;
 }
 
 class UnsupportedExpression extends Expression {
@@ -63,6 +65,9 @@ class UnsupportedExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) => null;
+
+  @override
+  bool get isConstant => true;
 }
 
 class NotNullExpression extends Expression {
@@ -73,6 +78,9 @@ class NotNullExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) => _delegate.evaluate(context) != null;
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
 class NotExpression extends Expression {
@@ -90,6 +98,9 @@ class NotExpression extends Expression {
     context.logger.warn(() => 'NotExpression expected bool but got $operand');
     return null;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
 class EqualsExpression extends Expression {
@@ -104,6 +115,9 @@ class EqualsExpression extends Expression {
   evaluate(EvaluationContext context) {
     return _first.evaluate(context) == _second.evaluate(context);
   }
+
+  @override
+  bool get isConstant => _first.isConstant && _second.isConstant;
 }
 
 class InExpression extends Expression {
@@ -119,6 +133,9 @@ class InExpression extends Expression {
     final first = _first.evaluate(context);
     return _values.any((e) => first == e);
   }
+
+  @override
+  bool get isConstant => _first.isConstant;
 }
 
 class AnyExpression extends Expression {
@@ -140,6 +157,9 @@ class AnyExpression extends Expression {
     }
     return false;
   }
+
+  @override
+  bool get isConstant => !_delegates.any((e) => !e.isConstant);
 }
 
 class AllExpression extends Expression {
@@ -161,6 +181,9 @@ class AllExpression extends Expression {
     }
     return true;
   }
+
+  @override
+  bool get isConstant => !_delegates.any((e) => !e.isConstant);
 }
 
 class ToStringExpression extends Expression {
@@ -172,4 +195,7 @@ class ToStringExpression extends Expression {
   @override
   evaluate(EvaluationContext context) =>
       _delegate.evaluate(context)?.toString() ?? '';
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }

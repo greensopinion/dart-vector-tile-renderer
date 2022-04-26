@@ -1,7 +1,8 @@
 import '../style.dart';
+import 'caching_expression.dart';
 import 'expression.dart';
 
-class LineCapExpression extends Expression {
+class LineCapExpression extends Expression<LineCap> {
   final Expression _delegate;
 
   LineCapExpression(this._delegate)
@@ -16,9 +17,12 @@ class LineCapExpression extends Expression {
     }
     return LineCap.DEFAULT;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
-class LineJoinExpression extends Expression {
+class LineJoinExpression extends Expression<LineJoin> {
   final Expression _delegate;
 
   LineJoinExpression(this._delegate)
@@ -33,9 +37,14 @@ class LineJoinExpression extends Expression {
     }
     return LineJoin.DEFAULT;
   }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
 }
 
 extension LineCapExpressionExtension on Expression {
-  LineCapExpression asLineCapExpression() => LineCapExpression(this);
-  LineJoinExpression asLineJoinExpression() => LineJoinExpression(this);
+  Expression<LineCap> asLineCapExpression() =>
+      wrapConstant(LineCapExpression(this));
+  Expression<LineJoin> asLineJoinExpression() =>
+      wrapConstant(LineJoinExpression(this));
 }

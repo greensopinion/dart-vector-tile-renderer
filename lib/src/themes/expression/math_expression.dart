@@ -24,4 +24,7 @@ class NaryMathExpression extends Expression {
     }
     return previous;
   }
+
+  @override
+  bool get isConstant => false;
 }

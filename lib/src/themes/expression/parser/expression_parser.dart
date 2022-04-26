@@ -80,7 +80,7 @@ class ExpressionParser {
       if (delegate != null && delegate.matches(json)) {
         final expression = delegate.parse(json);
         if (expression != null) {
-          return expression;
+          return wrapConstant(expression);
         }
       }
     }
@@ -191,7 +191,7 @@ class _CacheParserWrapper extends ExpressionComponentParser {
   Expression? parse(List json) {
     final result = _delegate.parse(json);
     if (result != null) {
-      return CachingExpression(result);
+      return cache(result);
     }
     return null;
   }
