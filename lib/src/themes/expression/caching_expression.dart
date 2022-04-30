@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
-import 'literal_expression.dart';
 
 import 'expression.dart';
+import 'literal_expression.dart';
 
 Expression<T> wrapConstant<T>(Expression<T> delegate) => delegate.isConstant &&
         !(delegate is LiteralExpression) &&

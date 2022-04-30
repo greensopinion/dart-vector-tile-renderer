@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
+import '../symbols/symbols.dart';
 
 import '../context.dart';
 import '../themes/expression/expression.dart';
@@ -15,6 +16,9 @@ class TextApproximation {
   Offset? _translation;
   Size? _size;
   TextRenderer? _renderer;
+
+  StyledSymbol? _symbol;
+  bool _symbolCreated = false;
 
   TextApproximation(
       this.context, this.evaluationContext, this.style, this.textLines) {
@@ -45,10 +49,18 @@ class TextApproximation {
 
   bool get hasRenderer => _renderer != null;
 
+  StyledSymbol? get styledSymbol {
+    if (!_symbolCreated) {
+      _symbol = _createStyledSymbol(context, evaluationContext, style, text);
+      _symbolCreated = true;
+    }
+    return _symbol;
+  }
+
   TextRenderer get renderer {
     var result = _renderer;
     if (result == null) {
-      result = TextRenderer(context, evaluationContext, style, text);
+      result = TextRenderer(context, evaluationContext, style, styledSymbol!);
       _renderer = result;
     }
     return result;
@@ -61,23 +73,58 @@ class TextApproximation {
     return _labelBox(offset, _translation, size!.width, size!.height,
         translated: translated);
   }
+
+  StyledSymbol? _createStyledSymbol(Context context,
+      EvaluationContext evaluationContext, Style style, String text) {
+    final foreground = style.textPaint!.paint(evaluationContext);
+    if (foreground == null) {
+      return null;
+    }
+    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
+    if (textSize != null) {
+      if (context.zoomScaleFactor > 1.0) {
+        textSize = textSize / context.zoomScaleFactor;
+      }
+      double? spacing =
+          style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
+      final shadows = style.textHalo?.evaluate(evaluationContext);
+      final textStyle = TextStyle(
+          foreground: foreground,
+          fontSize: textSize,
+          letterSpacing: spacing,
+          shadows: shadows,
+          fontFamily: style.textLayout?.fontFamily,
+          fontStyle: style.textLayout?.fontStyle);
+      final textTransform = style.textLayout?.textTransform;
+      final transformedText =
+          textTransform == null ? text : textTransform(text) ?? text;
+      final alignment = style.textLayout?.justify.evaluate(evaluationContext);
+      return StyledSymbol(
+          style: SymbolStyle(
+              textAlign: alignment?.toTextAlign() ?? TextAlign.center,
+              textStyle: textStyle),
+          text: transformedText);
+    }
+    return null;
+  }
 }
 
 class TextRenderer {
   final Context context;
   final Style style;
-  final String text;
-
+  final StyledSymbol symbol;
   late final TextPainter? _painter;
   late final Offset? _translation;
+
   TextRenderer(this.context, EvaluationContext evaluationContext, this.style,
-      this.text) {
-    _painter = _createTextPainter(context, evaluationContext, style, text);
+      this.symbol) {
+    _painter = context.textPainterProvider.provide(symbol);
     _translation = _layout(evaluationContext);
   }
 
   double get textHeight => _painter!.height;
   Offset? get translation => _translation;
+  bool get canPaint => _painter != null;
 
   Rect? labelBox(Offset offset, {required bool translated}) {
     if (_painter == null) {
@@ -101,40 +148,6 @@ class TextRenderer {
     if (_translation != null) {
       context.canvas.restore();
     }
-  }
-
-  TextPainter? _createTextPainter(Context context,
-      EvaluationContext evaluationContext, Style style, String text) {
-    final foreground = style.textPaint!.paint(evaluationContext);
-    if (foreground == null) {
-      return null;
-    }
-    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
-    if (textSize != null) {
-      if (context.zoomScaleFactor > 1.0) {
-        textSize = textSize / context.zoomScaleFactor;
-      }
-      double? spacing =
-          style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
-      final shadows = style.textHalo?.call(evaluationContext);
-      final textStyle = TextStyle(
-          foreground: foreground,
-          fontSize: textSize,
-          letterSpacing: spacing,
-          shadows: shadows,
-          fontFamily: style.textLayout?.fontFamily,
-          fontStyle: style.textLayout?.fontStyle);
-      final textTransform = style.textLayout?.textTransform;
-      final transformedText =
-          textTransform == null ? text : textTransform(text);
-      final alignment = style.textLayout?.justify.evaluate(evaluationContext);
-      return TextPainter(
-          text: TextSpan(style: textStyle, text: transformedText),
-          textAlign: alignment?.toTextAlign() ?? TextAlign.center,
-          textDirection: TextDirection.ltr)
-        ..layout();
-    }
-    return null;
   }
 
   Offset? _layout(EvaluationContext context) {

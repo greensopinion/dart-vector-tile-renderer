@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'symbols/text_painter.dart';
+
 import 'constants.dart';
 import 'context.dart';
 import 'features/feature_renderer.dart';
@@ -13,7 +15,11 @@ class Renderer {
   final Theme theme;
   final Logger logger;
   final FeatureDispatcher featureRenderer;
-  Renderer({required this.theme, Logger? logger})
+  final TextPainterProvider painterProvider;
+  Renderer(
+      {required this.theme,
+      this.painterProvider = const DefaultTextPainterProvider(),
+      Logger? logger})
       : this.logger = logger ?? Logger.noop(),
         featureRenderer = FeatureDispatcher(logger ?? Logger.noop());
 
@@ -38,8 +44,17 @@ class Renderer {
       final tileClip = clip ?? tileSpace;
       final optimizations = Optimizations(
           skipInBoundsChecks: clip == null || tileClip == tileSpace);
-      final context = Context(logger, canvas, featureRenderer, tileset,
-          zoomScaleFactor, zoom, tileSpace, tileClip, optimizations);
+      final context = Context(
+          logger: logger,
+          canvas: canvas,
+          featureRenderer: featureRenderer,
+          tileset: tileset,
+          zoomScaleFactor: zoomScaleFactor,
+          zoom: zoom,
+          tileSpace: tileSpace,
+          tileClip: tileClip,
+          optimizations: optimizations,
+          textPainterProvider: painterProvider);
       final effectiveTheme = theme.atZoom(zoom);
       effectiveTheme.layers.forEach((themeLayer) {
         logger.log(() => 'rendering theme layer ${themeLayer.id}');
