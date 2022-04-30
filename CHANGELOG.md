@@ -1,3 +1,6 @@
+## 2.4.4
+
+* enable caching and incremental instantiation of TextPainter, see `TextPainterProvider` for details
 ## 2.4.3
 
 * improved performance with expression short-circuit for constant expressions
