@@ -1,6 +1,6 @@
 import 'expression.dart';
 
-class DoubleExpression extends Expression {
+class DoubleExpression extends Expression<double> {
   final Expression _delegate;
 
   DoubleExpression(this._delegate)
@@ -21,5 +21,5 @@ class DoubleExpression extends Expression {
 }
 
 extension NumericExpressionExtension on Expression {
-  DoubleExpression asDoubleExpression() => DoubleExpression(this);
+  Expression<double> asDoubleExpression() => DoubleExpression(this);
 }

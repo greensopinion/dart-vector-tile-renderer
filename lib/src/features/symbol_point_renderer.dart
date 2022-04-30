@@ -80,16 +80,21 @@ class SymbolPointRenderer extends FeatureRenderer {
       return false;
     }
 
-    return _preciselyOccupyLabelSpaceAtOffset(context, text, offset);
+    return _preciselyOccupyLabelSpaceAtOffset(box, context, text, offset);
   }
 
   bool _preciselyOccupyLabelSpaceAtOffset(
+    Rect approximateBox,
     Context context,
     TextApproximation text,
     Offset offset,
   ) {
     final box = text.renderer.labelBox(offset, translated: true);
     if (box == null) {
+      if (text.styledSymbol != null) {
+        context.labelSpace.occupy(text.text, approximateBox);
+        return true;
+      }
       return false;
     }
 

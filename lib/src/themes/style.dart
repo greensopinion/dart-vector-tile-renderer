@@ -4,11 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'expression/expression.dart';
 
 import '../extensions.dart';
-import 'expression/numeric_expression.dart';
 import 'paint_factory.dart';
 
 typedef ColorZoomFunction = Color? Function(double zoom);
-typedef TextHaloFunction = List<Shadow>? Function(EvaluationContext context);
 typedef TextTransformFunction = String? Function(String? text);
 
 class Style {
@@ -17,7 +15,7 @@ class Style {
   final LineLayout? lineLayout;
   final PaintStyle? textPaint;
   final TextLayout? textLayout;
-  final TextHaloFunction? textHalo;
+  final Expression<List<Shadow>>? textHalo;
   final PaintStyle? outlinePaint;
 
   Style(
@@ -74,9 +72,9 @@ class TextLayout {
   final Expression<LayoutAnchor> anchor;
   final Expression<LayoutJustify> justify;
   final Expression text;
-  final DoubleExpression textSize;
-  final DoubleExpression? textLetterSpacing;
-  final DoubleExpression? maxWidth;
+  final Expression<double> textSize;
+  final Expression<double>? textLetterSpacing;
+  final Expression<double>? maxWidth;
   final FontStyle? fontStyle;
   final String? fontFamily;
   final TextTransformFunction? textTransform;

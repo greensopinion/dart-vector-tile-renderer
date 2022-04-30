@@ -9,8 +9,8 @@ import 'expression/numeric_expression.dart';
 class PaintStyle {
   final String id;
   final PaintingStyle paintingStyle;
-  final DoubleExpression opacity;
-  final DoubleExpression strokeWidth;
+  final Expression<double> opacity;
+  final Expression<double> strokeWidth;
   final Expression<Color> color;
 
   PaintStyle(

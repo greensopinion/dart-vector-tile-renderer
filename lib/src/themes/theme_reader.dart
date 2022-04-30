@@ -187,10 +187,12 @@ class ThemeReader {
         expressionParser.parse(layout?['line-join']).asLineJoinExpression());
   }
 
-  TextHaloFunction? _toTextHalo(jsonLayer) {
+  Expression<List<Shadow>>? _toTextHalo(jsonLayer) {
     final paint = jsonLayer['paint'];
     if (paint != null) {
-      final haloWidth = (paint['text-halo-width'] as num?)?.toDouble();
+      final haloWidth = expressionParser
+          .parseOptional(paint['text-halo-width'])
+          ?.asDoubleExpression();
       final haloColor = expressionParser
           .parseOptional(paint['text-halo-color'])
           ?.asColorExpression();
@@ -201,13 +203,13 @@ class ThemeReader {
     return null;
   }
 
-  DoubleExpression _toTextSize(layout) {
+  Expression<double> _toTextSize(layout) {
     return expressionParser
         .parse(layout?['text-size'], whenNull: () => LiteralExpression(16.0))
         .asDoubleExpression();
   }
 
-  DoubleExpression? _toDoubleExpression(layoutProperty) {
+  Expression<double>? _toDoubleExpression(layoutProperty) {
     if (layoutProperty == null) {
       return null;
     }

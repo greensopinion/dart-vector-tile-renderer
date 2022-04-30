@@ -71,7 +71,7 @@ class SymbolLineRenderer extends FeatureRenderer {
 
     final metrics = path.computeMetrics().toList();
     final renderBox = _findMiddleMetric(context, metrics, textApproximation);
-    if (renderBox == null) {
+    if (renderBox == null || !textApproximation.renderer.canPaint) {
       return;
     }
 
@@ -166,8 +166,14 @@ class SymbolLineRenderer extends FeatureRenderer {
     if (box != null) {
       final textSpace = _textSpace(box, text.translation, tangent);
       if (context.labelSpace.canOccupy(text.text, textSpace)) {
-        return _preciselyOccupyLabelSpaceAtTangent(
-            context, text.renderer, tangent);
+        if (text.styledSymbol != null) {
+          var preciseBox = _preciselyOccupyLabelSpaceAtTangent(
+              context, text.renderer, tangent);
+          if (preciseBox == null) {
+            preciseBox = _RenderBox(box, tangent);
+          }
+          return preciseBox;
+        }
       }
     }
     return null;
@@ -181,8 +187,8 @@ class SymbolLineRenderer extends FeatureRenderer {
     final box = renderer.labelBox(tangent.position, translated: false);
     if (box != null) {
       final textSpace = _textSpace(box, renderer.translation, tangent);
-      if (context.labelSpace.canOccupy(renderer.text, textSpace)) {
-        context.labelSpace.occupy(renderer.text, textSpace);
+      if (context.labelSpace.canOccupy(renderer.symbol.text, textSpace)) {
+        context.labelSpace.occupy(renderer.symbol.text, textSpace);
         return _RenderBox(textSpace, tangent);
       }
     }

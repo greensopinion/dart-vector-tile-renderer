@@ -8,6 +8,8 @@ export 'src/logger.dart';
 export 'src/model/tile_factory.dart';
 export 'src/model/tile_model.dart';
 export 'src/renderer.dart';
+export 'src/symbols/symbols.dart';
+export 'src/symbols/text_painter.dart';
 export 'src/themes/provided_themes.dart';
 export 'src/themes/theme.dart';
 export 'src/themes/theme_reader.dart';
