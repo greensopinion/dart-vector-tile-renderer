@@ -1,4 +1,4 @@
-## 2.4.4
+## 2.4.5
 
 * enable caching and incremental instantiation of TextPainter, see `TextPainterProvider` for details
 ## 2.4.3
