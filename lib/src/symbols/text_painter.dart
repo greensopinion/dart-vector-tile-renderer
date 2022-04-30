@@ -11,7 +11,7 @@ class DefaultTextPainterProvider extends TextPainterProvider {
   const DefaultTextPainterProvider();
 
   @override
-  TextPainter? provide(StyledSymbol symbol) {
+  TextPainter provide(StyledSymbol symbol) {
     return TextPainter(
         text: TextSpan(style: symbol.style.textStyle, text: symbol.text),
         textAlign: symbol.style.textAlign,
@@ -37,9 +37,11 @@ class CreatedTextPainterProvider extends TextPainterProvider {
 
   Iterable<StyledSymbol> allSymbols() => _painterBySymbol.keys;
 
-  void create(StyledSymbol symbol) {
-    _painterBySymbol[symbol] = _delegate.provide(symbol);
+  TextPainter create(StyledSymbol symbol) {
+    final created = _painterBySymbol[symbol] ?? _delegate.provide(symbol);
+    _painterBySymbol[symbol] = created;
     _symbolsWithoutPainter.remove(symbol);
+    return created;
   }
 
   void evict(StyledSymbol symbol) {
