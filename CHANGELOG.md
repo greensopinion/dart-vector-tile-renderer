@@ -1,3 +1,7 @@
+## 2.4.6
+
+* add minimal support for fill-extrusion polygons by rendering a polygon without extrusion
+
 ## 2.4.5
 
 * enable caching and incremental instantiation of TextPainter, see `TextPainterProvider` for details
