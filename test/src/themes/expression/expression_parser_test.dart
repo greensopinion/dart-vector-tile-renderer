@@ -152,6 +152,14 @@ void main() {
       _assertGetProperty('no-such-value', null);
     });
 
+    test('parses a property expression', () {
+      // I couldn't find the spec for this, but themes use it with
+      // extrusion
+      final expression =
+          _parser.parse({'property': 'a-string', 'type': 'identity'});
+      expect(expression.evaluate(_context()), equals('a-string-value'));
+    });
+
     test('parses a has property', () {
       _assertHasProperty('a-string', true);
       _assertHasProperty('a-bool', true);

@@ -33,22 +33,14 @@ class PolygonRenderer extends FeatureRenderer {
 
     final polygons = feature.paths;
 
-    if (polygons.length == 1) {
-      logger.log(() => 'rendering polygon');
-    } else if (polygons.length > 1) {
-      logger.log(() => 'rendering multi-polygon');
-    }
-
     for (final polygon in polygons) {
       if (!context.optimizations.skipInBoundsChecks &&
           !context.tileSpaceMapper.isPathWithinTileClip(polygon)) {
         continue;
       }
-
       if (fillPaint != null) {
         context.canvas.drawPath(polygon, fillPaint);
       }
-
       if (outlinePaint != null) {
         context.canvas.drawPath(polygon, outlinePaint);
       }

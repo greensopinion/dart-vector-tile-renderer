@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
@@ -11,6 +12,7 @@ typedef TextTransformFunction = String? Function(String? text);
 
 class Style {
   final PaintStyle? fillPaint;
+  final Extrusion? fillExtrusion;
   final PaintStyle? linePaint;
   final LineLayout? lineLayout;
   final PaintStyle? textPaint;
@@ -20,6 +22,7 @@ class Style {
 
   Style(
       {this.fillPaint,
+      this.fillExtrusion,
       this.outlinePaint,
       this.linePaint,
       this.lineLayout,
@@ -123,4 +126,17 @@ class LineJoin {
   static List<LineJoin> values() => [bevel, round, miter];
   static LineJoin fromName(String? name) =>
       values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
+}
+
+class Extrusion {
+  final Expression<double>? base;
+  final Expression<double>? height;
+
+  Extrusion({this.base, this.height});
+
+  double calculateHeight(EvaluationContext context) {
+    final base = this.base?.evaluate(context) ?? 0;
+    final height = this.height?.evaluate(context) ?? 0;
+    return max(height, base);
+  }
 }

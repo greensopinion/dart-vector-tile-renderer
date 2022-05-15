@@ -33,7 +33,14 @@ class Theme {
 }
 
 /// The type of theme layer
-enum ThemeLayerType { fill, line, symbol, background, unsupported }
+enum ThemeLayerType {
+  fill,
+  fill_extrusion,
+  line,
+  symbol,
+  background,
+  unsupported
+}
 
 /// Represents a layer in the theme. Can [render] to a [Context], and specifies
 /// its [type].

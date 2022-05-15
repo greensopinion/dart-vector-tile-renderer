@@ -103,6 +103,11 @@ class ExpressionParser {
             ..._flattenStops(stops)
           ]);
         }
+      } else {
+        final property = json['property'];
+        if (property is String) {
+          return GetPropertyExpression(property);
+        }
       }
     }
     logger.warn(() => 'Unsupported expression syntax: $json');

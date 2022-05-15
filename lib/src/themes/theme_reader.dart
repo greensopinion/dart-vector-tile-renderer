@@ -52,6 +52,8 @@ class ThemeReader {
       return _toBackgroundTheme(jsonLayer);
     } else if (type == 'fill') {
       return _toFillTheme(jsonLayer);
+    } else if (type == 'fill-extrusion') {
+      return _toFillExtrusionTheme(jsonLayer);
     } else if (type == 'line') {
       return _toLineTheme(jsonLayer);
     } else if (type == 'symbol') {
@@ -71,6 +73,30 @@ class ThemeReader {
     return null;
   }
 
+  ThemeLayer? _toFillExtrusionTheme(jsonLayer) {
+    final selector = selectorFactory.create(jsonLayer);
+    final paintJson = jsonLayer['paint'];
+    final paint = paintFactory.create(
+        _layerId(jsonLayer), PaintingStyle.fill, 'fill-extrusion', paintJson);
+    if (paint != null) {
+      final base = expressionParser
+          .parseOptional(paintJson['fill-extrusion-base'])
+          ?.asDoubleExpression();
+      final height = expressionParser
+          .parseOptional(paintJson['fill-extrusion-height'])
+          ?.asDoubleExpression();
+      return DefaultLayer(
+          jsonLayer['id'] ?? _unknownId, ThemeLayerType.fill_extrusion,
+          selector: selector,
+          style: Style(
+              fillPaint: paint,
+              fillExtrusion: Extrusion(base: base, height: height)),
+          minzoom: _minZoom(jsonLayer),
+          maxzoom: _maxZoom(jsonLayer));
+    }
+    return null;
+  }
+
   ThemeLayer? _toFillTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
@@ -80,8 +106,7 @@ class ThemeReader {
         _layerId(jsonLayer), PaintingStyle.stroke, 'fill-outline', paintJson,
         defaultStrokeWidth: 0.1);
     if (paint != null) {
-      return DefaultLayer(
-          jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
+      return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.fill,
           selector: selector,
           style: Style(fillPaint: paint, outlinePaint: outlinePaint),
           minzoom: _minZoom(jsonLayer),
@@ -96,8 +121,7 @@ class ThemeReader {
     final lineStyle = paintFactory.create(
         _layerId(jsonLayer), PaintingStyle.stroke, 'line', jsonPaint);
     if (lineStyle != null) {
-      return DefaultLayer(
-          jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
+      return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.line,
           selector: selector,
           style:
               Style(linePaint: lineStyle, lineLayout: _toLineLayout(jsonLayer)),
@@ -118,8 +142,7 @@ class ThemeReader {
       final layout = _toTextLayout(jsonLayer);
       final textHalo = _toTextHalo(jsonLayer);
 
-      return DefaultLayer(
-          jsonLayer['id'] ?? _unknownId, _toLayerType(jsonLayer),
+      return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.symbol,
           selector: selector,
           style:
               Style(textPaint: paint, textLayout: layout, textHalo: textHalo),
@@ -214,22 +237,6 @@ class ThemeReader {
       return null;
     }
     return expressionParser.parse(layoutProperty).asDoubleExpression();
-  }
-}
-
-ThemeLayerType _toLayerType(jsonLayer) {
-  final type = jsonLayer['type'] ?? '';
-  switch (type) {
-    case 'background':
-      return ThemeLayerType.background;
-    case 'fill':
-      return ThemeLayerType.fill;
-    case 'line':
-      return ThemeLayerType.line;
-    case 'symbol':
-      return ThemeLayerType.symbol;
-    default:
-      return ThemeLayerType.unsupported;
   }
 }
 
