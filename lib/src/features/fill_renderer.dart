@@ -4,9 +4,9 @@ import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
 
-class PolygonRenderer extends FeatureRenderer {
+class FillRenderer extends FeatureRenderer {
   final Logger logger;
-  PolygonRenderer(this.logger);
+  FillRenderer(this.logger);
 
   @override
   void render(

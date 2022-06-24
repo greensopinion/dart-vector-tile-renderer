@@ -4,9 +4,10 @@ import '../model/tile_model.dart';
 import '../themes/style.dart';
 import '../themes/theme.dart';
 import 'line_renderer.dart';
-import 'polygon_renderer.dart';
+import 'fill_renderer.dart';
 import 'symbol_line_renderer.dart';
 import 'symbol_point_renderer.dart';
+import 'symbol_polygon_renderer.dart';
 
 abstract class FeatureRenderer {
   void render(
@@ -20,7 +21,7 @@ abstract class FeatureRenderer {
 
 class FeatureDispatcher extends FeatureRenderer {
   final Logger logger;
-  final Map<TileFeatureType, FeatureRenderer> typeToRenderer;
+  final Map<ThemeLayerType, FeatureRenderer> typeToRenderer;
   final Map<TileFeatureType, FeatureRenderer> symbolTypeToRenderer;
 
   FeatureDispatcher(this.logger)
@@ -34,10 +35,13 @@ class FeatureDispatcher extends FeatureRenderer {
     TileLayer layer,
     TileFeature feature,
   ) {
-    final rendererMapping = layerType == ThemeLayerType.symbol
-        ? symbolTypeToRenderer
-        : typeToRenderer;
-    final delegate = rendererMapping[feature.type];
+    FeatureRenderer? delegate;
+    if (layerType == ThemeLayerType.symbol) {
+      delegate = symbolTypeToRenderer[feature.type];
+    } else {
+      delegate = typeToRenderer[layerType];
+    }
+
     if (delegate == null) {
       logger.warn(() =>
           'layer type $layerType feature ${feature.type} is not implemented');
@@ -46,11 +50,11 @@ class FeatureDispatcher extends FeatureRenderer {
     }
   }
 
-  static Map<TileFeatureType, FeatureRenderer> createDispatchMapping(
+  static Map<ThemeLayerType, FeatureRenderer> createDispatchMapping(
       Logger logger) {
     return {
-      TileFeatureType.polygon: PolygonRenderer(logger),
-      TileFeatureType.linestring: LineRenderer(logger),
+      ThemeLayerType.fill: FillRenderer(logger),
+      ThemeLayerType.line: LineRenderer(logger),
     };
   }
 
@@ -58,7 +62,7 @@ class FeatureDispatcher extends FeatureRenderer {
       Logger logger) {
     return {
       TileFeatureType.point: SymbolPointRenderer(logger),
-      TileFeatureType.linestring: SymbolLineRenderer(logger)
+      TileFeatureType.linestring: SymbolLineRenderer(logger),
     };
   }
 }
