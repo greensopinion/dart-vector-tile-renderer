@@ -203,11 +203,26 @@ class ThemeReader {
   }
 
   LineLayout _toLineLayout(jsonLayer) {
+    List<num> dashArray = [];
+
+    // check if we need to paint line dashed
+    final dashjson = jsonLayer['paint']['line-dasharray'];
+    if (dashjson != null) {
+      // check if at least 2 values are specified (otherwise dashing useless)
+      if ((dashjson as List<num>).length >= 2) {
+        // due to spec vals must be >= 0
+        assert(dashjson[0] >= .0);
+        assert(dashjson[1] >= .0);
+        dashArray = dashjson;
+      }
+    }
+
     final layout = jsonLayer['layout'];
     expressionParser.parse(layout?['line-cap']).asLineCapExpression();
     return LineLayout(
         expressionParser.parse(layout?['line-cap']).asLineCapExpression(),
-        expressionParser.parse(layout?['line-join']).asLineJoinExpression());
+        expressionParser.parse(layout?['line-join']).asLineJoinExpression(),
+        dashArray);
   }
 
   Expression<List<Shadow>>? _toTextHalo(jsonLayer) {

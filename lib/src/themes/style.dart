@@ -99,8 +99,9 @@ class TextLayout {
 class LineLayout {
   final Expression<LineCap> lineCap;
   final Expression<LineJoin> lineJoin;
+  final List<num> dashArray;
 
-  LineLayout(this.lineCap, this.lineJoin);
+  LineLayout(this.lineCap, this.lineJoin, this.dashArray);
 }
 
 class LineCap {
