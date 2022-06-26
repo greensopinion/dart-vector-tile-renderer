@@ -29,7 +29,7 @@ class SymbolLineRenderer extends FeatureRenderer {
       return;
     }
 
-    final lines = feature.paths;
+    final lines = feature.getPaths();
     if (lines.isEmpty) {
       return;
     }
