@@ -6,14 +6,14 @@ import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
 
-class PaintExpression extends Expression<Paint> {
+class PaintExpression extends Expression<PaintModel> {
   final PaintStyle _delegate;
 
   PaintExpression(this._delegate)
       : super(_cacheKey(_delegate), _properties(_delegate));
 
   @override
-  Paint? evaluate(EvaluationContext context) => _delegate.paint(context);
+  PaintModel? evaluate(EvaluationContext context) => _delegate.paint(context);
 
   @override
   bool get isConstant => false;
@@ -28,21 +28,27 @@ class PaintExpression extends Expression<Paint> {
       };
 }
 
+class PaintModel extends Paint {
+  List<double> strokeDashPattern = [];
+}
+
 class PaintStyle {
   final String id;
   final PaintingStyle paintingStyle;
   final Expression<double> opacity;
   final Expression<double> strokeWidth;
   final Expression<Color> color;
+  final List<double> strokeDashPattern;
 
   PaintStyle(
       {required this.id,
       required this.paintingStyle,
       required this.opacity,
       required this.strokeWidth,
-      required this.color});
+      required this.color,
+      required this.strokeDashPattern});
 
-  Paint? paint(EvaluationContext context) {
+  PaintModel? paint(EvaluationContext context) {
     final opacity = this.opacity.evaluate(context);
     if (opacity != null && opacity <= 0) {
       return null;
@@ -51,7 +57,9 @@ class PaintStyle {
     if (color == null) {
       return null;
     }
-    final paint = Paint()..style = paintingStyle;
+    final paint = PaintModel()
+      ..style = paintingStyle
+      ..strokeDashPattern = strokeDashPattern;
     if (opacity != null && opacity < 1.0) {
       paint.color = color.withOpacity(opacity);
     } else {
@@ -73,7 +81,7 @@ class PaintFactory {
   final ExpressionParser expressionParser;
   PaintFactory(this.logger) : expressionParser = ExpressionParser(logger);
 
-  Expression<Paint>? create(
+  Expression<PaintModel>? create(
       String id, PaintingStyle style, String prefix, paint,
       {double? defaultStrokeWidth = 1.0}) {
     if (paint == null) {
@@ -87,11 +95,23 @@ class PaintFactory {
         whenNull: () => LiteralExpression(1.0));
     final strokeWidth = expressionParser.parse(paint['$prefix-width'],
         whenNull: () => LiteralExpression(defaultStrokeWidth));
+
+    List<double> dashArray = [];
+    final dashJson = paint['$prefix-dasharray'];
+    if (dashJson != null && dashJson is List<num> && dashJson.length >= 2) {
+      if (dashJson.any((element) => element < .0)) {
+        logger.warn(() => '$prefix-dasharray contains value < 0');
+      } else {
+        dashArray = dashJson.map((e) => e.toDouble()).toList(growable: false);
+      }
+    }
+
     return PaintExpression(PaintStyle(
         id: id,
         paintingStyle: style,
         opacity: opacity.asDoubleExpression(),
         strokeWidth: strokeWidth.asDoubleExpression(),
-        color: color.asColorExpression()));
+        color: color.asColorExpression(),
+        strokeDashPattern: dashArray));
   }
 }

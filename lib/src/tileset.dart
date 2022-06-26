@@ -59,7 +59,7 @@ class TilesetPreprocessor {
         if (_initializeGeometry) {
           for (final feature in features) {
             if (feature.feature.hasPaths) {
-              feature.feature.paths;
+              feature.feature.getPaths();
             } else if (feature.feature.hasPoints) {
               feature.feature.points;
             }
