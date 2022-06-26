@@ -7,7 +7,6 @@ import 'line_renderer.dart';
 import 'fill_renderer.dart';
 import 'symbol_line_renderer.dart';
 import 'symbol_point_renderer.dart';
-import 'symbol_polygon_renderer.dart';
 
 abstract class FeatureRenderer {
   void render(
@@ -54,6 +53,7 @@ class FeatureDispatcher extends FeatureRenderer {
       Logger logger) {
     return {
       ThemeLayerType.fill: FillRenderer(logger),
+      ThemeLayerType.fill_extrusion: FillRenderer(logger),
       ThemeLayerType.line: LineRenderer(logger),
     };
   }
