@@ -31,7 +31,7 @@ class FillRenderer extends FeatureRenderer {
     final fillPaint = style.fillPaint?.evaluate(evaluationContext);
     final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
 
-    final polygons = feature.paths;
+    final polygons = feature.getPaths();
 
     for (final polygon in polygons) {
       if (!context.optimizations.skipInBoundsChecks &&

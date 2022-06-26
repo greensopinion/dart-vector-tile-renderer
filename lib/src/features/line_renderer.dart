@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
@@ -49,13 +47,13 @@ class LineRenderer extends FeatureRenderer {
     effectivePaint.strokeWidth =
         context.tileSpaceMapper.widthFromPixelToTile(strokeWidth);
 
-    var dashLengths = style.lineLayout!.dashArray;
+    var dashLengths = style.linePaint?.dashArray ?? [];
     // map dash lengths to correct tile unit
     dashLengths = dashLengths.map((e) =>
         context.tileSpaceMapper.widthFromPixelToTile(e.toDouble())
     ).toList(growable: false);
 
-    final lines = feature.paths;
+    final lines = feature.getPaths(dashLengths: dashLengths);
 
     if (lines.length == 1) {
       logger.log(() => 'rendering linestring');
@@ -69,48 +67,7 @@ class LineRenderer extends FeatureRenderer {
         continue;
       }
 
-      // do we need a dashed line?
-      if (style.lineLayout!.dashArray.length >= 2) {
-        final dashedLine = dashPath(line, CircularIntervalList(dashLengths));
-        context.canvas.drawPath(dashedLine, effectivePaint);
-      } else {
-        context.canvas.drawPath(line, effectivePaint);
-      }
+      context.canvas.drawPath(line, effectivePaint);
     }
-  }
-
-  // convert a path into a dashed path with given intervals
-  Path dashPath(Path source, CircularIntervalList<num> dashArray) {
-    final Path dest = Path();
-    for (final PathMetric metric in source.computeMetrics()) {
-      // start point of dashing
-      double distance = .0;
-      bool draw = true;
-      while (distance < metric.length) {
-        final num len = dashArray.next;
-        if (draw) {
-          dest.addPath(metric.extractPath(distance, distance + len), Offset.zero);
-        }
-        distance += len;
-        draw = !draw;
-      }
-    }
-
-    return dest;
-  }
-}
-
-// Fixed list always rotating through elements
-class CircularIntervalList<T> {
-  CircularIntervalList(this._vals);
-
-  final List<T> _vals;
-  int _idx = 0;
-
-  T get next {
-    if (_idx >= _vals.length) {
-      _idx = 0;
-    }
-    return _vals[_idx++];
   }
 }
