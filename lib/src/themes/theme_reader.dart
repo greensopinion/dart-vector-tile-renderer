@@ -206,14 +206,14 @@ class ThemeReader {
     List<num> dashArray = [];
 
     // check if we need to paint line dashed
-    final dashjson = jsonLayer['paint']['line-dasharray'];
-    if (dashjson != null) {
+    final dashJson = jsonLayer['paint']['line-dasharray'];
+    if (dashJson != null) {
       // check if at least 2 values are specified (otherwise dashing useless)
-      if ((dashjson as List<num>).length >= 2) {
+      if ((dashJson as List<num>).length >= 2) {
         // due to spec vals must be >= 0
-        assert(dashjson[0] >= .0);
-        assert(dashjson[1] >= .0);
-        dashArray = dashjson;
+        assert(dashJson[0] >= .0);
+        assert(dashJson[1] >= .0);
+        dashArray = dashJson;
       }
     }
 

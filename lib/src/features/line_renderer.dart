@@ -49,9 +49,9 @@ class LineRenderer extends FeatureRenderer {
     effectivePaint.strokeWidth =
         context.tileSpaceMapper.widthFromPixelToTile(strokeWidth);
 
-    var dashlengths = style.lineLayout!.dashArray;
+    var dashLengths = style.lineLayout!.dashArray;
     // map dash lengths to correct tile unit
-    dashlengths = dashlengths.map((e) =>
+    dashLengths = dashLengths.map((e) =>
         context.tileSpaceMapper.widthFromPixelToTile(e.toDouble())
     ).toList(growable: false);
 
@@ -71,34 +71,33 @@ class LineRenderer extends FeatureRenderer {
 
       // do we need a dashed line?
       if (style.lineLayout!.dashArray.length >= 2) {
-        final dashedline = dashPath(
-            line, dashArray: CircularIntervalList(dashlengths));
-        context.canvas.drawPath(dashedline, effectivePaint);
+        final dashedLine = dashPath(line, CircularIntervalList(dashLengths));
+        context.canvas.drawPath(dashedLine, effectivePaint);
       } else {
         context.canvas.drawPath(line, effectivePaint);
       }
     }
   }
-}
 
-// convert a path into a dashed path with given intervals
-Path dashPath(Path source, {required CircularIntervalList<num> dashArray}) {
-  final Path dest = Path();
-  for (final PathMetric metric in source.computeMetrics()) {
-    // start point of dashing
-    double distance = .0;
-    bool draw = true;
-    while (distance < metric.length) {
-      final num len = dashArray.next;
-      if (draw) {
-        dest.addPath(metric.extractPath(distance, distance + len), Offset.zero);
+  // convert a path into a dashed path with given intervals
+  Path dashPath(Path source, CircularIntervalList<num> dashArray) {
+    final Path dest = Path();
+    for (final PathMetric metric in source.computeMetrics()) {
+      // start point of dashing
+      double distance = .0;
+      bool draw = true;
+      while (distance < metric.length) {
+        final num len = dashArray.next;
+        if (draw) {
+          dest.addPath(metric.extractPath(distance, distance + len), Offset.zero);
+        }
+        distance += len;
+        draw = !draw;
       }
-      distance += len;
-      draw = !draw;
     }
-  }
 
-  return dest;
+    return dest;
+  }
 }
 
 // Fixed list always rotating through elements
