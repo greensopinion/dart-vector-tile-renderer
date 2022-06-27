@@ -31,7 +31,8 @@ class FillRenderer extends FeatureRenderer {
     final fillPaint = style.fillPaint?.evaluate(evaluationContext);
     final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
 
-    final polygons = feature.getPaths();
+    final polygons = feature.getPaths(
+        dashLengths: style.outlinePaint?.strokeDashPattern ?? []);
 
     for (final polygon in polygons) {
       if (!context.optimizations.skipInBoundsChecks &&

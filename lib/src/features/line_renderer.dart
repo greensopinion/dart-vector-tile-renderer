@@ -47,11 +47,11 @@ class LineRenderer extends FeatureRenderer {
     effectivePaint.strokeWidth =
         context.tileSpaceMapper.widthFromPixelToTile(strokeWidth);
 
-    var dashLengths = style.linePaint?.dashArray ?? [];
     // map dash lengths to correct tile unit
-    dashLengths = dashLengths.map((e) =>
-        context.tileSpaceMapper.widthFromPixelToTile(e.toDouble())
-    ).toList(growable: false);
+    final dashLengths = style.linePaint?.strokeDashPattern
+            .map((e) => context.tileSpaceMapper.widthFromPixelToTile(e))
+            .toList(growable: false) ??
+        [];
 
     final lines = feature.getPaths(dashLengths: dashLengths);
 

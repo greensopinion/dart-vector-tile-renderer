@@ -12,7 +12,7 @@ class PaintStyle {
   final Expression<double> opacity;
   final Expression<double> strokeWidth;
   final Expression<Color> color;
-  final List<num> dashArray;
+  final List<double> strokeDashPattern;
 
   PaintStyle(
       {required this.id,
@@ -20,7 +20,7 @@ class PaintStyle {
       required this.opacity,
       required this.strokeWidth,
       required this.color,
-      required this.dashArray});
+      required this.strokeDashPattern});
 
   Paint? paint(EvaluationContext context) {
     final color = this.color.evaluate(context);
@@ -67,16 +67,16 @@ class PaintFactory {
     final strokeWidth = expressionParser.parse(paint['$prefix-width'],
         whenNull: () => LiteralExpression(defaultStrokeWidth));
 
-    List<num> dashArray = [];
+    List<double> dashArray = [];
     final dashJson = paint['$prefix-dasharray'];
-    if (dashJson != null) {
+    if (dashJson != null && dashJson is List<num>) {
       // check if at least 2 values are specified (otherwise dashing useless)
-      if ((dashJson as List<num>).length >= 2) {
+      if (dashJson.length >= 2) {
         // due to spec vals must be >= 0
         if (dashJson.any((element) => element < .0)) {
           logger.warn(() => '$prefix-dasharray contains value < 0');
         } else {
-          dashArray = dashJson;
+          dashArray = dashJson.map((e) => e.toDouble()).toList(growable: false);
         }
       }
     }
@@ -87,6 +87,6 @@ class PaintFactory {
         opacity: opacity.asDoubleExpression(),
         strokeWidth: strokeWidth.asDoubleExpression(),
         color: color.asColorExpression(),
-        dashArray: dashArray);
+        strokeDashPattern: dashArray);
   }
 }

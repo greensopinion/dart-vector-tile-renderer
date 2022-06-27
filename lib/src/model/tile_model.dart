@@ -1,8 +1,7 @@
 import 'dart:collection';
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/model/path_utils.dart';
-
+import 'path_utils.dart';
 import 'geometry_decoding.dart';
 
 class Tile {
@@ -25,7 +24,7 @@ class TileFeature {
   final List<int>? _geometry;
   List<Offset>? _points;
   List<Path>? _paths;
-  HashMap<List<num>, List<Path>> dashedPaths = HashMap();
+  HashMap<List<double>, List<Path>> _dashedPaths = HashMap();
 
   TileFeature({
     required this.type,
@@ -46,7 +45,7 @@ class TileFeature {
     return _points ?? [];
   }
 
-  List<Path> getPaths({List<num> dashLengths = const []}) {
+  List<Path> getPaths({List<double> dashLengths = const []}) {
     if (type == TileFeatureType.point) {
       throw StateError('Cannot get paths from a point feature');
     }
@@ -67,11 +66,14 @@ class TileFeature {
     }
 
     if (dashLengths.length >= 2) {
-      if (dashedPaths.containsKey(dashLengths)) {
-        return dashedPaths[dashLengths]!;
+      if (_dashedPaths.containsKey(dashLengths)) {
+        return _dashedPaths[dashLengths]!;
       } else {
-        final path = _paths?.map((e) => e.dashPath(RingNumberProvider(dashLengths))).toList() ?? [];
-        dashedPaths[dashLengths] = path;
+        final path = _paths
+                ?.map((e) => e.dashPath(RingNumberProvider(dashLengths)))
+                .toList() ??
+            [];
+        _dashedPaths[dashLengths] = path;
         return path;
       }
     } else {
