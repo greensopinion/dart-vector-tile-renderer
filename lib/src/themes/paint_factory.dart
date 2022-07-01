@@ -69,15 +69,11 @@ class PaintFactory {
 
     List<double> dashArray = [];
     final dashJson = paint['$prefix-dasharray'];
-    if (dashJson != null && dashJson is List<num>) {
-      // check if at least 2 values are specified (otherwise dashing useless)
-      if (dashJson.length >= 2) {
-        // due to spec vals must be >= 0
-        if (dashJson.any((element) => element < .0)) {
-          logger.warn(() => '$prefix-dasharray contains value < 0');
-        } else {
-          dashArray = dashJson.map((e) => e.toDouble()).toList(growable: false);
-        }
+    if (dashJson != null && dashJson is List<num> && dashJson.length >= 2) {
+      if (dashJson.any((element) => element < .0)) {
+        logger.warn(() => '$prefix-dasharray contains value < 0');
+      } else {
+        dashArray = dashJson.map((e) => e.toDouble()).toList(growable: false);
       }
     }
 

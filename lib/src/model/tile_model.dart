@@ -1,6 +1,6 @@
-import 'dart:collection';
 import 'dart:ui';
 
+import 'ring_number_provider.dart';
 import 'path_utils.dart';
 import 'geometry_decoding.dart';
 
@@ -24,7 +24,6 @@ class TileFeature {
   final List<int>? _geometry;
   List<Offset>? _points;
   List<Path>? _paths;
-  HashMap<List<double>, List<Path>> _dashedPaths = HashMap();
 
   TileFeature({
     required this.type,
@@ -51,31 +50,23 @@ class TileFeature {
     }
 
     final geometry = _geometry;
-    if (geometry != null) {
-      if (_paths == null) {
-        // ignore: missing_enum_constant_in_switch
-        switch (type) {
-          case TileFeatureType.linestring:
-            _paths = decodeLineStrings(geometry).toList(growable: false);
-            break;
-          case TileFeatureType.polygon:
-            _paths = decodePolygons(geometry).toList(growable: false);
-            break;
-        }
+    if (geometry != null && _paths == null) {
+      // ignore: missing_enum_constant_in_switch
+      switch (type) {
+        case TileFeatureType.linestring:
+          _paths = decodeLineStrings(geometry).toList(growable: false);
+          break;
+        case TileFeatureType.polygon:
+          _paths = decodePolygons(geometry).toList(growable: false);
+          break;
       }
     }
 
     if (dashLengths.length >= 2) {
-      if (_dashedPaths.containsKey(dashLengths)) {
-        return _dashedPaths[dashLengths]!;
-      } else {
-        final path = _paths
-                ?.map((e) => e.dashPath(RingNumberProvider(dashLengths)))
-                .toList() ??
-            [];
-        _dashedPaths[dashLengths] = path;
-        return path;
-      }
+      return _paths
+              ?.map((e) => e.dashPath(RingNumberProvider(dashLengths)))
+              .toList() ??
+          [];
     } else {
       return _paths ?? [];
     }
