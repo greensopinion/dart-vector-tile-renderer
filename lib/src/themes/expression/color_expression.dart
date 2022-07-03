@@ -1,8 +1,7 @@
 import 'dart:ui';
 
-import 'caching_expression.dart';
-
 import '../color_parser.dart';
+import 'caching_expression.dart';
 import 'expression.dart';
 
 class ColorExpression extends Expression<Color> {

@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import '../symbols/symbols.dart';
 
 import '../context.dart';
+import '../symbols/symbols.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 
