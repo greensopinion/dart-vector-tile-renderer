@@ -21,23 +21,23 @@ class PaintStyle {
       required this.color});
 
   Paint? paint(EvaluationContext context) {
-    final color = this.color.evaluate(context);
-    if (color == null) {
-      return null;
-    }
     final opacity = this.opacity.evaluate(context);
     if (opacity != null && opacity <= 0) {
       return null;
     }
-    final paint = Paint()
-      ..style = paintingStyle
-      ..color = color;
-    if (opacity != null) {
+    final color = this.color.evaluate(context);
+    if (color == null) {
+      return null;
+    }
+    final paint = Paint()..style = paintingStyle;
+    if (opacity != null && opacity < 1.0) {
       paint.color = color.withOpacity(opacity);
+    } else {
+      paint.color = color;
     }
     if (paintingStyle == PaintingStyle.stroke) {
       final strokeWidth = this.strokeWidth.evaluate(context);
-      if (strokeWidth == null) {
+      if (strokeWidth == null || strokeWidth <= 0) {
         return null;
       }
       paint.strokeWidth = strokeWidth;
