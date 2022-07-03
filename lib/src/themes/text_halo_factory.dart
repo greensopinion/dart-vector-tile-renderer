@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'expression/expression.dart';
 import 'expression/caching_expression.dart';
+import 'expression/expression.dart';
 
 class TextHaloFactory {
   static Expression<List<Shadow>>? toHaloFunction(

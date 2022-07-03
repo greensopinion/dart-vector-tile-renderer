@@ -1,13 +1,12 @@
 import 'dart:ui';
 
-import 'symbols/text_painter.dart';
-
 import 'constants.dart';
 import 'context.dart';
 import 'features/feature_renderer.dart';
 import 'logger.dart';
 import 'optimizations.dart';
 import 'profiling.dart';
+import 'symbols/text_painter.dart';
 import 'themes/theme.dart';
 import 'tileset.dart';
 
