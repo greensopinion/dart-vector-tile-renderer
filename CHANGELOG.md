@@ -1,3 +1,7 @@
+## 2.4.7
+
+* fix bug that prevented some themes from working with an exception "Cannot get paths from a point feature"
+
 ## 2.4.6
 
 * add minimal support for fill-extrusion polygons by rendering a polygon without extrusion
