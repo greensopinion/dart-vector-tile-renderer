@@ -43,6 +43,9 @@ class TileFeature {
     return _points;
   }
 
+  bool get hasPaths =>
+      type == TileFeatureType.linestring || type == TileFeatureType.polygon;
+
   List<Path> get paths {
     if (type == TileFeatureType.point) {
       throw StateError('Cannot get paths from a point feature');

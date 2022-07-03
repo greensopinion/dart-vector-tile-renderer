@@ -18,6 +18,9 @@ class LineRenderer extends FeatureRenderer {
     TileLayer layer,
     TileFeature feature,
   ) {
+    if (!feature.hasPaths) {
+      return;
+    }
     if (style.linePaint == null) {
       logger.warn(() =>
           'line does not have a line paint for vector tile layer ${layer.name}');
@@ -49,18 +52,11 @@ class LineRenderer extends FeatureRenderer {
 
     final lines = feature.paths;
 
-    if (lines.length == 1) {
-      logger.log(() => 'rendering linestring');
-    } else if (lines.length > 1) {
-      logger.log(() => 'rendering multi-linestring');
-    }
-
     for (final line in lines) {
       if (!context.optimizations.skipInBoundsChecks &&
           !context.tileSpaceMapper.isPathWithinTileClip(line)) {
         continue;
       }
-
       context.canvas.drawPath(line, effectivePaint);
     }
   }
