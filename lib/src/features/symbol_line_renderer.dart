@@ -75,8 +75,6 @@ class SymbolLineRenderer extends FeatureRenderer {
       return;
     }
 
-    logger.log(() => 'rendering symbol linestring');
-
     context.tileSpaceMapper.drawInPixelSpace(() {
       final tangentPosition = renderBox.tangent.position;
       final tangentAngle = renderBox.tangent.angle;
