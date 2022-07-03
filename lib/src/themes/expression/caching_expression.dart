@@ -35,11 +35,14 @@ class _CachingExpression<T> extends Expression<T> {
   }
 
   _CacheKey _createKey(EvaluationContext context) {
+    if (_propertyKeys.length == 1) {
+      return _SingularCacheKey(context.getProperty(_propertyKeys.first));
+    }
     final values = _propertyKeys
         .map((e) => context.getProperty(e))
         .toList(growable: false);
 
-    return _CacheKey(values);
+    return _PluralCacheKey(values);
   }
 
   @override
@@ -90,14 +93,33 @@ class _CacheEntry<T> {
 
 final _equality = ListEquality();
 
-class _CacheKey {
-  final List _values;
+abstract class _CacheKey {
+  _CacheKey();
+}
+
+class _SingularCacheKey extends _CacheKey {
+  final dynamic _value;
   final int _hashCode;
 
-  _CacheKey(this._values) : _hashCode = _equality.hash(_values);
+  _SingularCacheKey(this._value) : _hashCode = _value.hashCode;
 
   bool operator ==(other) =>
-      other is _CacheKey &&
+      other is _SingularCacheKey &&
+      other._hashCode == _hashCode &&
+      other._value == _value;
+
+  @override
+  int get hashCode => _hashCode;
+}
+
+class _PluralCacheKey extends _CacheKey {
+  final List? _values;
+  final int _hashCode;
+
+  _PluralCacheKey(this._values) : _hashCode = _equality.hash(_values);
+
+  bool operator ==(other) =>
+      other is _PluralCacheKey &&
       other._hashCode == _hashCode &&
       _equality.equals(other._values, _values);
 
