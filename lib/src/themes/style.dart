@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'expression/expression.dart';
 
 import '../extensions.dart';
-import 'paint_factory.dart';
 
 typedef ColorZoomFunction = Color? Function(double zoom);
 typedef TextTransformFunction = String? Function(String? text);
