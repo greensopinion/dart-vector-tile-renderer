@@ -1,10 +1,33 @@
 import 'dart:ui';
 
 import '../logger.dart';
+import 'expression/caching_expression.dart';
 import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
+
+class PaintExpression extends Expression<Paint> {
+  final PaintStyle _delegate;
+
+  PaintExpression(this._delegate)
+      : super(_cacheKey(_delegate), _properties(_delegate));
+
+  @override
+  Paint? evaluate(EvaluationContext context) => _delegate.paint(context);
+
+  @override
+  bool get isConstant => false;
+
+  static String _cacheKey(PaintStyle delegate) =>
+      "paint(${delegate.id},${delegate.paintingStyle},opacity(${delegate.opacity.cacheKey}),strokeWidth(${delegate.strokeWidth.cacheKey}),color(${delegate.color.cacheKey}))";
+
+  static Set<String> _properties(PaintStyle delegate) => {
+        ...delegate.color.properties(),
+        ...delegate.strokeWidth.properties(),
+        ...delegate.opacity.properties()
+      };
+}
 
 class PaintStyle {
   final String id;
@@ -51,7 +74,8 @@ class PaintFactory {
   final ExpressionParser expressionParser;
   PaintFactory(this.logger) : expressionParser = ExpressionParser(logger);
 
-  PaintStyle? create(String id, PaintingStyle style, String prefix, paint,
+  Expression<Paint>? create(
+      String id, PaintingStyle style, String prefix, paint,
       {double? defaultStrokeWidth = 1.0}) {
     if (paint == null) {
       return null;
@@ -64,11 +88,11 @@ class PaintFactory {
         whenNull: () => LiteralExpression(1.0));
     final strokeWidth = expressionParser.parse(paint['$prefix-width'],
         whenNull: () => LiteralExpression(defaultStrokeWidth));
-    return PaintStyle(
+    return PaintExpression(PaintStyle(
         id: id,
         paintingStyle: style,
         opacity: opacity.asDoubleExpression(),
         strokeWidth: strokeWidth.asDoubleExpression(),
-        color: color.asColorExpression());
+        color: color.asColorExpression()));
   }
 }

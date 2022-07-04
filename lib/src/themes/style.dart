@@ -11,14 +11,14 @@ typedef ColorZoomFunction = Color? Function(double zoom);
 typedef TextTransformFunction = String? Function(String? text);
 
 class Style {
-  final PaintStyle? fillPaint;
+  final Expression<Paint>? fillPaint;
   final Extrusion? fillExtrusion;
-  final PaintStyle? linePaint;
+  final Expression<Paint>? linePaint;
   final LineLayout? lineLayout;
-  final PaintStyle? textPaint;
+  final Expression<Paint>? textPaint;
   final TextLayout? textLayout;
   final Expression<List<Shadow>>? textHalo;
-  final PaintStyle? outlinePaint;
+  final Expression<Paint>? outlinePaint;
 
   Style(
       {this.fillPaint,

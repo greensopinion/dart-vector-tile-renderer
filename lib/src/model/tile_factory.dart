@@ -3,7 +3,7 @@ import 'package:vector_tile/vector_tile.dart';
 
 import '../extensions.dart';
 import '../logger.dart';
-import '../themes/paint_factory.dart';
+import '../themes/expression/expression.dart';
 import '../themes/theme.dart';
 import '../themes/theme_layers.dart';
 import 'tile_model.dart';
@@ -87,26 +87,19 @@ extension _DefaultLayerExtension on DefaultLayer {
   Set<String> propertyNames() {
     final names = <String>{};
     names.addAll(selector.layerSelector.propertyNames());
-    names.addPaintStyleProperties(this.style.fillPaint);
-    names.addPaintStyleProperties(this.style.linePaint);
-    names.addPaintStyleProperties(this.style.outlinePaint);
-    names.addPaintStyleProperties(this.style.textPaint);
-    names.addAllOptional(this.style.textLayout?.text.properties());
+    names.addProperties(this.style.fillPaint);
+    names.addProperties(this.style.linePaint);
+    names.addProperties(this.style.outlinePaint);
+    names.addProperties(this.style.textPaint);
+    names.addProperties(this.style.textLayout?.text);
     return names.whereType<String>().toSet();
   }
 }
 
 extension _StringSet on Set<String> {
-  void addAllOptional(Set<String>? values) {
-    if (values != null) {
-      addAll(values);
-    }
-  }
-
-  void addPaintStyleProperties(PaintStyle? style) {
-    if (style != null) {
-      addAllOptional(style.opacity.properties());
-      addAllOptional(style.strokeWidth.properties());
+  void addProperties(Expression? expression) {
+    if (expression != null) {
+      addAll(expression.properties());
     }
   }
 }
