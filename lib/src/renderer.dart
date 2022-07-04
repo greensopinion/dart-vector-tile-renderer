@@ -42,7 +42,8 @@ class Renderer {
       canvas.clipRect(tileSpace);
       final tileClip = clip ?? tileSpace;
       final optimizations = Optimizations(
-          skipInBoundsChecks: clip == null || tileClip == tileSpace);
+          skipInBoundsChecks: clip == null ||
+              (tileClip.width - tileSpace.width).abs() < (tileSpace.width / 2));
       final context = Context(
           logger: logger,
           canvas: canvas,
