@@ -76,7 +76,7 @@ class TextApproximation {
 
   StyledSymbol? _createStyledSymbol(Context context,
       EvaluationContext evaluationContext, Style style, String text) {
-    final foreground = style.textPaint!.paint(evaluationContext);
+    final foreground = style.textPaint!.evaluate(evaluationContext);
     if (foreground == null) {
       return null;
     }

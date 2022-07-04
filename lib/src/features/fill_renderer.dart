@@ -31,8 +31,8 @@ class FillRenderer extends FeatureRenderer {
       context.zoom,
       logger,
     );
-    final fillPaint = style.fillPaint?.paint(evaluationContext);
-    final outlinePaint = style.outlinePaint?.paint(evaluationContext);
+    final fillPaint = style.fillPaint?.evaluate(evaluationContext);
+    final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
 
     final polygons = feature.paths;
 
