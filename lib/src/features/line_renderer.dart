@@ -1,7 +1,6 @@
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
-import '../themes/paint_factory.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
 import 'line_styler.dart';

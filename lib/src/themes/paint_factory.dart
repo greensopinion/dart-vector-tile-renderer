@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import '../logger.dart';
-import 'expression/caching_expression.dart';
 import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
