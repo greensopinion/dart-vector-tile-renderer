@@ -1,3 +1,8 @@
+## 2.5.0
+
+* improve preprocessing capability so that additional preprocessing can be separated from drawing
+* more optimizations
+
 ## 2.4.7
 
 * fix bug that prevented some themes from working with an exception "Cannot get paths from a point feature"
