@@ -6,6 +6,7 @@ import '../logger.dart';
 import '../themes/expression/expression.dart';
 import '../themes/theme.dart';
 import '../themes/theme_layers.dart';
+import 'tile_data_model.dart';
 import 'tile_model.dart';
 
 class TileFactory {
@@ -21,48 +22,49 @@ class TileFactory {
         layers.map((e) => e.selector.layerSelector.layerNames()).flatSet();
   }
 
-  Tile create(VectorTile tile) {
-    return Tile(
+  TileData createTileData(VectorTile tile) {
+    return TileData(
         layers: tile.layers
-            // .where((layer) => layerNames.contains(layer.name))
-            .map(_vectorLayerToTileLayer)
-            .whereType<TileLayer>()
+            .map(_vectorLayerToTileDataLayer)
+            .whereType<TileDataLayer>()
             .toList(growable: false));
   }
 
-  TileLayer? _vectorLayerToTileLayer(VectorTileLayer vectorLayer) {
-    return TileLayer(
+  Tile create(VectorTile tile) {
+    return createTileData(tile).toTile();
+  }
+
+  TileDataLayer? _vectorLayerToTileDataLayer(VectorTileLayer vectorLayer) {
+    return TileDataLayer(
         name: vectorLayer.name,
         extent: vectorLayer.extent,
         features: vectorLayer.features
-            .map(_vectorFeatureToTileFeature)
-            .whereType<TileFeature>()
+            .map(_vectorFeatureToTileDataFeature)
+            .whereType<TileDataFeature>()
             .toList(growable: false));
   }
 
-  TileFeature? _vectorFeatureToTileFeature(VectorTileFeature vectorFeature) {
+  TileDataFeature? _vectorFeatureToTileDataFeature(
+      VectorTileFeature vectorFeature) {
     final type = vectorFeature.type;
     if (type == null || type == VectorTileGeomType.UNKNOWN) {
       return null;
     }
     if (type == VectorTileGeomType.POINT) {
-      return TileFeature(
-        type: TileFeatureType.point,
-        properties: _decodeProperties(vectorFeature),
-        geometry: vectorFeature.geometryList!,
-      );
+      return TileDataFeature(
+          type: TileFeatureType.point,
+          properties: _decodeProperties(vectorFeature),
+          geometry: vectorFeature.geometryList!);
     } else if (type == VectorTileGeomType.LINESTRING) {
-      return TileFeature(
-        type: TileFeatureType.linestring,
-        properties: _decodeProperties(vectorFeature),
-        geometry: vectorFeature.geometryList!,
-      );
+      return TileDataFeature(
+          type: TileFeatureType.linestring,
+          properties: _decodeProperties(vectorFeature),
+          geometry: vectorFeature.geometryList!);
     } else if (type == VectorTileGeomType.POLYGON) {
-      return TileFeature(
-        type: TileFeatureType.polygon,
-        properties: _decodeProperties(vectorFeature),
-        geometry: vectorFeature.geometryList!,
-      );
+      return TileDataFeature(
+          type: TileFeatureType.polygon,
+          properties: _decodeProperties(vectorFeature),
+          geometry: vectorFeature.geometryList!);
     }
     return null;
   }

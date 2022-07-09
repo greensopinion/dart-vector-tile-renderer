@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
 enum _Command {
   moveTo,
@@ -26,7 +26,7 @@ int _decodeCommandLength(int command) => command >> 3;
 @pragma('vm:prefer-inline')
 int _decodeZigZag(int value) => (value >> 1) ^ -(value & 1);
 
-Iterable<Offset> decodePoints(List<int> geometry) sync* {
+Iterable<TilePoint> decodePoints(List<int> geometry) sync* {
   final it = geometry.iterator;
 
   // Decode MoveTo command
@@ -43,11 +43,11 @@ Iterable<Offset> decodePoints(List<int> geometry) sync* {
     final x = _decodeZigZag(it.current);
     it.moveNext();
     final y = _decodeZigZag(it.current);
-    yield Offset(x.toDouble(), y.toDouble());
+    yield TilePoint(x.toDouble(), y.toDouble());
   }
 }
 
-Iterable<Path> decodeLineStrings(List<int> geometry) sync* {
+Iterable<TileLine> decodeLineStrings(List<int> geometry) sync* {
   // Cursor point.
   // Note that it is never reset between line strings.
   var cx = 0;
@@ -56,7 +56,7 @@ Iterable<Path> decodeLineStrings(List<int> geometry) sync* {
   final it = geometry.iterator;
   while (it.moveNext()) {
     // Start of a new line string.
-    final points = <Offset>[];
+    final points = <TilePoint>[];
 
     // Decode MoveTo command
     final moveToCommand = it.current;
@@ -68,7 +68,7 @@ Iterable<Path> decodeLineStrings(List<int> geometry) sync* {
     cx += _decodeZigZag(it.current);
     it.moveNext();
     cy += _decodeZigZag(it.current);
-    points.add(Offset(cx.toDouble(), cy.toDouble()));
+    points.add(TilePoint(cx.toDouble(), cy.toDouble()));
 
     // Decode LineTo command.
     it.moveNext();
@@ -83,15 +83,15 @@ Iterable<Path> decodeLineStrings(List<int> geometry) sync* {
       cx += _decodeZigZag(it.current);
       it.moveNext();
       cy += _decodeZigZag(it.current);
-      points.add(Offset(cx.toDouble(), cy.toDouble()));
+      points.add(TilePoint(cx.toDouble(), cy.toDouble()));
     }
 
-    yield Path()..addPolygon(points, false);
+    yield TileLine(points);
   }
 }
 
-Iterable<Path> decodePolygons(List<int> geometry) sync* {
-  Path? polygon;
+Iterable<TilePolygon> decodePolygons(List<int> geometry) sync* {
+  List<TileLine>? rings;
 
   // Cursor point.
   // Note that it is never reset between polygons or rings.
@@ -101,7 +101,7 @@ Iterable<Path> decodePolygons(List<int> geometry) sync* {
   final it = geometry.iterator;
   while (it.moveNext()) {
     // Start of a new ring.
-    final points = <Offset>[];
+    final points = <TilePoint>[];
 
     // The rings area. We need it to know if the ring is exterior or interior.
     var a = 0;
@@ -122,7 +122,7 @@ Iterable<Path> decodePolygons(List<int> geometry) sync* {
     cy += _decodeZigZag(it.current);
     x0 = cx;
     y0 = cy;
-    points.add(Offset(cx.toDouble(), cy.toDouble()));
+    points.add(TilePoint(cx.toDouble(), cy.toDouble()));
 
     // Decode LineTo command.
     it.moveNext();
@@ -140,7 +140,7 @@ Iterable<Path> decodePolygons(List<int> geometry) sync* {
       a += (cx * y) - (x * cy);
       cx = x;
       cy = y;
-      points.add(Offset(cx.toDouble(), cy.toDouble()));
+      points.add(TilePoint(cx.toDouble(), cy.toDouble()));
     }
     a += (cx * y0) - (x0 * cy);
 
@@ -157,24 +157,22 @@ Iterable<Path> decodePolygons(List<int> geometry) sync* {
       // We just decoded an interior ring.
 
       // Add the ring to the current polygon.
-      assert(polygon != null);
-      polygon!.addPolygon(points, true);
+      assert(rings != null);
+      rings!.add(TileLine(points));
     } else {
       // We just decoded an exterior ring.
 
-      if (polygon != null) {
+      if (rings != null) {
         // If we have a previous polygon, it is now complete, so yield it.
-        yield polygon;
+        yield TilePolygon(rings);
       }
 
       // Make the ring the current polygon.
-      polygon = Path()
-        ..fillType = PathFillType.evenOdd
-        ..addPolygon(points, true);
+      rings = [TileLine(points)];
     }
   }
 
   // The last polygon wont be completed in the decode loop, so yield it now.
-  assert(polygon != null);
-  yield polygon!;
+  assert(rings != null);
+  yield TilePolygon(rings!);
 }

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/model/geometry_decoding.dart';
+import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
 const moveTo = 0x1;
 const lineTo = 0x2;
@@ -13,6 +14,8 @@ int command(int command, int length) => length << 3 | command;
 int zigZag(int n) => (n << 1) ^ (n >> 31);
 
 void main() {
+  final uiGeometry = UiGeometry();
+
   group('point', () {
     test('single point', () {
       final points = decodePoints([
@@ -21,7 +24,7 @@ void main() {
         zigZag(1),
       ]).toList();
 
-      expect(points, [Offset(0, 1)]);
+      expect(points, [TilePoint(0, 1)]);
     });
 
     test('multiple points', () {
@@ -33,7 +36,7 @@ void main() {
         zigZag(3),
       ]).toList();
 
-      expect(points, [Offset(0, 1), Offset(2, 3)]);
+      expect(points, [TilePoint(0, 1), TilePoint(2, 3)]);
     });
   });
 
@@ -49,7 +52,7 @@ void main() {
       ]).toList();
 
       expect(lines, hasLength(1));
-      final metric = lines[0].computeMetrics().first;
+      final metric = uiGeometry.createLine(lines[0]).computeMetrics().first;
       expect(metric.getTangentForOffset(0)!.position, Offset(0, 1));
       expect(metric.getTangentForOffset(metric.length)!.position, Offset(2, 4));
     });
@@ -72,7 +75,8 @@ void main() {
 
       expect(lines, hasLength(2));
 
-      final line0Metric = lines[0].computeMetrics().first;
+      final line0Metric =
+          uiGeometry.createLine(lines[0]).computeMetrics().first;
       expect(
         line0Metric.getTangentForOffset(0)!.position,
         Offset(0, 1),
@@ -82,7 +86,8 @@ void main() {
         Offset(2, 4),
       );
 
-      final line1Metric = lines[1].computeMetrics().first;
+      final line1Metric =
+          uiGeometry.createLine(lines[1]).computeMetrics().first;
       expect(
         line1Metric.getTangentForOffset(0)!.position,
         Offset(2, 5),
@@ -114,7 +119,8 @@ void main() {
 
       expect(polygons, hasLength(1));
 
-      final polygonMetrics = polygons[0].computeMetrics().toList();
+      final polygonMetrics =
+          uiGeometry.createPolygon(polygons[0]).computeMetrics().toList();
       expect(polygonMetrics, hasLength(1));
 
       final ringMetric = polygonMetrics[0];
@@ -159,7 +165,8 @@ void main() {
         command(closePath, 1),
       ]).toList();
 
-      final polygonMetrics = polygons[0].computeMetrics().toList();
+      final polygonMetrics =
+          uiGeometry.createPolygon(polygons[0]).computeMetrics().toList();
       expect(polygonMetrics, hasLength(2));
 
       final innerRingMetric = polygonMetrics[1];
