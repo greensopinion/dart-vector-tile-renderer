@@ -32,12 +32,16 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _zoom;
   late TextEditingController _xOffset;
   late TextEditingController _yOffset;
+  late TextEditingController _clipOffset;
+  late TextEditingController _clipSize;
   TileOptions options = TileOptions(
       size: Size(256, 256),
       scale: 1.0,
       zoom: 15,
       xOffset: 0,
       yOffset: 0,
+      clipOffset: 0,
+      clipSize: 0,
       renderMode: RenderMode.vector);
 
   @override
@@ -48,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _zoom = TextEditingController(text: '${options.zoom.toInt()}');
     _xOffset = TextEditingController(text: '${options.xOffset.toInt()}');
     _yOffset = TextEditingController(text: '${options.yOffset.toInt()}');
+    _clipOffset = TextEditingController(text: '${options.clipOffset.toInt()}');
+    _clipSize = TextEditingController(text: '${options.clipSize.toInt()}');
   }
 
   @override
@@ -68,6 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     (value) => options.withValues(xOffset: value)),
                 _doubleTextField(_yOffset, 'Y Offset',
                     (value) => options.withValues(yOffset: value)),
+                _doubleTextField(_clipOffset, 'Clip Offset',
+                    (value) => options.withValues(clipOffset: value)),
+                _doubleTextField(_clipSize, 'Clip Size',
+                    (value) => options.withValues(clipSize: value)),
                 _doubleTextField(
                     _zoom, 'Zoom', (value) => options.withValues(zoom: value)),
               ])),
@@ -97,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Padding(
           padding: EdgeInsets.only(right: 5.0),
           child: Container(
-              width: 80,
+              width: 100,
               child: TextField(
                   controller: controller,
                   onChanged: (value) {
