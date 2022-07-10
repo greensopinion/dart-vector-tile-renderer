@@ -216,14 +216,14 @@ void main() {
             clipped,
             TilePolygon([
               TileLine([
-                Point(0.0, 2.0),
-                Point(1.5, 1.0),
-                Point(3.0, 0.0),
-                Point(10.0, 0.0),
-                Point(10.0, 5.0),
-                Point(10.0, 3.69231),
-                Point(7.5, 6.0),
-                Point(3.16667, 10.0)
+                TilePoint(0.0, 2.0),
+                TilePoint(1.5, 1.0),
+                TilePoint(3.0, 0.0),
+                TilePoint(10.0, 0.0),
+                TilePoint(10.0, 3.69231),
+                TilePoint(7.5, 6.0),
+                TilePoint(3.16667, 10.0),
+                TilePoint(0.0, 10.0)
               ])
             ]));
       });
@@ -298,6 +298,27 @@ void main() {
                 Point(6.0, 3.0),
                 Point(7.0, 3.0),
                 Point(7.0, 0.0)
+              ])
+            ]));
+      });
+      test('ends outside at a corner', () {
+        final polygon = TilePolygon([
+          TileLine([
+            TilePoint(-2, 8),
+            TilePoint(2, 8),
+            TilePoint(2, 12),
+            TilePoint(-2, 12)
+          ])
+        ]);
+        var clipped = clipPolygon(polygon, ClipArea(0, 0, 10, 10))?.round();
+        expect(
+            clipped,
+            TilePolygon([
+              TileLine([
+                TilePoint(0.0, 8.0),
+                TilePoint(2.0, 8.0),
+                TilePoint(2.0, 10.0),
+                TilePoint(0, 10.0)
               ])
             ]));
       });
