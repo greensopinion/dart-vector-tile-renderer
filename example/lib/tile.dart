@@ -14,6 +14,8 @@ class TileOptions {
   final double xOffset;
   final double yOffset;
   final RenderMode renderMode;
+  final double clipOffset;
+  final double clipSize;
 
   TileOptions(
       {required this.size,
@@ -21,6 +23,8 @@ class TileOptions {
       required this.zoom,
       required this.xOffset,
       required this.yOffset,
+      required this.clipOffset,
+      required this.clipSize,
       required this.renderMode});
 
   TileOptions withValues(
@@ -29,6 +33,8 @@ class TileOptions {
       double? zoom,
       double? xOffset,
       double? yOffset,
+      double? clipOffset,
+      double? clipSize,
       RenderMode? renderMode}) {
     return TileOptions(
         size: size ?? this.size,
@@ -36,6 +42,8 @@ class TileOptions {
         zoom: zoom ?? this.zoom,
         xOffset: xOffset ?? this.xOffset,
         yOffset: yOffset ?? this.yOffset,
+        clipOffset: clipOffset ?? this.clipOffset,
+        clipSize: clipSize ?? this.clipSize,
         renderMode: renderMode ?? this.renderMode);
   }
 }
@@ -75,7 +83,8 @@ class _TileState extends State<Tile> {
     super.didUpdateWidget(tile);
     image?.dispose();
     image = null;
-    _maybeLoadImage();
+    tileset = null;
+    _loadTileset();
   }
 
   @override
@@ -94,12 +103,24 @@ class _TileState extends State<Tile> {
   }
 
   void _loadTileset() async {
-    final tileData =
+    final tileBuffer =
         await DefaultAssetBundle.of(context).load('assets/sample_tile.pbf');
-    final tileBytes = tileData.buffer
-        .asUint8List(tileData.offsetInBytes, tileData.lengthInBytes);
-    final tile = TileFactory(theme, Logger.noop())
-        .create(VectorTileReader().read(tileBytes));
+    final tileBytes = tileBuffer.buffer
+        .asUint8List(tileBuffer.offsetInBytes, tileBuffer.lengthInBytes);
+    var tileData = TileFactory(theme, Logger.noop())
+        .createTileData(VectorTileReader().read(tileBytes));
+    if (widget.options.clipSize > 0) {
+      final clipSize = widget.options.clipSize;
+      final clipOffset = widget.options.clipOffset;
+      final clip = TileClip(
+          bounds: Rectangle(clipOffset, clipOffset, clipSize, clipSize));
+      tileData = clip.clip(tileData);
+      if (clipOffset > 0) {
+        tileData =
+            TileTranslate(Point(-clipOffset, -clipOffset)).translate(tileData);
+      }
+    }
+    final tile = tileData.toTile();
     final tileset = TilesetPreprocessor(theme)
         .preprocess(Tileset({'openmaptiles': tile}), zoom: 14);
     setState(() {
