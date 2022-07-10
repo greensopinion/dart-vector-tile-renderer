@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
+import 'package:vector_tile_renderer/src/themes/paint_factory.dart';
 import 'expression/expression.dart';
 
 import '../extensions.dart';
@@ -12,14 +13,14 @@ typedef ColorZoomFunction = Color? Function(double zoom);
 typedef TextTransformFunction = String? Function(String? text);
 
 class Style {
-  final Expression<Paint>? fillPaint;
+  final Expression<VectorPaint>? fillPaint;
   final Extrusion? fillExtrusion;
-  final Expression<Paint>? linePaint;
+  final Expression<VectorPaint>? linePaint;
   final LineLayout? lineLayout;
-  final Expression<Paint>? textPaint;
+  final Expression<VectorPaint>? textPaint;
   final TextLayout? textLayout;
   final Expression<List<Shadow>>? textHalo;
-  final Expression<Paint>? outlinePaint;
+  final Expression<VectorPaint>? outlinePaint;
 
   Style(
       {this.fillPaint,

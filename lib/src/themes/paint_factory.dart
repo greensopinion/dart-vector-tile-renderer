@@ -6,6 +6,32 @@ import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
 
+class PaintExpression extends Expression<VectorPaint> {
+  final PaintStyle _delegate;
+
+  PaintExpression(this._delegate)
+      : super(_cacheKey(_delegate), _properties(_delegate));
+
+  @override
+  VectorPaint? evaluate(EvaluationContext context) => _delegate.paint(context);
+
+  @override
+  bool get isConstant => false;
+
+  static String _cacheKey(PaintStyle delegate) =>
+      "paint(${delegate.id},${delegate.paintingStyle},opacity(${delegate.opacity.cacheKey}),strokeWidth(${delegate.strokeWidth.cacheKey}),color(${delegate.color.cacheKey}))";
+
+  static Set<String> _properties(PaintStyle delegate) => {
+        ...delegate.color.properties(),
+        ...delegate.strokeWidth.properties(),
+        ...delegate.opacity.properties()
+      };
+}
+
+class VectorPaint extends Paint {
+  List<double> strokeDashPattern = [];
+}
+
 class PaintStyle {
   final String id;
   final PaintingStyle paintingStyle;
@@ -22,24 +48,26 @@ class PaintStyle {
       required this.color,
       required this.strokeDashPattern});
 
-  Paint? paint(EvaluationContext context) {
-    final color = this.color.evaluate(context);
-    if (color == null) {
-      return null;
-    }
+  VectorPaint? paint(EvaluationContext context) {
     final opacity = this.opacity.evaluate(context);
     if (opacity != null && opacity <= 0) {
       return null;
     }
-    final paint = Paint()
+    final color = this.color.evaluate(context);
+    if (color == null) {
+      return null;
+    }
+    final paint = VectorPaint()
       ..style = paintingStyle
-      ..color = color;
-    if (opacity != null) {
+      ..strokeDashPattern = strokeDashPattern;
+    if (opacity != null && opacity < 1.0) {
       paint.color = color.withOpacity(opacity);
+    } else {
+      paint.color = color;
     }
     if (paintingStyle == PaintingStyle.stroke) {
       final strokeWidth = this.strokeWidth.evaluate(context);
-      if (strokeWidth == null) {
+      if (strokeWidth == null || strokeWidth <= 0) {
         return null;
       }
       paint.strokeWidth = strokeWidth;
@@ -53,7 +81,8 @@ class PaintFactory {
   final ExpressionParser expressionParser;
   PaintFactory(this.logger) : expressionParser = ExpressionParser(logger);
 
-  PaintStyle? create(String id, PaintingStyle style, String prefix, paint,
+  Expression<VectorPaint>? create(
+      String id, PaintingStyle style, String prefix, paint,
       {double? defaultStrokeWidth = 1.0}) {
     if (paint == null) {
       return null;
@@ -77,12 +106,12 @@ class PaintFactory {
       }
     }
 
-    return PaintStyle(
+    return PaintExpression(PaintStyle(
         id: id,
         paintingStyle: style,
         opacity: opacity.asDoubleExpression(),
         strokeWidth: strokeWidth.asDoubleExpression(),
         color: color.asColorExpression(),
-        strokeDashPattern: dashArray);
+        strokeDashPattern: dashArray));
   }
 }
