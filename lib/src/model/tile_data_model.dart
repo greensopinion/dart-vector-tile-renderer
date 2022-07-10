@@ -29,7 +29,7 @@ class TileDataLayer {
 class TileDataFeature {
   final TileFeatureType type;
   final Map<String, dynamic> properties;
-  final List<int> geometry;
+  List<int>? _geometry;
   Iterable<TilePoint>? _points;
   Iterable<TileLine>? _lines;
   Iterable<TilePolygon>? _polygons;
@@ -37,11 +37,12 @@ class TileDataFeature {
   TileDataFeature(
       {required this.type,
       required this.properties,
-      required this.geometry,
+      required List<int>? geometry,
       Iterable<TilePoint>? points,
       Iterable<TileLine>? lines,
       Iterable<TilePolygon>? polygons})
-      : _points = points,
+      : _geometry = geometry,
+        _points = points,
         _lines = lines,
         _polygons = polygons;
 
@@ -55,7 +56,8 @@ class TileDataFeature {
     }
     var points = _points;
     if (points == null) {
-      points = decodePoints(geometry);
+      points = decodePoints(_geometry!);
+      _geometry = null;
       _points = points;
     }
     return points;
@@ -67,7 +69,8 @@ class TileDataFeature {
     }
     var lines = _lines;
     if (lines == null) {
-      lines = decodeLineStrings(geometry);
+      lines = decodeLineStrings(_geometry!);
+      _geometry = null;
       _lines = lines;
     }
     return lines;
@@ -79,7 +82,8 @@ class TileDataFeature {
     }
     var polygons = _polygons;
     if (polygons == null) {
-      polygons = decodePolygons(geometry);
+      polygons = decodePolygons(_geometry!);
+      _geometry = null;
       _polygons = polygons;
     }
     return polygons;

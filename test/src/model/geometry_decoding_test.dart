@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/model/geometry_decoding.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
+import 'package:vector_tile_renderer/src/model/geometry_model_ui.dart';
 
 const moveTo = 0x1;
 const lineTo = 0x2;
