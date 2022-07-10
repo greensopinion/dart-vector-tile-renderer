@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'geometry_model.dart';
+import 'geometry_model_ui.dart';
 
 class Tile {
   final List<TileLayer> layers;
