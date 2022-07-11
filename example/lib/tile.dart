@@ -14,7 +14,8 @@ class TileOptions {
   final double xOffset;
   final double yOffset;
   final RenderMode renderMode;
-  final double clipOffset;
+  final double clipOffsetX;
+  final double clipOffsetY;
   final double clipSize;
 
   TileOptions(
@@ -23,7 +24,8 @@ class TileOptions {
       required this.zoom,
       required this.xOffset,
       required this.yOffset,
-      required this.clipOffset,
+      required this.clipOffsetX,
+      required this.clipOffsetY,
       required this.clipSize,
       required this.renderMode});
 
@@ -33,7 +35,8 @@ class TileOptions {
       double? zoom,
       double? xOffset,
       double? yOffset,
-      double? clipOffset,
+      double? clipOffsetX,
+      double? clipOffsetY,
       double? clipSize,
       RenderMode? renderMode}) {
     return TileOptions(
@@ -42,7 +45,8 @@ class TileOptions {
         zoom: zoom ?? this.zoom,
         xOffset: xOffset ?? this.xOffset,
         yOffset: yOffset ?? this.yOffset,
-        clipOffset: clipOffset ?? this.clipOffset,
+        clipOffsetX: clipOffsetX ?? this.clipOffsetX,
+        clipOffsetY: clipOffsetY ?? this.clipOffsetY,
         clipSize: clipSize ?? this.clipSize,
         renderMode: renderMode ?? this.renderMode);
   }
@@ -111,13 +115,14 @@ class _TileState extends State<Tile> {
         .createTileData(VectorTileReader().read(tileBytes));
     if (widget.options.clipSize > 0) {
       final clipSize = widget.options.clipSize;
-      final clipOffset = widget.options.clipOffset;
+      final clipOffsetX = widget.options.clipOffsetX;
+      final clipOffsetY = widget.options.clipOffsetY;
       final clip = TileClip(
-          bounds: Rectangle(clipOffset, clipOffset, clipSize, clipSize));
+          bounds: Rectangle(clipOffsetX, clipOffsetY, clipSize, clipSize));
       tileData = clip.clip(tileData);
-      if (clipOffset > 0) {
-        tileData =
-            TileTranslate(Point(-clipOffset, -clipOffset)).translate(tileData);
+      if (clipOffsetX > 0 || clipOffsetY > 0) {
+        tileData = TileTranslate(Point(-clipOffsetX, -clipOffsetY))
+            .translate(tileData);
       }
     }
     final tile = tileData.toTile();

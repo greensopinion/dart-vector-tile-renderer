@@ -211,7 +211,9 @@ void main() {
             TilePoint(1, 12)
           ])
         ]);
-        var clipped = clipPolygon(polygon, ClipArea(0, 0, 10, 10))?.round();
+        var clipped =
+            clipPolygon(polygon, ClipArea(0, 0, 10, 10), reshape: true)
+                ?.round();
         expect(
             clipped,
             TilePolygon([
@@ -237,7 +239,9 @@ void main() {
             TilePoint(-1, 11)
           ])
         ]);
-        var clipped = clipPolygon(polygon, ClipArea(0, 0, 10, 10))?.round();
+        var clipped =
+            clipPolygon(polygon, ClipArea(0, 0, 10, 10), reshape: true)
+                ?.round();
         expect(
             clipped,
             TilePolygon([
@@ -259,7 +263,9 @@ void main() {
             TilePoint(5, -1)
           ])
         ]);
-        var clipped = clipPolygon(polygon, ClipArea(0, 0, 10, 10))?.round();
+        var clipped =
+            clipPolygon(polygon, ClipArea(0, 0, 10, 10), reshape: true)
+                ?.round();
         expect(
             clipped,
             TilePolygon([
@@ -285,7 +291,9 @@ void main() {
             TilePoint(7, -1),
           ])
         ]);
-        var clipped = clipPolygon(polygon, ClipArea(0, 0, 10, 10))?.round();
+        var clipped =
+            clipPolygon(polygon, ClipArea(0, 0, 10, 10), reshape: true)
+                ?.round();
         expect(
             clipped,
             TilePolygon([
@@ -310,7 +318,9 @@ void main() {
             TilePoint(-2, 12)
           ])
         ]);
-        var clipped = clipPolygon(polygon, ClipArea(0, 0, 10, 10))?.round();
+        var clipped =
+            clipPolygon(polygon, ClipArea(0, 0, 10, 10), reshape: true)
+                ?.round();
         expect(
             clipped,
             TilePolygon([

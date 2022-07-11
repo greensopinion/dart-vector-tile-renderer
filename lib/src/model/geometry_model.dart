@@ -7,21 +7,27 @@ typedef Bounds = Rectangle<double>;
 
 class TileLine {
   final List<TilePoint> points;
+  Bounds? _bounds;
 
   TileLine(this.points);
 
   Bounds bounds() {
-    var minX = double.infinity;
-    var maxX = double.negativeInfinity;
-    var minY = double.infinity;
-    var maxY = double.negativeInfinity;
-    for (final point in points) {
-      minX = min(minX, point.x);
-      maxX = max(maxX, point.x);
-      minY = min(minY, point.y);
-      maxY = max(maxY, point.y);
+    var bounds = _bounds;
+    if (bounds == null) {
+      var minX = double.infinity;
+      var maxX = double.negativeInfinity;
+      var minY = double.infinity;
+      var maxY = double.negativeInfinity;
+      for (final point in points) {
+        minX = min(minX, point.x);
+        maxX = max(maxX, point.x);
+        minY = min(minY, point.y);
+        maxY = max(maxY, point.y);
+      }
+      bounds = Bounds.fromPoints(TilePoint(minX, minY), TilePoint(maxX, maxY));
+      _bounds = bounds;
     }
-    return Bounds.fromPoints(TilePoint(minX, minY), TilePoint(maxX, maxY));
+    return bounds;
   }
 
   @override
