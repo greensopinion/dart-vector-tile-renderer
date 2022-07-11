@@ -32,7 +32,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _zoom;
   late TextEditingController _xOffset;
   late TextEditingController _yOffset;
-  late TextEditingController _clipOffset;
+  late TextEditingController _clipOffsetX;
+  late TextEditingController _clipOffsetY;
   late TextEditingController _clipSize;
   TileOptions options = TileOptions(
       size: Size(256, 256),
@@ -40,7 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
       zoom: 15,
       xOffset: 0,
       yOffset: 0,
-      clipOffset: 0,
+      clipOffsetX: 0,
+      clipOffsetY: 0,
       clipSize: 0,
       renderMode: RenderMode.vector);
 
@@ -52,7 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _zoom = TextEditingController(text: '${options.zoom.toInt()}');
     _xOffset = TextEditingController(text: '${options.xOffset.toInt()}');
     _yOffset = TextEditingController(text: '${options.yOffset.toInt()}');
-    _clipOffset = TextEditingController(text: '${options.clipOffset.toInt()}');
+    _clipOffsetX =
+        TextEditingController(text: '${options.clipOffsetX.toInt()}');
+    _clipOffsetY =
+        TextEditingController(text: '${options.clipOffsetY.toInt()}');
     _clipSize = TextEditingController(text: '${options.clipSize.toInt()}');
   }
 
@@ -74,8 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     (value) => options.withValues(xOffset: value)),
                 _doubleTextField(_yOffset, 'Y Offset',
                     (value) => options.withValues(yOffset: value)),
-                _doubleTextField(_clipOffset, 'Clip Offset',
-                    (value) => options.withValues(clipOffset: value)),
+                _doubleTextField(_clipOffsetY, 'Clip Offset X',
+                    (value) => options.withValues(clipOffsetX: value)),
+                _doubleTextField(_clipOffsetX, 'Clip Offset Y',
+                    (value) => options.withValues(clipOffsetY: value)),
                 _doubleTextField(_clipSize, 'Clip Size',
                     (value) => options.withValues(clipSize: value)),
                 _doubleTextField(

@@ -11,7 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
   vector_tile: ^0.3.2
-    #path: ../dart-vector-tile
   fixnum: ^1.0.0
   collection: ^1.15.0
 

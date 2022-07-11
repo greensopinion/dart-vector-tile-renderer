@@ -16,7 +16,7 @@ List<TileLine> clipLine(TileLine line, ClipArea clip, {bool split = true}) {
     previous = point;
   }
   state.lines.addLine(state.points);
-  if (state.lines.isEmpty) {
+  if (!split && state.lines.isEmpty) {
     // no intersecting or inside points, so the clip is entirely contained
     // within the path
     return [
@@ -65,7 +65,7 @@ class _PointsState {
 // have overlapping bounding boxes.
 // Precision can be increased by increasing the depth. Complexity is O(2^depth)
 TilePoint? _findSegmentPointInside(ClipArea clip, TilePoint a, TilePoint b,
-    {int depth = 5}) {
+    {int depth = 6}) {
   TilePoint midpoint = TilePoint((a.x + b.x) / 2, (a.y + b.y) / 2);
   if (clip.containsPoint(midpoint)) {
     return midpoint;
@@ -77,11 +77,20 @@ TilePoint? _findSegmentPointInside(ClipArea clip, TilePoint a, TilePoint b,
   return null;
 }
 
-TilePolygon? clipPolygon(TilePolygon polygon, ClipArea clip) {
+TilePolygon? clipPolygon(TilePolygon polygon, ClipArea clip,
+    {bool reshape = false}) {
   final bounds = polygon.bounds();
   if (!bounds.intersects(clip)) {
     return null;
   }
+  if (reshape) {
+    return _clipPolygon(polygon, clip);
+  } else {
+    return polygon;
+  }
+}
+
+TilePolygon? _clipPolygon(TilePolygon polygon, ClipArea clip) {
   final rings = <TileLine>[];
   for (final ring in polygon.rings) {
     final clipped = clipLine(ring, clip, split: false);
