@@ -1,7 +1,7 @@
 import 'expression.dart';
 
 class GetPropertyExpression extends Expression {
-  final _propertyName;
+  final String _propertyName;
 
   GetPropertyExpression(this._propertyName)
       : super('get($_propertyName)', {_propertyName});

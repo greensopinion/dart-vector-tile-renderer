@@ -17,7 +17,7 @@ class TextWrapper {
 }
 
 List<String> wrapText(String text, double textSize, int maxWidth) {
-  double maxWidthInPoints = _ONE_EM * maxWidth;
+  double maxWidthInPoints = _oneEm * maxWidth;
   double textLength = text.length * textSize;
   if (textLength > maxWidthInPoints) {
     final words = text.split(RegExp(r'\s'));
@@ -59,4 +59,4 @@ List<String> wrapText(String text, double textSize, int maxWidth) {
   return [text];
 }
 
-const _ONE_EM = 24.0;
+const _oneEm = 24.0;

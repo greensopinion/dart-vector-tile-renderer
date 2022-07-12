@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:math';
 import 'dart:ui';
 
@@ -35,10 +37,10 @@ class LayoutPlacement {
   const LayoutPlacement._(this.name);
   static const point = LayoutPlacement._('point');
   static const line = LayoutPlacement._('line');
-  static const line_center = LayoutPlacement._('line-center');
+  static const lineCenter = LayoutPlacement._('line-center');
   static const DEFAULT = point;
 
-  static List<LayoutPlacement> values() => [point, line, line_center];
+  static List<LayoutPlacement> values() => [point, line, lineCenter];
   static LayoutPlacement fromName(String? name) =>
       values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }

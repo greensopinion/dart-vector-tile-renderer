@@ -54,7 +54,7 @@ class FeatureDispatcher extends FeatureRenderer {
       Logger logger) {
     return {
       ThemeLayerType.fill: FillRenderer(logger),
-      ThemeLayerType.fill_extrusion: FillRenderer(logger),
+      ThemeLayerType.fillExtrusion: FillRenderer(logger),
       ThemeLayerType.line: LineRenderer(logger),
     };
   }

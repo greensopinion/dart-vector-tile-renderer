@@ -86,7 +86,7 @@ class ThemeReader {
           .parseOptional(paintJson['fill-extrusion-height'])
           ?.asDoubleExpression();
       return DefaultLayer(
-          jsonLayer['id'] ?? _unknownId, ThemeLayerType.fill_extrusion,
+          jsonLayer['id'] ?? _unknownId, ThemeLayerType.fillExtrusion,
           selector: selector,
           style: Style(
               fillPaint: paint,

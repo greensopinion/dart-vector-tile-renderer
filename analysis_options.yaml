@@ -31,9 +31,7 @@ linter:
 
     # temporarily disable failing rules until we address the issue
     prefer_const_constructors: false
-    constant_identifier_names: false
     library_private_types_in_public_api: false
-    prefer_typing_uninitialized_variables: false
     avoid_function_literals_in_foreach_calls: false
 
 # Additional information about this file can be found at
