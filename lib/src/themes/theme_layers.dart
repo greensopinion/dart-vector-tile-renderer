@@ -35,7 +35,7 @@ class DefaultLayer extends ThemeLayer {
     }
 
     final features = context.tileset.resolver
-        .resolveFeatures(this.selector, context.zoom.truncate())
+        .resolveFeatures(selector, context.zoom.truncate())
         .toList(growable: false);
 
     if (features.isEmpty) {

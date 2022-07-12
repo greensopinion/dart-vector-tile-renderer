@@ -20,9 +20,8 @@ class Theme {
   Theme copyWith({Set<ThemeLayerType>? types, String? id, double? atZoom}) {
     return Theme(
         id: id ?? this.id,
-        version: this.version,
-        layers: this
-            .layers
+        version: version,
+        layers: layers
             .where((layer) => types?.contains(layer.type) ?? true)
             .where((layer) => atZoom == null || _matchesZoom(atZoom, layer))
             .toList(growable: false));

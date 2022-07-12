@@ -6,20 +6,20 @@ extension IterableExtension<T> on Iterable<T> {
 
 extension PaintExtension on Paint {
   Paint copy() => Paint()
-    ..blendMode = this.blendMode
-    ..color = this.color
-    ..colorFilter = this.colorFilter
-    ..filterQuality = this.filterQuality
-    ..imageFilter = this.imageFilter
-    ..invertColors = this.invertColors
-    ..isAntiAlias = this.isAntiAlias
-    ..maskFilter = this.maskFilter
-    ..shader = this.shader
-    ..strokeCap = this.strokeCap
-    ..strokeJoin = this.strokeJoin
-    ..strokeMiterLimit = this.strokeMiterLimit
-    ..strokeWidth = this.strokeWidth
-    ..style = this.style;
+    ..blendMode = blendMode
+    ..color = color
+    ..colorFilter = colorFilter
+    ..filterQuality = filterQuality
+    ..imageFilter = imageFilter
+    ..invertColors = invertColors
+    ..isAntiAlias = isAntiAlias
+    ..maskFilter = maskFilter
+    ..shader = shader
+    ..strokeCap = strokeCap
+    ..strokeJoin = strokeJoin
+    ..strokeMiterLimit = strokeMiterLimit
+    ..strokeWidth = strokeWidth
+    ..style = style;
 }
 
 extension StringSetsExtension on Iterable<Set<String>> {
