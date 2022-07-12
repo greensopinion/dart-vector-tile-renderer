@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'expression/caching_expression.dart';
@@ -17,7 +18,8 @@ class TextHaloExpression extends Expression<List<Shadow>> {
   TextHaloExpression(this.colorExpression, this.haloWidth)
       : super('textHalo(${colorExpression.cacheKey},${haloWidth?.cacheKey})', {
           ...colorExpression.properties(),
-          ...(haloWidth?.properties() ?? {})
+          ...(haloWidth?.properties() ?? {}),
+          'zoom'
         });
 
   @override
@@ -30,8 +32,9 @@ class TextHaloExpression extends Expression<List<Shadow>> {
     if (width == null) {
       return null;
     }
-    double offset = width / context.zoom;
-    double radius = width;
+    double factor = max(1.0, context.zoomScaleFactor);
+    double offset = width / factor;
+    double radius = width / factor;
     return [
       Shadow(
         offset: Offset(-offset, -offset),
@@ -57,6 +60,5 @@ class TextHaloExpression extends Expression<List<Shadow>> {
   }
 
   @override
-  bool get isConstant =>
-      colorExpression.isConstant && (haloWidth?.isConstant ?? true);
+  bool get isConstant => false;
 }

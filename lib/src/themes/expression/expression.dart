@@ -8,10 +8,11 @@ class EvaluationContext {
   final Map<String, dynamic> Function() _properties;
   final TileFeatureType _featureType;
   final double zoom;
+  final double zoomScaleFactor;
   final Logger logger;
 
-  EvaluationContext(
-      this._properties, this._featureType, this.zoom, this.logger);
+  EvaluationContext(this._properties, this._featureType, this.logger,
+      {required this.zoom, required this.zoomScaleFactor});
 
   getProperty(String name) {
     if (name == '\$type') {
