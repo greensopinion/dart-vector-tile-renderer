@@ -74,7 +74,7 @@ class ExpressionParser {
     if (json is num || json is bool || json == null) {
       return LiteralExpression(json);
     }
-    if (json is List && json.length > 0) {
+    if (json is List && json.isNotEmpty) {
       final operator = json[0];
       final delegate = _parserByOperator[operator];
       if (delegate != null && delegate.matches(json)) {
@@ -177,7 +177,7 @@ abstract class ExpressionComponentParser {
   ExpressionComponentParser(this.parser, this.operator);
 
   bool matches(List<dynamic> json) {
-    return json.length > 0 && json[0] == operator;
+    return json.isNotEmpty && json[0] == operator;
   }
 
   Expression? parse(List<dynamic> json);

@@ -7,6 +7,7 @@ class LayoutAnchorExpression extends Expression<LayoutAnchor> {
   LayoutAnchorExpression(this._delegate)
       : super('layoutAnchor(${_delegate.cacheKey})', _delegate.properties());
 
+  @override
   LayoutAnchor evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
     if (result is String) {
@@ -27,6 +28,7 @@ class LayoutPlacementExpression extends Expression<LayoutPlacement> {
   LayoutPlacementExpression(this._delegate)
       : super('layoutPlacement(${_delegate.cacheKey})', _delegate.properties());
 
+  @override
   LayoutPlacement evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
     if (result is String) {
@@ -47,6 +49,7 @@ class LayoutJustifyExpression extends Expression<LayoutJustify> {
   LayoutJustifyExpression(this._delegate)
       : super('justify(${_delegate.cacheKey})', _delegate.properties());
 
+  @override
   LayoutJustify evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
     if (result is String) {

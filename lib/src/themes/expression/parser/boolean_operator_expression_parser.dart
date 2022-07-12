@@ -12,6 +12,7 @@ class HasExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 2 && json[1] is String;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final getExpression = parser.parseOptional(['get', json[1]]);
     if (getExpression != null) {
@@ -29,6 +30,7 @@ class NotHasExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length >= 2 && json[1] is String;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final getExpression = parser.parseOptional(['get', json[1]]);
     if (getExpression != null) {
@@ -46,6 +48,7 @@ class InExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length >= 3 && json[1] is String;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final getExpression = parser.parseOptional(['get', json[1]]);
     if (getExpression != null) {
@@ -64,6 +67,7 @@ class NotInExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length >= 3 && json[1] is String;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final getExpression = parser.parseOptional(['get', json[1]]);
     if (getExpression != null) {
@@ -82,6 +86,7 @@ class NotExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 2;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     Expression? second = parser.parseOptionalPropertyOrExpression(json[1]);
     if (second != null) {
@@ -99,6 +104,7 @@ class EqualsExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 3;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final firstOperand = json[1];
     final secondOperand = json[2];
@@ -119,6 +125,7 @@ class NotEqualsExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 3;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final delegate = parser.parseOptional(['==', json[1], json[2]]);
     if (delegate != null) {
@@ -140,6 +147,7 @@ class ComparisonExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 3;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final firstOperand = json[1];
     final secondOperand = json[2];
@@ -155,6 +163,7 @@ class ComparisonExpressionParser extends ExpressionComponentParser {
 class AllExpressionParser extends ExpressionComponentParser {
   AllExpressionParser(ExpressionParser parser) : super(parser, 'all');
 
+  @override
   Expression? parse(List<dynamic> json) {
     final delegates = json.sublist(1).map((e) => parser.parseOptional(e));
     if (delegates.any((e) => e == null)) {
@@ -168,6 +177,7 @@ class AllExpressionParser extends ExpressionComponentParser {
 class AnyExpressionParser extends ExpressionComponentParser {
   AnyExpressionParser(ExpressionParser parser) : super(parser, 'any');
 
+  @override
   Expression? parse(List<dynamic> json) {
     final delegates = json.sublist(1).map((e) => parser.parseOptional(e));
     if (delegates.any((e) => e == null)) {
@@ -186,6 +196,7 @@ class MatchExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length > 3;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final firstOperand = json[1];
     final input = parser.parseOptional(firstOperand);
