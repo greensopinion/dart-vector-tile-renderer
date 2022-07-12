@@ -1,3 +1,7 @@
+## 2.5.1
+
+* improve support for overzooming
+
 ## 2.5.0
 
 * improve preprocessing capability so that additional preprocessing can be separated from drawing
