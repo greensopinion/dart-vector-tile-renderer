@@ -3,9 +3,9 @@ import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 void main() {
-  final _parser = ExpressionParser(Logger.noop());
+  final parser = ExpressionParser(const Logger.noop());
 
-  final _properties = {
+  final properties = {
     'a-string': 'a-string-value',
     'another-string': 'another-string-value',
     'a-bool': true,
@@ -15,11 +15,11 @@ void main() {
   };
   var zoom = 1.0;
   _context() => EvaluationContext(
-      () => _properties, TileFeatureType.linestring, Logger.noop(),
+      () => properties, TileFeatureType.linestring, const Logger.noop(),
       zoom: zoom, zoomScaleFactor: 1.0);
 
   void _assertExpression(dynamic jsonExpression, String cacheKey, expected) {
-    final expression = _parser.parse(jsonExpression);
+    final expression = parser.parse(jsonExpression);
     final result = expression.evaluate(_context());
     if (result is double && expected is double) {
       expect(result, closeTo(expected, 0.001));
@@ -31,7 +31,7 @@ void main() {
 
   test('parses an unsupported expression', () {
     final json = {'not-supported': true};
-    final expression = _parser.parse(json);
+    final expression = parser.parse(json);
     expect(expression, isA<UnsupportedExpression>());
     expect(expression.evaluate(_context()), isNull);
     expect((expression as UnsupportedExpression).json, equals(json));
@@ -40,7 +40,7 @@ void main() {
 
   test('supports operators', () {
     expect(
-        _parser.supportedOperators().toList()..sort(),
+        parser.supportedOperators().toList()..sort(),
         equals([
           '!',
           '!=',
@@ -76,7 +76,7 @@ void main() {
 
   group('literal expressions:', () {
     void _assertLiteral(dynamic value) {
-      final expression = _parser.parse(value);
+      final expression = parser.parse(value);
       expect(expression.evaluate(_context()), equals(value));
       expect(expression.cacheKey, 'literal($value)');
     }
@@ -114,27 +114,27 @@ void main() {
 
   group('property expressions:', () {
     void _assertGetProperty(String property, dynamic value) {
-      final expression = _parser.parse(['get', property]);
+      final expression = parser.parse(['get', property]);
       expect(expression.evaluate(_context()), equals(value));
     }
 
     void _assertHasProperty(String property, bool isPresent) {
-      final expression = _parser.parse(['has', property]);
+      final expression = parser.parse(['has', property]);
       expect(expression.evaluate(_context()), equals(isPresent));
     }
 
     void _assertNotHasProperty(String property, bool expected) {
-      final expression = _parser.parse(['!has', property]);
+      final expression = parser.parse(['!has', property]);
       expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertInProperty(String property, List values, bool expected) {
-      final expression = _parser.parse(['in', property, ...values]);
+      final expression = parser.parse(['in', property, ...values]);
       expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertNotInProperty(String property, List values, bool expected) {
-      final expression = _parser.parse(['!in', property, ...values]);
+      final expression = parser.parse(['!in', property, ...values]);
       expect(expression.evaluate(_context()), equals(expected));
     }
 
@@ -157,7 +157,7 @@ void main() {
       // I couldn't find the spec for this, but themes use it with
       // extrusion
       final expression =
-          _parser.parse({'property': 'a-string', 'type': 'identity'});
+          parser.parse({'property': 'a-string', 'type': 'identity'});
       expect(expression.evaluate(_context()), equals('a-string-value'));
     });
 
@@ -199,18 +199,18 @@ void main() {
 
   group('boolean expressions:', () {
     void _assertNotExpression(dynamic delegateExpression, bool expected) {
-      final expression = _parser.parse(['!', delegateExpression]);
+      final expression = parser.parse(['!', delegateExpression]);
       expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertEqualsExpression(dynamic first, dynamic second, bool expected) {
-      final expression = _parser.parse(['==', first, second]);
+      final expression = parser.parse(['==', first, second]);
       expect(expression.evaluate(_context()), equals(expected));
     }
 
     void _assertNotEqualsExpression(
         dynamic first, dynamic second, bool expected) {
-      final expression = _parser.parse(['!=', first, second]);
+      final expression = parser.parse(['!=', first, second]);
       expect(expression.evaluate(_context()), equals(expected));
     }
 
@@ -388,7 +388,7 @@ void main() {
       ['get', 'an-unexpected-string'],
       ['get', 'another-string']
     ];
-    final expectedCacheKey =
+    const expectedCacheKey =
         'coalesce(get(an-unexpected-string),get(another-string))';
     test('provides a cache key and value', () {
       _assertExpression(expression, expectedCacheKey, "another-string-value");
@@ -404,7 +404,7 @@ void main() {
       11,
       1.5
     ];
-    final expectedCacheKey =
+    const expectedCacheKey =
         'step(get(zoom),literal(0),[stop(literal(10),literal(1)),stop(literal(11),literal(1.5))])';
     test('provides a cache key', () {
       _assertExpression(expression, expectedCacheKey, 0);
@@ -429,7 +429,7 @@ void main() {
         14,
         1
       ];
-      final expectedCacheKey =
+      const expectedCacheKey =
           'step(get(zoom),literal(0),[stop(literal(14),literal(1))])';
       zoom = 13;
       _assertExpression(expression, expectedCacheKey, 0);
@@ -453,7 +453,7 @@ void main() {
         22,
         28
       ];
-      final expectedCacheKey =
+      const expectedCacheKey =
           'interpolate(get(zoom),linear,[stop(literal(9),literal(8.5)),stop(literal(15),literal(12)),stop(literal(22),literal(28))])';
 
       test('provides a value below the upper bound', () {
@@ -490,7 +490,7 @@ void main() {
             [14, 13]
           ]
         };
-        final expectedCacheKey =
+        const expectedCacheKey =
             'interpolate(get(zoom),linear,[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
 
         zoom = 1;
@@ -512,7 +512,7 @@ void main() {
         15,
         16
       ];
-      final expectedCacheKey =
+      const expectedCacheKey =
           'interpolate(get(zoom),cubicBezier(0.5,0.0,1.0,1.0),[stop(literal(11),literal(10.5)),stop(literal(15),literal(16))])';
 
       test('provides a value below the upper bound', () {
@@ -553,7 +553,7 @@ void main() {
         15,
         12
       ];
-      final expectedCacheKey =
+      const expectedCacheKey =
           'interpolate(get(zoom),exponential(literal(1.2)),[stop(literal(9),literal(8.5)),stop(literal(15),literal(12))])';
 
       test('provides a value below the upper bound', () {
@@ -585,7 +585,7 @@ void main() {
             [14, 13]
           ]
         };
-        final cacheKey =
+        const cacheKey =
             'interpolate(get(zoom),exponential(literal(2)),[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
         zoom = 1;
         _assertExpression(expression, cacheKey, 12);
@@ -609,7 +609,7 @@ void main() {
         2
       ]
     ];
-    final expectedCacheKey = '(get(zoom)*literal(2))';
+    const expectedCacheKey = '(get(zoom)*literal(2))';
     test('provides variable expressions', () {
       zoom = 3;
       _assertExpression(expression, expectedCacheKey, zoom * 2);
@@ -632,7 +632,7 @@ void main() {
       2,
       3
     ];
-    final expectedCacheKey =
+    const expectedCacheKey =
         'case(equals(literal(3),get(zoom)):literal(1);equals(literal(4),get(zoom)):literal(2);literal(true):literal(3))';
     test('provides case expression that evaluates to a fallback', () {
       zoom = 1;
