@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 typedef MessageFunction = String Function();
 
 abstract class Logger {
