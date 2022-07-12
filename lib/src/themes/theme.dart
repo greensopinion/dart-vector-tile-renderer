@@ -34,7 +34,7 @@ class Theme {
 /// The type of theme layer
 enum ThemeLayerType {
   fill,
-  fill_extrusion,
+  fillExtrusion,
   line,
   symbol,
   background,

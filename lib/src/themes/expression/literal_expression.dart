@@ -1,7 +1,7 @@
 import 'expression.dart';
 
 class LiteralExpression extends Expression {
-  final _literal;
+  final dynamic _literal;
 
   LiteralExpression(this._literal) : super('literal($_literal)', {});
 
