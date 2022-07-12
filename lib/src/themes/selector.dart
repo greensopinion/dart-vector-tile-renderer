@@ -58,18 +58,18 @@ class _CompositeSelector extends LayerSelector {
   @override
   Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom) {
     Iterable<TileLayer> result = tileLayers;
-    delegates.forEach((delegate) {
+    for (final delegate in delegates) {
       result = delegate.select(result, zoom);
-    });
+    }
     return result;
   }
 
   @override
   Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) {
     Iterable<TileFeature> result = features;
-    delegates.forEach((delegate) {
+    for (final delegate in delegates) {
       result = delegate.features(result, zoom);
-    });
+    }
     return result;
   }
 
