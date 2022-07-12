@@ -59,4 +59,4 @@ class TilePolygon {
   String toString() => "TilePolygon($rings)";
 }
 
-final _equality = ListEquality();
+const _equality = ListEquality();

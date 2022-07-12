@@ -89,7 +89,7 @@ class _CacheEntry<T> {
   _CacheEntry(this.value);
 }
 
-final _equality = ListEquality();
+const _equality = ListEquality();
 
 abstract class _CacheKey {
   _CacheKey();

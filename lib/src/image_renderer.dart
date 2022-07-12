@@ -13,7 +13,7 @@ class ImageRenderer {
   final double scale;
 
   ImageRenderer({required this.theme, required this.scale, Logger? logger})
-      : logger = logger ?? Logger.noop() {
+      : logger = logger ?? const Logger.noop() {
     assert(scale >= 1 && scale <= 4);
   }
 
