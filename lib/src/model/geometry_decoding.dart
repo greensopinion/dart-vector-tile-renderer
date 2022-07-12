@@ -1,4 +1,4 @@
-import 'package:vector_tile_renderer/src/model/geometry_model.dart';
+import 'geometry_model.dart';
 
 enum _Command {
   moveTo,
