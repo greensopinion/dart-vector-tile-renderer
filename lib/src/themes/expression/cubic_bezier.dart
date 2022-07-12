@@ -54,9 +54,7 @@ class CubicBezier {
       return _maxX;
     }
     var t = _newtonsMethod(x);
-    if (t == null) {
-      t = _bisectionMethod(x);
-    }
+    t ??= _bisectionMethod(x);
     return t;
   }
 
