@@ -50,11 +50,8 @@ class SymbolLineRenderer extends FeatureRenderer {
     }
 
     final evaluationContext = EvaluationContext(
-      () => feature.properties,
-      feature.type,
-      context.zoom,
-      logger,
-    );
+        () => feature.properties, feature.type, logger,
+        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
 
     final text = textLayout.text.evaluate(evaluationContext);
     if (text == null) {

@@ -26,11 +26,8 @@ class FillRenderer extends FeatureRenderer {
     }
 
     final evaluationContext = EvaluationContext(
-      () => feature.properties,
-      feature.type,
-      context.zoom,
-      logger,
-    );
+        () => feature.properties, feature.type, logger,
+        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
     final fillPaint = style.fillPaint?.evaluate(evaluationContext);
     final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
 

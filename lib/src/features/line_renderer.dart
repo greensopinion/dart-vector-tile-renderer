@@ -28,11 +28,8 @@ class LineRenderer extends FeatureRenderer {
     }
 
     final evaluationContext = EvaluationContext(
-      () => feature.properties,
-      feature.type,
-      context.zoom,
-      logger,
-    );
+        () => feature.properties, feature.type, logger,
+        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
 
     final effectivePaint = style.linePaint?.evaluate(evaluationContext);
     if (effectivePaint == null) {

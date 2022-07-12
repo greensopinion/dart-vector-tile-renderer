@@ -15,7 +15,8 @@ void main() {
   };
   var zoom = 1.0;
   _context() => EvaluationContext(
-      () => _properties, TileFeatureType.linestring, zoom, Logger.noop());
+      () => _properties, TileFeatureType.linestring, Logger.noop(),
+      zoom: zoom, zoomScaleFactor: 1.0);
 
   void _assertExpression(dynamic jsonExpression, String cacheKey, expected) {
     final expression = _parser.parse(jsonExpression);

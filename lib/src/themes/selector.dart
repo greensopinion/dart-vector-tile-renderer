@@ -120,8 +120,9 @@ class _ExpressionLayerSelector extends LayerSelector {
   @override
   Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) {
     return features.where((feature) {
-      final context = EvaluationContext(() => feature.properties, feature.type,
-          zoom.toDouble(), Logger.noop());
+      final context = EvaluationContext(
+          () => feature.properties, feature.type, Logger.noop(),
+          zoom: zoom.toDouble(), zoomScaleFactor: 1.0);
       final result = _expression.evaluate(context);
       return result is bool && result;
     });
