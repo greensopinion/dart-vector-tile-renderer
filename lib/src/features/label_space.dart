@@ -3,7 +3,7 @@ import 'dart:ui';
 class LabelSpace {
   final Rect space;
   final List<_LabelRect> occupied = [];
-  final Set<String> texts = Set();
+  final Set<String> texts = {};
 
   LabelSpace(this.space);
 
