@@ -3,8 +3,8 @@ import '../math_expression.dart';
 import 'expression_parser.dart';
 
 class NaryMathExpressionParser extends ExpressionComponentParser {
-  String _operationName;
-  BinaryOperation _operation;
+  final String _operationName;
+  final BinaryOperation _operation;
   NaryMathExpressionParser(
       ExpressionParser parser, this._operationName, this._operation)
       : super(parser, _operationName);

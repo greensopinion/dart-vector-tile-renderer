@@ -21,7 +21,7 @@ class _CachingExpression<T> extends Expression<T> {
             List.from([..._delegate.properties()].sorted(), growable: false),
         super(_delegate.cacheKey, _delegate.properties());
 
-  _EntryCache<T> _cache = _EntryCache<T>(50);
+  final _EntryCache<T> _cache = _EntryCache<T>(50);
 
   @override
   T? evaluate(EvaluationContext context) {

@@ -33,7 +33,6 @@ linter:
     prefer_const_declarations: false
     prefer_const_constructors: false
     constant_identifier_names: false
-    prefer_final_fields: false
     prefer_conditional_assignment: false
     library_private_types_in_public_api: false
     prefer_collection_literals: false

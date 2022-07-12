@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'theme_function_model.dart';
 
 abstract class ThemeFunction<T> {
-  Map<FunctionModel, _ZoomValue> _cache = {};
+  final Map<FunctionModel, _ZoomValue> _cache = {};
 
   T? exponential(FunctionModel<T> model, double zoom) {
     _ZoomValue? cached = _cache[model];
