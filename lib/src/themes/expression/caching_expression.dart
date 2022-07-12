@@ -60,9 +60,7 @@ class _ConstantExpression<T> extends Expression<T> {
 
   @override
   T? evaluate(EvaluationContext context) {
-    if (_constantValue == null) {
-      _constantValue = _CacheEntry(_delegate.evaluate(context));
-    }
+    _constantValue ??= _CacheEntry(_delegate.evaluate(context));
     return _constantValue!.value;
   }
 

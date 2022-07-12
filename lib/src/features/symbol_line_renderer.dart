@@ -164,9 +164,7 @@ class SymbolLineRenderer extends FeatureRenderer {
         if (text.styledSymbol != null) {
           var preciseBox = _preciselyOccupyLabelSpaceAtTangent(
               context, text.renderer, tangent);
-          if (preciseBox == null) {
-            preciseBox = _RenderBox(box, tangent);
-          }
+          preciseBox ??= _RenderBox(box, tangent);
           return preciseBox;
         }
       }
