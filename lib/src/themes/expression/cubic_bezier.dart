@@ -32,13 +32,11 @@ class CubicBezier {
   }
 
   double _sampleCurveX(double t) {
-    return ((_coefficientAx * t + _coefficientBx) * t + _coefficientCx) *
-        t;
+    return ((_coefficientAx * t + _coefficientBx) * t + _coefficientCx) * t;
   }
 
   double _sampleCurveY(double t) {
-    return ((_coefficientAy * t + _coefficientBy) * t + _coefficientCy) *
-        t;
+    return ((_coefficientAy * t + _coefficientBy) * t + _coefficientCy) * t;
   }
 
   double _sampleCurveDerivativeX(double t) {

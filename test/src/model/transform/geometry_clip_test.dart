@@ -7,7 +7,8 @@ import 'package:vector_tile_renderer/src/model/transform/geometry_clip.dart';
 void main() {
   group('line clip', () {
     test('entirely outside of the clip area', () {
-      var clipped = clipLine(TileLine([const TilePoint(0, 0), const TilePoint(10, 10)]),
+      var clipped = clipLine(
+          TileLine([const TilePoint(0, 0), const TilePoint(10, 10)]),
           const ClipArea(11, 11, 10, 10));
       expect(clipped, []);
     });
@@ -125,19 +126,23 @@ void main() {
       });
 
       test('diagonal line failing case', () {
-        final line =
-            TileLine([const TilePoint(787.0, 252.0), const TilePoint(601.0, -4.0)]);
+        final line = TileLine(
+            [const TilePoint(787.0, 252.0), const TilePoint(601.0, -4.0)]);
         var clipped = clipLine(line, const ClipArea(0, 0, 800, 800)).round();
         expect(clipped, [
-          TileLine([const TilePoint(787.0, 252.0), const TilePoint(603.90625, 0.0)])
+          TileLine(
+              [const TilePoint(787.0, 252.0), const TilePoint(603.90625, 0.0)])
         ]);
       });
     });
 
     group('reentry inside outside', () {
       test('in out in', () {
-        final line =
-            TileLine([const TilePoint(7, 8), const TilePoint(12, -3), const TilePoint(4, 4)]);
+        final line = TileLine([
+          const TilePoint(7, 8),
+          const TilePoint(12, -3),
+          const TilePoint(4, 4)
+        ]);
         var clipped = clipLine(line, const ClipArea(0, 0, 10, 10)).round();
         expect(clipped, [
           TileLine([const Point(7.0, 8.0), const Point(10.0, 1.4)]),
@@ -164,7 +169,11 @@ void main() {
         final line = TileLine([const TilePoint(-3, 4), const TilePoint(6, -2)]);
         var clipped = clipLine(line, const ClipArea(0, 0, 10, 10)).round();
         expect(clipped, [
-          TileLine([const Point(0.0, 2.0), const Point(1.5, 1.0), const Point(3.0, 0.0)])
+          TileLine([
+            const Point(0.0, 2.0),
+            const Point(1.5, 1.0),
+            const Point(3.0, 0.0)
+          ])
         ]);
       });
 
@@ -172,14 +181,22 @@ void main() {
         final line = TileLine([const TilePoint(4, -1), const TilePoint(4, 11)]);
         var clipped = clipLine(line, const ClipArea(0, 0, 10, 10)).round();
         expect(clipped, [
-          TileLine([const Point(4.0, 0.0), const Point(4.0, 5.0), const Point(4.0, 10.0)])
+          TileLine([
+            const Point(4.0, 0.0),
+            const Point(4.0, 5.0),
+            const Point(4.0, 10.0)
+          ])
         ]);
       });
       test('horizontal crossing line', () {
         final line = TileLine([const TilePoint(-1, 4), const TilePoint(11, 4)]);
         var clipped = clipLine(line, const ClipArea(0, 0, 10, 10)).round();
         expect(clipped, [
-          TileLine([const Point(0.0, 4.0), const Point(5.0, 4.0), const Point(10.0, 4.0)])
+          TileLine([
+            const Point(0.0, 4.0),
+            const Point(5.0, 4.0),
+            const Point(10.0, 4.0)
+          ])
         ]);
       });
 
@@ -192,9 +209,16 @@ void main() {
         ]);
         var clipped = clipLine(line, const ClipArea(0, 0, 10, 10)).round();
         expect(clipped, [
-          TileLine([const Point(0.0, 2.0), const Point(1.5, 1.0), const Point(3.0, 0.0)]),
-          TileLine(
-              [const Point(10.0, 3.69231), const Point(7.5, 6.0), const Point(3.16667, 10.0)])
+          TileLine([
+            const Point(0.0, 2.0),
+            const Point(1.5, 1.0),
+            const Point(3.0, 0.0)
+          ]),
+          TileLine([
+            const Point(10.0, 3.69231),
+            const Point(7.5, 6.0),
+            const Point(3.16667, 10.0)
+          ])
         ]);
       });
     });
