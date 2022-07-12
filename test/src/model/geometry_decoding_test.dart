@@ -25,7 +25,7 @@ void main() {
         zigZag(1),
       ]).toList();
 
-      expect(points, [TilePoint(0, 1)]);
+      expect(points, [const TilePoint(0, 1)]);
     });
 
     test('multiple points', () {
@@ -37,7 +37,7 @@ void main() {
         zigZag(3),
       ]).toList();
 
-      expect(points, [TilePoint(0, 1), TilePoint(2, 3)]);
+      expect(points, [const TilePoint(0, 1), const TilePoint(2, 3)]);
     });
   });
 
@@ -54,8 +54,8 @@ void main() {
 
       expect(lines, hasLength(1));
       final metric = uiGeometry.createLine(lines[0]).computeMetrics().first;
-      expect(metric.getTangentForOffset(0)!.position, Offset(0, 1));
-      expect(metric.getTangentForOffset(metric.length)!.position, Offset(2, 4));
+      expect(metric.getTangentForOffset(0)!.position, const Offset(0, 1));
+      expect(metric.getTangentForOffset(metric.length)!.position, const Offset(2, 4));
     });
 
     test('multiple line string', () {
@@ -80,22 +80,22 @@ void main() {
           uiGeometry.createLine(lines[0]).computeMetrics().first;
       expect(
         line0Metric.getTangentForOffset(0)!.position,
-        Offset(0, 1),
+        const Offset(0, 1),
       );
       expect(
         line0Metric.getTangentForOffset(line0Metric.length)!.position,
-        Offset(2, 4),
+        const Offset(2, 4),
       );
 
       final line1Metric =
           uiGeometry.createLine(lines[1]).computeMetrics().first;
       expect(
         line1Metric.getTangentForOffset(0)!.position,
-        Offset(2, 5),
+        const Offset(2, 5),
       );
       expect(
         line1Metric.getTangentForOffset(line0Metric.length)!.position,
-        Offset(4, 8),
+        const Offset(4, 8),
       );
     });
   });
@@ -125,14 +125,14 @@ void main() {
       expect(polygonMetrics, hasLength(1));
 
       final ringMetric = polygonMetrics[0];
-      expect(ringMetric.getTangentForOffset(0)!.position, Offset(0, 0));
+      expect(ringMetric.getTangentForOffset(0)!.position, const Offset(0, 0));
       expect(
         ringMetric.getTangentForOffset(sqrt(2))!.position,
-        Offset(1, 1),
+        const Offset(1, 1),
       );
       expect(
         ringMetric.getTangentForOffset(sqrt(2) + 1)!.position,
-        Offset(0, 1),
+        const Offset(0, 1),
       );
     });
 
@@ -171,14 +171,14 @@ void main() {
       expect(polygonMetrics, hasLength(2));
 
       final innerRingMetric = polygonMetrics[1];
-      expect(innerRingMetric.getTangentForOffset(0)!.position, Offset(0, 0));
+      expect(innerRingMetric.getTangentForOffset(0)!.position, const Offset(0, 0));
       expect(
         innerRingMetric.getTangentForOffset(1)!.position,
-        Offset(0, 1),
+        const Offset(0, 1),
       );
       expect(
         innerRingMetric.getTangentForOffset(2)!.position,
-        Offset(1, 1),
+        const Offset(1, 1),
       );
     });
 
