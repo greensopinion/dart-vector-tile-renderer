@@ -1,3 +1,7 @@
+## 2.5.2
+
+* improve text halo at high zoom levels
+
 ## 2.5.1
 
 * improve support for overzooming
