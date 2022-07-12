@@ -2,7 +2,7 @@ import 'dart:ui';
 
 class LabelSpace {
   final Rect space;
-  final List<_LabelRect> occupied = [];
+  final List<_LabelRect> _occupied = [];
   final Set<String> texts = {};
 
   LabelSpace(this.space);
@@ -12,12 +12,12 @@ class LabelSpace {
   bool canOccupy(String text, Rect rect) =>
       canAccept(text) &&
       space.containsCompletely(rect) &&
-      !occupied.any((existing) => existing.space.overlaps(rect));
+      !_occupied.any((existing) => existing.space.overlaps(rect));
 
   void occupy(String text, Rect box) {
     final boxWithMargin = Rect.fromLTRB(box.left - margin, box.top - margin,
         box.right + (2 * margin), box.bottom + (2 * margin));
-    occupied.add(_LabelRect(text, boxWithMargin));
+    _occupied.add(_LabelRect(text, boxWithMargin));
     texts.add(text);
   }
 }
