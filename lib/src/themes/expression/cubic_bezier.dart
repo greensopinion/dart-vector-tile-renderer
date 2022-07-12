@@ -59,7 +59,7 @@ class CubicBezier {
   }
 
   double? _newtonsMethod(double x) {
-    final attempts = 8;
+    const attempts = 8;
     double t = x;
 
     for (var i = 0; i < attempts; ++i) {
@@ -78,7 +78,7 @@ class CubicBezier {
     double t0 = 0.0;
     double t1 = 1.0;
     double t = x;
-    final attempts = 20;
+    const attempts = 20;
 
     for (int i = 0; i < attempts; ++i) {
       final x2 = _sampleCurveX(t);
