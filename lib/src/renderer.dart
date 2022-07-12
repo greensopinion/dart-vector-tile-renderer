@@ -56,10 +56,10 @@ class Renderer {
           optimizations: optimizations,
           textPainterProvider: painterProvider);
       final effectiveTheme = theme.atZoom(zoom);
-      effectiveTheme.layers.forEach((themeLayer) {
+      for (final themeLayer in effectiveTheme.layers) {
         logger.log(() => 'rendering theme layer ${themeLayer.id}');
         themeLayer.render(context);
-      });
+      }
       canvas.restore();
     });
   }

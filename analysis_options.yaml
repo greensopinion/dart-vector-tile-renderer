@@ -31,7 +31,6 @@ linter:
 
     # temporarily disable failing rules until we address the issue
     prefer_const_constructors: false
-    avoid_function_literals_in_foreach_calls: false
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
