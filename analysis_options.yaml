@@ -30,7 +30,6 @@ linter:
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
 
     # temporarily disable failing rules until we address the issue
-    prefer_const_declarations: false
     prefer_const_constructors: false
     constant_identifier_names: false
     library_private_types_in_public_api: false

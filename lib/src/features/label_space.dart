@@ -27,7 +27,7 @@ extension _RectExtension on Rect {
       contains(other.topLeft) && contains(other.bottomRight);
 }
 
-final margin = 2.0;
+const margin = 2.0;
 
 class _LabelRect {
   final Rect space;

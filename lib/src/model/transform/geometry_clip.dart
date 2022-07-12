@@ -221,7 +221,7 @@ TilePoint _intersectingClipY(
 
 double _delta(double a, double b) => ((a < b) ? (b - a) : (a - b)).abs();
 
-final _nineteDegrees = (90 * pi / 180);
+const _nineteDegrees = (90 * pi / 180);
 
 extension _TileLineList on List<TileLine> {
   void addLine(List<TilePoint> points) {

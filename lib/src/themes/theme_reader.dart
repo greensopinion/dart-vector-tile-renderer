@@ -240,4 +240,4 @@ class ThemeReader {
   }
 }
 
-final _unknownId = '<unknown>';
+const _unknownId = '<unknown>';

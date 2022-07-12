@@ -220,11 +220,11 @@ class _RenderBox {
   _RenderBox(this.box, this.tangent);
 }
 
-final _minPathMetricSize = 100.0;
+const _minPathMetricSize = 100.0;
 
-final _degToRad = pi / 180.0;
-final _rotationOvershot = 3;
-final _rotationShiftUpper = (90 + _rotationOvershot) * _degToRad;
-final _rotationShiftLower = -(90 + _rotationOvershot) * _degToRad;
-final _rotationShift = (180 * _degToRad);
-final _ninetyDegrees = 90 * _degToRad;
+const _degToRad = pi / 180.0;
+const _rotationOvershot = 3;
+const _rotationShiftUpper = (90 + _rotationOvershot) * _degToRad;
+const _rotationShiftLower = -(90 + _rotationOvershot) * _degToRad;
+const _rotationShift = (180 * _degToRad);
+const _ninetyDegrees = 90 * _degToRad;
