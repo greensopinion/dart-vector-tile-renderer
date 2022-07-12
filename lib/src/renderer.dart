@@ -19,8 +19,8 @@ class Renderer {
       {required this.theme,
       this.painterProvider = const DefaultTextPainterProvider(),
       Logger? logger})
-      : logger = logger ?? Logger.noop(),
-        featureRenderer = FeatureDispatcher(logger ?? Logger.noop());
+      : logger = logger ?? const Logger.noop(),
+        featureRenderer = FeatureDispatcher(logger ?? const Logger.noop());
 
   /// renders the given tile to the canvas
   ///
