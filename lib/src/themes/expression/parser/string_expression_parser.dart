@@ -12,6 +12,7 @@ class ToStringExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 2;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final delegate = parser.parseOptional(json[1]);
     if (delegate == null) {
@@ -52,6 +53,7 @@ class GeometryTypeExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 1;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     return GetPropertyExpression("\$type");
   }

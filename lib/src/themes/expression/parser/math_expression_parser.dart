@@ -14,6 +14,7 @@ class NaryMathExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length > 2;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final operands = json.sublist(1);
     final operandExpressions = operands

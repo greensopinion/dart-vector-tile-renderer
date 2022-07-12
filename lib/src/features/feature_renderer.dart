@@ -27,6 +27,7 @@ class FeatureDispatcher extends FeatureRenderer {
       : typeToRenderer = createDispatchMapping(logger),
         symbolTypeToRenderer = createSymbolDispatchMapping(logger);
 
+  @override
   void render(
     Context context,
     ThemeLayerType layerType,

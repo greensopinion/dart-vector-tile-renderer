@@ -10,6 +10,7 @@ class GetExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 2 && json[1] is String;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     return GetPropertyExpression(json[1]);
   }

@@ -6,6 +6,7 @@ class DoubleExpression extends Expression<double> {
   DoubleExpression(this._delegate)
       : super('double(${_delegate.cacheKey})', _delegate.properties());
 
+  @override
   double? evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
     if (result is num) {

@@ -8,6 +8,7 @@ class LineCapExpression extends Expression<LineCap> {
   LineCapExpression(this._delegate)
       : super('lineCap(${_delegate.cacheKey})', _delegate.properties());
 
+  @override
   LineCap evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
     if (result is String) {
@@ -28,6 +29,7 @@ class LineJoinExpression extends Expression<LineJoin> {
   LineJoinExpression(this._delegate)
       : super('lineJoin(${_delegate.cacheKey})', _delegate.properties());
 
+  @override
   LineJoin evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
     if (result is String) {

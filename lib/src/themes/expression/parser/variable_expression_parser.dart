@@ -14,6 +14,7 @@ class LetExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length > 3 && json.length % 2 == 0;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final output = json.last;
     final variableDefinitions = json.sublist(1, json.length - 1);
@@ -45,6 +46,7 @@ class VarExpressionParser extends ExpressionComponentParser {
     return super.matches(json) && json.length == 2;
   }
 
+  @override
   Expression? parse(List<dynamic> json) {
     final variableName = json.last;
     return _registry.reference(variableName);

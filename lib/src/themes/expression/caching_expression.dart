@@ -4,8 +4,8 @@ import 'expression.dart';
 import 'literal_expression.dart';
 
 Expression<T> wrapConstant<T>(Expression<T> delegate) => delegate.isConstant &&
-        !(delegate is LiteralExpression) &&
-        !(delegate is _ConstantExpression)
+        delegate is! LiteralExpression &&
+        delegate is! _ConstantExpression
     ? _ConstantExpression<T>(delegate)
     : delegate;
 
@@ -103,6 +103,7 @@ class _SingularCacheKey extends _CacheKey {
 
   _SingularCacheKey(this._value) : _hashCode = _value.hashCode;
 
+  @override
   bool operator ==(other) =>
       other is _SingularCacheKey &&
       other._hashCode == _hashCode &&
@@ -118,6 +119,7 @@ class _PluralCacheKey extends _CacheKey {
 
   _PluralCacheKey(this._values) : _hashCode = _equality.hash(_values);
 
+  @override
   bool operator ==(other) =>
       other is _PluralCacheKey &&
       other._hashCode == _hashCode &&

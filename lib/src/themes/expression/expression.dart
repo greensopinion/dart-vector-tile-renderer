@@ -150,7 +150,7 @@ class AnyExpression extends Expression {
   evaluate(EvaluationContext context) {
     for (final delegate in _delegates) {
       final val = delegate.evaluate(context);
-      if (!(val is bool)) {
+      if (val is! bool) {
         context.logger.warn(() => 'AnyExpression expected bool but got $val');
       } else if (val) {
         return true;
@@ -174,7 +174,7 @@ class AllExpression extends Expression {
   evaluate(EvaluationContext context) {
     for (final delegate in _delegates) {
       final val = delegate.evaluate(context);
-      if (!(val is bool)) {
+      if (val is! bool) {
         context.logger.warn(() => 'AllExpression expected bool but got $val');
       } else if (!val) {
         return false;
