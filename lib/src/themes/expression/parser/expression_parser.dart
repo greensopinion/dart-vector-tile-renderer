@@ -19,7 +19,7 @@ typedef ExpressionFunction = Expression Function();
 
 class ExpressionParser {
   final Logger logger;
-  Map<String, ExpressionComponentParser> _parserByOperator = {};
+  final Map<String, ExpressionComponentParser> _parserByOperator = {};
   ExpressionParser(this.logger) {
     _register(GetExpressionParser(this));
     _register(HasExpressionParser(this));

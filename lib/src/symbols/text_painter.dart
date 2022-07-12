@@ -21,7 +21,7 @@ class DefaultTextPainterProvider extends TextPainterProvider {
 }
 
 class CreatedTextPainterProvider extends TextPainterProvider {
-  DefaultTextPainterProvider _delegate = DefaultTextPainterProvider();
+  final DefaultTextPainterProvider _delegate = DefaultTextPainterProvider();
 
   final _painterBySymbol = <StyledSymbol, TextPainter?>{};
   final _symbolsWithoutPainter = <StyledSymbol>{};
