@@ -89,11 +89,11 @@ extension _DefaultLayerExtension on DefaultLayer {
   Set<String> propertyNames() {
     final names = <String>{};
     names.addAll(selector.layerSelector.propertyNames());
-    names.addProperties(this.style.fillPaint);
-    names.addProperties(this.style.linePaint);
-    names.addProperties(this.style.outlinePaint);
-    names.addProperties(this.style.textPaint);
-    names.addProperties(this.style.textLayout?.text);
+    names.addProperties(style.fillPaint);
+    names.addProperties(style.linePaint);
+    names.addProperties(style.outlinePaint);
+    names.addProperties(style.textPaint);
+    names.addProperties(style.textLayout?.text);
     return names.whereType<String>().toSet();
   }
 }

@@ -24,7 +24,7 @@ class LabelSpace {
 
 extension _RectExtension on Rect {
   bool containsCompletely(Rect other) =>
-      this.contains(other.topLeft) && this.contains(other.bottomRight);
+      contains(other.topLeft) && contains(other.bottomRight);
 }
 
 final margin = 2.0;

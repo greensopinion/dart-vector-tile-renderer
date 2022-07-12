@@ -23,7 +23,7 @@ class ThemeReader {
   late final PaintFactory paintFactory;
   late final ExpressionParser expressionParser;
 
-  ThemeReader({Logger? logger}) : this.logger = logger ?? Logger.noop() {
+  ThemeReader({Logger? logger}) : logger = logger ?? Logger.noop() {
     selectorFactory = SelectorFactory(this.logger);
     paintFactory = PaintFactory(this.logger);
     expressionParser = ExpressionParser(this.logger);

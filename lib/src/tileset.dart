@@ -11,13 +11,13 @@ class Tileset {
   final Map<String, Tile> tiles;
   late final LayerFeatureResolver _resolver;
 
-  Tileset(this.tiles) : this.preprocessed = false {
+  Tileset(this.tiles) : preprocessed = false {
     _resolver = DefaultLayerFeatureResolver(this);
   }
 
   Tileset._preprocessed(Tileset original, this._resolver)
-      : this.tiles = original.tiles,
-        this.preprocessed = true;
+      : tiles = original.tiles,
+        preprocessed = true;
 
   Tile? tile(String sourceId) => tiles[sourceId];
 }

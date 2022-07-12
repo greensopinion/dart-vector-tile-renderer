@@ -32,7 +32,6 @@ linter:
     # temporarily disable failing rules until we address the issue
     prefer_const_declarations: false
     prefer_const_constructors: false
-    unnecessary_this: false
     constant_identifier_names: false
     annotate_overrides: false
     prefer_is_empty: false
