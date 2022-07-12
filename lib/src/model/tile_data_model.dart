@@ -1,5 +1,5 @@
-import 'package:vector_tile_renderer/src/model/geometry_decoding.dart';
-import 'package:vector_tile_renderer/src/model/geometry_model.dart';
+import 'geometry_decoding.dart';
+import 'geometry_model.dart';
 
 import 'tile_model.dart';
 
