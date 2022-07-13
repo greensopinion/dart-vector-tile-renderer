@@ -6,14 +6,14 @@ import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
 
-class PaintExpression extends Expression<VectorPaint> {
+class PaintExpression extends Expression<PaintModel> {
   final PaintStyle _delegate;
 
   PaintExpression(this._delegate)
       : super(_cacheKey(_delegate), _properties(_delegate));
 
   @override
-  VectorPaint? evaluate(EvaluationContext context) => _delegate.paint(context);
+  PaintModel? evaluate(EvaluationContext context) => _delegate.paint(context);
 
   @override
   bool get isConstant => false;
@@ -28,7 +28,7 @@ class PaintExpression extends Expression<VectorPaint> {
       };
 }
 
-class VectorPaint extends Paint {
+class PaintModel extends Paint {
   List<double> strokeDashPattern = [];
 }
 
@@ -48,7 +48,7 @@ class PaintStyle {
       required this.color,
       required this.strokeDashPattern});
 
-  VectorPaint? paint(EvaluationContext context) {
+  PaintModel? paint(EvaluationContext context) {
     final opacity = this.opacity.evaluate(context);
     if (opacity != null && opacity <= 0) {
       return null;
@@ -57,7 +57,7 @@ class PaintStyle {
     if (color == null) {
       return null;
     }
-    final paint = VectorPaint()
+    final paint = PaintModel()
       ..style = paintingStyle
       ..strokeDashPattern = strokeDashPattern;
     if (opacity != null && opacity < 1.0) {
@@ -81,7 +81,7 @@ class PaintFactory {
   final ExpressionParser expressionParser;
   PaintFactory(this.logger) : expressionParser = ExpressionParser(logger);
 
-  Expression<VectorPaint>? create(
+  Expression<PaintModel>? create(
       String id, PaintingStyle style, String prefix, paint,
       {double? defaultStrokeWidth = 1.0}) {
     if (paint == null) {

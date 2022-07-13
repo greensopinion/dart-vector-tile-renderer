@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'ring_number_provider.dart';
 import 'path_utils.dart';
-import 'geometry_decoding.dart';
+import 'geometry_model.dart';
+import 'geometry_model_ui.dart';
 
 class Tile {
   final List<TileLayer> layers;
@@ -21,54 +22,69 @@ class TileLayer {
 class TileFeature {
   final TileFeatureType type;
   final Map<String, dynamic> properties;
-  final List<int>? _geometry;
-  List<Offset>? _points;
-  List<Path>? _paths;
+  List<TilePoint>? _modelPoints;
+  List<TileLine>? _modelLines;
+  List<TilePolygon>? _modelPolygons;
+  late List<Offset> _points;
+  late List<Path> _paths;
 
-  TileFeature({
-    required this.type,
-    required this.properties,
-    required List<int> geometry,
-  }) : _geometry = geometry;
+  TileFeature(
+      {required this.type,
+      required this.properties,
+      required List<TilePoint>? points,
+      required List<TileLine>? lines,
+      required List<TilePolygon>? polygons})
+      : _modelPoints = points,
+        _modelLines = lines,
+        _modelPolygons = polygons;
 
   List<Offset> get points {
     if (type != TileFeatureType.point) {
       throw StateError('Feature does not have points');
     }
-
-    final geometry = _geometry;
-    if (geometry != null && _points == null) {
-      _points = decodePoints(geometry).toList(growable: false);
+    final modelPoints = _modelPoints;
+    if (modelPoints != null) {
+      final uiGeometry = UiGeometry();
+      _points = modelPoints
+          .map((e) => uiGeometry.createPoint(e))
+          .toList(growable: false);
+      _modelPoints = null;
     }
-
-    return _points ?? [];
+    return _points;
   }
+
+  bool get hasPaths =>
+      type == TileFeatureType.linestring || type == TileFeatureType.polygon;
+
+  bool get hasPoints => type == TileFeatureType.point;
 
   List<Path> getPaths({List<double> dashLengths = const []}) {
     if (type == TileFeatureType.point) {
       throw StateError('Cannot get paths from a point feature');
     }
-
-    final geometry = _geometry;
-    if (geometry != null && _paths == null) {
-      // ignore: missing_enum_constant_in_switch
-      switch (type) {
-        case TileFeatureType.linestring:
-          _paths = decodeLineStrings(geometry).toList(growable: false);
-          break;
-        case TileFeatureType.polygon:
-          _paths = decodePolygons(geometry).toList(growable: false);
-          break;
-      }
+    final modelLines = _modelLines;
+    if (modelLines != null) {
+      assert(type == TileFeatureType.linestring);
+      final uiGeometry = UiGeometry();
+      _paths = modelLines
+          .map((e) => uiGeometry.createLine(e))
+          .toList(growable: false);
+      _modelLines = null;
+    }
+    final modelPolygons = _modelPolygons;
+    if (modelPolygons != null) {
+      assert(type == TileFeatureType.polygon);
+      final uiGeometry = UiGeometry();
+      _paths = modelPolygons
+          .map((e) => uiGeometry.createPolygon(e))
+          .toList(growable: false);
+      _modelPolygons = null;
     }
 
     if (dashLengths.length >= 2) {
-      return _paths
-              ?.map((e) => e.dashPath(RingNumberProvider(dashLengths)))
-              .toList() ??
-          [];
+      return _paths.map((e) => e.dashPath(RingNumberProvider(dashLengths))).toList();
     } else {
-      return _paths ?? [];
+      return _paths;
     }
   }
 }
