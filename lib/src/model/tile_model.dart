@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'ring_number_provider.dart';
-import 'path_utils.dart';
 import 'geometry_model.dart';
 import 'geometry_model_ui.dart';
 
@@ -58,7 +56,7 @@ class TileFeature {
 
   bool get hasPoints => type == TileFeatureType.point;
 
-  List<Path> getPaths({List<double> dashLengths = const []}) {
+  List<Path> get paths {
     if (type == TileFeatureType.point) {
       throw StateError('Cannot get paths from a point feature');
     }
@@ -80,12 +78,7 @@ class TileFeature {
           .toList(growable: false);
       _modelPolygons = null;
     }
-
-    if (dashLengths.length >= 2) {
-      return _paths.map((e) => e.dashPath(RingNumberProvider(dashLengths))).toList();
-    } else {
-      return _paths;
-    }
+    return _paths;
   }
 }
 
