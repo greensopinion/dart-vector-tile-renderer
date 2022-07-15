@@ -1,3 +1,6 @@
+## 2.5.4
+
+* provide support for dashed paths with `line-dasharray` theme style
 ## 2.5.2
 
 * improve text halo at high zoom levels

@@ -27,6 +27,10 @@ CI with GitHub Actions:
 * [Maputnik Style Editor](https://maputnik.github.io/)
 * Theme [style specification](https://docs.mapbox.com/mapbox-gl-js/style-spec/)
 
+## Contributors
+
+Many thanks to [the contributors](https://github.com/greensopinion/dart-vector-tile-renderer/graphs/contributors) who helped to improve this library.
+
 ## License
 
 Copyright 2021 David Green
