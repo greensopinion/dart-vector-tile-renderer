@@ -29,7 +29,7 @@ class PaintExpression extends Expression<PaintModel> {
 }
 
 class PaintModel extends Paint {
-  List<double> strokeDashPattern = [];
+  List<double>? strokeDashPattern;
 }
 
 class PaintStyle {
@@ -38,7 +38,7 @@ class PaintStyle {
   final Expression<double> opacity;
   final Expression<double> strokeWidth;
   final Expression<Color> color;
-  final List<double> strokeDashPattern;
+  final List<double>? strokeDashPattern;
 
   PaintStyle(
       {required this.id,
@@ -96,7 +96,7 @@ class PaintFactory {
     final strokeWidth = expressionParser.parse(paint['$prefix-width'],
         whenNull: () => LiteralExpression(defaultStrokeWidth));
 
-    List<double> dashArray = [];
+    List<double>? dashArray;
     final dashJson = paint['$prefix-dasharray'];
     if (dashJson != null && dashJson is List<num> && dashJson.length >= 2) {
       if (dashJson.any((element) => element < .0)) {

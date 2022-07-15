@@ -1,5 +1,7 @@
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
+import '../path/path_transform.dart';
+import '../path/ring_number_provider.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
@@ -48,15 +50,17 @@ class LineRenderer extends FeatureRenderer {
         context.tileSpaceMapper.widthFromPixelToTile(strokeWidth);
 
     final dashLengths = effectivePaint.strokeDashPattern
-        .map((e) => context.tileSpaceMapper.widthFromPixelToTile(e))
+        ?.map((e) => context.tileSpaceMapper.widthFromPixelToTile(e))
         .toList(growable: false);
 
-    final lines = feature.getPaths(dashLengths: dashLengths);
-
-    for (final line in lines) {
+    final lines = feature.paths;
+    for (var line in lines) {
       if (!context.optimizations.skipInBoundsChecks &&
           !context.tileSpaceMapper.isPathWithinTileClip(line)) {
         continue;
+      }
+      if (dashLengths != null) {
+        line = line.dashPath(RingNumberProvider(dashLengths));
       }
       context.canvas.drawPath(line, effectivePaint);
     }
