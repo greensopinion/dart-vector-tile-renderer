@@ -63,6 +63,9 @@ class DefaultLayer extends ThemeLayer {
       }
     });
   }
+
+  @override
+  String? get tileSource => selector.tileSelector.source;
 }
 
 class BackgroundLayer extends ThemeLayer {
@@ -84,4 +87,7 @@ class BackgroundLayer extends ThemeLayer {
       context.canvas.drawRect(context.tileClip, paint);
     }
   }
+
+  @override
+  String? get tileSource => null;
 }

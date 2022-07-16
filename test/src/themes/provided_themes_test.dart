@@ -6,5 +6,6 @@ void main() {
     final theme = ProvidedThemes.lightTheme();
     expect(theme.id, 'osm-liberty');
     expect(theme.version, '2021-08-22');
+    expect(theme.tileSources, <String>{'openmaptiles'});
   });
 }

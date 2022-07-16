@@ -29,6 +29,9 @@ class Theme {
 
   bool _matchesZoom(double zoom, ThemeLayer layer) =>
       (zoom >= (layer.minzoom ?? -1)) && (zoom <= (layer.maxzoom ?? 100));
+
+  Set<String> get tileSources =>
+      layers.map((e) => e.tileSource).whereType<String>().toSet();
 }
 
 /// The type of theme layer
@@ -50,6 +53,8 @@ abstract class ThemeLayer {
   final double? maxzoom;
   ThemeLayer(this.id, this.type,
       {required this.minzoom, required this.maxzoom});
+
+  String? get tileSource;
 
   void render(Context context);
 }
