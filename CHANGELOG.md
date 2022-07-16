@@ -1,3 +1,7 @@
+## 2.5.5
+
+* expose the tile sources of a theme
+
 ## 2.5.4
 
 * provide support for dashed paths with `line-dasharray` theme style

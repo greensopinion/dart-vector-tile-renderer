@@ -30,6 +30,7 @@ class Theme {
   bool _matchesZoom(double zoom, ThemeLayer layer) =>
       (zoom >= (layer.minzoom ?? -1)) && (zoom <= (layer.maxzoom ?? 100));
 
+  /// Provides the sources of all layers of this theme.
   Set<String> get tileSources =>
       layers.map((e) => e.tileSource).whereType<String>().toSet();
 }
