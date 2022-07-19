@@ -1,3 +1,7 @@
+## 2.5.6
+
+* performance improvement when rendering a tile at different zoom levels
+
 ## 2.5.5
 
 * expose the tile sources of a theme
