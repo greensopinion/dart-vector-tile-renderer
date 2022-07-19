@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../logger.dart';
 import '../model/tile_model.dart';
 import '../tileset.dart';
@@ -40,6 +42,8 @@ abstract class LayerSelector {
 
   factory LayerSelector.expression(Expression expression) =>
       _ExpressionLayerSelector(expression);
+  factory LayerSelector.withZoomConstraints(num? minzoom, num? maxzoom) =>
+      _ZoomConstraintLayerSelector(minzoom?.floor(), maxzoom?.ceil());
 
   Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom);
 
@@ -47,6 +51,42 @@ abstract class LayerSelector {
 
   Set<String> propertyNames();
   Set<String> layerNames();
+
+  int? minZoom() => null;
+  int? maxZoom() => null;
+}
+
+class _ZoomConstraintLayerSelector extends LayerSelector {
+  final int? minzoom;
+  final int? maxzoom;
+
+  _ZoomConstraintLayerSelector(this.minzoom, this.maxzoom)
+      : super._('zoom($minzoom-$maxzoom)');
+
+  @override
+  Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) =>
+      features;
+
+  @override
+  Set<String> layerNames() => {};
+
+  @override
+  Set<String> propertyNames() => {};
+
+  @override
+  Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom) {
+    final min = minzoom;
+    final max = maxzoom;
+    if ((min != null && zoom < min) || (max != null && zoom > max)) {
+      return [];
+    }
+    return tileLayers;
+  }
+
+  @override
+  int? minZoom() => minzoom;
+  @override
+  int? maxZoom() => maxzoom;
 }
 
 class _CompositeSelector extends LayerSelector {
@@ -89,6 +129,24 @@ class _CompositeSelector extends LayerSelector {
       names.addAll(delegate.layerNames());
     }
     return names;
+  }
+
+  @override
+  int? minZoom() {
+    final values = delegates.map((e) => e.minZoom()).whereType<int>();
+    if (values.isEmpty) {
+      return null;
+    }
+    return values.reduce(min);
+  }
+
+  @override
+  int? maxZoom() {
+    final values = delegates.map((e) => e.maxZoom()).whereType<int>();
+    if (values.isEmpty) {
+      return null;
+    }
+    return values.reduce(max);
   }
 }
 

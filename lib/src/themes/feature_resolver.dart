@@ -30,18 +30,41 @@ class DefaultLayerFeatureResolver implements LayerFeatureResolver {
 
 /// A [LayerFeatureResolver] that uses another resolver and caches its results.
 class CachingLayerFeatureResolver implements LayerFeatureResolver {
-  CachingLayerFeatureResolver(this._delegate);
-
   final LayerFeatureResolver _delegate;
+  final _cacheByZoom = <Map<String, List<LayerFeature>>?>[];
 
-  final _cache = <String, List<LayerFeature>>{};
+  CachingLayerFeatureResolver(this._delegate) {
+    for (int x = 0; x <= _maximumConceivableZoom; ++x) {
+      _cacheByZoom.add(null);
+    }
+  }
 
   @override
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector, int zoom) {
-    return _cache.putIfAbsent(
-      "$zoom:${selector.cacheKey}",
-      () => _delegate.resolveFeatures(selector, zoom).toList(growable: false),
+    final cache = _cache(zoom);
+    return cache.putIfAbsent(
+      selector.cacheKey,
+      () {
+        final minZoom = selector.layerSelector.minZoom();
+        final maxZoom = selector.layerSelector.maxZoom();
+        final checkZoom = minZoom ?? maxZoom ?? 0;
+        if (checkZoom != zoom) {
+          return resolveFeatures(selector, checkZoom).toList(growable: false);
+        }
+        return _delegate
+            .resolveFeatures(selector, zoom)
+            .toList(growable: false);
+      },
     );
+  }
+
+  Map<String, List<LayerFeature>> _cache(int zoom) {
+    var cache = _cacheByZoom[zoom];
+    if (cache == null) {
+      cache = {};
+      _cacheByZoom[zoom] = cache;
+    }
+    return cache;
   }
 }
 
@@ -51,3 +74,5 @@ class LayerFeature {
   final TileLayer layer;
   final TileFeature feature;
 }
+
+const _maximumConceivableZoom = 25;

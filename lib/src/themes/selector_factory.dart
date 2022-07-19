@@ -18,12 +18,21 @@ class SelectorFactory {
   LayerSelector _layerSelector(themeLayer) {
     final sourceLayer = themeLayer['source-layer'];
     if (sourceLayer != null && sourceLayer is String) {
-      final selector = LayerSelector.named(sourceLayer);
-      List<dynamic>? filter = themeLayer['filter'] as List<dynamic>?;
-      if (filter == null) {
-        return selector;
+      var selector = LayerSelector.named(sourceLayer);
+      final selectors = [selector];
+      final minzoom = _getZoomChecked(themeLayer, 'minzoom');
+      final maxzoom = _getZoomChecked(themeLayer, 'maxzoom');
+      if (minzoom != null || maxzoom != null) {
+        selectors.add(LayerSelector.withZoomConstraints(minzoom, maxzoom));
       }
-      return LayerSelector.composite([selector, _createFilter(filter)]);
+      List<dynamic>? filter = themeLayer['filter'] as List<dynamic>?;
+      if (filter != null) {
+        selectors.add(_createFilter(filter));
+      }
+      if (selectors.length > 1) {
+        return LayerSelector.composite(selectors);
+      }
+      return selectors.first;
     }
     logger.warn(() => 'theme layer has no source-layer: ${themeLayer["id"]}');
     return LayerSelector.none();
@@ -35,5 +44,16 @@ class SelectorFactory {
     }
     final expression = ExpressionParser(logger).parse(filter);
     return LayerSelector.expression(expression);
+  }
+
+  num? _getZoomChecked(themeLayer, String property) {
+    final zoom = themeLayer[property];
+    if (zoom is num) {
+      return zoom;
+    } else if (zoom != null) {
+      logger
+          .warn(() => 'expecting theme $property to be a number but got $zoom');
+    }
+    return null;
   }
 }
