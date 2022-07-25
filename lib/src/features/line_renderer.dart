@@ -3,6 +3,7 @@ import '../context.dart';
 import '../path/path_transform.dart';
 import '../path/ring_number_provider.dart';
 import '../themes/expression/expression.dart';
+import '../themes/paint_factory.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
 import 'line_styler.dart';
