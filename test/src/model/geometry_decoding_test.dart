@@ -12,7 +12,7 @@ const closePath = 0x7;
 
 int command(int command, int length) => length << 3 | command;
 
-int zigZag(int n) => (n << 1) ^ (n >> 31);
+int zigZag(int n) => ((n << 1) ^ (n >> 31)).toSigned(32);
 
 void main() {
   final uiGeometry = UiGeometry();
