@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../model/tile_model.dart';
 import '../tileset.dart';
 import 'selector.dart';
@@ -59,10 +61,11 @@ class CachingLayerFeatureResolver implements LayerFeatureResolver {
   }
 
   Map<String, List<LayerFeature>> _cache(int zoom) {
-    var cache = _cacheByZoom[zoom];
+    final index = min(zoom, _maximumConceivableZoom);
+    var cache = _cacheByZoom[index];
     if (cache == null) {
       cache = {};
-      _cacheByZoom[zoom] = cache;
+      _cacheByZoom[index] = cache;
     }
     return cache;
   }
