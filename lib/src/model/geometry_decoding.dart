@@ -1,24 +1,13 @@
 import 'geometry_model.dart';
 
-enum _Command {
-  moveTo,
-  lineTo,
-  closePath,
+class _Command {
+  static const moveTo = 1;
+  static const lineTo = 2;
+  static const closePath = 7;
 }
 
 @pragma('vm:prefer-inline')
-_Command _decodeCommand(int command) {
-  switch (command & 0x7) {
-    case 1:
-      return _Command.moveTo;
-    case 2:
-      return _Command.lineTo;
-    case 7:
-      return _Command.closePath;
-    default:
-      throw ArgumentError('Unknown command: ${command & 0x7}');
-  }
-}
+int _decodeCommand(int command) => command & 0x7;
 
 @pragma('vm:prefer-inline')
 int _decodeCommandLength(int command) => command >> 3;
@@ -152,7 +141,13 @@ Iterable<TilePolygon> decodePolygons(List<int> geometry) sync* {
     );
     assert(_decodeCommandLength(closePathCommand) == 1);
 
-    assert(a != 0);
+    if (a == 0) {
+      // The tile data is invalid.
+      // We can't know if the ring is exterior or interior.
+      // The safe thing to do is to stop decoding.
+      return;
+    }
+
     if (a.isNegative) {
       // We just decoded an interior ring.
 
