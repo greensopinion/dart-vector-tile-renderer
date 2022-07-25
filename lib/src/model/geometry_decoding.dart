@@ -24,7 +24,7 @@ _Command _decodeCommand(int command) {
 int _decodeCommandLength(int command) => command >> 3;
 
 @pragma('vm:prefer-inline')
-int _decodeZigZag(int value) => (value >> 1) ^ -(value & 1);
+int _decodeZigZag(int value) => ((value >> 1) ^ -(value & 1)).toSigned(32);
 
 Iterable<TilePoint> decodePoints(List<int> geometry) sync* {
   final it = geometry.iterator;
