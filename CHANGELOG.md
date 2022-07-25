@@ -1,3 +1,6 @@
+## 2.5.7
+
+* bug fix for themes that specify maxZoom > 25
 ## 2.5.6
 
 * performance improvement when rendering a tile at different zoom levels
