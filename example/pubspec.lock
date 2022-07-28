@@ -169,7 +169,7 @@ packages:
       name: vector_tile
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.2"
+    version: "1.0.0"
   vector_tile_renderer:
     dependency: "direct main"
     description:
