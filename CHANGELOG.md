@@ -1,3 +1,7 @@
+## 2.5.8
+
+* improve web support
+
 ## 2.5.7
 
 * bug fix for themes that specify maxZoom > 25
