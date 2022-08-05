@@ -11,7 +11,8 @@ void main() {
     'a-bool': true,
     'a-false-bool': false,
     'an-int': 33,
-    'a-double': 13.2
+    'a-double': 13.2,
+    'level': 127
   };
   var zoom = 1.0;
   _context() => EvaluationContext(
@@ -499,6 +500,26 @@ void main() {
         _assertExpression(expression, expectedCacheKey, 12);
         zoom = 14;
         _assertExpression(expression, expectedCacheKey, 13);
+      });
+
+      test('provides color interpolation', () {
+        final expression = [
+          "interpolate",
+          ["linear"],
+          ["get", "level"],
+          110,
+          "rgba(0,0,0,0.08)",
+          127,
+          "rgba(0,0,0,0.06)",
+          143,
+          "rgba(0,0,0,0.04)",
+          160,
+          "rgba(0,0,0,0.02)"
+        ];
+        _assertExpression(
+            expression,
+            'interpolate(get(level),linear,[stop(literal(110),literal(rgba(0,0,0,0.08))),stop(literal(127),literal(rgba(0,0,0,0.06))),stop(literal(143),literal(rgba(0,0,0,0.04))),stop(literal(160),literal(rgba(0,0,0,0.02)))])',
+            'rgba(0,0,0,0.06)');
       });
     });
 
