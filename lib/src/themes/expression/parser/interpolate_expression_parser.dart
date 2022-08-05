@@ -59,6 +59,8 @@ class InterpolateExpressionParser extends ExpressionComponentParser {
     final input = json[2];
     if (input is List && input.length == 1) {
       return parser.parseOptionalPropertyOrExpression(input[0]);
+    } else if (input is List) {
+      return parser.parseOptional(input);
     }
     return null;
   }
