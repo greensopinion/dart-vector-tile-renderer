@@ -1,3 +1,7 @@
+## 2.5.9
+
+* add support for string expressions
+* improve support for interpolate expressions
 ## 2.5.8
 
 * improve web support
