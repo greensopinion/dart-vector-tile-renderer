@@ -25,43 +25,38 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void render(Context context) {
-    final layers = selector
-        .select(context.tileset, context.zoom.truncate())
-        .toList(growable: false);
-    assert(layers.length <= 1);
-
+    final layers = selector.select(context.tileset, context.zoom.truncate());
     if (layers.isEmpty) {
       return;
     }
 
     final features = context.tileset.resolver
-        .resolveFeatures(selector, context.zoom.truncate())
-        .toList(growable: false);
+        .resolveFeatures(selector, context.zoom.truncate());
 
     if (features.isEmpty) {
       return;
     }
 
-    final layer = layers.first;
+    for (final layer in layers) {
+      context.tileSpaceMapper = TileSpaceMapper(
+        context.canvas,
+        context.tileClip,
+        tileSize,
+        layer.extent,
+      );
 
-    context.tileSpaceMapper = TileSpaceMapper(
-      context.canvas,
-      context.tileClip,
-      tileSize,
-      layer.extent,
-    );
-
-    context.tileSpaceMapper.drawInTileSpace(() {
-      for (final feature in features) {
-        context.featureRenderer.render(
-          context,
-          type,
-          style,
-          feature.layer,
-          feature.feature,
-        );
-      }
-    });
+      context.tileSpaceMapper.drawInTileSpace(() {
+        for (final feature in features) {
+          context.featureRenderer.render(
+            context,
+            type,
+            style,
+            feature.layer,
+            feature.feature,
+          );
+        }
+      });
+    }
   }
 
   @override
