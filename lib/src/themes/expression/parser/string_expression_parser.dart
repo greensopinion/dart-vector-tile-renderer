@@ -1,6 +1,7 @@
 import '../coalesce_expression.dart';
 import '../expression.dart';
 import '../property_expression.dart';
+import '../string_expression.dart';
 import 'expression_parser.dart';
 
 class ToStringExpressionParser extends ExpressionComponentParser {
@@ -41,6 +42,28 @@ class CoalesceExpressionParser extends ExpressionComponentParser {
       return null;
     }
     return CoalesceExpression(valueExpressions);
+  }
+}
+
+class StringExpressionParser extends ExpressionComponentParser {
+  StringExpressionParser(ExpressionParser parser) : super(parser, 'string');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length > 1;
+  }
+
+  @override
+  Expression? parse(List json) {
+    final values = json.sublist(1);
+    final valueExpressions = values
+        .map((e) => parser.parseOptional(e))
+        .whereType<Expression>()
+        .toList(growable: false);
+    if (values.length != valueExpressions.length) {
+      return null;
+    }
+    return StringExpression(valueExpressions);
   }
 }
 

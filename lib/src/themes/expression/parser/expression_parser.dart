@@ -46,6 +46,7 @@ class ExpressionParser {
     _register(MatchExpressionParser(this));
     _register(GeometryTypeExpressionParser(this));
     _register(CoalesceExpressionParser(this));
+    _register(StringExpressionParser(this));
     _register(NaryMathExpressionParser(this, '*', (a, b) => a * b));
     _register(NaryMathExpressionParser(this, '/', (a, b) => a / b));
     _register(NaryMathExpressionParser(this, '+', (a, b) => a + b));
