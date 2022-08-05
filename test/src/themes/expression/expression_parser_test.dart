@@ -70,6 +70,7 @@ void main() {
           'let',
           'match',
           'step',
+          'string',
           'to-string',
           'var'
         ]));
@@ -395,6 +396,20 @@ void main() {
       _assertExpression(expression, expectedCacheKey, "another-string-value");
     });
   });
+
+  group('string expressions:', () {
+    final expression = [
+      'string',
+      ['get', 'an-unexpected-string'],
+      ['get', 'another-string']
+    ];
+    const expectedCacheKey =
+        'string(get(an-unexpected-string),get(another-string))';
+    test('provides a cache key and value', () {
+      _assertExpression(expression, expectedCacheKey, "another-string-value");
+    });
+  });
+
   group('step expressions:', () {
     final expression = [
       'step',
