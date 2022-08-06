@@ -1,3 +1,6 @@
+## 2.5.10
+
+* performance improvement
 ## 2.5.9
 
 * add support for string expressions
