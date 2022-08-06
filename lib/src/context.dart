@@ -7,6 +7,7 @@ import 'logger.dart';
 import 'model/tile_model.dart';
 import 'optimizations.dart';
 import 'symbols/text_painter.dart';
+import 'themes/paint_factory.dart';
 import 'tileset.dart';
 
 class Context {
@@ -21,6 +22,7 @@ class Context {
   final LabelSpace labelSpace;
   final Optimizations optimizations;
   final TextPainterProvider textPainterProvider;
+  final CachingPaintProvider paintProvider;
   late TileSpaceMapper tileSpaceMapper;
 
   Context(
@@ -34,7 +36,8 @@ class Context {
       required this.tileClip,
       required this.optimizations,
       required this.textPainterProvider})
-      : labelSpace = LabelSpace(tileClip);
+      : labelSpace = LabelSpace(tileClip),
+        paintProvider = CachingPaintProvider();
 
   Tile? tile(String sourceId) => tileset.tiles[sourceId];
 }

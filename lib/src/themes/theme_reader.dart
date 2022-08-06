@@ -76,8 +76,8 @@ class ThemeReader {
   ThemeLayer? _toFillExtrusionTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
-    final paint = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.fill, 'fill-extrusion', paintJson);
+    final paint = paintFactory.create(_layerId(jsonLayer), PaintingStyle.fill,
+        'fill-extrusion', paintJson, null);
     if (paint != null) {
       final base = expressionParser
           .parseOptional(paintJson['fill-extrusion-base'])
@@ -101,9 +101,9 @@ class ThemeReader {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
     final paint = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.fill, 'fill', paintJson);
-    final outlinePaint = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.stroke, 'fill-outline', paintJson,
+        _layerId(jsonLayer), PaintingStyle.fill, 'fill', paintJson, null);
+    final outlinePaint = paintFactory.create(_layerId(jsonLayer),
+        PaintingStyle.stroke, 'fill-outline', paintJson, null,
         defaultStrokeWidth: 0.1);
     if (paint != null) {
       return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.fill,
@@ -118,13 +118,13 @@ class ThemeReader {
   ThemeLayer? _toLineTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final jsonPaint = jsonLayer['paint'];
-    final lineStyle = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.stroke, 'line', jsonPaint);
+    final jsonLayout = jsonLayer['layout'];
+    final lineStyle = paintFactory.create(_layerId(jsonLayer),
+        PaintingStyle.stroke, 'line', jsonPaint, jsonLayout);
     if (lineStyle != null) {
       return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.line,
           selector: selector,
-          style:
-              Style(linePaint: lineStyle, lineLayout: _toLineLayout(jsonLayer)),
+          style: Style(linePaint: lineStyle),
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer));
     }
@@ -137,7 +137,7 @@ class ThemeReader {
     final selector = selectorFactory.create(jsonLayer);
     final jsonPaint = jsonLayer['paint'];
     final paint = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint);
+        _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint, null);
     if (paint != null) {
       final layout = _toTextLayout(jsonLayer);
       final textHalo = _toTextHalo(jsonLayer);
@@ -200,14 +200,6 @@ class ThemeReader {
         fontFamily: fontFamily,
         fontStyle: fontStyle,
         textTransform: textTransform);
-  }
-
-  LineLayout _toLineLayout(jsonLayer) {
-    final layout = jsonLayer['layout'];
-    expressionParser.parse(layout?['line-cap']).asLineCapExpression();
-    return LineLayout(
-        expressionParser.parse(layout?['line-cap']).asLineCapExpression(),
-        expressionParser.parse(layout?['line-join']).asLineJoinExpression());
   }
 
   Expression<List<Shadow>>? _toTextHalo(jsonLayer) {
