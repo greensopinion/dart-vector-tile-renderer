@@ -6,7 +6,6 @@ import '../logger.dart';
 import '../profiling.dart';
 import 'expression/color_expression.dart';
 import 'expression/expression.dart';
-import 'expression/line_expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
 import 'expression/text_expression.dart';
