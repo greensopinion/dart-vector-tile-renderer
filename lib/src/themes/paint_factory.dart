@@ -1,17 +1,16 @@
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'expression/line_expression.dart';
 
 import '../logger.dart';
 import 'expression/caching_expression.dart';
 import 'expression/color_expression.dart';
 import 'expression/expression.dart';
+import 'expression/line_expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
 import 'paint_model.dart';
 import 'style.dart';
-import 'line_styler.dart';
 
 class PaintExpression extends Expression<PaintModel> {
   final PaintStyle _delegate;
