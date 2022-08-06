@@ -3,10 +3,8 @@ import '../context.dart';
 import '../path/path_transform.dart';
 import '../path/ring_number_provider.dart';
 import '../themes/expression/expression.dart';
-import '../themes/paint_factory.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
-import 'line_styler.dart';
 
 class LineRenderer extends FeatureRenderer {
   final Logger logger;
@@ -24,7 +22,8 @@ class LineRenderer extends FeatureRenderer {
     if (!feature.hasPaths) {
       return;
     }
-    if (style.linePaint == null) {
+    final linePaintExpression = style.linePaint;
+    if (linePaintExpression == null) {
       logger.warn(() =>
           'line does not have a line paint for vector tile layer ${layer.name}');
       return;
@@ -34,26 +33,25 @@ class LineRenderer extends FeatureRenderer {
         () => feature.properties, feature.type, logger,
         zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
 
-    final effectivePaint = style.linePaint?.evaluate(evaluationContext);
-    if (effectivePaint == null) {
+    final paint = style.linePaint?.evaluate(evaluationContext);
+    if (paint == null) {
       return;
     }
 
-    var strokeWidth = effectivePaint.strokeWidth;
-    if (context.zoomScaleFactor > 1.0) {
-      strokeWidth = effectivePaint.strokeWidth / context.zoomScaleFactor;
+    final effectivePaint = context.paintProvider.provide(evaluationContext,
+        paint: linePaintExpression,
+        strokeWidthModifier: (strokeWidth) {
+          if (context.zoomScaleFactor > 1.0) {
+            strokeWidth = strokeWidth / context.zoomScaleFactor;
+          }
+          return strokeWidth;
+        },
+        widthModifier: (strokeWidth) =>
+            context.tileSpaceMapper.widthFromPixelToTile(strokeWidth));
+    if (effectivePaint == null) {
+      return;
     }
-    LineStyler(style, evaluationContext).apply(effectivePaint);
-
-    // Since we are rendering in tile space, we need to render lines with
-    // a stroke width in tile space.
-    effectivePaint.strokeWidth =
-        context.tileSpaceMapper.widthFromPixelToTile(strokeWidth);
-
-    final dashLengths = effectivePaint.strokeDashPattern
-        ?.map((e) => context.tileSpaceMapper.widthFromPixelToTile(e))
-        .toList(growable: false);
-
+    final dashLengths = effectivePaint.strokeDashPattern;
     final lines = feature.paths;
     for (var line in lines) {
       if (!context.optimizations.skipInBoundsChecks &&
@@ -63,7 +61,7 @@ class LineRenderer extends FeatureRenderer {
       if (dashLengths != null) {
         line = line.dashPath(RingNumberProvider(dashLengths));
       }
-      context.canvas.drawPath(line, effectivePaint);
+      context.canvas.drawPath(line, effectivePaint.paint());
     }
   }
 }

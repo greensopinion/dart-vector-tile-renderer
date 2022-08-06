@@ -39,10 +39,10 @@ class FillRenderer extends FeatureRenderer {
         continue;
       }
       if (fillPaint != null) {
-        context.canvas.drawPath(polygon, fillPaint);
+        context.canvas.drawPath(polygon, fillPaint.paint());
       }
       if (outlinePaint != null) {
-        context.canvas.drawPath(polygon, outlinePaint);
+        context.canvas.drawPath(polygon, outlinePaint.paint());
       }
     }
   }

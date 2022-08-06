@@ -1,24 +1,8 @@
 import 'package:flutter/rendering.dart';
 
-import '../themes/expression/expression.dart';
-import '../themes/style.dart';
+import 'style.dart';
 
-class LineStyler {
-  final Style _style;
-  final EvaluationContext _context;
-
-  LineStyler(this._style, this._context);
-  void apply(Paint paint) {
-    final lineCap =
-        _style.lineLayout?.lineCap.evaluate(_context) ?? LineCap.DEFAULT;
-    final lineJoin =
-        _style.lineLayout?.lineJoin.evaluate(_context) ?? LineJoin.DEFAULT;
-    lineCap.apply(paint);
-    lineJoin.apply(paint);
-  }
-}
-
-extension _LineCapExtension on LineCap {
+extension LineCapExtension on LineCap {
   void apply(Paint paint) {
     paint.strokeCap = _toStrokeCap();
   }
@@ -37,7 +21,7 @@ extension _LineCapExtension on LineCap {
   }
 }
 
-extension _LineJoinExtension on LineJoin {
+extension LineJoinExtension on LineJoin {
   void apply(Paint paint) {
     paint.strokeJoin = _toStrokeJoin();
   }
