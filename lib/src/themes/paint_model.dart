@@ -14,6 +14,7 @@ class PaintModel {
   final List<double>? strokeDashPattern;
   final LineCap? lineCap;
   final LineJoin? lineJoin;
+  final int _hashCode;
 
   Paint? _paint;
 
@@ -23,11 +24,20 @@ class PaintModel {
       required this.strokeWidth,
       required this.lineCap,
       required this.lineJoin,
-      required this.strokeDashPattern});
+      required this.strokeDashPattern})
+      : _hashCode = _equality.hash([
+          paintingStyle,
+          color,
+          strokeWidth,
+          lineCap,
+          lineJoin,
+          _equality.hash(strokeDashPattern)
+        ]);
 
   @override
   bool operator ==(other) =>
       other is PaintModel &&
+      other._hashCode == _hashCode &&
       other.paintingStyle == paintingStyle &&
       other.color == color &&
       other.strokeWidth == strokeWidth &&
@@ -36,14 +46,7 @@ class PaintModel {
       _equality.equals(other.strokeDashPattern, strokeDashPattern);
 
   @override
-  int get hashCode => _equality.hash([
-        paintingStyle,
-        color,
-        strokeWidth,
-        lineCap,
-        lineJoin,
-        _equality.hash(strokeDashPattern)
-      ]);
+  int get hashCode => _hashCode;
 
   // Do not mutate the paint!
   Paint paint() {
