@@ -1,3 +1,7 @@
+## 2.5.11
+
+* retain theme layer metadata
+
 ## 2.5.10
 
 * performance improvement
