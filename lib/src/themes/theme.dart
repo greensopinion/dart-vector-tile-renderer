@@ -52,8 +52,9 @@ abstract class ThemeLayer {
   final ThemeLayerType type;
   final double? minzoom;
   final double? maxzoom;
+  final Map<String, dynamic> metadata;
   ThemeLayer(this.id, this.type,
-      {required this.minzoom, required this.maxzoom});
+      {required this.minzoom, required this.maxzoom, required this.metadata});
 
   String? get tileSource;
 

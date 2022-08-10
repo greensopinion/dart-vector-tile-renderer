@@ -67,7 +67,8 @@ class ThemeReader {
     if (styleBackgroundColor != null) {
       final backgroundColor =
           expressionParser.parse(styleBackgroundColor).asColorExpression();
-      return BackgroundLayer(jsonLayer['id'] ?? _unknownId, backgroundColor);
+      return BackgroundLayer(
+          jsonLayer['id'] ?? _unknownId, backgroundColor, _metadata(jsonLayer));
     }
     return null;
   }
@@ -91,7 +92,8 @@ class ThemeReader {
               fillPaint: paint,
               fillExtrusion: Extrusion(base: base, height: height)),
           minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer));
+          maxzoom: _maxZoom(jsonLayer),
+          metadata: _metadata(jsonLayer));
     }
     return null;
   }
@@ -109,7 +111,8 @@ class ThemeReader {
           selector: selector,
           style: Style(fillPaint: paint, outlinePaint: outlinePaint),
           minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer));
+          maxzoom: _maxZoom(jsonLayer),
+          metadata: _metadata(jsonLayer));
     }
     return null;
   }
@@ -125,7 +128,8 @@ class ThemeReader {
           selector: selector,
           style: Style(linePaint: lineStyle),
           minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer));
+          maxzoom: _maxZoom(jsonLayer),
+          metadata: _metadata(jsonLayer));
     }
     return null;
   }
@@ -146,7 +150,8 @@ class ThemeReader {
           style:
               Style(textPaint: paint, textLayout: layout, textHalo: textHalo),
           minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer));
+          maxzoom: _maxZoom(jsonLayer),
+          metadata: _metadata(jsonLayer));
     }
     return null;
   }
@@ -229,6 +234,11 @@ class ThemeReader {
     }
     return expressionParser.parse(layoutProperty).asDoubleExpression();
   }
+}
+
+Map<String, dynamic> _metadata(jsonLayer) {
+  final layerMetadata = jsonLayer['metadata'];
+  return (layerMetadata is Map<String, dynamic>) ? layerMetadata : {};
 }
 
 const _unknownId = '<unknown>';
