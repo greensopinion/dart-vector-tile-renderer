@@ -14,14 +14,13 @@ class DefaultLayer extends ThemeLayer {
   final TileLayerSelector selector;
   final Style style;
 
-  DefaultLayer(
-    String id,
-    ThemeLayerType type, {
-    required this.selector,
-    required this.style,
-    required double? minzoom,
-    required double? maxzoom,
-  }) : super(id, type, minzoom: minzoom, maxzoom: maxzoom);
+  DefaultLayer(String id, ThemeLayerType type,
+      {required this.selector,
+      required this.style,
+      required double? minzoom,
+      required double? maxzoom,
+      required Map<String, dynamic> metadata})
+      : super(id, type, minzoom: minzoom, maxzoom: maxzoom, metadata: metadata);
 
   @override
   void render(Context context) {
@@ -66,8 +65,9 @@ class DefaultLayer extends ThemeLayer {
 class BackgroundLayer extends ThemeLayer {
   final Expression<Color> fillColor;
 
-  BackgroundLayer(String id, this.fillColor)
-      : super(id, ThemeLayerType.background, minzoom: 0, maxzoom: 24);
+  BackgroundLayer(String id, this.fillColor, Map<String, dynamic> metadata)
+      : super(id, ThemeLayerType.background,
+            minzoom: 0, maxzoom: 24, metadata: metadata);
 
   @override
   void render(Context context) {
