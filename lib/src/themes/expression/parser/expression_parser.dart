@@ -86,7 +86,7 @@ class ExpressionParser {
       }
     }
     if (json is Map) {
-      final base = json['base'];
+      final base = json['base'] ?? 1;
       final stops = json['stops'];
       if (stops is List) {
         if (base == 1) {

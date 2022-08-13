@@ -1,10 +1,11 @@
 import 'dart:math';
 
 import '../geometry_model.dart';
+import 'polygon_clip.dart';
 
 typedef ClipArea = Rectangle<double>;
 
-List<TileLine> clipLine(TileLine line, ClipArea clip, {bool split = true}) {
+List<TileLine> clipLine(TileLine line, ClipArea clip) {
   final bounds = line.bounds();
   if (!bounds.intersects(clip)) {
     return [];
@@ -12,44 +13,30 @@ List<TileLine> clipLine(TileLine line, ClipArea clip, {bool split = true}) {
   final state = _PointsState();
   TilePoint? previous;
   for (final point in line.points) {
-    _addPoint(state, clip, split, point, previous);
+    _addPoint(state, clip, point, previous);
     previous = point;
   }
   state.lines.addLine(state.points);
-  if (!split && state.lines.isEmpty) {
-    // no intersecting or inside points, so the clip is entirely contained
-    // within the path
-    return [
-      TileLine([clip.topLeft, clip.topRight, clip.bottomRight, clip.bottomLeft])
-    ];
-  }
   return state.lines;
 }
 
-void _addPoint(_PointsState state, ClipArea clip, bool split, TilePoint point,
-    TilePoint? previous) {
+void _addPoint(
+    _PointsState state, ClipArea clip, TilePoint point, TilePoint? previous) {
   if (clip.containsPoint(point)) {
     if (previous != null && !clip.containsPoint(previous)) {
-      final intersecting = _intersectingPoint(point, previous, clip);
-      if (split) {
-        state.points.add(intersecting);
-      } else {
-        _addIntersectingPoint(state.points, intersecting, clip);
-      }
+      state.points.add(_intersectingPoint(point, previous, clip));
     }
     state.points.add(point);
   } else if (previous != null && clip.containsPoint(previous)) {
     state.points.add(_intersectingPoint(previous, point, clip));
-    if (split) {
-      state.lines.addLine(state.points);
-      state.points = [];
-    }
+    state.lines.addLine(state.points);
+    state.points = [];
   } else if (previous != null) {
     TilePoint? segmentPointInside =
         _findSegmentPointInside(clip, previous, point);
     if (segmentPointInside != null) {
-      _addPoint(state, clip, split, segmentPointInside, previous);
-      _addPoint(state, clip, split, point, segmentPointInside);
+      _addPoint(state, clip, segmentPointInside, previous);
+      _addPoint(state, clip, point, segmentPointInside);
     }
   }
 }
@@ -77,92 +64,8 @@ TilePoint? _findSegmentPointInside(ClipArea clip, TilePoint a, TilePoint b,
   return null;
 }
 
-TilePolygon? clipPolygon(TilePolygon polygon, ClipArea clip,
-    {bool reshape = false}) {
-  final bounds = polygon.bounds();
-  if (!bounds.intersects(clip)) {
-    return null;
-  }
-  if (reshape) {
-    return _clipPolygon(polygon, clip);
-  } else {
-    return polygon;
-  }
-}
-
-TilePolygon? _clipPolygon(TilePolygon polygon, ClipArea clip) {
-  final rings = <TileLine>[];
-  for (final ring in polygon.rings) {
-    final clipped = clipLine(ring, clip, split: false);
-    if (clipped.length != 1) {
-      return null;
-    }
-    var clippedRing = clipped.first;
-    if (clippedRing.points.length > 2) {
-      final line = clippedRing.points.toList();
-      _closeAroundClip(
-          line, clippedRing.points.last, clippedRing.points.first, clip);
-      clippedRing = TileLine(line);
-    }
-    rings.add(clippedRing);
-  }
-  return TilePolygon(rings);
-}
-
-void _closeAroundClip(
-    List<TilePoint> points, TilePoint first, TilePoint second, ClipArea clip) {
-  final firstEdge = _intersectionOf(first, clip);
-  final lastEdge = _intersectionOf(second, clip);
-  if (firstEdge != null &&
-      lastEdge != null &&
-      firstEdge != lastEdge &&
-      !(first.x == second.x || first.y == second.y)) {
-    // going from first to last
-    final startIndex = firstEdge.index + 1;
-    final numEdges = _IntersectionEdge.values.length;
-    final lastIndex = startIndex + numEdges - 1;
-    for (int x = startIndex; x < lastIndex; ++x) {
-      final nextEdge = _IntersectionEdge.values[x % numEdges];
-      if (nextEdge == _IntersectionEdge.top) {
-        points.add(clip.topLeft);
-      } else if (nextEdge == _IntersectionEdge.right) {
-        points.add(clip.topRight);
-      } else if (nextEdge == _IntersectionEdge.bottom) {
-        points.add(clip.bottomRight);
-      } else if (nextEdge == _IntersectionEdge.left) {
-        points.add(clip.bottomLeft);
-      }
-      if (nextEdge == lastEdge) {
-        break;
-      }
-    }
-  }
-}
-
-void _addIntersectingPoint(
-    List<TilePoint> points, TilePoint point, ClipArea clip) {
-  if (points.isNotEmpty) {
-    _closeAroundClip(points, points.last, point, clip);
-  }
-  points.add(point);
-}
-
-enum _IntersectionEdge { top, right, bottom, left }
-
-_IntersectionEdge? _intersectionOf(TilePoint point, ClipArea clip) {
-  if (point.y == clip.bottom) {
-    return _IntersectionEdge.bottom;
-  }
-  if (point.x == clip.right) {
-    return _IntersectionEdge.right;
-  }
-  if (point.y == clip.top) {
-    return _IntersectionEdge.top;
-  }
-  if (point.x == clip.left) {
-    return _IntersectionEdge.left;
-  }
-  return null;
+TilePolygon? clipPolygon(TilePolygon polygon, ClipArea clip) {
+  return PolygonClip(clip).clip(polygon);
 }
 
 TilePoint _intersectingPoint(
