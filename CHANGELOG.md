@@ -1,3 +1,6 @@
+## 2.6.0
+
+* clip polygons
 ## 2.5.11
 
 * retain theme layer metadata
