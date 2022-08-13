@@ -1,3 +1,7 @@
+## 2.6.2
+
+* fix defect when clipping polygons with a void
+
 ## 2.6.1
 
 * improve memory usage
