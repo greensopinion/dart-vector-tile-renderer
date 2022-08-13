@@ -17,12 +17,14 @@ class PolygonClip {
     final rings = <TileLine>[];
     for (final ring in polygon.rings) {
       final clipped = _clipRing(ring);
-      if (clipped == null) {
+      if (clipped != null) {
+        rings.add(clipped);
+      } else if (rings.isEmpty) {
+        // only skip the inner ring
         return null;
       }
-      rings.add(clipped);
     }
-    return TilePolygon(rings);
+    return rings.isEmpty ? null : TilePolygon(rings);
   }
 
   TileLine? _clipRing(TileLine ring) {
