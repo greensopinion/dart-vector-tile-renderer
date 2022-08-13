@@ -1,3 +1,6 @@
+## 2.6.1
+
+* improve memory usage
 ## 2.6.0
 
 * clip polygons

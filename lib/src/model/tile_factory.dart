@@ -25,6 +25,7 @@ class TileFactory {
   TileData createTileData(VectorTile tile) {
     return TileData(
         layers: tile.layers
+            .where((layer) => layerNames.contains(layer.name))
             .map(_vectorLayerToTileDataLayer)
             .whereType<TileDataLayer>()
             .toList(growable: false));
