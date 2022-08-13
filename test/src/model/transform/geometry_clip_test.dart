@@ -236,20 +236,18 @@ void main() {
           ])
         ]);
         var clipped =
-            clipPolygon(polygon, const ClipArea(0, 0, 10, 10), reshape: true)
-                ?.round();
+            clipPolygon(polygon, const ClipArea(0, 0, 10, 10))?.round();
         expect(
             clipped,
             TilePolygon([
               TileLine([
+                const TilePoint(0.0, 10.0),
+                const TilePoint(0.0, 10.0),
                 const TilePoint(0.0, 2.0),
-                const TilePoint(1.5, 1.0),
                 const TilePoint(3.0, 0.0),
                 const TilePoint(10.0, 0.0),
                 const TilePoint(10.0, 3.69231),
-                const TilePoint(7.5, 6.0),
-                const TilePoint(3.16667, 10.0),
-                const TilePoint(0.0, 10.0)
+                const TilePoint(3.16667, 10.0)
               ])
             ]));
       });
@@ -264,16 +262,15 @@ void main() {
           ])
         ]);
         var clipped =
-            clipPolygon(polygon, const ClipArea(0, 0, 10, 10), reshape: true)
-                ?.round();
+            clipPolygon(polygon, const ClipArea(0, 0, 10, 10))?.round();
         expect(
             clipped,
             TilePolygon([
               TileLine([
-                const Point(0.0, 0.0),
-                const Point(10.0, 0.0),
-                const Point(10.0, 10.0),
-                const Point(0.0, 10.0)
+                const TilePoint(0.0, 10.0),
+                const TilePoint(0.0, 0.0),
+                const TilePoint(10.0, 0.0),
+                const TilePoint(10.0, 10.0)
               ])
             ]));
       });
@@ -288,8 +285,7 @@ void main() {
           ])
         ]);
         var clipped =
-            clipPolygon(polygon, const ClipArea(0, 0, 10, 10), reshape: true)
-                ?.round();
+            clipPolygon(polygon, const ClipArea(0, 0, 10, 10))?.round();
         expect(
             clipped,
             TilePolygon([
@@ -316,8 +312,7 @@ void main() {
           ])
         ]);
         var clipped =
-            clipPolygon(polygon, const ClipArea(0, 0, 10, 10), reshape: true)
-                ?.round();
+            clipPolygon(polygon, const ClipArea(0, 0, 10, 10))?.round();
         expect(
             clipped,
             TilePolygon([
@@ -343,24 +338,19 @@ void main() {
           ])
         ]);
         var clipped =
-            clipPolygon(polygon, const ClipArea(0, 0, 10, 10), reshape: true)
-                ?.round();
+            clipPolygon(polygon, const ClipArea(0, 0, 10, 10))?.round();
         expect(
             clipped,
             TilePolygon([
               TileLine([
+                const TilePoint(0.0, 10.0),
                 const TilePoint(0.0, 8.0),
                 const TilePoint(2.0, 8.0),
-                const TilePoint(2.0, 10.0),
-                const TilePoint(0, 10.0)
+                const TilePoint(2.0, 10.0)
               ])
             ]));
       });
     });
-
-    // failing test cases:
-    //   notched polygon that entirely contains clip, notch is intersecting
-    //   outside polygon with multiple overlapping notches
   });
 }
 
