@@ -15,7 +15,7 @@ int _decodeCommandLength(int command) => command >> 3;
 @pragma('vm:prefer-inline')
 int _decodeZigZag(int value) => ((value >> 1) ^ -(value & 1)).toSigned(32);
 
-Iterable<TilePoint> decodePoints(List<int> geometry) sync* {
+Iterable<TilePoint> decodePoints(List<int> geometry) {
   final it = geometry.iterator;
 
   // Decode MoveTo command
@@ -26,21 +26,26 @@ Iterable<TilePoint> decodePoints(List<int> geometry) sync* {
   final points = _decodeCommandLength(moveToCommand);
   assert(points >= 1);
 
+  final decoded = <TilePoint>[];
+
   // Decode points.
   for (var i = 0; i < points; i++) {
     it.moveNext();
     final x = _decodeZigZag(it.current);
     it.moveNext();
     final y = _decodeZigZag(it.current);
-    yield TilePoint(x.toDouble(), y.toDouble());
+    decoded.add(TilePoint(x.toDouble(), y.toDouble()));
   }
+  return decoded;
 }
 
-Iterable<TileLine> decodeLineStrings(List<int> geometry) sync* {
+Iterable<TileLine> decodeLineStrings(List<int> geometry) {
   // Cursor point.
   // Note that it is never reset between line strings.
   var cx = 0;
   var cy = 0;
+
+  final decoded = <TileLine>[];
 
   final it = geometry.iterator;
   while (it.moveNext()) {
@@ -75,12 +80,15 @@ Iterable<TileLine> decodeLineStrings(List<int> geometry) sync* {
       points.add(TilePoint(cx.toDouble(), cy.toDouble()));
     }
 
-    yield TileLine(points);
+    decoded.add(TileLine(points));
   }
+  return decoded;
 }
 
-Iterable<TilePolygon> decodePolygons(List<int> geometry) sync* {
+Iterable<TilePolygon> decodePolygons(List<int> geometry) {
   List<TileLine>? rings;
+
+  final decoded = <TilePolygon>[];
 
   // Cursor point.
   // Note that it is never reset between polygons or rings.
@@ -145,7 +153,7 @@ Iterable<TilePolygon> decodePolygons(List<int> geometry) sync* {
       // The tile data is invalid.
       // We can't know if the ring is exterior or interior.
       // The safe thing to do is to stop decoding.
-      return;
+      return decoded;
     }
 
     if (a.isNegative) {
@@ -159,7 +167,7 @@ Iterable<TilePolygon> decodePolygons(List<int> geometry) sync* {
 
       if (rings != null) {
         // If we have a previous polygon, it is now complete, so yield it.
-        yield TilePolygon(rings);
+        decoded.add(TilePolygon(rings));
       }
 
       // Make the ring the current polygon.
@@ -169,5 +177,6 @@ Iterable<TilePolygon> decodePolygons(List<int> geometry) sync* {
 
   // The last polygon wont be completed in the decode loop, so yield it now.
   assert(rings != null);
-  yield TilePolygon(rings!);
+  decoded.add(TilePolygon(rings!));
+  return decoded;
 }
