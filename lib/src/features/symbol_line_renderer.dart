@@ -121,7 +121,7 @@ class SymbolLineRenderer extends FeatureRenderer {
     TextApproximation text,
     PathMetric metric,
   ) {
-    Tangent? _getTangentForOffsetInPixels(double distance) {
+    Tangent? getTangentForOffsetInPixels(double distance) {
       final tangent = metric.getTangentForOffset(distance);
       if (tangent != null) {
         return Tangent.fromAngle(
@@ -132,16 +132,16 @@ class SymbolLineRenderer extends FeatureRenderer {
       return null;
     }
 
-    Tangent? tangent = _getTangentForOffsetInPixels(metric.length / 2);
+    Tangent? tangent = getTangentForOffsetInPixels(metric.length / 2);
     _RenderBox? renderBox;
     if (tangent != null) {
       renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
       if (renderBox == null) {
-        tangent = _getTangentForOffsetInPixels(metric.length / 4);
+        tangent = getTangentForOffsetInPixels(metric.length / 4);
         if (tangent != null) {
           renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
           if (renderBox == null) {
-            tangent = _getTangentForOffsetInPixels(metric.length * 3 / 4);
+            tangent = getTangentForOffsetInPixels(metric.length * 3 / 4);
             if (tangent != null) {
               renderBox = _occupyLabelSpaceAtTangent(context, text, tangent);
             }
