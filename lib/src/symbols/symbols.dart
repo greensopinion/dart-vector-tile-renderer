@@ -26,7 +26,7 @@ class SymbolStyle {
 
   @override
   int get hashCode =>
-      hashValues(textAlign, textStyle.fontSize, textStyle.foreground);
+      Object.hash(textAlign, textStyle.fontSize, textStyle.foreground);
 }
 
 class StyledSymbol {
@@ -40,7 +40,7 @@ class StyledSymbol {
       (other is StyledSymbol && text == other.text && style == other.style);
 
   @override
-  int get hashCode => hashValues(text, style.textStyle.fontSize);
+  int get hashCode => Object.hash(text, style.textStyle.fontSize);
 }
 
 // only bothers comparing paint properties that we use
