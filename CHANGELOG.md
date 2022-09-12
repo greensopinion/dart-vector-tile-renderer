@@ -1,3 +1,7 @@
+## 2.6.3
+
+* fix performance regression on Flutter 3.3.1 when running in debug mode
+
 ## 2.6.2
 
 * fix defect when clipping polygons with a void
