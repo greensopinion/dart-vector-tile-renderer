@@ -1,10 +1,10 @@
 name: vector_tile_renderer
 description: A vector tile renderer for use in creating map tile images or writing to a canvas.
-version: 2.6.2
+version: 2.6.3
 homepage: https://github.com/greensopinion/dart-vector-tile-renderer
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.17.0 <3.4.0"
   flutter: ">=1.17.0"
 
 dependencies:
