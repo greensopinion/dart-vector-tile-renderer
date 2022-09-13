@@ -25,7 +25,9 @@ class InterpolateExpressionParser extends ExpressionComponentParser {
     }
     final interpolationType = json[1];
     if (interpolationType is List &&
-        interpolationType.length == 1 &&
+        interpolationType.isNotEmpty &&
+        // allow for second argument since some themes provide it
+        interpolationType.length <= 2 &&
         interpolationType[0] == 'linear') {
       return InterpolateLinearExpression(inputExpression, stops);
     }
