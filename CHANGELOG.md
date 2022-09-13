@@ -1,3 +1,6 @@
+## 3.0.0
+
+* improve exports to avoid naming conflicts
 ## 2.6.3
 
 * fix performance regression on Flutter 3.3.1 when running in debug mode

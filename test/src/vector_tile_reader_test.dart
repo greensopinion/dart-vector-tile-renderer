@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
+import 'package:vector_tile/vector_tile.dart';
 import 'extensions.dart';
 
 void main() {

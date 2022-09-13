@@ -1,4 +1,4 @@
-import '../vector_tile_renderer.dart';
+import 'package:vector_tile/vector_tile.dart';
 
 extension VectorTileFeatureExtension on VectorTileFeature {
   String? stringProperty(String name) {
