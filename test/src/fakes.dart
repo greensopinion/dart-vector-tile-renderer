@@ -1,5 +1,5 @@
 import 'package:test/fake.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart';
+import 'package:vector_tile/vector_tile.dart';
 
 class FakeVectorTileLayer extends Fake implements VectorTileLayer {
   final String _name;

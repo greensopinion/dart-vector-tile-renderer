@@ -1,6 +1,6 @@
 library vector_tile_renderer;
 
-export 'package:vector_tile/vector_tile.dart';
+export 'package:vector_tile/vector_tile.dart' show VectorTile;
 
 export 'src/image_renderer.dart';
 export 'src/image_to_png.dart';
