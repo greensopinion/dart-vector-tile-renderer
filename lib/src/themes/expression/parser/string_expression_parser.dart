@@ -1,4 +1,5 @@
 import '../coalesce_expression.dart';
+import '../concat_expression.dart';
 import '../expression.dart';
 import '../property_expression.dart';
 import '../string_expression.dart';
@@ -42,6 +43,28 @@ class CoalesceExpressionParser extends ExpressionComponentParser {
       return null;
     }
     return CoalesceExpression(valueExpressions);
+  }
+}
+
+class ConcatExpressionParser extends ExpressionComponentParser {
+  ConcatExpressionParser(ExpressionParser parser) : super(parser, 'concat');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length > 1;
+  }
+
+  @override
+  Expression? parse(List json) {
+    final values = json.sublist(1);
+    final valueExpressions = values
+        .map((e) => parser.parseOptional(e))
+        .whereType<Expression>()
+        .toList(growable: false);
+    if (values.length != valueExpressions.length) {
+      return null;
+    }
+    return ConcatExpression(valueExpressions);
   }
 }
 

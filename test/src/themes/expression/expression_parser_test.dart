@@ -62,6 +62,7 @@ void main() {
           'any',
           'case',
           'coalesce',
+          'concat',
           'geometry-type',
           'get',
           'has',
@@ -391,6 +392,21 @@ void main() {
         'coalesce(get(an-unexpected-string),get(another-string))';
     test('provides a cache key and value', () {
       assertExpression(expression, expectedCacheKey, "another-string-value");
+    });
+  });
+
+  group('concat expressions:', () {
+    final expression = [
+      'concat',
+      ['get', 'an-unexpected-string'],
+      ['get', 'another-string'],
+      'a-value'
+    ];
+    const expectedCacheKey =
+        'concat(get(an-unexpected-string),get(another-string),literal(a-value))';
+    test('provides a cache key and value', () {
+      assertExpression(
+          expression, expectedCacheKey, 'another-string-valuea-value');
     });
   });
 
