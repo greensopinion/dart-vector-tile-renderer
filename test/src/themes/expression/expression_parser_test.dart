@@ -549,6 +549,22 @@ void main() {
             'interpolate(get(level),linear,[stop(literal(110),literal(rgba(0,0,0,0.08))),stop(literal(127),literal(rgba(0,0,0,0.06))),stop(literal(143),literal(rgba(0,0,0,0.04))),stop(literal(160),literal(rgba(0,0,0,0.02)))])',
             'rgba(0,0,0,0.06)');
       });
+
+      test('supports linear with base', () {
+        const base = 1;
+        final expression = [
+          "interpolate",
+          ["linear", base],
+          ["zoom"],
+          9,
+          8.5
+        ];
+        zoom = 1;
+        assertExpression(
+            expression,
+            'interpolate(get(zoom),linear,[stop(literal(9),literal(8.5))])',
+            8.5);
+      });
     });
 
     group('cubic-bezier interpolation:', () {
