@@ -1,3 +1,7 @@
+## 3.0.1
+
+* support style concat expression
+* support style linear expression that has base argument
 ## 3.0.0
 
 * improve exports to avoid naming conflicts
