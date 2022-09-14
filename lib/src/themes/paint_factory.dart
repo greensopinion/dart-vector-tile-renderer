@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:collection/collection.dart';
-
 import '../logger.dart';
 import 'expression/caching_expression.dart';
 import 'expression/color_expression.dart';
