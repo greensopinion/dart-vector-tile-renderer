@@ -1,3 +1,6 @@
+## 3.0.2
+
+* minor improvement in performance
 ## 3.0.1
 
 * support style concat expression
