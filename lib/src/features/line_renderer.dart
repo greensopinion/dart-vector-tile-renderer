@@ -58,10 +58,11 @@ class LineRenderer extends FeatureRenderer {
           !context.tileSpaceMapper.isPathWithinTileClip(line)) {
         continue;
       }
+      var path = line.path;
       if (dashLengths != null) {
-        line = line.dashPath(RingNumberProvider(dashLengths));
+        path = path.dashPath(RingNumberProvider(dashLengths));
       }
-      context.canvas.drawPath(line, effectivePaint.paint());
+      context.canvas.drawPath(path, effectivePaint.paint());
     }
   }
 }
