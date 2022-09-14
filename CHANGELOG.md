@@ -1,4 +1,4 @@
-## 3.0.2
+## 3.0.3
 
 * minor improvement in performance
 ## 3.0.1
