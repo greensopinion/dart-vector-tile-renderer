@@ -38,6 +38,10 @@ class _CachingExpression<T> extends Expression<T> {
     if (_propertyKeys.length == 1) {
       return _SingularCacheKey(context.getProperty(_propertyKeys.first));
     }
+    if (_propertyKeys.length == 2) {
+      return _PairCacheKey(context.getProperty(_propertyKeys.first),
+          context.getProperty(_propertyKeys[1]));
+    }
     final values = _propertyKeys
         .map((e) => context.getProperty(e))
         .toList(growable: false);
@@ -106,6 +110,25 @@ class _SingularCacheKey extends _CacheKey {
       other is _SingularCacheKey &&
       other._hashCode == _hashCode &&
       other._value == _value;
+
+  @override
+  int get hashCode => _hashCode;
+}
+
+class _PairCacheKey extends _CacheKey {
+  final dynamic _firstValue;
+  final dynamic _secondValue;
+  final int _hashCode;
+
+  _PairCacheKey(this._firstValue, this._secondValue)
+      : _hashCode = Object.hash(_firstValue, _secondValue);
+
+  @override
+  bool operator ==(other) =>
+      other is _PairCacheKey &&
+      other._hashCode == _hashCode &&
+      other._firstValue == _firstValue &&
+      other._secondValue == _secondValue;
 
   @override
   int get hashCode => _hashCode;

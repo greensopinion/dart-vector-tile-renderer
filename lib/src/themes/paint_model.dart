@@ -25,14 +25,8 @@ class PaintModel {
       required this.lineCap,
       required this.lineJoin,
       required this.strokeDashPattern})
-      : _hashCode = _equality.hash([
-          paintingStyle,
-          color,
-          strokeWidth,
-          lineCap,
-          lineJoin,
-          _equality.hash(strokeDashPattern)
-        ]);
+      : _hashCode = Object.hash(paintingStyle, color, strokeWidth, lineCap,
+            lineJoin, _equality.hash(strokeDashPattern));
 
   @override
   bool operator ==(other) =>

@@ -22,15 +22,22 @@ class PaintExpression extends Expression<PaintModel> {
   PaintModel? evaluate(EvaluationContext context) => _delegate.paint(context);
 
   @override
-  bool get isConstant => false;
+  bool get isConstant =>
+      _delegate.color.isConstant &&
+      _delegate.strokeWidth.isConstant &&
+      _delegate.opacity.isConstant &&
+      (_delegate.lineCap?.isConstant ?? true) &&
+      (_delegate.lineJoin?.isConstant ?? true);
 
   static String _cacheKey(PaintStyle delegate) =>
-      "paint(${delegate.id},${delegate.paintingStyle},opacity(${delegate.opacity.cacheKey}),strokeWidth(${delegate.strokeWidth.cacheKey}),color(${delegate.color.cacheKey}))";
+      "paint(${delegate.id},${delegate.paintingStyle},opacity(${delegate.opacity.cacheKey}),strokeWidth(${delegate.strokeWidth.cacheKey}),color(${delegate.color.cacheKey}),lineCap(${delegate.lineCap?.cacheKey ?? ''}),lineJoin(${delegate.lineJoin?.cacheKey ?? ''}))";
 
   static Set<String> _properties(PaintStyle delegate) => {
         ...delegate.color.properties(),
         ...delegate.strokeWidth.properties(),
-        ...delegate.opacity.properties()
+        ...delegate.opacity.properties(),
+        ...delegate.lineCap?.properties() ?? {},
+        ...delegate.lineJoin?.properties() ?? {},
       };
 }
 
@@ -164,14 +171,12 @@ class CachingPaintProvider {
 }
 
 class _PaintCacheKey {
-  static const _equality = ListEquality();
-
   final PaintModel paint;
   final double? strokeWidth;
   late final int _hashCode;
 
   _PaintCacheKey(this.paint, this.strokeWidth) {
-    _hashCode = _equality.hash([paint, strokeWidth]);
+    _hashCode = Object.hash(paint, strokeWidth);
   }
 
   @override
