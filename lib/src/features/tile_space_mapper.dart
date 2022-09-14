@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import '../../vector_tile_renderer.dart';
+
 class TileSpaceMapper {
   TileSpaceMapper(
     Canvas canvas,
@@ -27,8 +29,8 @@ class TileSpaceMapper {
     return point * pixelsPerTileUnit;
   }
 
-  bool isPathWithinTileClip(Path path) {
-    return tileClipInTileUnits.overlaps(path.getBounds());
+  bool isPathWithinTileClip(BoundedPath path) {
+    return tileClipInTileUnits.overlaps(path.bounds);
   }
 
   void drawInTileSpace(void Function() fn) {

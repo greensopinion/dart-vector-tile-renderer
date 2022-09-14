@@ -34,16 +34,7 @@ class SymbolLineRenderer extends FeatureRenderer {
       return;
     }
 
-    final Path path;
-    if (lines.length == 1) {
-      path = lines.first;
-    } else {
-      path = Path();
-      for (final line in lines) {
-        path.addPath(line, Offset.zero);
-      }
-    }
-
+    final BoundedPath path = feature.compoundPath;
     if (!context.optimizations.skipInBoundsChecks &&
         !context.tileSpaceMapper.isPathWithinTileClip(path)) {
       return;
@@ -66,7 +57,7 @@ class SymbolLineRenderer extends FeatureRenderer {
     final textApproximation = TextApproximation(
         context, evaluationContext, style, [textAbbreviation]);
 
-    final metrics = path.computeMetrics().toList();
+    final metrics = path.pathMetrics;
     final renderBox = _findMiddleMetric(context, metrics, textApproximation);
     if (renderBox == null || !textApproximation.renderer.canPaint) {
       return;
