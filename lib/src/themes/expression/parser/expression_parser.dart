@@ -9,6 +9,7 @@ import 'boolean_operator_expression_parser.dart';
 import 'get_expression_parser.dart';
 import 'interpolate_expression_parser.dart';
 import 'math_expression_parser.dart';
+import 'numeric_expression_parser.dart';
 import 'step_expression_parser.dart';
 import 'string_expression_parser.dart';
 import 'variable_expression_parser.dart';
@@ -43,6 +44,7 @@ class ExpressionParser {
     _register(StepExpressionParser(this));
     _register(CaseExpressionParser(this));
     _register(ToStringExpressionParser(this));
+    _register(ToNumberExpressionParser(this));
     _register(MatchExpressionParser(this));
     _register(GeometryTypeExpressionParser(this));
     _register(CoalesceExpressionParser(this));
