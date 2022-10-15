@@ -72,6 +72,7 @@ void main() {
           'match',
           'step',
           'string',
+          'to-number',
           'to-string',
           'var'
         ]));
@@ -112,6 +113,28 @@ void main() {
         'to-string',
         ['get', 'a-string']
       ], 'toString(get(a-string))', 'a-string-value');
+    });
+
+    test('parses to-number', () {
+      assertExpression(['to-number', true], 'toNumber(literal(true))', 1);
+      assertExpression(['to-number', false], 'toNumber(literal(false))', 0);
+      assertExpression([
+        'to-number',
+        ['get', 'an-int']
+      ], 'toNumber(get(an-int))', 33);
+      assertExpression([
+        'to-number',
+        ['get', 'a-double']
+      ], 'toNumber(get(a-double))', 13.2);
+      assertExpression([
+        'to-number',
+        ['get', 'no-such-property'],
+        15
+      ], 'toNumber(get(no-such-property),literal(15))', 15);
+      assertExpression([
+        'to-number',
+        ['get', 'no-such-property']
+      ], 'toNumber(get(no-such-property))', 0);
     });
   });
 

@@ -1,3 +1,7 @@
+## 3.0.4
+
+* add support for to-number expressions
+
 ## 3.0.3
 
 * minor improvement in performance
