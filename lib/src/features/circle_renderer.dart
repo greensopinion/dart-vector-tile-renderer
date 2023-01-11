@@ -4,17 +4,21 @@ import '../themes/expression/expression.dart';
 import '../themes/style.dart';
 import 'feature_renderer.dart';
 
+const double localZoom = 5.0;
+
 class CircleRenderer extends FeatureRenderer {
   final Logger logger;
 
   CircleRenderer(this.logger);
 
   @override
-  void render(Context context,
-      ThemeLayerType layerType,
-      Style style,
-      TileLayer layer,
-      TileFeature feature,) {
+  void render(
+    Context context,
+    ThemeLayerType layerType,
+    Style style,
+    TileLayer layer,
+    TileFeature feature,
+  ) {
     if (style.fillPaint == null) {
       logger
           .warn(() => 'circle does not have a fill paint or an outline paint');
@@ -22,7 +26,7 @@ class CircleRenderer extends FeatureRenderer {
     }
 
     final evaluationContext = EvaluationContext(
-          () => feature.properties,
+      () => feature.properties,
       feature.type,
       logger,
       zoom: context.zoom,
@@ -32,7 +36,11 @@ class CircleRenderer extends FeatureRenderer {
     final points = feature.points;
 
     for (final point in points) {
-      context.canvas.drawCircle(point, 15, fillPaint!.paint());
+      context.canvas.drawCircle(
+        point,
+        localZoom * context.zoom,
+        fillPaint!.paint(),
+      );
     }
   }
 }
