@@ -32,7 +32,7 @@ class CircleRenderer extends FeatureRenderer {
     final points = feature.points;
 
     for (final point in points) {
-      context.canvas.drawCircle(point, 5, fillPaint!.paint());
+      context.canvas.drawCircle(point, 15, fillPaint!.paint());
     }
   }
 }
