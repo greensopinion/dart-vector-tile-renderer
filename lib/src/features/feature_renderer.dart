@@ -1,3 +1,5 @@
+import 'package:vector_tile_renderer/src/features/circle_renderer.dart';
+
 import '../context.dart';
 import '../logger.dart';
 import '../model/tile_model.dart';
@@ -53,6 +55,7 @@ class FeatureDispatcher extends FeatureRenderer {
   static Map<ThemeLayerType, FeatureRenderer> createDispatchMapping(
       Logger logger) {
     return {
+      ThemeLayerType.circle: CircleRenderer(logger),
       ThemeLayerType.fill: FillRenderer(logger),
       ThemeLayerType.fillExtrusion: FillRenderer(logger),
       ThemeLayerType.line: LineRenderer(logger),

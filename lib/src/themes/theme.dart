@@ -42,6 +42,7 @@ enum ThemeLayerType {
   line,
   symbol,
   background,
+  circle,
   unsupported
 }
 

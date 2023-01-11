@@ -57,8 +57,36 @@ class ThemeReader {
       return _toLineTheme(jsonLayer);
     } else if (type == 'symbol') {
       return _toSymbolTheme(jsonLayer);
+    } else if (type == 'circle') {
+      return _toCircleTheme(jsonLayer);
     }
     logger.warn(() => 'theme layer type $type not implemented');
+    return null;
+  }
+
+  ThemeLayer? _toCircleTheme(jsonLayer) {
+    final selector = selectorFactory.create(jsonLayer);
+    final jsonPaint = jsonLayer['paint'];
+    final jsonLayout = jsonLayer['layout'];
+    final circleStyle = paintFactory.create(
+      _layerId(jsonLayer),
+      PaintingStyle.fill,
+      'circle',
+      jsonPaint,
+      jsonLayout,
+    );
+
+    if (circleStyle != null) {
+      return DefaultLayer(
+        jsonLayer['id'] ?? _unknownId,
+        ThemeLayerType.circle,
+        selector: selector,
+        style: Style(fillPaint: circleStyle),
+        minzoom: _minZoom(jsonLayer),
+        maxzoom: _maxZoom(jsonLayer),
+        metadata: _metadata(jsonLayer),
+      );
+    }
     return null;
   }
 
@@ -157,6 +185,7 @@ class ThemeReader {
   }
 
   double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
+
   double? _maxZoom(jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
 
   TextLayout _toTextLayout(jsonLayer) {
