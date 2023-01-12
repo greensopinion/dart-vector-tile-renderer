@@ -47,9 +47,8 @@ class ThemeReader {
       return null;
     }
     final type = jsonLayer['type'];
-    if (type == 'background') {
-      return _toBackgroundTheme(jsonLayer);
-    } else if (type == 'fill') {
+
+    if (type == 'fill') {
       return _toFillTheme(jsonLayer);
     } else if (type == 'fill-extrusion') {
       return _toFillExtrusionTheme(jsonLayer);
@@ -86,17 +85,6 @@ class ThemeReader {
         maxzoom: _maxZoom(jsonLayer),
         metadata: _metadata(jsonLayer),
       );
-    }
-    return null;
-  }
-
-  ThemeLayer? _toBackgroundTheme(jsonLayer) {
-    final styleBackgroundColor = jsonLayer['paint']?['background-color'];
-    if (styleBackgroundColor != null) {
-      final backgroundColor =
-          expressionParser.parse(styleBackgroundColor).asColorExpression();
-      return BackgroundLayer(
-          jsonLayer['id'] ?? _unknownId, backgroundColor, _metadata(jsonLayer));
     }
     return null;
   }
