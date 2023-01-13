@@ -117,12 +117,23 @@ class PaintFactory {
         : expressionParser.parse(layout['$prefix-join']).asLineJoinExpression();
     List<double>? dashArray;
     final dashJson = paint['$prefix-dasharray'];
-    if (dashJson != null && dashJson is List<num> && dashJson.length >= 2) {
-      if (dashJson.any((element) => element < .0)) {
-        logger.warn(() => '$prefix-dasharray contains value < 0');
-      } else {
-        dashArray = dashJson.map((e) => e.toDouble()).toList(growable: false);
-      }
+    bool isValidDashData = false;
+
+    if (dashJson != null) {
+      isValidDashData = dashJson.every((element) {
+        final double? parsedNumber = double.tryParse(element.toString());
+
+        if (parsedNumber == null) return false;
+
+        return parsedNumber >= .0;
+      });
+    }
+
+    if (dashJson != null && isValidDashData && dashJson.length >= 2) {
+      dashArray = List.from(
+        dashJson.map((e) => e.toDouble()).toList(),
+        growable: false,
+      );
     }
 
     return cache(PaintExpression(PaintStyle(
