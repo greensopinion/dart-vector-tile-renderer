@@ -1,6 +1,7 @@
 import '../case_expression.dart';
 import '../comparison_expression.dart';
 import '../expression.dart';
+import '../is_supported_script_expression.dart';
 import '../literal_expression.dart';
 import 'expression_parser.dart';
 
@@ -258,5 +259,23 @@ class CaseExpressionParser extends ExpressionComponentParser {
     }
     cases.add(ConditionOutputPair(LiteralExpression(true), fallbackOutput));
     return CaseExpression(cases);
+  }
+}
+
+class IsSupportedScriptExpressionParser extends ExpressionComponentParser {
+  IsSupportedScriptExpressionParser(ExpressionParser parser) : super(parser, 'is-supported-script');
+
+  @override
+  bool matches(List<dynamic> json) {
+    return super.matches(json) && json.length == 2;
+  }
+
+  @override
+  Expression? parse(List<dynamic> json) {
+    Expression? second = parser.parseOptionalPropertyOrExpression(json[1]);
+    if (second != null) {
+      return IsSupportedScriptExpression(second);
+    }
+    return null;
   }
 }
