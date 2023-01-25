@@ -389,15 +389,32 @@ void main() {
           true);
     });
 
-    test('parses an is-supported-script expression for latin script strings', () {
-      assertExpression(['is-supported-script', ['get', 'a-string']], 'isSupportedScript(get(a-string))', true);
-      assertExpression(['is-supported-script', ['get', 'a-latin-ligature']], 'isSupportedScript(get(a-latin-ligature))', true);
+    test('parses an is-supported-script expression for latin script strings',
+        () {
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-string']
+      ], 'isSupportedScript(get(a-string))', true);
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-latin-ligature']
+      ], 'isSupportedScript(get(a-latin-ligature))', true);
     });
 
-    test('parses an is-supported-script expression for complex script strings', () {
-      assertExpression(['is-supported-script', ['get', 'a-bengali-string']], 'isSupportedScript(get(a-bengali-string))', true);
-      assertExpression(['is-supported-script', ['get', 'a-burmese-string']], 'isSupportedScript(get(a-burmese-string))', true);
-      assertExpression(['is-supported-script', ['get', 'a-khmer-string']], 'isSupportedScript(get(a-khmer-string))', true);
+    test('parses an is-supported-script expression for complex script strings',
+        () {
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-bengali-string']
+      ], 'isSupportedScript(get(a-bengali-string))', true);
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-burmese-string']
+      ], 'isSupportedScript(get(a-burmese-string))', true);
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-khmer-string']
+      ], 'isSupportedScript(get(a-khmer-string))', true);
     });
   });
   group('math expressions:', () {

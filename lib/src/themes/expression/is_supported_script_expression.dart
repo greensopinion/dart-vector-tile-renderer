@@ -6,7 +6,8 @@ class IsSupportedScriptExpression extends Expression {
   final Expression _expression;
 
   IsSupportedScriptExpression(this._expression)
-      : super('isSupportedScript(${_expression.cacheKey})', _expression.properties());
+      : super('isSupportedScript(${_expression.cacheKey})',
+            _expression.properties());
 
   @override
   evaluate(EvaluationContext context) {
@@ -27,7 +28,8 @@ class IsSupportedScriptExpression extends Expression {
       // C++: https://github.com/maplibre/maplibre-gl-native/blob/32ed70c95d734590b3e68cd4595a2806fd13c389/src/mbgl/util/i18n.cpp#L632
       return true;
     }
-    context.logger.warn(() => 'IsSupportedScriptExpression expected string but got $operand');
+    context.logger.warn(
+        () => 'IsSupportedScriptExpression expected string but got $operand');
     return null;
   }
 

@@ -263,7 +263,8 @@ class CaseExpressionParser extends ExpressionComponentParser {
 }
 
 class IsSupportedScriptExpressionParser extends ExpressionComponentParser {
-  IsSupportedScriptExpressionParser(ExpressionParser parser) : super(parser, 'is-supported-script');
+  IsSupportedScriptExpressionParser(ExpressionParser parser)
+      : super(parser, 'is-supported-script');
 
   @override
   bool matches(List<dynamic> json) {
