@@ -1,5 +1,3 @@
-import 'package:flutter/widgets.dart';
-
 import 'expression.dart';
 
 class IsSupportedScriptExpression extends Expression {
