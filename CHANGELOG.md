@@ -1,3 +1,7 @@
+## 3.1.0
+
+* add suppport for `is-supported-script` expression in map themes
+
 ## 3.0.4
 
 * add support for to-number expressions
