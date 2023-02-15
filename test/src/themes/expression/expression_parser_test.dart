@@ -8,6 +8,10 @@ void main() {
   final properties = {
     'a-string': 'a-string-value',
     'another-string': 'another-string-value',
+    'a-latin-ligature': 'ﬁ',
+    'a-bengali-string': 'বাংলা',
+    'a-burmese-string': 'မြန်မာဘာသာ',
+    'a-khmer-string': 'អក្សរខ្មែរ',
     'a-bool': true,
     'a-false-bool': false,
     'an-int': 33,
@@ -68,6 +72,7 @@ void main() {
           'has',
           'in',
           'interpolate',
+          'is-supported-script',
           'let',
           'match',
           'step',
@@ -382,6 +387,34 @@ void main() {
         true
       ], 'match(get(another-string),[literal(no-match-value),literal(a-string-value)],[literal(another-no-match-value)],literal(false),literal(false),literal(true))',
           true);
+    });
+
+    test('parses an is-supported-script expression for latin script strings',
+        () {
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-string']
+      ], 'isSupportedScript(get(a-string))', true);
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-latin-ligature']
+      ], 'isSupportedScript(get(a-latin-ligature))', true);
+    });
+
+    test('parses an is-supported-script expression for complex script strings',
+        () {
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-bengali-string']
+      ], 'isSupportedScript(get(a-bengali-string))', true);
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-burmese-string']
+      ], 'isSupportedScript(get(a-burmese-string))', true);
+      assertExpression([
+        'is-supported-script',
+        ['get', 'a-khmer-string']
+      ], 'isSupportedScript(get(a-khmer-string))', true);
     });
   });
   group('math expressions:', () {
