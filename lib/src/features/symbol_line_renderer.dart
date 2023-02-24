@@ -85,6 +85,9 @@ class SymbolLineRenderer extends FeatureRenderer {
     List<PathMetric> metrics,
     TextApproximation text,
   ) {
+    if (metrics.isEmpty) {
+      return null;
+    }
     final midpoint = metrics.length ~/ 2;
     for (int x = 0; x <= (midpoint + 1); ++x) {
       int lower = midpoint - x;
