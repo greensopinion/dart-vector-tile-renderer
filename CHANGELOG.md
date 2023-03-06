@@ -1,3 +1,11 @@
+## 3.1.1
+
+* fix issue where tiles could not be rendered when tile has text with empty path metrics
+
+## 3.1.0
+
+* add suppport for `is-supported-script` expression in map themes
+
 ## 3.0.4
 
 * add support for to-number expressions

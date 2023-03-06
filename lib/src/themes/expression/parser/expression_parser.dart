@@ -59,6 +59,7 @@ class ExpressionParser {
     final varParser = VarExpressionParser(this);
     _register(varParser);
     _register(LetExpressionParser(this, varParser));
+    _register(IsSupportedScriptExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
