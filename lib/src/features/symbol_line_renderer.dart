@@ -154,13 +154,12 @@ class SymbolLineRenderer extends FeatureRenderer {
     final box = text.labelBox(tangent.position, translated: false);
     if (box != null) {
       final textSpace = _textSpace(box, text.translation, tangent);
-      if (context.labelSpace.canOccupy(text.text, textSpace)) {
-        if (text.styledSymbol != null) {
-          var preciseBox = _preciselyOccupyLabelSpaceAtTangent(
-              context, text.renderer, tangent);
-          preciseBox ??= _RenderBox(box, tangent);
-          return preciseBox;
-        }
+      if (context.labelSpace.canOccupy(text.text, textSpace) &&
+          text.styledSymbol != null) {
+        var preciseBox = _preciselyOccupyLabelSpaceAtTangent(
+            context, text.renderer, tangent);
+        preciseBox ??= _RenderBox(box, tangent);
+        return preciseBox;
       }
     }
     return null;

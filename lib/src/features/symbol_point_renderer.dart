@@ -73,7 +73,8 @@ class SymbolPointRenderer extends FeatureRenderer {
       return false;
     }
 
-    if (!context.labelSpace.canOccupy(text.text, box)) {
+    if (!context.labelSpace.canOccupy(text.text, box) ||
+        text.styledSymbol == null) {
       return false;
     }
 
