@@ -1,3 +1,7 @@
+## 3.1.2
+
+* fix issue where a null pointer exception could prevent a tile from rendering correctly
+
 ## 3.1.1
 
 * fix issue where tiles could not be rendered when tile has text with empty path metrics
