@@ -2,6 +2,7 @@ import 'expression.dart';
 import 'property_accumulator.dart';
 
 typedef BinaryOperation = num Function(num, num);
+typedef UnaryOperation = num Function(num);
 
 class NaryMathExpression extends Expression {
   final BinaryOperation _operation;
@@ -26,5 +27,25 @@ class NaryMathExpression extends Expression {
   }
 
   @override
-  bool get isConstant => false;
+  bool get isConstant => !_operands.any((e) => !e.isConstant);
+}
+
+class UnaryMathExpression extends Expression {
+  final UnaryOperation _operation;
+  final Expression _operand;
+
+  UnaryMathExpression(String operationName, this._operation, this._operand)
+      : super('$operationName(${_operand.cacheKey})', _operand.properties());
+
+  @override
+  evaluate(EvaluationContext context) {
+    final operand = _operand.evaluate(context);
+    if (operand is num) {
+      return _operation(operand);
+    }
+    return null;
+  }
+
+  @override
+  bool get isConstant => _operand.isConstant;
 }

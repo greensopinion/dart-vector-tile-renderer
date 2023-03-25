@@ -75,6 +75,7 @@ void main() {
           'is-supported-script',
           'let',
           'match',
+          'sqrt',
           'step',
           'string',
           'to-boolean',
@@ -454,6 +455,9 @@ void main() {
     });
     test('provides ^ expression', () {
       assertExpression(['^', 3, 2], '(literal(3)^literal(2))', 9);
+    });
+    test('provides sqrt expression', () {
+      assertExpression(['sqrt', 4], 'sqrt(literal(4))', 2);
     });
   });
 
