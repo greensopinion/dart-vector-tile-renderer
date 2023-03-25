@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:vector_tile_renderer/src/themes/expression/parser/boolean_expression_parser.dart';
+import 'boolean_expression_parser.dart';
 
 import '../../../logger.dart';
 import '../caching_expression.dart';
