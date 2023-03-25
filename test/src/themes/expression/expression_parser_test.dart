@@ -77,6 +77,7 @@ void main() {
           'match',
           'step',
           'string',
+          'to-boolean',
           'to-number',
           'to-string',
           'var'
@@ -118,6 +119,24 @@ void main() {
         'to-string',
         ['get', 'a-string']
       ], 'toString(get(a-string))', 'a-string-value');
+    });
+
+    test('parses to-boolean', () {
+      assertExpression(['to-boolean', true], 'toBoolean(literal(true))', true);
+      assertExpression(
+          ['to-boolean', false], 'toBoolean(literal(false))', false);
+      assertExpression([
+        'to-boolean',
+        ['get', 'an-int']
+      ], 'toBoolean(get(an-int))', true);
+      assertExpression([
+        'to-boolean',
+        ['get', 'a-double']
+      ], 'toBoolean(get(a-double))', true);
+      assertExpression([
+        'to-boolean',
+        ['get', 'no-such-property']
+      ], 'toBoolean(get(no-such-property))', false);
     });
 
     test('parses to-number', () {

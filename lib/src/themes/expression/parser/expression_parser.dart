@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:vector_tile_renderer/src/themes/expression/parser/boolean_expression_parser.dart';
+
 import '../../../logger.dart';
 import '../caching_expression.dart';
 import '../expression.dart';
@@ -43,6 +45,7 @@ class ExpressionParser {
     _register(InterpolateExpressionParser(this), caching: true);
     _register(StepExpressionParser(this));
     _register(CaseExpressionParser(this));
+    _register(ToBooleanExpressionParser(this));
     _register(ToStringExpressionParser(this));
     _register(ToNumberExpressionParser(this));
     _register(MatchExpressionParser(this));
