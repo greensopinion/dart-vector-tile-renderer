@@ -59,6 +59,7 @@ class ExpressionParser {
     _register(NaryMathExpressionParser(this, '-', (a, b) => a - b));
     _register(NaryMathExpressionParser(this, '%', (a, b) => a % b));
     _register(NaryMathExpressionParser(this, '^', pow));
+    _register(UnaryMathExpressionParser(this, 'sqrt', sqrt));
     final varParser = VarExpressionParser(this);
     _register(varParser);
     _register(LetExpressionParser(this, varParser));
