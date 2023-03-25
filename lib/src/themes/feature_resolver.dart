@@ -49,7 +49,6 @@ class CachingLayerFeatureResolver implements LayerFeatureResolver {
       () {
         final minZoom = selector.layerSelector.minZoom();
         final maxZoom = selector.layerSelector.maxZoom();
-        final checkZoom = minZoom ?? maxZoom ?? 0;
         if ((minZoom != null && zoom < minZoom) ||
             (maxZoom != null && zoom > maxZoom)) {
           return [];
