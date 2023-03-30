@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import '../../vector_tile_renderer.dart';
@@ -12,6 +13,7 @@ import 'text_wrapper.dart';
 class SymbolPointRenderer extends FeatureRenderer {
   final Logger logger;
   SymbolPointRenderer(this.logger);
+  double degrees2Radians = pi / 180.0;
 
   @override
   void render(
@@ -20,6 +22,7 @@ class SymbolPointRenderer extends FeatureRenderer {
     Style style,
     TileLayer layer,
     TileFeature feature,
+    double rotation,
   ) {
     final textPaint = style.textPaint;
     final textLayout = style.textLayout;
@@ -58,8 +61,13 @@ class SymbolPointRenderer extends FeatureRenderer {
       }
 
       context.tileSpaceMapper.drawInPixelSpace(() {
+        context.canvas.translate(offset.dx, offset.dy);
+        context.canvas.rotate(-degrees2Radians * rotation);
+        context.canvas.translate(-offset.dx, -offset.dy);
         textApproximation.renderer.render(offset);
       });
+
+      context.canvas.restore();
     }
   }
 

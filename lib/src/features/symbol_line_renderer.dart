@@ -21,6 +21,7 @@ class SymbolLineRenderer extends FeatureRenderer {
     Style style,
     TileLayer layer,
     TileFeature feature,
+    double rotation,
   ) {
     final textPaint = style.textPaint;
     final textLayout = style.textLayout;

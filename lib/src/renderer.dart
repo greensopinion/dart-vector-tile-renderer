@@ -15,12 +15,15 @@ class Renderer {
   final Logger logger;
   final FeatureDispatcher featureRenderer;
   final TextPainterProvider painterProvider;
-  Renderer(
-      {required this.theme,
-      this.painterProvider = const DefaultTextPainterProvider(),
-      Logger? logger})
-      : logger = logger ?? const Logger.noop(),
-        featureRenderer = FeatureDispatcher(logger ?? const Logger.noop());
+  final double rotation;
+  Renderer({
+    required this.theme,
+    this.painterProvider = const DefaultTextPainterProvider(),
+    Logger? logger,
+    this.rotation = 0,
+  })  : logger = logger ?? const Logger.noop(),
+        featureRenderer = FeatureDispatcher(logger ?? const Logger.noop(),
+            rotation: rotation);
 
   /// renders the given tile to the canvas
   ///
@@ -58,7 +61,7 @@ class Renderer {
       final effectiveTheme = theme.atZoom(zoom);
       for (final themeLayer in effectiveTheme.layers) {
         logger.log(() => 'rendering theme layer ${themeLayer.id}');
-        themeLayer.render(context);
+        themeLayer.render(context, rotation: rotation);
       }
       canvas.restore();
     });

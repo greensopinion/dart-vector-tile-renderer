@@ -58,5 +58,5 @@ abstract class ThemeLayer {
 
   String? get tileSource;
 
-  void render(Context context);
+  void render(Context context, {double rotation = 0});
 }

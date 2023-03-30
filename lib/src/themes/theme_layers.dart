@@ -23,7 +23,7 @@ class DefaultLayer extends ThemeLayer {
       : super(id, type, minzoom: minzoom, maxzoom: maxzoom, metadata: metadata);
 
   @override
-  void render(Context context) {
+  void render(Context context, {double rotation = 0}) {
     final layers = selector.select(context.tileset, context.zoom.truncate());
     if (layers.isEmpty) {
       return;
@@ -52,6 +52,7 @@ class DefaultLayer extends ThemeLayer {
             style,
             feature.layer,
             feature.feature,
+            rotation,
           );
         }
       });
@@ -70,7 +71,7 @@ class BackgroundLayer extends ThemeLayer {
             minzoom: 0, maxzoom: 24, metadata: metadata);
 
   @override
-  void render(Context context) {
+  void render(Context context, {double rotation = 0}) {
     context.logger.log(() => 'rendering $id');
     final color = fillColor.evaluate(EvaluationContext(
         () => {}, TileFeatureType.background, context.logger,

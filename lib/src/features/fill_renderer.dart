@@ -15,6 +15,7 @@ class FillRenderer extends FeatureRenderer {
     Style style,
     TileLayer layer,
     TileFeature feature,
+    double rotation,
   ) {
     if (!feature.hasPaths) {
       return;

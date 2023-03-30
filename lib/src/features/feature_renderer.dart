@@ -9,23 +9,20 @@ import 'symbol_line_renderer.dart';
 import 'symbol_point_renderer.dart';
 
 abstract class FeatureRenderer {
-  void render(
-    Context context,
-    ThemeLayerType layerType,
-    Style style,
-    TileLayer layer,
-    TileFeature feature,
-  );
+  void render(Context context, ThemeLayerType layerType, Style style,
+      TileLayer layer, TileFeature feature, double rotation);
 }
 
 class FeatureDispatcher extends FeatureRenderer {
   final Logger logger;
   final Map<ThemeLayerType, FeatureRenderer> typeToRenderer;
   final Map<TileFeatureType, FeatureRenderer> symbolTypeToRenderer;
+  final double rotation;
 
-  FeatureDispatcher(this.logger)
+  FeatureDispatcher(this.logger, {this.rotation = 0})
       : typeToRenderer = createDispatchMapping(logger),
-        symbolTypeToRenderer = createSymbolDispatchMapping(logger);
+        symbolTypeToRenderer =
+            createSymbolDispatchMapping(logger, rotation: rotation);
 
   @override
   void render(
@@ -34,6 +31,7 @@ class FeatureDispatcher extends FeatureRenderer {
     Style style,
     TileLayer layer,
     TileFeature feature,
+    double rotation,
   ) {
     FeatureRenderer? delegate;
     if (layerType == ThemeLayerType.symbol) {
@@ -46,7 +44,7 @@ class FeatureDispatcher extends FeatureRenderer {
       logger.warn(() =>
           'layer type $layerType feature ${feature.type} is not implemented');
     } else {
-      delegate.render(context, layerType, style, layer, feature);
+      delegate.render(context, layerType, style, layer, feature, rotation);
     }
   }
 
@@ -60,7 +58,8 @@ class FeatureDispatcher extends FeatureRenderer {
   }
 
   static Map<TileFeatureType, FeatureRenderer> createSymbolDispatchMapping(
-      Logger logger) {
+      Logger logger,
+      {double rotation = 0}) {
     return {
       TileFeatureType.point: SymbolPointRenderer(logger),
       TileFeatureType.linestring: SymbolLineRenderer(logger),
