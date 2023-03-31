@@ -1,3 +1,9 @@
+## 3.2.0
+
+* add support for `to-boolean` expressions
+* add support for `sqrt` expressions
+* fix defect that occasionally caused tile layers not to be rendered if a minZoom or maxZoom was specified
+
 ## 3.1.2
 
 * fix issue where a null pointer exception could prevent a tile from rendering correctly

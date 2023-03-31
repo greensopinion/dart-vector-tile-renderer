@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'boolean_expression_parser.dart';
+
 import '../../../logger.dart';
 import '../caching_expression.dart';
 import '../expression.dart';
@@ -43,6 +45,7 @@ class ExpressionParser {
     _register(InterpolateExpressionParser(this), caching: true);
     _register(StepExpressionParser(this));
     _register(CaseExpressionParser(this));
+    _register(ToBooleanExpressionParser(this));
     _register(ToStringExpressionParser(this));
     _register(ToNumberExpressionParser(this));
     _register(MatchExpressionParser(this));
@@ -56,6 +59,7 @@ class ExpressionParser {
     _register(NaryMathExpressionParser(this, '-', (a, b) => a - b));
     _register(NaryMathExpressionParser(this, '%', (a, b) => a % b));
     _register(NaryMathExpressionParser(this, '^', pow));
+    _register(UnaryMathExpressionParser(this, 'sqrt', sqrt));
     final varParser = VarExpressionParser(this);
     _register(varParser);
     _register(LetExpressionParser(this, varParser));
