@@ -24,6 +24,7 @@ class Context {
   final TextPainterProvider textPainterProvider;
   final CachingPaintProvider paintProvider;
   late TileSpaceMapper tileSpaceMapper;
+  final double rotation;
 
   Context(
       {required this.logger,
@@ -35,7 +36,8 @@ class Context {
       required this.tileSpace,
       required this.tileClip,
       required this.optimizations,
-      required this.textPainterProvider})
+      required this.textPainterProvider,
+      this.rotation = 0})
       : labelSpace = LabelSpace(tileClip),
         paintProvider = CachingPaintProvider();
 

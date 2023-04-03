@@ -9,14 +9,8 @@ class FillRenderer extends FeatureRenderer {
   FillRenderer(this.logger);
 
   @override
-  void render(
-    Context context,
-    ThemeLayerType layerType,
-    Style style,
-    TileLayer layer,
-    TileFeature feature,
-    double rotation,
-  ) {
+  void render(Context context, ThemeLayerType layerType, Style style,
+      TileLayer layer, TileFeature feature) {
     if (!feature.hasPaths) {
       return;
     }

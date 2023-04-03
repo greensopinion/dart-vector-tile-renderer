@@ -23,7 +23,7 @@ class DefaultLayer extends ThemeLayer {
       : super(id, type, minzoom: minzoom, maxzoom: maxzoom, metadata: metadata);
 
   @override
-  void render(Context context, {double rotation = 0}) {
+  void render(Context context) {
     final layers = selector.select(context.tileset, context.zoom.truncate());
     if (layers.isEmpty) {
       return;
@@ -46,14 +46,8 @@ class DefaultLayer extends ThemeLayer {
 
       context.tileSpaceMapper.drawInTileSpace(() {
         for (final feature in features) {
-          context.featureRenderer.render(
-            context,
-            type,
-            style,
-            feature.layer,
-            feature.feature,
-            rotation,
-          );
+          context.featureRenderer
+              .render(context, type, style, feature.layer, feature.feature);
         }
       });
     }
@@ -71,7 +65,7 @@ class BackgroundLayer extends ThemeLayer {
             minzoom: 0, maxzoom: 24, metadata: metadata);
 
   @override
-  void render(Context context, {double rotation = 0}) {
+  void render(Context context) {
     context.logger.log(() => 'rendering $id');
     final color = fillColor.evaluate(EvaluationContext(
         () => {}, TileFeatureType.background, context.logger,

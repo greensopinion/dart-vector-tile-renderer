@@ -15,14 +15,8 @@ class SymbolLineRenderer extends FeatureRenderer {
   SymbolLineRenderer(this.logger);
 
   @override
-  void render(
-    Context context,
-    ThemeLayerType layerType,
-    Style style,
-    TileLayer layer,
-    TileFeature feature,
-    double rotation,
-  ) {
+  void render(Context context, ThemeLayerType layerType, Style style,
+      TileLayer layer, TileFeature feature) {
     final textPaint = style.textPaint;
     final textLayout = style.textLayout;
     if (textPaint == null || textLayout == null) {

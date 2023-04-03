@@ -16,14 +16,8 @@ class SymbolPointRenderer extends FeatureRenderer {
   double degrees2Radians = pi / 180.0;
 
   @override
-  void render(
-    Context context,
-    ThemeLayerType layerType,
-    Style style,
-    TileLayer layer,
-    TileFeature feature,
-    double rotation,
-  ) {
+  void render(Context context, ThemeLayerType layerType, Style style,
+      TileLayer layer, TileFeature feature) {
     final textPaint = style.textPaint;
     final textLayout = style.textLayout;
     if (textPaint == null || textLayout == null) {
@@ -62,7 +56,7 @@ class SymbolPointRenderer extends FeatureRenderer {
 
       context.tileSpaceMapper.drawInPixelSpace(() {
         context.canvas.translate(offset.dx, offset.dy);
-        context.canvas.rotate(-degrees2Radians * rotation);
+        context.canvas.rotate(-degrees2Radians * context.rotation);
         context.canvas.translate(-offset.dx, -offset.dy);
         textApproximation.renderer.render(offset);
       });
