@@ -1,3 +1,7 @@
+## 3.2.1
+
+* fix an issue where curly brace expressions referencing a non-string property value could not be rendered as text
+
 ## 3.2.0
 
 * add support for `to-boolean` expressions

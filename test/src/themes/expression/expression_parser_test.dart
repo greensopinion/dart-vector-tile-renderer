@@ -190,8 +190,10 @@ void main() {
     }
 
     test('parses a formatted string', () {
-      assertExpression('{a-string}', 'get(a-string)', 'a-string-value');
-      assertExpression('{no-match}', 'get(no-match)', null);
+      assertExpression(
+          '{a-string}', 'toString(get(a-string))', 'a-string-value');
+      assertExpression('{no-match}', 'toString(get(no-match))', '');
+      assertExpression('{an-int}', 'toString(get(an-int))', '33');
     });
 
     test('parses a get property', () {
