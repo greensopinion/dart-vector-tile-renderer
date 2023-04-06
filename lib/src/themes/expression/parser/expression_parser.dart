@@ -172,7 +172,7 @@ class ExpressionParser {
     if (match != null) {
       final propertyName = match.group(1);
       if (propertyName != null) {
-        return GetPropertyExpression(propertyName);
+        return ToStringExpression(GetPropertyExpression(propertyName));
       }
     }
     return LiteralExpression(json);
