@@ -24,12 +24,13 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void render(Context context) {
-    final layers = selector.select(context.tileset, context.zoom.truncate());
+    final layers =
+        selector.select(context.tileSource.tileset, context.zoom.truncate());
     if (layers.isEmpty) {
       return;
     }
 
-    final features = context.tileset.resolver
+    final features = context.tileSource.tileset.resolver
         .resolveFeatures(selector, context.zoom.truncate());
 
     if (features.isEmpty) {

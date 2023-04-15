@@ -5,7 +5,7 @@ import 'logger.dart';
 import 'profiling.dart';
 import 'renderer.dart';
 import 'themes/theme.dart';
-import 'tileset.dart';
+import 'tile_source.dart';
 
 class ImageRenderer {
   final Logger logger;
@@ -26,8 +26,8 @@ class ImageRenderer {
   ///        no scaling is being applied.
   /// [zoom] the current zoom level, which is used to filter theme layers
   ///        via `minzoom` and `maxzoom`. Value if provided must be >= 0 and <= 24
-  /// [tileset] the tileset, having vector tiles by `'source'` ID as defined by the theme
-  Future<Image> render(Tileset tileset,
+  /// [tile] the tile to render
+  Future<Image> render(TileSource tile,
       {double zoomScaleFactor = 1.0, required double zoom}) {
     return profileAsync('RenderImage', () {
       final recorder = PictureRecorder();
@@ -36,8 +36,8 @@ class ImageRenderer {
       final canvas = Canvas(recorder, rect);
       canvas.clipRect(rect);
       canvas.scale(scale.toDouble(), scale.toDouble());
-      Renderer(theme: theme, logger: logger).render(canvas, tileset,
-          zoomScaleFactor: zoomScaleFactor, zoom: zoom);
+      Renderer(theme: theme, logger: logger)
+          .render(canvas, tile, zoomScaleFactor: zoomScaleFactor, zoom: zoom);
       return recorder.endRecording().toImage(size.floor(), size.floor());
     });
   }

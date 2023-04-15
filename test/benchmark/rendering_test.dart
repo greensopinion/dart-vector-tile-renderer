@@ -25,7 +25,7 @@ Picture _renderPicture({
 
   Renderer(theme: theme).render(
     canvas,
-    tileset,
+    TileSource(tileset: tileset),
     zoomScaleFactor: scale,
     zoom: zoom,
   );

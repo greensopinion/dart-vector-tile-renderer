@@ -8,13 +8,13 @@ import 'model/tile_model.dart';
 import 'optimizations.dart';
 import 'symbols/text_painter.dart';
 import 'themes/paint_factory.dart';
-import 'tileset.dart';
+import 'tile_source.dart';
 
 class Context {
   final Logger logger;
   final Canvas canvas;
   final FeatureDispatcher featureRenderer;
-  final Tileset tileset;
+  final TileSource tileSource;
   final double zoomScaleFactor;
   final double zoom;
   final Rect tileSpace;
@@ -29,7 +29,7 @@ class Context {
       {required this.logger,
       required this.canvas,
       required this.featureRenderer,
-      required this.tileset,
+      required this.tileSource,
       required this.zoomScaleFactor,
       required this.zoom,
       required this.tileSpace,
@@ -39,5 +39,5 @@ class Context {
       : labelSpace = LabelSpace(tileClip),
         paintProvider = CachingPaintProvider();
 
-  Tile? tile(String sourceId) => tileset.tiles[sourceId];
+  Tile? tile(String sourceId) => tileSource.tileset.tiles[sourceId];
 }
