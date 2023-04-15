@@ -1,7 +1,8 @@
 import 'dart:core';
 
 import 'package:flutter/painting.dart';
-import 'package:vector_tile_renderer/src/themes/expression/string_expression.dart';
+import 'expression/string_expression.dart';
+import 'paint_model.dart';
 
 import '../logger.dart';
 import '../profiling.dart';
@@ -139,22 +140,30 @@ class ThemeReader {
 
   ThemeLayer? _toSymbolTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
-    final jsonPaint = jsonLayer['paint'];
-    final paint = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint, null);
-    if (paint != null) {
-      final layout = _toSymbolLayout(jsonLayer);
-      final textHalo = _toTextHalo(jsonLayer);
 
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.symbol,
-          selector: selector,
-          style:
-              Style(textPaint: paint, symbolLayout: layout, textHalo: textHalo),
-          minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer),
-          metadata: _metadata(jsonLayer));
+    final layout = _toSymbolLayout(jsonLayer);
+    final textHalo = _toTextHalo(jsonLayer);
+    if (layout.text == null && layout.icon == null) {
+      logger.warn(() => 'layer has no text and no icon: $jsonLayer');
+      return null;
     }
-    return null;
+    Expression<PaintModel>? paint;
+    if (layout.text != null) {
+      final jsonPaint = jsonLayer['paint'];
+      paint = paintFactory.create(
+          _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint, null);
+      if (paint == null) {
+        logger.warn(() => 'layer has no paint: $jsonLayer');
+        return null;
+      }
+    }
+    return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.symbol,
+        selector: selector,
+        style:
+            Style(textPaint: paint, symbolLayout: layout, textHalo: textHalo),
+        minzoom: _minZoom(jsonLayer),
+        maxzoom: _maxZoom(jsonLayer),
+        metadata: _metadata(jsonLayer));
   }
 
   double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();

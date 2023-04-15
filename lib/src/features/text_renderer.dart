@@ -126,6 +126,7 @@ class TextRenderer {
   }
 
   double get textHeight => _painter!.height;
+  Size get size => Size(_painter!.width, _painter!.height);
   Offset? get translation => _translation;
   bool get canPaint => _painter != null;
 
