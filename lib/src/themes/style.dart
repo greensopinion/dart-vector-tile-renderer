@@ -18,7 +18,7 @@ class Style {
   final Expression<PaintModel>? linePaint;
   final Expression<PaintModel>? textPaint;
   final TextLayout? textLayout;
-  final Expression<List<Shadow>>? textHalo;
+  final Expression<Color>? textHalo;
   final Expression<PaintModel>? outlinePaint;
 
   Style(

@@ -206,18 +206,12 @@ class ThemeReader {
         textTransform: textTransform);
   }
 
-  Expression<List<Shadow>>? _toTextHalo(jsonLayer) {
+  Expression<Color>? _toTextHalo(jsonLayer) {
     final paint = jsonLayer['paint'];
     if (paint != null) {
-      final haloWidth = expressionParser
-          .parseOptional(paint['text-halo-width'])
-          ?.asDoubleExpression();
-      final haloColor = expressionParser
+      return expressionParser
           .parseOptional(paint['text-halo-color'])
           ?.asColorExpression();
-      if (haloWidth != null && haloColor != null) {
-        return TextHaloFactory.toHaloFunction(haloColor, haloWidth);
-      }
     }
     return null;
   }

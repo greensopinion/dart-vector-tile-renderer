@@ -87,12 +87,12 @@ class TextApproximation {
       }
       double? spacing =
           style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
-      final shadows = style.textHalo?.evaluate(evaluationContext);
+      final backgroundColor = style.textHalo?.evaluate(evaluationContext);
       final textStyle = TextStyle(
           foreground: foreground.paint(),
           fontSize: textSize,
           letterSpacing: spacing,
-          shadows: shadows,
+          backgroundColor: backgroundColor,
           fontFamily: style.textLayout?.fontFamily,
           fontStyle: style.textLayout?.fontStyle);
       final textTransform = style.textLayout?.textTransform;
