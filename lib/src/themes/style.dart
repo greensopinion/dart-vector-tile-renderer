@@ -17,7 +17,7 @@ class Style {
   final Extrusion? fillExtrusion;
   final Expression<PaintModel>? linePaint;
   final Expression<PaintModel>? textPaint;
-  final TextLayout? textLayout;
+  final SymbolLayout? symbolLayout;
   final Expression<List<Shadow>>? textHalo;
   final Expression<PaintModel>? outlinePaint;
 
@@ -27,7 +27,7 @@ class Style {
       this.outlinePaint,
       this.linePaint,
       this.textPaint,
-      this.textLayout,
+      this.symbolLayout,
       this.textHalo});
 }
 
@@ -70,12 +70,30 @@ class LayoutJustify {
       values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }
 
-class TextLayout {
+class SymbolLayout {
   final Expression<LayoutPlacement> placement;
+  final TextLayout? text;
+  final IconLayout? icon;
+
+  SymbolLayout({
+    required this.placement,
+    this.text,
+    this.icon,
+  });
+}
+
+class IconLayout {
+  final Expression<String?> icon;
+  final Expression<LayoutAnchor> anchor;
+  final Expression<double>? opacity;
+
+  IconLayout({required this.icon, required this.anchor, required this.opacity});
+}
+
+class TextLayout {
   final Expression<LayoutAnchor> anchor;
   final Expression<LayoutJustify> justify;
   final Expression<String?> text;
-  final Expression? icon;
   final Expression<double> textSize;
   final Expression<double>? textLetterSpacing;
   final Expression<double>? maxWidth;
@@ -84,11 +102,9 @@ class TextLayout {
   final TextTransformFunction? textTransform;
 
   TextLayout(
-      {required this.placement,
-      required this.anchor,
+      {required this.anchor,
       required this.justify,
       required this.text,
-      required this.icon,
       required this.textSize,
       required this.textLetterSpacing,
       required this.maxWidth,

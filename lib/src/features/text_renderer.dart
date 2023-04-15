@@ -23,7 +23,8 @@ class TextApproximation {
   TextApproximation(
       this.context, this.evaluationContext, this.style, this.textLines) {
     text = textLines.join('\n');
-    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
+    double? textSize =
+        style.symbolLayout!.text!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
@@ -39,7 +40,7 @@ class TextApproximation {
       _size = size;
       _translation = _offset(
           size,
-          style.textLayout!.anchor.evaluate(evaluationContext) ??
+          style.symbolLayout!.text!.anchor.evaluate(evaluationContext) ??
               LayoutAnchor.DEFAULT);
     }
   }
@@ -80,25 +81,27 @@ class TextApproximation {
     if (foreground == null) {
       return null;
     }
-    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
+    double? textSize =
+        style.symbolLayout!.text!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
       }
-      double? spacing =
-          style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
+      double? spacing = style.symbolLayout!.text!.textLetterSpacing
+          ?.evaluate(evaluationContext);
       final shadows = style.textHalo?.evaluate(evaluationContext);
       final textStyle = TextStyle(
           foreground: foreground.paint(),
           fontSize: textSize,
           letterSpacing: spacing,
           shadows: shadows,
-          fontFamily: style.textLayout?.fontFamily,
-          fontStyle: style.textLayout?.fontStyle);
-      final textTransform = style.textLayout?.textTransform;
+          fontFamily: style.symbolLayout!.text?.fontFamily,
+          fontStyle: style.symbolLayout!.text?.fontStyle);
+      final textTransform = style.symbolLayout!.text?.textTransform;
       final transformedText =
           textTransform == null ? text : textTransform(text) ?? text;
-      final alignment = style.textLayout?.justify.evaluate(evaluationContext);
+      final alignment =
+          style.symbolLayout!.text?.justify.evaluate(evaluationContext);
       return StyledSymbol(
           style: SymbolStyle(
               textAlign: alignment?.toTextAlign() ?? TextAlign.center,
@@ -154,8 +157,10 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    return _offset(_painter!.size,
-        style.textLayout!.anchor.evaluate(context) ?? LayoutAnchor.DEFAULT);
+    return _offset(
+        _painter!.size,
+        style.symbolLayout!.text!.anchor.evaluate(context) ??
+            LayoutAnchor.DEFAULT);
   }
 }
 

@@ -22,8 +22,10 @@ class SymbolPointRenderer extends FeatureRenderer {
     TileFeature feature,
   ) {
     final textPaint = style.textPaint;
-    final textLayout = style.textLayout;
-    if (textPaint == null || textLayout == null) {
+    final symbolLayout = style.symbolLayout;
+    if (textPaint == null ||
+        symbolLayout == null ||
+        symbolLayout.text == null) {
       logger.warn(() => 'point does not have a text paint or layout');
       return;
     }
@@ -32,7 +34,7 @@ class SymbolPointRenderer extends FeatureRenderer {
         () => feature.properties, feature.type, logger,
         zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
 
-    final text = textLayout.text.evaluate(evaluationContext);
+    final text = symbolLayout.text!.text.evaluate(evaluationContext);
     if (text == null) {
       logger.warn(() => 'point with no text');
       return;
@@ -45,7 +47,7 @@ class SymbolPointRenderer extends FeatureRenderer {
 
     logger.log(() => 'rendering symbol points');
 
-    final lines = TextWrapper(textLayout).wrap(evaluationContext, text);
+    final lines = TextWrapper(symbolLayout.text!).wrap(evaluationContext, text);
 
     final textApproximation =
         TextApproximation(context, evaluationContext, style, lines);

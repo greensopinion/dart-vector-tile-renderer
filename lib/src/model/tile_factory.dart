@@ -94,7 +94,15 @@ extension _DefaultLayerExtension on DefaultLayer {
     names.addProperties(style.linePaint);
     names.addProperties(style.outlinePaint);
     names.addProperties(style.textPaint);
-    names.addProperties(style.textLayout?.text);
+    names.addProperties(style.symbolLayout?.text?.text);
+    names.addProperties(style.symbolLayout?.text?.anchor);
+    names.addProperties(style.symbolLayout?.text?.justify);
+    names.addProperties(style.symbolLayout?.text?.maxWidth);
+    names.addProperties(style.symbolLayout?.text?.textLetterSpacing);
+    names.addProperties(style.symbolLayout?.text?.textSize);
+    names.addProperties(style.symbolLayout?.icon?.icon);
+    names.addProperties(style.symbolLayout?.icon?.anchor);
+    names.addProperties(style.symbolLayout?.icon?.opacity);
     return names.whereType<String>().toSet();
   }
 }

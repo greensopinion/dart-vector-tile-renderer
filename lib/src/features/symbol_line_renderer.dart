@@ -23,8 +23,10 @@ class SymbolLineRenderer extends FeatureRenderer {
     TileFeature feature,
   ) {
     final textPaint = style.textPaint;
-    final textLayout = style.textLayout;
-    if (textPaint == null || textLayout == null) {
+    final symbolLayout = style.symbolLayout;
+    if (textPaint == null ||
+        symbolLayout == null ||
+        symbolLayout.text == null) {
       logger.warn(() => 'line symbol does not have a text paint or layout');
       return;
     }
@@ -44,7 +46,7 @@ class SymbolLineRenderer extends FeatureRenderer {
         () => feature.properties, feature.type, logger,
         zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
 
-    final text = textLayout.text.evaluate(evaluationContext);
+    final text = symbolLayout.text!.text.evaluate(evaluationContext);
     if (text == null) {
       return;
     }
