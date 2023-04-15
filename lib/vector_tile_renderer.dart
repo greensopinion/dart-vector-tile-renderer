@@ -16,5 +16,7 @@ export 'src/symbols/text_painter.dart';
 export 'src/themes/provided_themes.dart';
 export 'src/themes/theme.dart';
 export 'src/themes/theme_reader.dart';
+export 'src/themes/sprite.dart';
+export 'src/themes/sprite_reader.dart';
 export 'src/tileset.dart' hide InternalTileset;
 export 'src/vector_tile_reader.dart';

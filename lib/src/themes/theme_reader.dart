@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:flutter/painting.dart';
+import 'package:vector_tile_renderer/src/themes/expression/string_expression.dart';
 
 import '../logger.dart';
 import '../profiling.dart';
@@ -170,7 +171,10 @@ class ThemeReader {
     final anchor = expressionParser
         .parse(layout?['text-anchor'])
         .asLayoutAnchorExpression();
-    final textFunction = expressionParser.parse(layout?['text-field']);
+    final textFunction = expressionParser
+        .parse(layout?['text-field'])
+        .asOptionalStringExpression();
+    final iconFunction = expressionParser.parseOptional(layout?['icon-image']);
     final font = layout?['text-font'];
     String? fontFamily;
     FontStyle? fontStyle;
@@ -198,6 +202,7 @@ class ThemeReader {
         anchor: anchor,
         justify: justify,
         text: textFunction,
+        icon: iconFunction,
         textSize: textSize,
         textLetterSpacing: textLetterSpacing,
         maxWidth: maxWidth,

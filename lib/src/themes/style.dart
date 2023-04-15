@@ -74,7 +74,8 @@ class TextLayout {
   final Expression<LayoutPlacement> placement;
   final Expression<LayoutAnchor> anchor;
   final Expression<LayoutJustify> justify;
-  final Expression text;
+  final Expression<String?> text;
+  final Expression? icon;
   final Expression<double> textSize;
   final Expression<double>? textLetterSpacing;
   final Expression<double>? maxWidth;
@@ -87,6 +88,7 @@ class TextLayout {
       required this.anchor,
       required this.justify,
       required this.text,
+      required this.icon,
       required this.textSize,
       required this.textLetterSpacing,
       required this.maxWidth,

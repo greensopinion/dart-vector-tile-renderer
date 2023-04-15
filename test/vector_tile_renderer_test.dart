@@ -10,4 +10,9 @@ void main() {
     expect(ProvidedThemes, isNotNull);
     expect(ThemeReader, isNotNull);
   });
+  test('provides sprites', () {
+    expect(Sprite, isNotNull);
+    expect(SpriteIndex, isNotNull);
+    expect(SpriteIndexReader, isNotNull);
+  });
 }
