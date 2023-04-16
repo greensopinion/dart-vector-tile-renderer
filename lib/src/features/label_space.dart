@@ -7,7 +7,8 @@ class LabelSpace {
 
   LabelSpace(this.space);
 
-  bool canAccept(String? text) => text != null && !texts.contains(text);
+  bool canAccept(String? text) =>
+      text != null && text.isNotEmpty && !texts.contains(text);
 
   bool canOccupy(String text, Rect rect) =>
       canAccept(text) &&

@@ -48,16 +48,13 @@ class SymbolLineRenderer extends FeatureRenderer {
         zoomScaleFactor: context.zoomScaleFactor,
         hasImage: context.hasImage);
 
-    final placement = symbolLayout.placement.evaluate(evaluationContext) ??
-        LayoutPlacement.point;
-
     final text = symbolLayout.text?.text.evaluate(evaluationContext);
     final icon = symbolLayout.getIcon(context, evaluationContext);
     if (text == null) {
       logger.warn(() => 'line with no text');
       return;
     }
-
+    bool rotate = _shouldRotate(symbolLayout, evaluationContext);
     final textAbbreviation = TextAbbreviator().abbreviate(text);
     if (!context.labelSpace.canAccept(textAbbreviation)) {
       return;
@@ -66,20 +63,6 @@ class SymbolLineRenderer extends FeatureRenderer {
         context, evaluationContext, style, [textAbbreviation]);
 
     final metrics = path.pathMetrics;
-    var textRotationAlignment =
-        symbolLayout.text?.rotationAlignment?.evaluate(evaluationContext) ??
-            RotationAlignment.auto;
-    var rotate = true;
-    if (textRotationAlignment == RotationAlignment.auto) {
-      if (placement == LayoutPlacement.point) {
-        textRotationAlignment = RotationAlignment.viewport;
-      } else {
-        textRotationAlignment = RotationAlignment.map;
-      }
-    }
-    if (textRotationAlignment == RotationAlignment.viewport) {
-      rotate = false;
-    }
     final renderBox =
         _findMiddleMetric(context, metrics, textApproximation, rotate);
     if (renderBox == null || !textApproximation.renderer.canPaint) {
@@ -105,12 +88,29 @@ class SymbolLineRenderer extends FeatureRenderer {
     });
   }
 
-  _RenderBox? _findMiddleMetric(
-    Context context,
-    List<PathMetric> metrics,
-    TextApproximation text,
-    bool rotate,
-  ) {
+  bool _shouldRotate(
+      SymbolLayout symbolLayout, EvaluationContext evaluationContext) {
+    var textRotationAlignment =
+        symbolLayout.text?.rotationAlignment?.evaluate(evaluationContext) ??
+            RotationAlignment.auto;
+    var rotate = true;
+    if (textRotationAlignment == RotationAlignment.auto) {
+      final placement = symbolLayout.placement.evaluate(evaluationContext) ??
+          LayoutPlacement.point;
+      if (placement == LayoutPlacement.point) {
+        textRotationAlignment = RotationAlignment.viewport;
+      } else {
+        textRotationAlignment = RotationAlignment.map;
+      }
+    }
+    if (textRotationAlignment == RotationAlignment.viewport) {
+      rotate = false;
+    }
+    return rotate;
+  }
+
+  _RenderBox? _findMiddleMetric(Context context, List<PathMetric> metrics,
+      TextApproximation text, bool rotate) {
     if (metrics.isEmpty) {
       return null;
     }
@@ -177,10 +177,7 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 
   _RenderBox? _occupyLabelSpaceAtTangent(
-    Context context,
-    TextApproximation text,
-    Tangent tangent,
-  ) {
+      Context context, TextApproximation text, Tangent tangent) {
     final box = text.labelBox(tangent.position, translated: false);
     if (box != null) {
       final textSpace = _textSpace(box, text.translation, tangent);
@@ -196,10 +193,7 @@ class SymbolLineRenderer extends FeatureRenderer {
   }
 
   _RenderBox? _preciselyOccupyLabelSpaceAtTangent(
-    Context context,
-    TextRenderer renderer,
-    Tangent tangent,
-  ) {
+      Context context, TextRenderer renderer, Tangent tangent) {
     final box = renderer.labelBox(tangent.position, translated: false);
     if (box != null) {
       final textSpace = _textSpace(box, renderer.translation, tangent);
