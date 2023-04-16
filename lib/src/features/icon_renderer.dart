@@ -15,12 +15,14 @@ class IconRenderer extends SymbolIcon {
   final Image atlas;
   final double size;
   final LayoutAnchor anchor;
+  final double? rotate;
 
   IconRenderer(this.context,
       {required this.sprite,
       required this.atlas,
       required this.size,
-      required this.anchor});
+      required this.anchor,
+      required this.rotate});
 
   bool get overlapsText => sprite.content != null;
 
@@ -46,10 +48,10 @@ class IconRenderer extends SymbolIcon {
           atlas,
           segments
               .map((e) => RSTransform.fromComponents(
-                  rotation: 0,
+                  rotation: rotate == null ? 0 : (rotate! * pi / 180.0),
                   scale: e.scale,
-                  anchorX: 0,
-                  anchorY: 0,
+                  anchorX: rotate == null ? 0 : offset.dx + anchorOffset.dx,
+                  anchorY: rotate == null ? 0 : offset.dy + anchorOffset.dy,
                   translateX: offset.dx + anchorOffset.dx,
                   translateY: offset.dy + anchorOffset.dy))
               .toList(),

@@ -101,13 +101,15 @@ class IconLayout {
   final Expression<double>? opacity;
   final Expression<double>? size;
   final Expression<RotationAlignment>? rotationAlignment;
+  final Expression<double>? rotate;
 
   IconLayout(
       {required this.icon,
       required this.anchor,
       required this.opacity,
       required this.size,
-      required this.rotationAlignment});
+      required this.rotationAlignment,
+      required this.rotate});
 }
 
 class TextLayout {

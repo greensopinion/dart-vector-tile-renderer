@@ -15,8 +15,13 @@ extension SymbolLayoutExtension on SymbolLayout {
         final size = icon?.size?.evaluate(evaluationContext) ?? 1.0;
         final anchor =
             icon?.anchor.evaluate(evaluationContext) ?? LayoutAnchor.DEFAULT;
+        final rotate = icon?.rotate?.evaluate(evaluationContext);
         iconRenderer = IconRenderer(context,
-            sprite: sprite, atlas: atlas, size: size, anchor: anchor);
+            sprite: sprite,
+            atlas: atlas,
+            size: size,
+            anchor: anchor,
+            rotate: rotate);
       } else {
         context.logger.warn(() => 'missing sprite: $icon');
       }
