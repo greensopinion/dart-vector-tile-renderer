@@ -191,6 +191,7 @@ class ThemeReader {
         .parse(layout?['icon-anchor'])
         .asLayoutAnchorExpression();
     final opacity = _toDoubleExpression(layout?['icon-opacity']);
+    final size = _toDoubleExpression(layout?['icon-size']);
 
     final rotationAlignment = expressionParser
         .parse(layout?['text-rotation-alignment'])
@@ -199,6 +200,7 @@ class ThemeReader {
         icon: iconFunction,
         anchor: anchor,
         opacity: opacity,
+        size: size,
         rotationAlignment: rotationAlignment);
   }
 

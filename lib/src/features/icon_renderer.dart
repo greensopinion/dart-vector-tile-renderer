@@ -9,9 +9,12 @@ class IconRenderer extends SymbolIcon {
   final Context context;
   final Sprite sprite;
   final Image atlas;
+  final double size;
 
-  IconRenderer(this.context, {required this.sprite, required this.atlas});
+  IconRenderer(this.context,
+      {required this.sprite, required this.atlas, required this.size});
 
+  @override
   bool get overlapsText => sprite.content != null;
 
   @override
@@ -60,7 +63,7 @@ class IconRenderer extends SymbolIcon {
             imageSource: Rect.fromLTWH(sprite.x.toDouble(), sprite.y.toDouble(),
                 sprite.width.toDouble(), sprite.height.toDouble()),
             centerOffset: Offset.zero,
-            scale: scale)
+            scale: scale * size)
       ];
     }
     double margin = contentHeight / 1.5;
@@ -72,7 +75,8 @@ class IconRenderer extends SymbolIcon {
     double desiredContentHeight = contentHeight + (2 * margin);
     double desiredScale = max(desiredContentWidth / spriteContentWidth,
             desiredContentHeight / spriteContentHeight) *
-        scale;
+        scale *
+        size;
     double actualWidth = (desiredScale * sprite.width);
     double actualHeight = (desiredScale * sprite.height);
     double offsetX = (scaledWidth - actualWidth) / 2.0;

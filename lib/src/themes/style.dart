@@ -99,12 +99,14 @@ class IconLayout {
   final Expression<String?> icon;
   final Expression<LayoutAnchor> anchor;
   final Expression<double>? opacity;
+  final Expression<double>? size;
   final Expression<RotationAlignment>? rotationAlignment;
 
   IconLayout(
       {required this.icon,
       required this.anchor,
       required this.opacity,
+      required this.size,
       required this.rotationAlignment});
 }
 
