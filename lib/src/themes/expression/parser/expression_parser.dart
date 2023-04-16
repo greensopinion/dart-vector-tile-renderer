@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import '../concat_expression.dart';
+
 import 'image_expression_parser.dart';
 
 import 'boolean_expression_parser.dart';
@@ -171,11 +173,25 @@ class ExpressionParser {
   }
 
   Expression? _parseString(String json) {
-    final match = RegExp(r'\{(.+?)\}').firstMatch(json);
-    if (match != null) {
-      final propertyName = match.group(1);
-      if (propertyName != null) {
-        return ToStringExpression(GetPropertyExpression(propertyName));
+    final matches = RegExp(r'\{(.+?)\}').allMatches(json);
+    if (matches.isNotEmpty) {
+      final result = <Expression>[];
+      var previousOffset = 0;
+      for (final match in matches) {
+        if (match.start > previousOffset) {
+          result.add(
+              LiteralExpression(json.substring(previousOffset, match.start)));
+        }
+        final propertyName = match.group(1);
+        if (propertyName != null) {
+          result.add(ToStringExpression(GetPropertyExpression(propertyName)));
+        }
+        previousOffset = match.end;
+      }
+      if (result.length == 1) {
+        return result.first;
+      } else if (result.isNotEmpty) {
+        return ConcatExpression(result);
       }
     }
     return LiteralExpression(json);

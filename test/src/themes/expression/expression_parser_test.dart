@@ -198,6 +198,12 @@ void main() {
           '{a-string}', 'toString(get(a-string))', 'a-string-value');
       assertExpression('{no-match}', 'toString(get(no-match))', '');
       assertExpression('{an-int}', 'toString(get(an-int))', '33');
+      assertExpression('prefix_{an-int}',
+          'concat(literal(prefix_),toString(get(an-int)))', 'prefix_33');
+      assertExpression(
+          'prefix_{an-int}_{a-string}',
+          'concat(literal(prefix_),toString(get(an-int)),literal(_),toString(get(a-string)))',
+          'prefix_33_a-string-value');
     });
 
     test('parses a get property', () {
