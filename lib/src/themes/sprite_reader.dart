@@ -29,7 +29,7 @@ class SpriteIndexReader {
           height is int &&
           x is int &&
           y is int &&
-          pixelRatio is int) {
+          pixelRatio is num) {
         var stretchX = _readStretch(json['stretchX'], width);
         var stretchY = _readStretch(json['stretchY'], height);
         var content = _readContent(json);
@@ -39,7 +39,7 @@ class SpriteIndexReader {
             height: height,
             x: x,
             y: y,
-            pixelRatio: pixelRatio,
+            pixelRatio: pixelRatio.toInt(),
             stretchX: stretchX,
             stretchY: stretchY,
             content: content);
