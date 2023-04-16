@@ -1,11 +1,10 @@
-import 'package:vector_tile_renderer/src/features/context_extension.dart';
-
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../path/path_transform.dart';
 import '../path/ring_number_provider.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
+import 'extensions.dart';
 import 'feature_renderer.dart';
 
 class LineRenderer extends FeatureRenderer {

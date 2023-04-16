@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'tileset.dart';
 import 'themes/sprite.dart';
+import 'tileset.dart';
 
 /// a model representing the source data of a tile.
 class TileSource {

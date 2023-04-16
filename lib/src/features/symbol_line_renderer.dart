@@ -1,14 +1,13 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/features/context_extension.dart';
-import 'package:vector_tile_renderer/src/features/symbol_layout_extension.dart';
-
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
+import 'extensions.dart';
 import 'feature_renderer.dart';
+import 'symbol_layout_extension.dart';
 import 'text_abbreviator.dart';
 import 'text_renderer.dart';
 
@@ -59,6 +58,9 @@ class SymbolLineRenderer extends FeatureRenderer {
     if (!context.labelSpace.canAccept(textAbbreviation)) {
       return;
     }
+
+    final textAnchor = symbolLayout.text?.anchor.evaluate(evaluationContext) ??
+        LayoutAnchor.center;
     final textApproximation = TextApproximation(
         context, evaluationContext, style, [textAbbreviation]);
 
@@ -73,16 +75,26 @@ class SymbolLineRenderer extends FeatureRenderer {
       final tangentPosition = renderBox.tangent.position;
       final tangentAngle = renderBox.tangent.angle;
       final rotate = (tangentAngle >= 0.01 || tangentAngle <= -0.01);
-      if (rotate) {
+      final saveState = rotate;
+      if (saveState) {
         context.canvas.save();
         context.canvas.translate(tangentPosition.dx, tangentPosition.dy);
         context.canvas.rotate(-_rightSideUpAngle(tangentAngle));
         context.canvas.translate(-tangentPosition.dx, -tangentPosition.dy);
       }
-      icon?.render(tangentPosition,
+      final occupied = icon?.render(tangentPosition,
           contentSize: textApproximation.renderer.size);
-      textApproximation.renderer.render(tangentPosition);
-      if (rotate) {
+      var textPosition = tangentPosition;
+      if (occupied != null &&
+          occupied.overlapsText &&
+          textAnchor == LayoutAnchor.center) {
+        textPosition = textPosition.translate(
+            0,
+            (occupied.contentArea.top - occupied.area.top).abs() -
+                (occupied.contentArea.bottom - occupied.area.bottom).abs());
+      }
+      textApproximation.renderer.render(textPosition);
+      if (saveState) {
         context.canvas.restore();
       }
     });

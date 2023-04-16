@@ -1,8 +1,6 @@
 import 'dart:core';
 
 import 'package:flutter/painting.dart';
-import 'expression/string_expression.dart';
-import 'paint_model.dart';
 
 import '../logger.dart';
 import '../profiling.dart';
@@ -10,8 +8,10 @@ import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
+import 'expression/string_expression.dart';
 import 'expression/text_expression.dart';
 import 'paint_factory.dart';
+import 'paint_model.dart';
 import 'selector_factory.dart';
 import 'style.dart';
 import 'text_halo_factory.dart';

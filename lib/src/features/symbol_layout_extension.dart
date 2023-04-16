@@ -13,8 +13,10 @@ extension SymbolLayoutExtension on SymbolLayout {
       final atlas = context.tileSource.spriteAtlas;
       if (sprite != null && atlas != null) {
         final size = icon?.size?.evaluate(evaluationContext) ?? 1.0;
-        iconRenderer =
-            IconRenderer(context, sprite: sprite, atlas: atlas, size: size);
+        final anchor =
+            icon?.anchor.evaluate(evaluationContext) ?? LayoutAnchor.DEFAULT;
+        iconRenderer = IconRenderer(context,
+            sprite: sprite, atlas: atlas, size: size, anchor: anchor);
       } else {
         context.logger.warn(() => 'missing sprite: $icon');
       }

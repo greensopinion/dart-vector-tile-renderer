@@ -1,9 +1,16 @@
 import 'dart:ui';
 
 abstract class SymbolIcon {
-  /// indicates whether the icon overlaps text
-  bool get overlapsText;
+  RenderedIcon? render(Offset offset, {required Size contentSize});
+}
 
-  /// returns the size and offset of the rendered symbol
-  Rect? render(Offset offset, {required Size contentSize});
+class RenderedIcon {
+  final bool overlapsText;
+  final Rect area;
+  final Rect contentArea;
+
+  RenderedIcon(
+      {required this.overlapsText,
+      required this.area,
+      required this.contentArea});
 }

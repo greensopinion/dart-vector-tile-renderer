@@ -1,4 +1,4 @@
-import 'package:vector_tile_renderer/src/context.dart';
+import '../../context.dart';
 
 import '../../logger.dart';
 import '../../model/tile_model.dart';

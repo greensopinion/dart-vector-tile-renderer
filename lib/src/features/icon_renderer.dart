@@ -1,6 +1,10 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
+import 'extensions.dart';
+import '../themes/style.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import 'symbol_icon.dart';
@@ -10,25 +14,34 @@ class IconRenderer extends SymbolIcon {
   final Sprite sprite;
   final Image atlas;
   final double size;
+  final LayoutAnchor anchor;
 
   IconRenderer(this.context,
-      {required this.sprite, required this.atlas, required this.size});
+      {required this.sprite,
+      required this.atlas,
+      required this.size,
+      required this.anchor});
 
-  @override
   bool get overlapsText => sprite.content != null;
 
   @override
-  Rect? render(Offset offset, {required Size contentSize}) {
+  RenderedIcon? render(Offset offset, {required Size contentSize}) {
     final paint = Paint()..isAntiAlias = true;
 
     double scale = (1 / (2 * sprite.pixelRatio));
 
     final segments = _fitContent(sprite, scale, contentSize: contentSize);
     if (segments.isNotEmpty) {
-      double approximateWidth = (sprite.width * scale);
-      double approximateHeight = (sprite.height * scale);
-      double xOffset = approximateWidth / 2.0;
-      double yOffset = approximateHeight / 2.0;
+      final renderedArea = segments
+          .map((e) => e.area.translate(offset.dx, offset.dy))
+          .reduce((a, b) => a.expandToInclude(b));
+      final contentArea = segments
+              .map((e) => e.contentArea)
+              .whereNotNull()
+              .firstOrNull
+              ?.translate(renderedArea.left, renderedArea.top) ??
+          renderedArea;
+      final anchorOffset = anchor.offset(renderedArea.size);
       context.canvas.drawAtlas(
           atlas,
           segments
@@ -37,18 +50,20 @@ class IconRenderer extends SymbolIcon {
                   scale: e.scale,
                   anchorX: 0,
                   anchorY: 0,
-                  translateX: offset.dx - xOffset + e.centerOffset.dx,
-                  translateY: offset.dy - yOffset + e.centerOffset.dy))
+                  translateX: offset.dx + anchorOffset.dx,
+                  translateY: offset.dy + anchorOffset.dy))
               .toList(),
           segments.map((e) => e.imageSource).toList(),
           null,
           null,
           null,
           paint);
-      return Rect.fromLTWH(offset.dx - xOffset, offset.dy - yOffset,
-          approximateWidth, approximateHeight);
+      return RenderedIcon(
+          overlapsText: overlapsText,
+          area: renderedArea,
+          contentArea: contentArea);
     }
-    return Rect.fromCenter(center: offset, width: 0, height: 0);
+    return null;
   }
 
   List<_Segment> _fitContent(Sprite sprite, double scale,
@@ -57,13 +72,20 @@ class IconRenderer extends SymbolIcon {
     double scaledHeight = scale * sprite.height;
     final contentWidth = contentSize.width;
     final contentHeight = contentSize.height;
+    final completeSpriteSource = Rect.fromLTWH(sprite.x.toDouble(),
+        sprite.y.toDouble(), sprite.width.toDouble(), sprite.height.toDouble());
     if ((contentWidth == 0 && contentWidth == 0) || sprite.content == null) {
+      final adjustedScale = scale * size;
       return [
         _Segment(
-            imageSource: Rect.fromLTWH(sprite.x.toDouble(), sprite.y.toDouble(),
-                sprite.width.toDouble(), sprite.height.toDouble()),
-            centerOffset: Offset.zero,
-            scale: scale * size)
+            imageSource: completeSpriteSource,
+            scale: adjustedScale,
+            area: Rect.fromLTWH(
+                0,
+                0,
+                completeSpriteSource.width * adjustedScale,
+                completeSpriteSource.height * adjustedScale),
+            contentArea: null)
       ];
     }
     double margin = contentHeight / 1.5;
@@ -81,23 +103,32 @@ class IconRenderer extends SymbolIcon {
     double actualHeight = (desiredScale * sprite.height);
     double offsetX = (scaledWidth - actualWidth) / 2.0;
     double offsetY = (scaledHeight - actualHeight) / 2.0;
+    final center = Offset(offsetX, offsetY);
+    final actualContentArea = Rect.fromLTRB(
+        sprite.content![0] * desiredScale,
+        sprite.content![1] * desiredScale,
+        sprite.content![2] * desiredScale,
+        sprite.content![3] * desiredScale);
+    final actualArea = Rect.fromLTWH(0, 0, actualWidth, actualHeight);
     return [
       _Segment(
-          imageSource: Rect.fromLTWH(sprite.x.toDouble(), sprite.y.toDouble(),
-              sprite.width.toDouble(), sprite.height.toDouble()),
-          centerOffset: Offset(offsetX, offsetY),
-          scale: desiredScale)
+          imageSource: completeSpriteSource,
+          scale: desiredScale,
+          area: actualArea,
+          contentArea: actualContentArea)
     ];
   }
 }
 
 class _Segment {
   final Rect imageSource;
-  final Offset centerOffset;
   final double scale;
+  final Rect area;
+  final Rect? contentArea;
 
   _Segment(
       {required this.imageSource,
-      required this.centerOffset,
-      required this.scale});
+      required this.scale,
+      required this.area,
+      required this.contentArea});
 }

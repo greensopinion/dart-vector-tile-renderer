@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
+import 'extensions.dart';
 
 import '../context.dart';
 import '../symbols/symbols.dart';
@@ -38,10 +39,10 @@ class TextApproximation {
           : approximateLineHeight;
       final size = Size(approximateWidth, approximateHeight);
       _size = size;
-      _translation = _offset(
-          size,
+      final anchor =
           style.symbolLayout!.text!.anchor.evaluate(evaluationContext) ??
-              LayoutAnchor.DEFAULT);
+              LayoutAnchor.DEFAULT;
+      _translation = anchor.offset(size);
     }
   }
 
@@ -158,21 +159,10 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    return _offset(
-        _painter!.size,
-        style.symbolLayout!.text!.anchor.evaluate(context) ??
-            LayoutAnchor.DEFAULT);
+    final anchor = style.symbolLayout!.text!.anchor.evaluate(context) ??
+        LayoutAnchor.DEFAULT;
+    return anchor.offset(_painter!.size);
   }
-}
-
-Offset? _offset(Size size, LayoutAnchor anchor) {
-  switch (anchor) {
-    case LayoutAnchor.center:
-      return Offset(-size.width / 2, -size.height / 2);
-    case LayoutAnchor.top:
-      return Offset(-size.width / 2, 0);
-  }
-  return null;
 }
 
 Rect? _labelBox(Offset offset, Offset? translation, double width, double height,

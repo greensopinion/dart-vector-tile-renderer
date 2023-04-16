@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:vector_tile_renderer/src/themes/sprite.dart';
+import 'sprite.dart';
 
 import '../logger.dart';
 
