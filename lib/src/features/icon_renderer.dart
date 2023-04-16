@@ -12,21 +12,20 @@ class IconRenderer extends SymbolIcon {
 
   IconRenderer(this.context, {required this.sprite, required this.atlas});
 
-  bool _isNotImplemented() => sprite.content == null;
+  bool get overlapsText => sprite.content != null;
 
   @override
-  void render(Offset offset, {required Size contentSize}) {
-    if (_isNotImplemented()) {
-      return;
-    }
+  Rect? render(Offset offset, {required Size contentSize}) {
     final paint = Paint()..isAntiAlias = true;
 
     double scale = (1 / (2 * sprite.pixelRatio));
 
     final segments = _fitContent(sprite, scale, contentSize: contentSize);
     if (segments.isNotEmpty) {
-      double xOffset = (sprite.width * scale) / 2.0;
-      double yOffset = (sprite.height * scale) / 2.0;
+      double approximateWidth = (sprite.width * scale);
+      double approximateHeight = (sprite.height * scale);
+      double xOffset = approximateWidth / 2.0;
+      double yOffset = approximateHeight / 2.0;
       context.canvas.drawAtlas(
           atlas,
           segments
@@ -43,7 +42,10 @@ class IconRenderer extends SymbolIcon {
           null,
           null,
           paint);
+      return Rect.fromLTWH(offset.dx - xOffset, offset.dy - yOffset,
+          approximateWidth, approximateHeight);
     }
+    return Rect.fromCenter(center: offset, width: 0, height: 0);
   }
 
   List<_Segment> _fitContent(Sprite sprite, double scale,

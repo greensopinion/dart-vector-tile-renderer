@@ -1,8 +1,10 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/features/context_extension.dart';
-import 'package:vector_tile_renderer/src/features/icon_renderer.dart';
-import 'package:vector_tile_renderer/src/features/symbol_layout_extension.dart';
+import 'package:flutter/material.dart';
+
+import 'context_extension.dart';
+import 'icon_renderer.dart';
+import 'symbol_layout_extension.dart';
 
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
@@ -56,6 +58,8 @@ class SymbolPointRenderer extends FeatureRenderer {
     final textApproximation = lines == null
         ? null
         : TextApproximation(context, evaluationContext, style, lines);
+    final textAnchor = symbolLayout.text?.anchor.evaluate(evaluationContext) ??
+        LayoutAnchor.center;
 
     logger.log(() => 'rendering symbol points');
 
@@ -69,12 +73,19 @@ class SymbolPointRenderer extends FeatureRenderer {
       }
 
       context.tileSpaceMapper.drawInPixelSpace(() {
+        Offset textAdjustment = Offset.zero;
         if (icon != null) {
-          icon.render(offset,
+          final occupied = icon.render(offset,
               contentSize: textApproximation?.renderer.size ?? Size.zero);
+          if (!icon.overlapsText) {
+            if (textAnchor == LayoutAnchor.top) {
+              textAdjustment = Offset(0, (occupied?.height ?? 0) / 2.0);
+            }
+          }
         }
         if (textApproximation != null) {
-          textApproximation.renderer.render(offset);
+          var effectiveOffset = offset + textAdjustment;
+          textApproximation.renderer.render(effectiveOffset);
         }
       });
     }
