@@ -1,6 +1,8 @@
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/features/context_extension.dart';
 import 'package:vector_tile_renderer/src/features/icon_renderer.dart';
+import 'package:vector_tile_renderer/src/features/symbol_layout_extension.dart';
 
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
@@ -31,10 +33,12 @@ class SymbolPointRenderer extends FeatureRenderer {
 
     final evaluationContext = EvaluationContext(
         () => feature.properties, feature.type, logger,
-        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
+        zoom: context.zoom,
+        zoomScaleFactor: context.zoomScaleFactor,
+        hasImage: context.hasImage);
 
     final text = symbolLayout.text?.text.evaluate(evaluationContext);
-    final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);
+    final icon = symbolLayout.getIcon(context, evaluationContext);
     if (text == null && icon == null) {
       logger.warn(() => 'point with no text or icon');
       return;
@@ -53,16 +57,6 @@ class SymbolPointRenderer extends FeatureRenderer {
         ? null
         : TextApproximation(context, evaluationContext, style, lines);
 
-    IconRenderer? iconRenderer;
-    if (icon != null) {
-      final sprite = context.tileSource.spriteIndex?.spriteByName[icon];
-      final atlas = context.tileSource.spriteAtlas;
-      if (sprite != null && atlas != null) {
-        iconRenderer = IconRenderer(context, sprite: sprite, atlas: atlas);
-      } else {
-        logger.warn(() => 'missing sprite: $icon');
-      }
-    }
     logger.log(() => 'rendering symbol points');
 
     for (final point in feature.points) {
@@ -75,18 +69,12 @@ class SymbolPointRenderer extends FeatureRenderer {
       }
 
       context.tileSpaceMapper.drawInPixelSpace(() {
-        var iconSize = Size.zero;
-        if (iconRenderer != null) {
-          iconSize = iconRenderer.render(offset,
+        if (icon != null) {
+          icon.render(offset,
               contentSize: textApproximation?.renderer.size ?? Size.zero);
-          if (iconRenderer.sprite.content != null) {
-            iconSize = Size.zero;
-          }
         }
         if (textApproximation != null) {
-          // text-radial-offset
-          var effectiveOffset = offset.translate(0, iconSize.height / 2.0);
-          textApproximation.renderer.render(effectiveOffset);
+          textApproximation.renderer.render(offset);
         }
       });
     }

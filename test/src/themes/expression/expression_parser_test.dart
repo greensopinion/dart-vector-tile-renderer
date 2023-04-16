@@ -18,10 +18,13 @@ void main() {
     'a-double': 13.2,
     'level': 127
   };
+  final imageNames = {'firstImage'};
   var zoom = 1.0;
   context() => EvaluationContext(
       () => properties, TileFeatureType.linestring, const Logger.noop(),
-      zoom: zoom, zoomScaleFactor: 1.0);
+      zoom: zoom,
+      zoomScaleFactor: 1.0,
+      hasImage: (imageName) => imageNames.contains(imageName));
 
   void assertExpression(dynamic jsonExpression, String cacheKey, expected) {
     final expression = parser.parse(jsonExpression);
@@ -70,6 +73,7 @@ void main() {
           'geometry-type',
           'get',
           'has',
+          'image',
           'in',
           'interpolate',
           'is-supported-script',
@@ -246,6 +250,12 @@ void main() {
   group('other expressions:', () {
     test('parses geometry-type', () {
       assertExpression(['geometry-type'], 'get(\$type)', 'LineString');
+    });
+    test('parses an image expression', () {
+      assertExpression(
+          ['image', 'firstImage'], 'image(literal(firstImage))', 'firstImage');
+      assertExpression(
+          ['image', 'anotherImage'], 'image(literal(anotherImage))', null);
     });
   });
 

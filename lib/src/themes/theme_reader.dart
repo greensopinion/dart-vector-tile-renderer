@@ -191,7 +191,15 @@ class ThemeReader {
         .parse(layout?['icon-anchor'])
         .asLayoutAnchorExpression();
     final opacity = _toDoubleExpression(layout?['icon-opacity']);
-    return IconLayout(icon: iconFunction, anchor: anchor, opacity: opacity);
+
+    final rotationAlignment = expressionParser
+        .parse(layout?['text-rotation-alignment'])
+        .asRotationAlignmentExpression();
+    return IconLayout(
+        icon: iconFunction,
+        anchor: anchor,
+        opacity: opacity,
+        rotationAlignment: rotationAlignment);
   }
 
   TextLayout? _toTextLayout(layout) {
@@ -229,6 +237,9 @@ class ThemeReader {
     final justify = expressionParser
         .parse(layout?['text-justify'])
         .asLayoutJustifyExpression();
+    final rotationAlignment = expressionParser
+        .parse(layout?['text-rotation-alignment'])
+        .asRotationAlignmentExpression();
     return TextLayout(
         anchor: anchor,
         justify: justify,
@@ -238,7 +249,8 @@ class ThemeReader {
         maxWidth: maxWidth,
         fontFamily: fontFamily,
         fontStyle: fontStyle,
-        textTransform: textTransform);
+        textTransform: textTransform,
+        rotationAlignment: rotationAlignment);
   }
 
   Expression<List<Shadow>>? _toTextHalo(jsonLayer) {

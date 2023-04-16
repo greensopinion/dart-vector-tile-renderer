@@ -1,3 +1,5 @@
+import 'package:vector_tile_renderer/src/features/context_extension.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../path/path_transform.dart';
@@ -31,7 +33,9 @@ class LineRenderer extends FeatureRenderer {
 
     final evaluationContext = EvaluationContext(
         () => feature.properties, feature.type, logger,
-        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
+        zoom: context.zoom,
+        zoomScaleFactor: context.zoomScaleFactor,
+        hasImage: context.hasImage);
 
     final paint = style.linePaint?.evaluate(evaluationContext);
     if (paint == null) {

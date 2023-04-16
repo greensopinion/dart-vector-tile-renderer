@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:vector_tile_renderer/src/themes/expression/parser/image_expression_parser.dart';
+
 import 'boolean_expression_parser.dart';
 
 import '../../../logger.dart';
@@ -64,6 +66,7 @@ class ExpressionParser {
     _register(varParser);
     _register(LetExpressionParser(this, varParser));
     _register(IsSupportedScriptExpressionParser(this));
+    _register(ImageExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();

@@ -70,6 +70,19 @@ class LayoutJustify {
       values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }
 
+class RotationAlignment {
+  final String name;
+  const RotationAlignment._(this.name);
+  static const map = RotationAlignment._('map');
+  static const viewport = RotationAlignment._('viewport');
+  static const auto = RotationAlignment._('auto');
+  static const DEFAULT = auto;
+
+  static List<RotationAlignment> values() => [map, viewport, auto];
+  static RotationAlignment fromName(String? name) =>
+      values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
+}
+
 class SymbolLayout {
   final Expression<LayoutPlacement> placement;
   final TextLayout? text;
@@ -86,8 +99,13 @@ class IconLayout {
   final Expression<String?> icon;
   final Expression<LayoutAnchor> anchor;
   final Expression<double>? opacity;
+  final Expression<RotationAlignment>? rotationAlignment;
 
-  IconLayout({required this.icon, required this.anchor, required this.opacity});
+  IconLayout(
+      {required this.icon,
+      required this.anchor,
+      required this.opacity,
+      required this.rotationAlignment});
 }
 
 class TextLayout {
@@ -100,6 +118,7 @@ class TextLayout {
   final FontStyle? fontStyle;
   final String? fontFamily;
   final TextTransformFunction? textTransform;
+  final Expression<RotationAlignment>? rotationAlignment;
 
   TextLayout(
       {required this.anchor,
@@ -110,7 +129,8 @@ class TextLayout {
       required this.maxWidth,
       required this.fontFamily,
       required this.fontStyle,
-      required this.textTransform});
+      required this.textTransform,
+      required this.rotationAlignment});
 }
 
 class LineCap {

@@ -1,6 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/features/context_extension.dart';
+import 'package:vector_tile_renderer/src/features/symbol_layout_extension.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
@@ -22,12 +25,9 @@ class SymbolLineRenderer extends FeatureRenderer {
     TileLayer layer,
     TileFeature feature,
   ) {
-    final textPaint = style.textPaint;
     final symbolLayout = style.symbolLayout;
-    if (textPaint == null ||
-        symbolLayout == null ||
-        symbolLayout.text == null) {
-      logger.warn(() => 'line symbol does not have a text paint or layout');
+    if (symbolLayout == null) {
+      logger.warn(() => 'line symbol does not have a layout');
       return;
     }
 
@@ -44,10 +44,17 @@ class SymbolLineRenderer extends FeatureRenderer {
 
     final evaluationContext = EvaluationContext(
         () => feature.properties, feature.type, logger,
-        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
+        zoom: context.zoom,
+        zoomScaleFactor: context.zoomScaleFactor,
+        hasImage: context.hasImage);
 
-    final text = symbolLayout.text!.text.evaluate(evaluationContext);
+    final placement = symbolLayout.placement.evaluate(evaluationContext) ??
+        LayoutPlacement.point;
+
+    final text = symbolLayout.text?.text.evaluate(evaluationContext);
+    final icon = symbolLayout.getIcon(context, evaluationContext);
     if (text == null) {
+      logger.warn(() => 'line with no text');
       return;
     }
 
@@ -55,12 +62,26 @@ class SymbolLineRenderer extends FeatureRenderer {
     if (!context.labelSpace.canAccept(textAbbreviation)) {
       return;
     }
-
     final textApproximation = TextApproximation(
         context, evaluationContext, style, [textAbbreviation]);
 
     final metrics = path.pathMetrics;
-    final renderBox = _findMiddleMetric(context, metrics, textApproximation);
+    var textRotationAlignment =
+        symbolLayout.text?.rotationAlignment?.evaluate(evaluationContext) ??
+            RotationAlignment.auto;
+    var rotate = true;
+    if (textRotationAlignment == RotationAlignment.auto) {
+      if (placement == LayoutPlacement.point) {
+        textRotationAlignment = RotationAlignment.viewport;
+      } else {
+        textRotationAlignment = RotationAlignment.map;
+      }
+    }
+    if (textRotationAlignment == RotationAlignment.viewport) {
+      rotate = false;
+    }
+    final renderBox =
+        _findMiddleMetric(context, metrics, textApproximation, rotate);
     if (renderBox == null || !textApproximation.renderer.canPaint) {
       return;
     }
@@ -75,6 +96,8 @@ class SymbolLineRenderer extends FeatureRenderer {
         context.canvas.rotate(-_rightSideUpAngle(tangentAngle));
         context.canvas.translate(-tangentPosition.dx, -tangentPosition.dy);
       }
+      icon?.render(tangentPosition,
+          contentSize: textApproximation.renderer.size);
       textApproximation.renderer.render(tangentPosition);
       if (rotate) {
         context.canvas.restore();
@@ -86,6 +109,7 @@ class SymbolLineRenderer extends FeatureRenderer {
     Context context,
     List<PathMetric> metrics,
     TextApproximation text,
+    bool rotate,
   ) {
     if (metrics.isEmpty) {
       return null;
@@ -94,7 +118,8 @@ class SymbolLineRenderer extends FeatureRenderer {
     for (int x = 0; x <= (midpoint + 1); ++x) {
       int lower = midpoint - x;
       if (lower >= 0 && metrics[lower].length > _minPathMetricSize) {
-        final renderBox = _occupyLabelSpace(context, text, metrics[lower]);
+        final renderBox =
+            _occupyLabelSpace(context, text, metrics[lower], rotate);
         if (renderBox != null) {
           return renderBox;
         }
@@ -103,26 +128,29 @@ class SymbolLineRenderer extends FeatureRenderer {
       if (upper != lower &&
           upper < metrics.length &&
           metrics[upper].length > _minPathMetricSize) {
-        final renderBox = _occupyLabelSpace(context, text, metrics[upper]);
+        final renderBox =
+            _occupyLabelSpace(context, text, metrics[upper], rotate);
         if (renderBox != null) {
           return renderBox;
         }
       }
     }
-    return _occupyLabelSpace(context, text, metrics[midpoint]);
+    return _occupyLabelSpace(context, text, metrics[midpoint], rotate);
   }
 
   _RenderBox? _occupyLabelSpace(
     Context context,
     TextApproximation text,
     PathMetric metric,
+    bool rotate,
   ) {
     Tangent? getTangentForOffsetInPixels(double distance) {
       final tangent = metric.getTangentForOffset(distance);
       if (tangent != null) {
+        final angle = rotate ? -tangent.angle : 0.0;
         return Tangent.fromAngle(
           context.tileSpaceMapper.pointFromTileToPixels(tangent.position),
-          -tangent.angle,
+          angle,
         );
       }
       return null;

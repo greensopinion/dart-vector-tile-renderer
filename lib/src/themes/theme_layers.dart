@@ -75,7 +75,7 @@ class BackgroundLayer extends ThemeLayer {
     context.logger.log(() => 'rendering $id');
     final color = fillColor.evaluate(EvaluationContext(
         () => {}, TileFeatureType.background, context.logger,
-        zoom: context.zoom, zoomScaleFactor: 1.0));
+        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
     if (color != null) {
       final paint = Paint()
         ..style = PaintingStyle.fill
