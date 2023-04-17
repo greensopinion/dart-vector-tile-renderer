@@ -143,12 +143,14 @@ class ThemeReader {
         _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint, null);
     if (paint != null) {
       final layout = _toTextLayout(jsonLayer);
-      final textHalo = _toTextHalo(jsonLayer);
+      final textHaloColor = _toTextHalo(jsonLayer);
 
       return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.symbol,
           selector: selector,
-          style:
-              Style(textPaint: paint, textLayout: layout, textHalo: textHalo),
+          style: Style(
+              textPaint: paint,
+              textLayout: layout,
+              textHaloColor: textHaloColor),
           minzoom: _minZoom(jsonLayer),
           maxzoom: _maxZoom(jsonLayer),
           metadata: _metadata(jsonLayer));
@@ -206,18 +208,12 @@ class ThemeReader {
         textTransform: textTransform);
   }
 
-  Expression<List<Shadow>>? _toTextHalo(jsonLayer) {
+  Expression<Color>? _toTextHalo(jsonLayer) {
     final paint = jsonLayer['paint'];
     if (paint != null) {
-      final haloWidth = expressionParser
-          .parseOptional(paint['text-halo-width'])
-          ?.asDoubleExpression();
-      final haloColor = expressionParser
+      return expressionParser
           .parseOptional(paint['text-halo-color'])
           ?.asColorExpression();
-      if (haloWidth != null && haloColor != null) {
-        return TextHaloFactory.toHaloFunction(haloColor, haloWidth);
-      }
     }
     return null;
   }

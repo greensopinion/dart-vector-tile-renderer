@@ -16,12 +16,14 @@ class TextApproximation {
   Offset? _translation;
   Size? _size;
   TextRenderer? _renderer;
+  Paint? foregroundPaint;
 
   StyledSymbol? _symbol;
   bool _symbolCreated = false;
 
   TextApproximation(
-      this.context, this.evaluationContext, this.style, this.textLines) {
+      this.context, this.evaluationContext, this.style, this.textLines,
+      {this.foregroundPaint}) {
     text = textLines.join('\n');
     double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
@@ -87,12 +89,13 @@ class TextApproximation {
       }
       double? spacing =
           style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
-      final shadows = style.textHalo?.evaluate(evaluationContext);
+      final textHaloColor = style.textHaloColor?.evaluate(evaluationContext);
       final textStyle = TextStyle(
-          foreground: foreground.paint(),
+          foreground: textHaloColor != null && foregroundPaint != null
+              ? foregroundPaint
+              : foreground.paint(),
           fontSize: textSize,
           letterSpacing: spacing,
-          shadows: shadows,
           fontFamily: style.textLayout?.fontFamily,
           fontStyle: style.textLayout?.fontStyle);
       final textTransform = style.textLayout?.textTransform;
@@ -106,6 +109,20 @@ class TextApproximation {
           text: transformedText);
     }
     return null;
+  }
+
+  TextApproximation copyWith(
+      {Context? context,
+      EvaluationContext? evaluationContext,
+      Style? style,
+      List<String>? textLines,
+      Paint? foregroundPaint}) {
+    return TextApproximation(
+        context ?? this.context,
+        evaluationContext ?? this.evaluationContext,
+        style ?? this.style,
+        textLines ?? this.textLines,
+        foregroundPaint: foregroundPaint ?? this.foregroundPaint);
   }
 }
 

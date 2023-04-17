@@ -73,6 +73,18 @@ class SymbolLineRenderer extends FeatureRenderer {
         context.canvas.rotate(-_rightSideUpAngle(tangentAngle));
         context.canvas.translate(-tangentPosition.dx, -tangentPosition.dy);
       }
+      if (style.textHaloColor != null &&
+          style.textHaloColor!.evaluate(evaluationContext) != null) {
+        var halo = textApproximation.copyWith(
+            foregroundPaint: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 0.05223759 +
+                  (4.863703 - 0.05223759) /
+                      (1 + pow((context.zoomScaleFactor / 1.79391), 1.347225))
+              ..color = style.textHaloColor!.evaluate(evaluationContext)!);
+
+        halo.renderer.render(tangentPosition);
+      }
       textApproximation.renderer.render(tangentPosition);
       if (rotate) {
         context.canvas.restore();
