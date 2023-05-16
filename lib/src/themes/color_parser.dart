@@ -20,6 +20,18 @@ class ColorParser {
     return null;
   }
 
+  /// Parses a CSS alpha-value https://developer.mozilla.org/en-US/docs/Web/CSS/alpha-value
+  /// and, if successful, standardizes to a double value.
+  ///
+  /// NOTE: The output value *should* be between zero and one to be useful, but
+  /// this function does *not* validate this. The [Color] library constructors
+  /// check this.
+  static double? alphaValueToDouble(String value) {
+    final isPercentage = value.contains('%');
+    final raw = double.tryParse(value.replaceAll(RegExp(r'%'), ''));
+    return isPercentage && raw != null ? raw / 100.0 : raw;
+  }
+
   static Color? toColor(String? color) {
     if (color == null) {
       return null;
@@ -45,16 +57,19 @@ class ColorParser {
           .replaceAll(RegExp(r"hsla?\("), '')
           .replaceAll(RegExp(r"\)"), '')
           .split(',')
-          .map((s) => s.trim().replaceAll(RegExp(r'%'), ''))
+          .map((s) => s.trim())
           .toList();
       if (components.length == 4 || components.length == 3) {
         //hsla(30, 19%, 90%, 0.4)
         //hsl(248, 7%, 66%)
         final hue = double.tryParse(components[0]);
-        final saturation = double.tryParse(components[1]);
-        final lightness = double.tryParse(components[2]);
+        final saturation =
+            double.tryParse(components[1].replaceAll(RegExp(r'%'), ''));
+        final lightness =
+            double.tryParse(components[2].replaceAll(RegExp(r'%'), ''));
         final alpha =
-            components.length == 3 ? 1.0 : double.tryParse(components[3]);
+            components.length == 3 ? 1.0 : alphaValueToDouble(components[3]);
+
         if (hue != null &&
             saturation != null &&
             lightness != null &&
@@ -78,9 +93,9 @@ class ColorParser {
         final g = int.tryParse(components[1]);
         final b = int.tryParse(components[2]);
         final alpha =
-            components.length == 3 ? 1.0 : double.tryParse(components[3]);
+            components.length == 3 ? 1.0 : alphaValueToDouble(components[3]);
         if (r != null && g != null && b != null && alpha != null) {
-          return Color.fromARGB((0xff * alpha).toInt(), r, g, b);
+          return Color.fromARGB((0xff * alpha).round().toInt(), r, g, b);
         }
       }
     }
