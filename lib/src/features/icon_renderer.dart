@@ -90,7 +90,10 @@ class IconRenderer extends SymbolIcon {
     }
     final contentWidth = contentSize.width;
     final contentHeight = contentSize.height;
-    double margin = contentHeight / 1.5;
+    double margin = contentHeight / 2;
+    if (context.zoomScaleFactor > 1.0) {
+      margin = margin * context.zoomScaleFactor;
+    }
     double spriteContentWidth =
         (spriteContent[2] - spriteContent[0]).toDouble();
     double spriteContentHeight =
