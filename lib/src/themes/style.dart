@@ -18,7 +18,7 @@ class Style {
   final Expression<PaintModel>? linePaint;
   final Expression<PaintModel>? textPaint;
   final TextLayout? textLayout;
-  final Expression<List<Shadow>>? textHalo;
+  final Expression<Color>? textHaloColor;
   final Expression<PaintModel>? outlinePaint;
 
   Style(
@@ -28,7 +28,7 @@ class Style {
       this.linePaint,
       this.textPaint,
       this.textLayout,
-      this.textHalo});
+      this.textHaloColor});
 }
 
 class LayoutPlacement {
