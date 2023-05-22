@@ -1,6 +1,5 @@
-import '../image_expression.dart';
-
 import '../expression.dart';
+import '../image_expression.dart';
 import 'expression_parser.dart';
 
 class ImageExpressionParser extends ExpressionComponentParser {

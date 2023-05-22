@@ -1,5 +1,3 @@
-import '../../context.dart';
-
 import '../../logger.dart';
 import '../../model/tile_model.dart';
 import 'property_accumulator.dart';

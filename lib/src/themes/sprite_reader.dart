@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'sprite.dart';
 
 import '../logger.dart';
+import 'sprite.dart';
 
 class SpriteIndexReader {
   final Logger logger;

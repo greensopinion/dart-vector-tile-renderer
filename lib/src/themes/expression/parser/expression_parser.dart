@@ -1,18 +1,15 @@
 import 'dart:math';
 
-import '../concat_expression.dart';
-
-import 'image_expression_parser.dart';
-
-import 'boolean_expression_parser.dart';
-
 import '../../../logger.dart';
 import '../caching_expression.dart';
+import '../concat_expression.dart';
 import '../expression.dart';
 import '../literal_expression.dart';
 import '../property_expression.dart';
+import 'boolean_expression_parser.dart';
 import 'boolean_operator_expression_parser.dart';
 import 'get_expression_parser.dart';
+import 'image_expression_parser.dart';
 import 'interpolate_expression_parser.dart';
 import 'math_expression_parser.dart';
 import 'numeric_expression_parser.dart';

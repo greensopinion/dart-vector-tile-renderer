@@ -1,8 +1,8 @@
 import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
-import 'symbol_icon.dart';
 import 'icon_renderer.dart';
+import 'symbol_icon.dart';
 
 extension SymbolLayoutExtension on SymbolLayout {
   SymbolIcon? getIcon(Context context, EvaluationContext evaluationContext) {

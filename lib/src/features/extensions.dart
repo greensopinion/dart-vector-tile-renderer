@@ -1,8 +1,7 @@
 import 'dart:ui';
 
-import '../themes/style.dart';
-
 import '../context.dart';
+import '../themes/style.dart';
 
 extension ImageContextExtension on Context {
   bool hasImage(String imageName) =>
