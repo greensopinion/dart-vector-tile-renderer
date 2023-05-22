@@ -2,11 +2,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'extensions.dart';
-import '../themes/style.dart';
 
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
+import '../themes/style.dart';
+import 'extensions.dart';
 import 'symbol_icon.dart';
 
 class IconRenderer extends SymbolIcon {
@@ -24,13 +24,11 @@ class IconRenderer extends SymbolIcon {
       required this.anchor,
       required this.rotate});
 
-  bool get overlapsText => sprite.content != null;
-
   @override
   RenderedIcon? render(Offset offset, {required Size contentSize}) {
     final paint = Paint()..isAntiAlias = true;
 
-    double scale = (1 / (2 * sprite.pixelRatio));
+    double scale = sprite.pixelRatio == 1 ? 1 : (1 / (sprite.pixelRatio));
 
     final segments = _fitContent(sprite, scale, contentSize: contentSize);
     if (segments.isNotEmpty) {
@@ -61,7 +59,7 @@ class IconRenderer extends SymbolIcon {
           null,
           paint);
       return RenderedIcon(
-          overlapsText: overlapsText,
+          overlapsText: sprite.content != null,
           area: renderedArea,
           contentArea: contentArea);
     }
@@ -70,14 +68,14 @@ class IconRenderer extends SymbolIcon {
 
   List<_Segment> _fitContent(Sprite sprite, double scale,
       {required Size contentSize}) {
-    double scaledWidth = scale * sprite.width;
-    double scaledHeight = scale * sprite.height;
-    final contentWidth = contentSize.width;
-    final contentHeight = contentSize.height;
     final completeSpriteSource = Rect.fromLTWH(sprite.x.toDouble(),
         sprite.y.toDouble(), sprite.width.toDouble(), sprite.height.toDouble());
-    if ((contentWidth == 0 && contentWidth == 0) || sprite.content == null) {
-      final adjustedScale = scale * size;
+    var spriteContent = sprite.content;
+    var adjustedScale = scale * size;
+    if (context.zoomScaleFactor > 1.0) {
+      adjustedScale = adjustedScale / context.zoomScaleFactor;
+    }
+    if (spriteContent == null || contentSize == Size.zero) {
       return [
         _Segment(
             imageSource: completeSpriteSource,
@@ -90,27 +88,25 @@ class IconRenderer extends SymbolIcon {
             contentArea: null)
       ];
     }
+    final contentWidth = contentSize.width;
+    final contentHeight = contentSize.height;
     double margin = contentHeight / 1.5;
     double spriteContentWidth =
-        (sprite.content![2] - sprite.content![0]).toDouble();
+        (spriteContent[2] - spriteContent[0]).toDouble();
     double spriteContentHeight =
-        (sprite.content![3] - sprite.content![1]).toDouble();
+        (spriteContent[3] - spriteContent[1]).toDouble();
     double desiredContentWidth = contentWidth + (2 * margin);
     double desiredContentHeight = contentHeight + (2 * margin);
     double desiredScale = max(desiredContentWidth / spriteContentWidth,
             desiredContentHeight / spriteContentHeight) *
-        scale *
-        size;
+        adjustedScale;
     double actualWidth = (desiredScale * sprite.width);
     double actualHeight = (desiredScale * sprite.height);
-    double offsetX = (scaledWidth - actualWidth) / 2.0;
-    double offsetY = (scaledHeight - actualHeight) / 2.0;
-    final center = Offset(offsetX, offsetY);
     final actualContentArea = Rect.fromLTRB(
-        sprite.content![0] * desiredScale,
-        sprite.content![1] * desiredScale,
-        sprite.content![2] * desiredScale,
-        sprite.content![3] * desiredScale);
+        spriteContent[0] * desiredScale,
+        spriteContent[1] * desiredScale,
+        spriteContent[2] * desiredScale,
+        spriteContent[3] * desiredScale);
     final actualArea = Rect.fromLTWH(0, 0, actualWidth, actualHeight);
     return [
       _Segment(
