@@ -8,8 +8,10 @@ import 'expression/color_expression.dart';
 import 'expression/expression.dart';
 import 'expression/literal_expression.dart';
 import 'expression/numeric_expression.dart';
+import 'expression/string_expression.dart';
 import 'expression/text_expression.dart';
 import 'paint_factory.dart';
+import 'paint_model.dart';
 import 'selector_factory.dart';
 import 'style.dart';
 import 'text_halo_factory.dart';
@@ -138,39 +140,85 @@ class ThemeReader {
 
   ThemeLayer? _toSymbolTheme(jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
-    final jsonPaint = jsonLayer['paint'];
-    final paint = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint, null);
-    if (paint != null) {
-      final layout = _toTextLayout(jsonLayer);
-      final textHalo = _toTextHalo(jsonLayer);
 
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.symbol,
-          selector: selector,
-          style:
-              Style(textPaint: paint, textLayout: layout, textHalo: textHalo),
-          minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer),
-          metadata: _metadata(jsonLayer));
+    final layout = _toSymbolLayout(jsonLayer);
+    final textHalo = _toTextHalo(jsonLayer);
+    if (layout.text == null && layout.icon == null) {
+      logger.warn(() => 'layer has no text and no icon: $jsonLayer');
+      return null;
     }
-    return null;
+    Expression<PaintModel>? paint;
+    if (layout.text != null) {
+      final jsonPaint = jsonLayer['paint'];
+      paint = paintFactory.create(
+          _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint, null);
+      if (paint == null) {
+        logger.warn(() => 'layer has no paint: $jsonLayer');
+        return null;
+      }
+    }
+    return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.symbol,
+        selector: selector,
+        style:
+            Style(textPaint: paint, symbolLayout: layout, textHalo: textHalo),
+        minzoom: _minZoom(jsonLayer),
+        maxzoom: _maxZoom(jsonLayer),
+        metadata: _metadata(jsonLayer));
   }
 
   double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
   double? _maxZoom(jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
 
-  TextLayout _toTextLayout(jsonLayer) {
+  SymbolLayout _toSymbolLayout(jsonLayer) {
     final layout = jsonLayer['layout'];
-    final textSize = _toTextSize(layout);
-    final textLetterSpacing =
-        _toDoubleExpression(layout?['text-letter-spacing']);
     final placement = expressionParser
         .parse(layout?['symbol-placement'])
         .asLayoutPlacementExpression();
+    return SymbolLayout(
+        placement: placement,
+        text: _toTextLayout(layout),
+        icon: _toIconLayout(layout));
+  }
+
+  IconLayout? _toIconLayout(layout) {
+    final iconFunction = expressionParser
+        .parseOptional(layout?['icon-image'])
+        ?.asOptionalStringExpression();
+    if (iconFunction == null) {
+      return null;
+    }
+    final anchor = expressionParser
+        .parse(layout?['icon-anchor'])
+        .asLayoutAnchorExpression();
+    final opacity = _toDoubleExpression(layout?['icon-opacity']);
+    final size = _toDoubleExpression(layout?['icon-size']);
+    final rotate = _toDoubleExpression(layout?['icon-rotate']);
+
+    final rotationAlignment = expressionParser
+        .parse(layout?['text-rotation-alignment'])
+        .asRotationAlignmentExpression();
+    return IconLayout(
+        icon: iconFunction,
+        anchor: anchor,
+        opacity: opacity,
+        size: size,
+        rotationAlignment: rotationAlignment,
+        rotate: rotate);
+  }
+
+  TextLayout? _toTextLayout(layout) {
+    final textFunction = expressionParser
+        .parseOptional(layout?['text-field'])
+        ?.asOptionalStringExpression();
+    if (textFunction == null) {
+      return null;
+    }
+    final textSize = _toTextSize(layout);
+    final textLetterSpacing =
+        _toDoubleExpression(layout?['text-letter-spacing']);
     final anchor = expressionParser
         .parse(layout?['text-anchor'])
         .asLayoutAnchorExpression();
-    final textFunction = expressionParser.parse(layout?['text-field']);
     final font = layout?['text-font'];
     String? fontFamily;
     FontStyle? fontStyle;
@@ -193,8 +241,10 @@ class ThemeReader {
     final justify = expressionParser
         .parse(layout?['text-justify'])
         .asLayoutJustifyExpression();
+    final rotationAlignment = expressionParser
+        .parse(layout?['text-rotation-alignment'])
+        .asRotationAlignmentExpression();
     return TextLayout(
-        placement: placement,
         anchor: anchor,
         justify: justify,
         text: textFunction,
@@ -203,7 +253,8 @@ class ThemeReader {
         maxWidth: maxWidth,
         fontFamily: fontFamily,
         fontStyle: fontStyle,
-        textTransform: textTransform);
+        textTransform: textTransform,
+        rotationAlignment: rotationAlignment);
   }
 
   Expression<List<Shadow>>? _toTextHalo(jsonLayer) {

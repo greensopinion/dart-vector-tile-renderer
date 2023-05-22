@@ -64,6 +64,27 @@ class LayoutJustifyExpression extends Expression<LayoutJustify> {
   bool get isConstant => _delegate.isConstant;
 }
 
+class RotationAlignmentExpression extends Expression<RotationAlignment> {
+  final Expression _delegate;
+  RotationAlignmentExpression(this._delegate)
+      : super(
+            'rotationAlignment(${_delegate.cacheKey})', _delegate.properties());
+
+  @override
+  RotationAlignment evaluate(EvaluationContext context) {
+    final result = _delegate.evaluate(context);
+    if (result is String) {
+      return RotationAlignment.fromName(result);
+    } else if (result != null) {
+      context.logger.warn(() => 'expected string but got $result');
+    }
+    return RotationAlignment.DEFAULT;
+  }
+
+  @override
+  bool get isConstant => _delegate.isConstant;
+}
+
 extension TextExpressionExtension on Expression {
   Expression<LayoutAnchor> asLayoutAnchorExpression() =>
       LayoutAnchorExpression(this);
@@ -73,4 +94,7 @@ extension TextExpressionExtension on Expression {
 
   Expression<LayoutJustify> asLayoutJustifyExpression() =>
       LayoutJustifyExpression(this);
+
+  Expression<RotationAlignment> asRotationAlignmentExpression() =>
+      RotationAlignmentExpression(this);
 }

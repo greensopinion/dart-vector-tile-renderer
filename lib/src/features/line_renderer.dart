@@ -4,6 +4,7 @@ import '../path/path_transform.dart';
 import '../path/ring_number_provider.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
+import 'extensions.dart';
 import 'feature_renderer.dart';
 
 class LineRenderer extends FeatureRenderer {
@@ -31,7 +32,9 @@ class LineRenderer extends FeatureRenderer {
 
     final evaluationContext = EvaluationContext(
         () => feature.properties, feature.type, logger,
-        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
+        zoom: context.zoom,
+        zoomScaleFactor: context.zoomScaleFactor,
+        hasImage: context.hasImage);
 
     final paint = style.linePaint?.evaluate(evaluationContext);
     if (paint == null) {

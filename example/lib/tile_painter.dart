@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:example/tile.dart';
-import 'package:flutter/material.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart' as vt;
+import 'package:flutter/material.dart' hide Theme;
+import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 import 'dart:ui' as ui;
 
 class TilePainter extends CustomPainter {
-  final vt.Tileset tileset;
-  final vt.Theme theme;
+  final Tileset tileset;
+  final Theme theme;
   final TileOptions options;
   final ui.Image? image;
   TilePainter(this.tileset, this.theme, {required this.options, this.image});
@@ -24,7 +24,7 @@ class TilePainter extends CustomPainter {
         canvas.drawImage(image!, Offset.zero, Paint());
       }
     } else {
-      vt.Renderer(theme: theme).render(canvas, tileset,
+      Renderer(theme: theme).render(canvas, TileSource(tileset: tileset),
           clip: Rect.fromLTWH(0, 0, size.width, size.height),
           zoomScaleFactor: pow(2, options.scale).toDouble(),
           zoom: options.zoom);

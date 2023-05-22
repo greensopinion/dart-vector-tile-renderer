@@ -6,6 +6,7 @@ import '../context.dart';
 import '../symbols/symbols.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
+import 'extensions.dart';
 
 class TextApproximation {
   final Context context;
@@ -23,7 +24,8 @@ class TextApproximation {
   TextApproximation(
       this.context, this.evaluationContext, this.style, this.textLines) {
     text = textLines.join('\n');
-    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
+    double? textSize =
+        style.symbolLayout!.text!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
@@ -37,10 +39,10 @@ class TextApproximation {
           : approximateLineHeight;
       final size = Size(approximateWidth, approximateHeight);
       _size = size;
-      _translation = _offset(
-          size,
-          style.textLayout!.anchor.evaluate(evaluationContext) ??
-              LayoutAnchor.DEFAULT);
+      final anchor =
+          style.symbolLayout!.text!.anchor.evaluate(evaluationContext) ??
+              LayoutAnchor.DEFAULT;
+      _translation = anchor.offset(size);
     }
   }
 
@@ -80,25 +82,27 @@ class TextApproximation {
     if (foreground == null) {
       return null;
     }
-    double? textSize = style.textLayout!.textSize.evaluate(evaluationContext);
+    double? textSize =
+        style.symbolLayout!.text!.textSize.evaluate(evaluationContext);
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
       }
-      double? spacing =
-          style.textLayout!.textLetterSpacing?.evaluate(evaluationContext);
+      double? spacing = style.symbolLayout!.text!.textLetterSpacing
+          ?.evaluate(evaluationContext);
       final shadows = style.textHalo?.evaluate(evaluationContext);
       final textStyle = TextStyle(
           foreground: foreground.paint(),
           fontSize: textSize,
           letterSpacing: spacing,
           shadows: shadows,
-          fontFamily: style.textLayout?.fontFamily,
-          fontStyle: style.textLayout?.fontStyle);
-      final textTransform = style.textLayout?.textTransform;
+          fontFamily: style.symbolLayout!.text?.fontFamily,
+          fontStyle: style.symbolLayout!.text?.fontStyle);
+      final textTransform = style.symbolLayout!.text?.textTransform;
       final transformedText =
           textTransform == null ? text : textTransform(text) ?? text;
-      final alignment = style.textLayout?.justify.evaluate(evaluationContext);
+      final alignment =
+          style.symbolLayout!.text?.justify.evaluate(evaluationContext);
       return StyledSymbol(
           style: SymbolStyle(
               textAlign: alignment?.toTextAlign() ?? TextAlign.center,
@@ -123,6 +127,7 @@ class TextRenderer {
   }
 
   double get textHeight => _painter!.height;
+  Size get size => Size(_painter!.width, _painter!.height);
   Offset? get translation => _translation;
   bool get canPaint => _painter != null;
 
@@ -154,19 +159,10 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    return _offset(_painter!.size,
-        style.textLayout!.anchor.evaluate(context) ?? LayoutAnchor.DEFAULT);
+    final anchor = style.symbolLayout!.text!.anchor.evaluate(context) ??
+        LayoutAnchor.DEFAULT;
+    return anchor.offset(_painter!.size);
   }
-}
-
-Offset? _offset(Size size, LayoutAnchor anchor) {
-  switch (anchor) {
-    case LayoutAnchor.center:
-      return Offset(-size.width / 2, -size.height / 2);
-    case LayoutAnchor.top:
-      return Offset(-size.width / 2, 0);
-  }
-  return null;
 }
 
 Rect? _labelBox(Offset offset, Offset? translation, double width, double height,

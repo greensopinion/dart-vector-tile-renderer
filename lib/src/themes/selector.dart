@@ -180,7 +180,7 @@ class _ExpressionLayerSelector extends LayerSelector {
     return features.where((feature) {
       final context = EvaluationContext(
           () => feature.properties, feature.type, const Logger.noop(),
-          zoom: zoom.toDouble(), zoomScaleFactor: 1.0);
+          zoom: zoom.toDouble(), zoomScaleFactor: 1.0, hasImage: (_) => false);
       final result = _expression.evaluate(context);
       return result is bool && result;
     });

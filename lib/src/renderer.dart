@@ -8,7 +8,7 @@ import 'optimizations.dart';
 import 'profiling.dart';
 import 'symbols/text_painter.dart';
 import 'themes/theme.dart';
-import 'tileset.dart';
+import 'tile_source.dart';
 
 class Renderer {
   final Theme theme;
@@ -30,10 +30,10 @@ class Renderer {
   ///        no scaling is being applied.
   /// [zoom] the current zoom level, which is used to filter theme layers
   ///        via `minzoom` and `maxzoom`. Value must be >= 0 and <= 24
-  /// [tileset] the tileset having tiles by source id
+  /// [tile] the tile to render
   /// [clip] the optional clip to constrain tile rendering, used to limit drawing
   ///        so that a portion of a tile can be rendered to a canvas
-  void render(Canvas canvas, Tileset tileset,
+  void render(Canvas canvas, TileSource tile,
       {Rect? clip, required double zoomScaleFactor, required double zoom}) {
     profileSync('Render', () {
       final tileSpace =
@@ -48,7 +48,7 @@ class Renderer {
           logger: logger,
           canvas: canvas,
           featureRenderer: featureRenderer,
-          tileset: tileset,
+          tileSource: tile,
           zoomScaleFactor: zoomScaleFactor,
           zoom: zoom,
           tileSpace: tileSpace,

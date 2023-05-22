@@ -22,3 +22,27 @@ class StringExpression extends Expression<String> {
   @override
   bool get isConstant => false;
 }
+
+extension StringExpressionExtension on Expression {
+  Expression<String?> asOptionalStringExpression() =>
+      _OptionalStringExpression(this);
+}
+
+class _OptionalStringExpression extends Expression<String?> {
+  final Expression delegate;
+
+  _OptionalStringExpression(this.delegate)
+      : super(delegate.cacheKey, delegate.properties());
+
+  @override
+  String? evaluate(EvaluationContext context) {
+    final v = delegate.evaluate(context);
+    if (v != null) {
+      return v.toString();
+    }
+    return null;
+  }
+
+  @override
+  bool get isConstant => delegate.isConstant;
+}

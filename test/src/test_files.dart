@@ -7,3 +7,6 @@ Future<File> writeTestFile(Uint8List bytes, String filename) async {
   await file.writeAsBytes(bytes);
   return file;
 }
+
+Future<Uint8List> readTestFile(String filename) =>
+    File('test_data/$filename').readAsBytes();

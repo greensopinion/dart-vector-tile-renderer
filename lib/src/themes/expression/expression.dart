@@ -9,10 +9,13 @@ class EvaluationContext {
   final TileFeatureType _featureType;
   final double zoom;
   final double zoomScaleFactor;
+  final bool Function(String) hasImage;
   final Logger logger;
 
   EvaluationContext(this._properties, this._featureType, this.logger,
-      {required this.zoom, required this.zoomScaleFactor});
+      {required this.zoom,
+      required this.zoomScaleFactor,
+      required this.hasImage});
 
   getProperty(String name) {
     if (name == '\$type') {

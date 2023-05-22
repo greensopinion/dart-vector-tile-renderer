@@ -17,7 +17,7 @@ class Style {
   final Extrusion? fillExtrusion;
   final Expression<PaintModel>? linePaint;
   final Expression<PaintModel>? textPaint;
-  final TextLayout? textLayout;
+  final SymbolLayout? symbolLayout;
   final Expression<List<Shadow>>? textHalo;
   final Expression<PaintModel>? outlinePaint;
 
@@ -27,7 +27,7 @@ class Style {
       this.outlinePaint,
       this.linePaint,
       this.textPaint,
-      this.textLayout,
+      this.symbolLayout,
       this.textHalo});
 }
 
@@ -70,21 +70,62 @@ class LayoutJustify {
       values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }
 
-class TextLayout {
+class RotationAlignment {
+  final String name;
+  const RotationAlignment._(this.name);
+  static const map = RotationAlignment._('map');
+  static const viewport = RotationAlignment._('viewport');
+  static const auto = RotationAlignment._('auto');
+  static const DEFAULT = auto;
+
+  static List<RotationAlignment> values() => [map, viewport, auto];
+  static RotationAlignment fromName(String? name) =>
+      values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
+}
+
+class SymbolLayout {
   final Expression<LayoutPlacement> placement;
+  final TextLayout? text;
+  final IconLayout? icon;
+
+  SymbolLayout({
+    required this.placement,
+    this.text,
+    this.icon,
+  });
+}
+
+class IconLayout {
+  final Expression<String?> icon;
+  final Expression<LayoutAnchor> anchor;
+  final Expression<double>? opacity;
+  final Expression<double>? size;
+  final Expression<RotationAlignment>? rotationAlignment;
+  final Expression<double>? rotate;
+
+  IconLayout(
+      {required this.icon,
+      required this.anchor,
+      required this.opacity,
+      required this.size,
+      required this.rotationAlignment,
+      required this.rotate});
+}
+
+class TextLayout {
   final Expression<LayoutAnchor> anchor;
   final Expression<LayoutJustify> justify;
-  final Expression text;
+  final Expression<String?> text;
   final Expression<double> textSize;
   final Expression<double>? textLetterSpacing;
   final Expression<double>? maxWidth;
   final FontStyle? fontStyle;
   final String? fontFamily;
   final TextTransformFunction? textTransform;
+  final Expression<RotationAlignment>? rotationAlignment;
 
   TextLayout(
-      {required this.placement,
-      required this.anchor,
+      {required this.anchor,
       required this.justify,
       required this.text,
       required this.textSize,
@@ -92,7 +133,8 @@ class TextLayout {
       required this.maxWidth,
       required this.fontFamily,
       required this.fontStyle,
-      required this.textTransform});
+      required this.textTransform,
+      required this.rotationAlignment});
 }
 
 class LineCap {

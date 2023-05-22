@@ -1,14 +1,15 @@
 import 'dart:math';
 
-import 'boolean_expression_parser.dart';
-
 import '../../../logger.dart';
 import '../caching_expression.dart';
+import '../concat_expression.dart';
 import '../expression.dart';
 import '../literal_expression.dart';
 import '../property_expression.dart';
+import 'boolean_expression_parser.dart';
 import 'boolean_operator_expression_parser.dart';
 import 'get_expression_parser.dart';
+import 'image_expression_parser.dart';
 import 'interpolate_expression_parser.dart';
 import 'math_expression_parser.dart';
 import 'numeric_expression_parser.dart';
@@ -64,6 +65,7 @@ class ExpressionParser {
     _register(varParser);
     _register(LetExpressionParser(this, varParser));
     _register(IsSupportedScriptExpressionParser(this));
+    _register(ImageExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -168,11 +170,25 @@ class ExpressionParser {
   }
 
   Expression? _parseString(String json) {
-    final match = RegExp(r'\{(.+?)\}').firstMatch(json);
-    if (match != null) {
-      final propertyName = match.group(1);
-      if (propertyName != null) {
-        return ToStringExpression(GetPropertyExpression(propertyName));
+    final matches = RegExp(r'\{(.+?)\}').allMatches(json);
+    if (matches.isNotEmpty) {
+      final result = <Expression>[];
+      var previousOffset = 0;
+      for (final match in matches) {
+        if (match.start > previousOffset) {
+          result.add(
+              LiteralExpression(json.substring(previousOffset, match.start)));
+        }
+        final propertyName = match.group(1);
+        if (propertyName != null) {
+          result.add(ToStringExpression(GetPropertyExpression(propertyName)));
+        }
+        previousOffset = match.end;
+      }
+      if (result.length == 1) {
+        return result.first;
+      } else if (result.isNotEmpty) {
+        return ConcatExpression(result);
       }
     }
     return LiteralExpression(json);

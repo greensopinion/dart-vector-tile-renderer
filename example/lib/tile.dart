@@ -138,7 +138,8 @@ class _TileState extends State<Tile> {
     if (widget.options.renderMode == RenderMode.raster &&
         image == null &&
         tileset != null) {
-      final image = await ImageRenderer(theme: theme, scale: 2).render(tileset!,
+      final image = await ImageRenderer(theme: theme, scale: 2).render(
+          TileSource(tileset: tileset!),
           zoom: widget.options.zoom,
           zoomScaleFactor: pow(2, widget.options.scale).toDouble());
       if (_disposed) {

@@ -1,0 +1,22 @@
+{
+    "first-sprite": {
+        "width": 128,
+        "height": 128,
+        "x": 0,
+        "y": 0,
+        "pixelRatio": 2
+    },
+    "second-sprite": {
+        "width": 40,
+        "height": 80,
+        "x": 120,
+        "y": 128,
+        "pixelRatio": 2,
+        "placeholder": [
+            0,
+            34,
+            40,
+            46
+        ]
+    }
+}

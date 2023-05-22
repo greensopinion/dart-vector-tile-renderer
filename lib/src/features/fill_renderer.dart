@@ -2,6 +2,7 @@ import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
+import 'extensions.dart';
 import 'feature_renderer.dart';
 
 class FillRenderer extends FeatureRenderer {
@@ -27,7 +28,9 @@ class FillRenderer extends FeatureRenderer {
 
     final evaluationContext = EvaluationContext(
         () => feature.properties, feature.type, logger,
-        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
+        zoom: context.zoom,
+        zoomScaleFactor: context.zoomScaleFactor,
+        hasImage: context.hasImage);
     final fillPaint = style.fillPaint?.evaluate(evaluationContext);
     final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
 

@@ -4,7 +4,9 @@ import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
 import '../themes/style.dart';
+import 'extensions.dart';
 import 'feature_renderer.dart';
+import 'symbol_layout_extension.dart';
 import 'text_abbreviator.dart';
 import 'text_renderer.dart';
 import 'text_wrapper.dart';
@@ -21,44 +23,72 @@ class SymbolPointRenderer extends FeatureRenderer {
     TileLayer layer,
     TileFeature feature,
   ) {
-    final textPaint = style.textPaint;
-    final textLayout = style.textLayout;
-    if (textPaint == null || textLayout == null) {
-      logger.warn(() => 'point does not have a text paint or layout');
+    final symbolLayout = style.symbolLayout;
+    if (symbolLayout == null) {
+      logger.warn(() => 'point does layout');
       return;
     }
 
     final evaluationContext = EvaluationContext(
         () => feature.properties, feature.type, logger,
-        zoom: context.zoom, zoomScaleFactor: context.zoomScaleFactor);
+        zoom: context.zoom,
+        zoomScaleFactor: context.zoomScaleFactor,
+        hasImage: context.hasImage);
 
-    final text = textLayout.text.evaluate(evaluationContext);
-    if (text == null) {
-      logger.warn(() => 'point with no text');
+    final text = symbolLayout.text?.text.evaluate(evaluationContext);
+    final icon = symbolLayout.getIcon(context, evaluationContext);
+    if (text == null && icon == null) {
+      logger.warn(() => 'point with no text or icon');
       return;
     }
-
-    final textAbbreviation = TextAbbreviator().abbreviate(text);
-    if (!context.labelSpace.canAccept(textAbbreviation)) {
+    final textAbbreviation =
+        text == null ? null : TextAbbreviator().abbreviate(text);
+    if (textAbbreviation != null &&
+        !context.labelSpace.canAccept(textAbbreviation)) {
       return;
     }
+    final lines = text == null
+        ? null
+        : TextWrapper(symbolLayout.text!).wrap(evaluationContext, text);
+
+    final textApproximation = lines == null
+        ? null
+        : TextApproximation(context, evaluationContext, style, lines);
+    final textAnchor = symbolLayout.text?.anchor.evaluate(evaluationContext) ??
+        LayoutAnchor.center;
 
     logger.log(() => 'rendering symbol points');
-
-    final lines = TextWrapper(textLayout).wrap(evaluationContext, text);
-
-    final textApproximation =
-        TextApproximation(context, evaluationContext, style, lines);
 
     for (final point in feature.points) {
       final offset = context.tileSpaceMapper.pointFromTileToPixels(point);
 
-      if (!_occupyLabelSpaceAtOffset(context, textApproximation, offset)) {
+      if (textApproximation != null &&
+          (!_occupyLabelSpaceAtOffset(context, textApproximation, offset) ||
+              !textApproximation.renderer.canPaint)) {
         continue;
       }
 
       context.tileSpaceMapper.drawInPixelSpace(() {
-        textApproximation.renderer.render(offset);
+        var textOffset = offset;
+        if (icon != null) {
+          final occupied = icon.render(offset,
+              contentSize: textApproximation?.renderer.size ?? Size.zero);
+          if (occupied != null) {
+            if (!occupied.overlapsText && textAnchor == LayoutAnchor.top) {
+              textOffset = textOffset.translate(0, occupied.area.height / 2.0);
+            } else if (occupied.overlapsText &&
+                textAnchor == LayoutAnchor.center) {
+              textOffset = textOffset.translate(
+                  0,
+                  (occupied.contentArea.top - occupied.area.top).abs() -
+                      (occupied.contentArea.bottom - occupied.area.bottom)
+                          .abs());
+            }
+          }
+        }
+        if (textApproximation != null) {
+          textApproximation.renderer.render(textOffset);
+        }
       });
     }
   }
