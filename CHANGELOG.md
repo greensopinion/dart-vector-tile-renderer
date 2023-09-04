@@ -1,3 +1,7 @@
+## 5.0.1
+
+* support labels and icon rotation aligned with viewport
+
 ## 4.0.0
 
 * add support for sprites

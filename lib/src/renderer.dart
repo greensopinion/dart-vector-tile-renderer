@@ -34,7 +34,10 @@ class Renderer {
   /// [clip] the optional clip to constrain tile rendering, used to limit drawing
   ///        so that a portion of a tile can be rendered to a canvas
   void render(Canvas canvas, TileSource tile,
-      {Rect? clip, required double zoomScaleFactor, required double zoom}) {
+      {Rect? clip,
+      required double zoomScaleFactor,
+      required double zoom,
+      required double rotation}) {
     profileSync('Render', () {
       final tileSpace =
           Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
@@ -51,6 +54,7 @@ class Renderer {
           tileSource: tile,
           zoomScaleFactor: zoomScaleFactor,
           zoom: zoom,
+          rotation: rotation,
           tileSpace: tileSpace,
           tileClip: tileClip,
           optimizations: optimizations,

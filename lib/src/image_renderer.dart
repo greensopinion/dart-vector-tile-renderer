@@ -36,8 +36,8 @@ class ImageRenderer {
       final canvas = Canvas(recorder, rect);
       canvas.clipRect(rect);
       canvas.scale(scale.toDouble(), scale.toDouble());
-      Renderer(theme: theme, logger: logger)
-          .render(canvas, tile, zoomScaleFactor: zoomScaleFactor, zoom: zoom);
+      Renderer(theme: theme, logger: logger).render(canvas, tile,
+          zoomScaleFactor: zoomScaleFactor, zoom: zoom, rotation: 0.0);
       return recorder.endRecording().toImage(size.floor(), size.floor());
     });
   }

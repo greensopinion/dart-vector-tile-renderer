@@ -195,7 +195,7 @@ class ThemeReader {
     final rotate = _toDoubleExpression(layout?['icon-rotate']);
 
     final rotationAlignment = expressionParser
-        .parse(layout?['text-rotation-alignment'])
+        .parse(layout?['icon-rotation-alignment'])
         .asRotationAlignmentExpression();
     return IconLayout(
         icon: iconFunction,
