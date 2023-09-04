@@ -27,7 +27,8 @@ class TilePainter extends CustomPainter {
       Renderer(theme: theme).render(canvas, TileSource(tileset: tileset),
           clip: Rect.fromLTWH(0, 0, size.width, size.height),
           zoomScaleFactor: pow(2, options.scale).toDouble(),
-          zoom: options.zoom);
+          zoom: options.zoom,
+          rotation: 0.0);
     }
     canvas.restore();
   }

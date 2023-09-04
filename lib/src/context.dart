@@ -17,6 +17,9 @@ class Context {
   final TileSource tileSource;
   final double zoomScaleFactor;
   final double zoom;
+
+  /// rotation in radians
+  final double rotation;
   final Rect tileSpace;
   final Rect tileClip;
   final LabelSpace labelSpace;
@@ -32,6 +35,7 @@ class Context {
       required this.tileSource,
       required this.zoomScaleFactor,
       required this.zoom,
+      required this.rotation,
       required this.tileSpace,
       required this.tileClip,
       required this.optimizations,

@@ -15,6 +15,7 @@ class IconRenderer extends SymbolIcon {
   final Image atlas;
   final double size;
   final LayoutAnchor anchor;
+  final RotationAlignment rotationAlignment;
   final double? rotate;
 
   IconRenderer(this.context,
@@ -22,10 +23,12 @@ class IconRenderer extends SymbolIcon {
       required this.atlas,
       required this.size,
       required this.anchor,
+      required this.rotationAlignment,
       required this.rotate});
 
   @override
-  RenderedIcon? render(Offset offset, {required Size contentSize}) {
+  RenderedIcon? render(Offset offset,
+      {required Size contentSize, required bool withRotation}) {
     final paint = Paint()..isAntiAlias = true;
 
     double scale = sprite.pixelRatio == 1 ? 1 : (1 / (sprite.pixelRatio));
@@ -41,15 +44,33 @@ class IconRenderer extends SymbolIcon {
               .firstOrNull
               ?.translate(renderedArea.left, renderedArea.top) ??
           renderedArea;
+      var rotation =
+          withRotation && rotationAlignment == RotationAlignment.viewport
+              ? context.rotation
+              : 0.0;
+      if (rotate != null) {
+        rotation += (rotate! * pi / 180.0);
+      }
       final anchorOffset = anchor.offset(renderedArea.size);
+      if (rotation != 0.0) {
+        context.canvas.save();
+        final rotationOffset = Offset(
+            offset.dx + anchorOffset.dx + (renderedArea.width / 2.0),
+            offset.dy + anchorOffset.dy + (renderedArea.height / 2.0));
+        context.canvas.translate(rotationOffset.dx, rotationOffset.dy);
+        context.canvas.rotate(-rotation);
+        context.canvas.translate(-rotationOffset.dx, -rotationOffset.dy);
+      }
       context.canvas.drawAtlas(
           atlas,
           segments
               .map((e) => RSTransform.fromComponents(
-                  rotation: rotate == null ? 0 : (rotate! * pi / 180.0),
+                  rotation: 0.0,
                   scale: e.scale,
-                  anchorX: rotate == null ? 0 : offset.dx + anchorOffset.dx,
-                  anchorY: rotate == null ? 0 : offset.dy + anchorOffset.dy,
+                  anchorX:
+                      0, // rotation == 0.0 ? 0 : offset.dx + anchorOffset.dx,
+                  anchorY:
+                      0, //rotation == 0.0 ? 0 : offset.dy + anchorOffset.dy,
                   translateX: offset.dx + anchorOffset.dx,
                   translateY: offset.dy + anchorOffset.dy))
               .toList(),
@@ -58,6 +79,9 @@ class IconRenderer extends SymbolIcon {
           null,
           null,
           paint);
+      if (rotation != 0.0) {
+        context.canvas.restore();
+      }
       return RenderedIcon(
           overlapsText: sprite.content != null,
           area: renderedArea,

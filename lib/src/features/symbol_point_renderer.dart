@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'symbol_rotation.dart';
+
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
 import '../themes/expression/expression.dart';
@@ -36,7 +39,8 @@ class SymbolPointRenderer extends FeatureRenderer {
         hasImage: context.hasImage);
 
     final text = symbolLayout.text?.text.evaluate(evaluationContext);
-    final icon = symbolLayout.getIcon(context, evaluationContext);
+    final icon = symbolLayout.getIcon(context, evaluationContext,
+        layoutPlacement: LayoutPlacement.point);
     if (text == null && icon == null) {
       logger.warn(() => 'point with no text or icon');
       return;
@@ -56,6 +60,9 @@ class SymbolPointRenderer extends FeatureRenderer {
         : TextApproximation(context, evaluationContext, style, lines);
     final textAnchor = symbolLayout.text?.anchor.evaluate(evaluationContext) ??
         LayoutAnchor.center;
+    final rotationAlignment = symbolLayout.textRotationAlignment(
+        evaluationContext,
+        layoutPlacement: LayoutPlacement.line);
 
     logger.log(() => 'rendering symbol points');
 
@@ -68,11 +75,23 @@ class SymbolPointRenderer extends FeatureRenderer {
         continue;
       }
 
+      double rotation = rotationAlignment == RotationAlignment.viewport
+          ? context.rotation
+          : 0.0;
+
       context.tileSpaceMapper.drawInPixelSpace(() {
         var textOffset = offset;
+
+        if (rotation != 0.0) {
+          context.canvas.save();
+          context.canvas.translate(offset.dx, offset.dy);
+          context.canvas.rotate(-rotation);
+          context.canvas.translate(-offset.dx, -offset.dy);
+        }
         if (icon != null) {
           final occupied = icon.render(offset,
-              contentSize: textApproximation?.renderer.size ?? Size.zero);
+              contentSize: textApproximation?.renderer.size ?? Size.zero,
+              withRotation: false);
           if (occupied != null) {
             if (!occupied.overlapsText && textAnchor == LayoutAnchor.top) {
               textOffset = textOffset.translate(0, occupied.area.height / 2.0);
@@ -88,6 +107,9 @@ class SymbolPointRenderer extends FeatureRenderer {
         }
         if (textApproximation != null) {
           textApproximation.renderer.render(textOffset);
+        }
+        if (rotation != 0.0) {
+          context.canvas.restore();
         }
       });
     }

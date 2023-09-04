@@ -1,7 +1,8 @@
 import 'dart:ui';
 
 abstract class SymbolIcon {
-  RenderedIcon? render(Offset offset, {required Size contentSize});
+  RenderedIcon? render(Offset offset,
+      {required Size contentSize, required bool withRotation});
 }
 
 class RenderedIcon {
