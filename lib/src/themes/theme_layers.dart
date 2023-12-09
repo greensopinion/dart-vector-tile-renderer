@@ -14,13 +14,12 @@ class DefaultLayer extends ThemeLayer {
   final TileLayerSelector selector;
   final Style style;
 
-  DefaultLayer(String id, ThemeLayerType type,
+  DefaultLayer(super.id, super.type,
       {required this.selector,
       required this.style,
-      required double? minzoom,
-      required double? maxzoom,
-      required Map<String, dynamic> metadata})
-      : super(id, type, minzoom: minzoom, maxzoom: maxzoom, metadata: metadata);
+      required super.minzoom,
+      required super.maxzoom,
+      required super.metadata});
 
   @override
   void render(Context context) {
