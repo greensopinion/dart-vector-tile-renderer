@@ -139,9 +139,7 @@ class NotEqualsExpressionParser extends ExpressionComponentParser {
 class ComparisonExpressionParser extends ExpressionComponentParser {
   final bool Function(num, num) _comparison;
 
-  ComparisonExpressionParser(
-      ExpressionParser parser, String operator, this._comparison)
-      : super(parser, operator);
+  ComparisonExpressionParser(super.parser, super.operator, this._comparison);
 
   @override
   bool matches(List<dynamic> json) {
