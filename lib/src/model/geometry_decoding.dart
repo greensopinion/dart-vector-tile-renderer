@@ -161,7 +161,7 @@ Iterable<TilePolygon> decodePolygons(List<int> geometry) {
 
       // Add the ring to the current polygon.
       rings ??= [TileLine([])];
-      rings!.add(TileLine(points));
+      rings.add(TileLine(points));
     } else {
       // We just decoded an exterior ring.
 
