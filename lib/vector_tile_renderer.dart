@@ -20,4 +20,5 @@ export 'src/themes/theme.dart';
 export 'src/themes/theme_reader.dart';
 export 'src/tile_source.dart';
 export 'src/tileset.dart' hide InternalTileset;
+export 'src/tileset_raster.dart';
 export 'src/vector_tile_reader.dart';

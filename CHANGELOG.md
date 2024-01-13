@@ -1,3 +1,8 @@
+## 5.2.0
+
+* improve invalid vector tile data handling 
+* support raster layers in the theme (e.g. to support hillshade with raster tiles)
+
 ## 5.1.0
 
 * update dependencies
