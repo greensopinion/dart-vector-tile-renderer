@@ -42,6 +42,7 @@ enum ThemeLayerType {
   line,
   symbol,
   background,
+  raster,
   unsupported
 }
 

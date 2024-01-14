@@ -37,6 +37,8 @@ class EvaluationContext {
         return 'Polygon';
       case TileFeatureType.background:
         return 'Background';
+      case TileFeatureType.none:
+        return 'None';
     }
   }
 }
