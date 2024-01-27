@@ -14,7 +14,7 @@ class ColorExpression extends Expression<Color> {
   Color? evaluate(EvaluationContext context) {
     final result = _delegate.evaluate(context);
     if (result is String) {
-      return ColorParser.toColor(result);
+      return ColorParser.toColor(result.trim());
     } else if (result != null) {
       context.logger.warn(() => 'expected string but got $result');
     }
