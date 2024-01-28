@@ -96,6 +96,13 @@ class ExpressionParser {
       }
     }
     if (json is Map) {
+      if (json['type'] == 'categorical') {
+        final property = json['property'];
+        final stops = json['stops'];
+        final defaultValue = json['default'];
+        return CategoricalPropertyExpression(property, defaultValue, stops);
+      }
+
       final base = json['base'] ?? 1;
       final stops = json['stops'];
       if (stops is List) {
