@@ -114,7 +114,7 @@ class ExpressionParser {
           'categorical',
           property,
           defaultValue,
-          ..._flattenStops(stops)
+          ..._flattenStops(stops),
         ]);
       }
 

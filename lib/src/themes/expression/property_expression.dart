@@ -52,7 +52,7 @@ class CategoricalPropertyExpression extends Expression {
 
     final propertyValue = context.getProperty(propertyName!);
     var tmpResult = defaultValue;
-    for (var i = 0; i<stops.length; i += 2) {
+    for (var i = 0; i < stops.length; i += 2) {
       final input = stops[i];
       final inputZoom = input['zoom'];
       final output = stops[i + 1];
