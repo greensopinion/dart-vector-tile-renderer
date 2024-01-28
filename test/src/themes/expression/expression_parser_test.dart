@@ -68,6 +68,7 @@ void main() {
           'all',
           'any',
           'case',
+          'categorical',
           'coalesce',
           'concat',
           'geometry-type',
@@ -85,7 +86,7 @@ void main() {
           'to-boolean',
           'to-number',
           'to-string',
-          'var'
+          'var',
         ]));
   });
 
@@ -807,6 +808,43 @@ void main() {
     test('provides case expression that evaluates to another case', () {
       zoom = 4;
       assertExpression(expression, expectedCacheKey, 2);
+    });
+  });
+  group('categorical expression:', () {
+    final expression = {
+      "property": "seamark:small_craft_facility:category",
+      "type": "categorical",
+      "stops": [
+        [
+          {"zoom": 0, "value": "showers"},
+          "Showers"
+        ],
+        [
+          {"zoom": 0, "value": "launderette"},
+          "Launderette"
+        ],
+      ],
+      "default": "Restrooms"
+    };
+    const expectedCacheKey =
+        'categorical(seamark:small_craft_facility:category)';
+    zoom = 0;
+    test('provides categorical expression that evaluates to a fallback', () {
+      properties["seamark:small_craft_facility:category"] = "SomethingRandom";
+      assertExpression(expression, expectedCacheKey, "Restrooms");
+    });
+    test(
+        'provides categorical expression if property is not set which evaluates to a fallback',
+        () {
+      assertExpression(expression, expectedCacheKey, "Restrooms");
+    });
+    test('provides categorical expression that evaluates to a first case', () {
+      properties["seamark:small_craft_facility:category"] = "showers";
+      assertExpression(expression, expectedCacheKey, "Showers");
+    });
+    test('provides categorical expression that evaluates to another case', () {
+      properties["seamark:small_craft_facility:category"] = "launderette";
+      assertExpression(expression, expectedCacheKey, "Launderette");
     });
   });
 }
