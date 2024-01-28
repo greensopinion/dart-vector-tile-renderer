@@ -8,6 +8,7 @@ import '../literal_expression.dart';
 import '../property_expression.dart';
 import 'boolean_expression_parser.dart';
 import 'boolean_operator_expression_parser.dart';
+import 'categorical_expression_parser.dart';
 import 'get_expression_parser.dart';
 import 'image_expression_parser.dart';
 import 'interpolate_expression_parser.dart';
@@ -24,6 +25,7 @@ typedef ExpressionFunction = Expression Function();
 class ExpressionParser {
   final Logger logger;
   final Map<String, ExpressionComponentParser> _parserByOperator = {};
+
   ExpressionParser(this.logger) {
     _register(GetExpressionParser(this));
     _register(HasExpressionParser(this));
@@ -66,6 +68,7 @@ class ExpressionParser {
     _register(LetExpressionParser(this, varParser));
     _register(IsSupportedScriptExpressionParser(this));
     _register(ImageExpressionParser(this));
+    _register(CategoricalExpressionParser(this));
   }
 
   Set<String> supportedOperators() => _parserByOperator.keys.toSet();
@@ -96,11 +99,23 @@ class ExpressionParser {
       }
     }
     if (json is Map) {
+      // legacy categorical expressions
+      // https://docs.mapbox.com/style-spec/reference/other
       if (json['type'] == 'categorical') {
         final property = json['property'];
+        if (property is! String?) {
+          logger.warn(() =>
+              'Malformed categorical expression, property field must be an optional String: $json');
+          return null;
+        }
         final stops = json['stops'];
         final defaultValue = json['default'];
-        return CategoricalPropertyExpression(property, defaultValue, stops);
+        return parseOptional([
+          'categorical',
+          property,
+          defaultValue,
+          ..._flattenStops(stops)
+        ]);
       }
 
       final base = json['base'] ?? 1;
