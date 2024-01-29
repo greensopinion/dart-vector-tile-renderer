@@ -65,7 +65,7 @@ class Tile extends StatefulWidget {
 
 class _TileState extends State<Tile> {
   Tileset? tileset;
-  final theme = ProvidedThemes.lightTheme(logger: Logger.console());
+  final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   ui.Image? image;
   bool _disposed = false;
 
@@ -95,7 +95,7 @@ class _TileState extends State<Tile> {
   Widget build(BuildContext context) {
     if (tileset == null ||
         (widget.options.renderMode == RenderMode.raster && image == null)) {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
     return Container(
         decoration: BoxDecoration(color: Colors.black45, border: Border.all()),
@@ -111,7 +111,7 @@ class _TileState extends State<Tile> {
         await DefaultAssetBundle.of(context).load('assets/sample_tile.pbf');
     final tileBytes = tileBuffer.buffer
         .asUint8List(tileBuffer.offsetInBytes, tileBuffer.lengthInBytes);
-    var tileData = TileFactory(theme, Logger.noop())
+    var tileData = TileFactory(theme, const Logger.noop())
         .createTileData(VectorTileReader().read(tileBytes));
     if (widget.options.clipSize > 0) {
       final clipSize = widget.options.clipSize;

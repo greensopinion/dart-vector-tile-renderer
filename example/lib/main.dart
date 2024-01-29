@@ -3,22 +3,24 @@ import 'package:flutter/material.dart';
 import 'tile.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.light(),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage();
+  const MyHomePage({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -36,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _clipOffsetY;
   late TextEditingController _clipSize;
   TileOptions options = TileOptions(
-      size: Size(256, 256),
+      size: const Size(256, 256),
       scale: 1.0,
       zoom: 15,
       xOffset: 0,
@@ -65,11 +67,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Vector Tile Example"),
+          title: const Text("Vector Tile Example"),
         ),
         body: Column(children: [
           Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Row(children: [
                 _doubleTextField(_scale, 'Scale',
                     (value) => options.withValues(scale: value)),
@@ -112,8 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _textField(TextEditingController controller, String label,
           TileOptions? Function(String) applyer) =>
       Padding(
-          padding: EdgeInsets.only(right: 5.0),
-          child: Container(
+          padding: const EdgeInsets.only(right: 5.0),
+          child: SizedBox(
               width: 100,
               child: TextField(
                   controller: controller,
@@ -126,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     }
                   },
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     labelText: label,
                   ))));
 
