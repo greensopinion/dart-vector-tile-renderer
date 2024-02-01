@@ -1,4 +1,5 @@
 import 'expression.dart';
+import 'literal_expression.dart';
 
 class GetPropertyExpression extends Expression {
   final String _propertyName;
@@ -23,10 +24,10 @@ class GetPropertyExpression extends Expression {
 class CategoricalPropertyExpression extends Expression {
   /// If specified, the function will take the specified feature property
   /// as an input.
-  final String? propertyName;
+  final LiteralExpression? propertyName;
 
   /// When the feature value does not match any of the stop domain values.
-  final dynamic defaultValue;
+  final LiteralExpression? defaultValue;
 
   /// An alternating list of one input and one output value. Stop output
   /// values must be literal values (in other words not functions or
@@ -43,10 +44,11 @@ class CategoricalPropertyExpression extends Expression {
 
   @override
   evaluate(EvaluationContext context) {
-    if (propertyName?.isEmpty ?? true) return null;
+    final propertyName = this.propertyName?.evaluate(context);
+    if (propertyName == null) return defaultValue?.evaluate(context);
 
     final propertyValue = context.getProperty(propertyName!);
-    var tmpResult = defaultValue;
+    dynamic tmpResult;
     for (var i = 0; i < stops.length; i += 2) {
       final input = stops[i];
       final inputZoom = input['zoom'];
@@ -58,7 +60,7 @@ class CategoricalPropertyExpression extends Expression {
         tmpResult = output;
       }
     }
-    return tmpResult;
+    return tmpResult ?? defaultValue?.evaluate(context);
   }
 
   @override

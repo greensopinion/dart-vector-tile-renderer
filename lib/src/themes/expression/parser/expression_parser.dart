@@ -110,7 +110,7 @@ class ExpressionParser {
           return parseOptional([
             'categorical',
             property,
-            json['default'],
+            parseOptional(json['default']),
             ..._flattenStops(stops),
           ]);
         }

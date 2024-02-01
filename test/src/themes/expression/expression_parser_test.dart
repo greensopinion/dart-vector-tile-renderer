@@ -827,7 +827,7 @@ void main() {
       "default": "Restrooms"
     };
     const expectedCacheKey =
-        'categorical(seamark:small_craft_facility:category)';
+        'categorical(literal(seamark:small_craft_facility:category))';
     zoom = 0;
     test('provides categorical expression that evaluates to a fallback', () {
       properties["seamark:small_craft_facility:category"] = "SomethingRandom";
