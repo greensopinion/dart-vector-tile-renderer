@@ -102,10 +102,8 @@ class ExpressionParser {
       // legacy categorical expressions
       // https://docs.mapbox.com/style-spec/reference/other
       if (json['type'] == 'categorical') {
-        final property = json['property'];
-        if (property is! String?) {
-          logger.warn(() =>
-              'Malformed categorical expression, property field must be an optional String: $json');
+        final property = parseOptional(json['property']);
+        if (property == null) {
           return null;
         }
         final stops = json['stops'];
