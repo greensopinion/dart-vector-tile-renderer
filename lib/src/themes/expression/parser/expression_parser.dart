@@ -99,26 +99,23 @@ class ExpressionParser {
       }
     }
     if (json is Map) {
-      // legacy categorical expressions
-      // https://docs.mapbox.com/style-spec/reference/other
-      if (json['type'] == 'categorical') {
-        final property = parseOptional(json['property']);
-        if (property == null) {
-          return null;
-        }
-        final stops = json['stops'];
-        final defaultValue = json['default'];
-        return parseOptional([
-          'categorical',
-          property,
-          defaultValue,
-          ..._flattenStops(stops),
-        ]);
-      }
-
-      final base = json['base'] ?? 1;
       final stops = json['stops'];
       if (stops is List) {
+        if (json['type'] == 'categorical') {
+          // legacy categorical expressions
+          // https://docs.mapbox.com/style-spec/reference/other
+          final property = parseOptional(json['property']);
+          if (property == null) return null;
+
+          return parseOptional([
+            'categorical',
+            property,
+            json['default'],
+            ..._flattenStops(stops),
+          ]);
+        }
+
+        final base = json['base'] ?? 1;
         if (base == 1) {
           return parseOptional([
             'interpolate',
