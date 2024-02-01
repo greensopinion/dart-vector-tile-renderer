@@ -50,10 +50,10 @@ class CategoricalPropertyExpression extends Expression {
     for (var i = 0; i < stops.length; i += 2) {
       final input = stops[i];
       final inputZoom = input['zoom'];
-      final output = stops[i + 1];
       if (inputZoom is! int) continue;
-
       if (input['zoom'] > context.zoom) break;
+
+      final output = stops[i + 1];
       if (input['value'] == propertyValue) {
         tmpResult = output;
       }
