@@ -45,11 +45,6 @@ class CategoricalPropertyExpression extends Expression {
   evaluate(EvaluationContext context) {
     if (propertyName?.isEmpty ?? true) return null;
 
-    if (!stops.length.isEven) {
-      context.logger.warn(() => 'Could not parse categorical stops: $stops');
-      return null;
-    }
-
     final propertyValue = context.getProperty(propertyName!);
     var tmpResult = defaultValue;
     for (var i = 0; i < stops.length; i += 2) {
