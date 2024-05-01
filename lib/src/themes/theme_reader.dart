@@ -239,7 +239,7 @@ class ThemeReader {
     final font = layout?['text-font'];
     String? fontFamily;
     FontStyle? fontStyle;
-    if (font is List<dynamic>) {
+    if (font is List<dynamic> && font.isNotEmpty) {
       fontFamily = font[0];
       if (fontFamily != null && fontFamily.toLowerCase().contains("italic")) {
         fontStyle = FontStyle.italic;
