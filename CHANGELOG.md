@@ -1,3 +1,7 @@
+## 5.2.1
+
+* add scale capability to `TileTranslate`
+
 ## 5.2.0
 
 * improve invalid vector tile data handling 

@@ -4,8 +4,9 @@ import '../tile_data_model.dart';
 
 class TileTranslate {
   final TilePoint _offset;
+  final double scale;
 
-  TileTranslate(this._offset);
+  TileTranslate(this._offset, {this.scale = 1.0});
 
   TileData translate(TileData tile) => TileData(
       layers: tile.layers.map(_translateLayer).toList(growable: false));
@@ -39,7 +40,7 @@ class TileTranslate {
               : null);
 
   TilePoint _translatePoint(TilePoint point, TilePoint translation) =>
-      TilePoint(point.x + translation.x, point.y + translation.y);
+      _scale(TilePoint(point.x + translation.x, point.y + translation.y));
 
   TileLine _translateLine(TileLine line, TilePoint translation) =>
       TileLine(line.points
@@ -50,4 +51,11 @@ class TileTranslate {
       TilePolygon(polygon.rings
           .map((l) => _translateLine(l, translation))
           .toList(growable: false));
+
+  TilePoint _scale(TilePoint point) {
+    if (scale == 1.0) {
+      return point;
+    }
+    return point * scale;
+  }
 }
