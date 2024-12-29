@@ -108,10 +108,14 @@ class ThemeReader {
     final paintJson = jsonLayer['paint'];
     final opacity = expressionParser.parse(paintJson?['raster-opacity'],
         whenNull: () => LiteralExpression(1.0));
+    final resampling = expressionParser.parse(paintJson?['raster-resampling'],
+        whenNull: () => LiteralExpression("linear"));
     return ThemeLayerRaster(
         jsonLayer['id'] ?? _unknownId, ThemeLayerType.raster,
         selector: selector,
-        paintModel: RasterPaintModel(opacity: opacity.asDoubleExpression()),
+        paintModel: RasterPaintModel(
+            opacity: opacity.asDoubleExpression(),
+            rasterResampling: resampling.asOptionalStringExpression()),
         minzoom: _minZoom(jsonLayer),
         maxzoom: _maxZoom(jsonLayer),
         metadata: _metadata(jsonLayer));

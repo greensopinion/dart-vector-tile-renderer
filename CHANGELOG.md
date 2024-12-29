@@ -1,3 +1,7 @@
+## 5.2.2
+
+* add `raster-resampling` to raster layer
+
 ## 5.2.1
 
 * add scale capability to `TileTranslate`
