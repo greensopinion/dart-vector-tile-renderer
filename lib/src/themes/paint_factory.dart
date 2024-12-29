@@ -69,7 +69,7 @@ class PaintStyle {
       return null;
     }
     if (opacity != null && opacity < 1.0) {
-      color = color.withOpacity(opacity);
+      color = color.withAlpha((255.0 * opacity).round());
     }
     double? strokeWidth;
     if (paintingStyle == PaintingStyle.stroke) {

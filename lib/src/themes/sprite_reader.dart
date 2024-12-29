@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
-
 import '../logger.dart';
 import 'sprite.dart';
 
@@ -13,7 +11,7 @@ class SpriteIndexReader {
   SpriteIndex read(Map<String, dynamic> json) {
     return SpriteIndex(Map.fromEntries(json.entries
         .map((e) => _readSprite(e))
-        .whereNotNull()
+        .nonNulls
         .map((e) => MapEntry(e.name, e))));
   }
 
