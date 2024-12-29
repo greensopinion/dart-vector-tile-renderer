@@ -1,6 +1,7 @@
-## 5.2.2
+## 6.0.0
 
 * add `raster-resampling` to raster layer
+* require Dart SDK minimum version 3.0
 
 ## 5.2.1
 

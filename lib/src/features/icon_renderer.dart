@@ -40,7 +40,7 @@ class IconRenderer extends SymbolIcon {
           .reduce((a, b) => a.expandToInclude(b));
       final contentArea = segments
               .map((e) => e.contentArea)
-              .whereNotNull()
+              .nonNulls
               .firstOrNull
               ?.translate(renderedArea.left, renderedArea.top) ??
           renderedArea;
