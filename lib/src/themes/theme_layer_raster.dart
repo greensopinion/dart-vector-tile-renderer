@@ -8,8 +8,9 @@ import 'selector.dart';
 
 class RasterPaintModel {
   final Expression<double> opacity;
+  final Expression<String?> rasterResampling;
 
-  RasterPaintModel({required this.opacity});
+  RasterPaintModel({required this.opacity, required this.rasterResampling});
 }
 
 class ThemeLayerRaster extends ThemeLayer {
@@ -40,7 +41,8 @@ class ThemeLayerRaster extends ThemeLayer {
     if (opacity > 0.0) {
       final paint = Paint()
         ..color = Color.fromARGB((opacity * 255).round().clamp(0, 255), 0, 0, 0)
-        ..isAntiAlias = true;
+        ..isAntiAlias = true
+        ..filterQuality = _filterQuality(evaluationContext);
       if (image.scope == context.tileSpace) {
         context.canvas
             .drawImageRect(image.image, image.scope, context.tileSpace, paint);
@@ -64,6 +66,14 @@ class ThemeLayerRaster extends ThemeLayer {
             paint);
       }
     }
+  }
+
+  FilterQuality _filterQuality(EvaluationContext context) {
+    final resampling = paintModel.rasterResampling.evaluate(context);
+    if (resampling == 'nearest') {
+      return FilterQuality.none;
+    }
+    return FilterQuality.medium;
   }
 
   @override
