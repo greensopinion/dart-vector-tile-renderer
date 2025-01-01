@@ -12,7 +12,7 @@ class TileTranslate {
       layers: tile.layers.map(_translateLayer).toList(growable: false));
 
   TileDataLayer _translateLayer(TileDataLayer layer) {
-    final pixelsPerTileUnit = 1 / layer.extent * tileSize;
+    final pixelsPerTileUnit = 1.0 / layer.extent * tileSize;
     final translation =
         TilePoint(_offset.x / pixelsPerTileUnit, _offset.y / pixelsPerTileUnit);
     return TileDataLayer(
