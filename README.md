@@ -12,7 +12,7 @@ An example of output:
 
 ## Known Issues
 
-* Theme layer types not implemented: raster, circle, fill-extrusion, heatmap, hillshade, sky
+* Theme layer types not implemented: circle, fill-extrusion, heatmap, hillshade, sky
 
 ## Development
 
