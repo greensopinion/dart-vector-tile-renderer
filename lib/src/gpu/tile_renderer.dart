@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart' as m;
 import 'package:flutter_gpu/gpu.dart' as gpu;
+import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart' as vm;
 
 import '../themes/theme.dart';
 import '../tileset.dart';
@@ -15,53 +19,55 @@ import 'shaders.dart';
 /// multiple times.
 ///
 class TileRenderer {
+  static final Completer<void> _initializer = Completer<void>();
+  static Future<void> initialize = _initializer.future;
+
   final Theme theme;
-  Tileset? tileset;
+  Tileset? _tileset;
 
-  TileRenderer({required this.theme});
-
-  void render(ui.Canvas canvas, ui.Size size) {
-    final tileset = this.tileset ?? Tileset({});
-
-    final texture = gpu.gpuContext.createTexture(
-        gpu.StorageMode.devicePrivate, size.width.toInt(), size.height.toInt());
-    final renderTarget = gpu.RenderTarget.singleColor(gpu.ColorAttachment(
-        texture: texture, clearValue: m.Colors.lightBlue.vector4));
-
-    final commandBuffer = gpu.gpuContext.createCommandBuffer();
-    final renderPass = commandBuffer.createRenderPass(renderTarget);
-
-    final vert = shaderLibrary['SimpleVertex']!;
-    final frag = shaderLibrary['SimpleFragment']!;
-    final pipeline = gpu.gpuContext.createRenderPipeline(vert, frag);
-
-    final points = [
-      ui.Offset(-0.5, -0.5),
-      ui.Offset(0.5, -0.5),
-      ui.Offset(0.0, 0.5),
-      ui.Offset(0.0, 0.0)
-    ];
-    final vertices = Float32List.fromList(
-        points.expand((o) => [o.dx, o.dy]).toList(growable: false));
-    final verticesDeviceBuffer = gpu.gpuContext
-        .createDeviceBufferWithCopy(ByteData.sublistView(vertices));
-
-    renderPass.bindPipeline(pipeline);
-    renderPass.setPrimitiveType(gpu.PrimitiveType.lineStrip);
-
-    final verticesView = gpu.BufferView(
-      verticesDeviceBuffer,
-      offsetInBytes: 0,
-      lengthInBytes: verticesDeviceBuffer.sizeInBytes,
-    );
-    renderPass.bindVertexBuffer(verticesView, points.length);
-    renderPass.draw();
-
-    commandBuffer.submit();
-    final image = texture.asImage();
-    canvas.drawImage(image, ui.Offset.zero, ui.Paint());
+  Tileset? get tileset => _tileset;
+  set tileset(Tileset? value) {
+    if (_tileset != value) {
+      _tileset = value;
+      _scene = null;
+    }
   }
 
-  /// Must call to release resources when done.
-  void dispose() {}
+  Scene? _scene;
+
+  final Camera _camera = PerspectiveCamera(
+    fovRadiansY: math.pi / 2, // 90 degrees
+    position: vm.Vector3(
+        0, 0, -128), // Move camera back far enough to see the full object
+    target: vm.Vector3(0, 0, 0), // Looking at the origin
+    up: vm.Vector3(0, 1, 0),
+  );
+
+  TileRenderer({required this.theme}) {
+    if (!_initializer.isCompleted) {
+      Scene.initializeStaticResources().then((_) {
+        _initializer.complete();
+      });
+    }
+  }
+
+  Scene get scene {
+    var scene = _scene;
+    if (scene == null) {
+      scene = _createScene();
+      _scene = scene;
+    }
+    return scene;
+  }
+
+  void render(ui.Canvas canvas, ui.Size size) {
+    scene.render(_camera, canvas, viewport: const ui.Offset(0, 0) & size);
+  }
+
+  Scene _createScene() {
+    Scene scene = Scene();
+    final mesh = Mesh(CuboidGeometry(vm.Vector3(256, 256, 0)), UnlitMaterial());
+    scene.addMesh(mesh);
+    return scene;
+  }
 }

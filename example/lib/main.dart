@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Column(children: [
           Padding(
               padding: const EdgeInsets.all(10),
-              child: Row(children: [
+              child: Wrap(children: [
                 _doubleTextField(_scale, 'Scale',
                     (value) => options.withValues(scale: value)),
                 _doubleTextField(_size, 'Size',
@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _radio<T extends Enum>(String label, List<T> values,
       T Function() currentValue, TileOptions Function(T value) applyer) {
-    return Row(
+    return Wrap(
         children: values
             .map((v) => SizedBox(
                 width: 150,

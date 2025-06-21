@@ -68,10 +68,18 @@ class _TileState extends State<Tile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   ui.Image? image;
   bool _disposed = false;
+  bool _ready = false;
 
   @override
   void initState() {
     super.initState();
+    TileRenderer.initialize.then((_) {
+      if (!_disposed) {
+        setState(() {
+          _ready = true;
+        });
+      }
+    });
     _loadTileset();
   }
 
@@ -93,17 +101,21 @@ class _TileState extends State<Tile> {
 
   @override
   Widget build(BuildContext context) {
-    if (tileset == null ||
-        (widget.options.renderMode == RenderMode.raster && image == null)) {
+    final isRaster = widget.options.renderMode == RenderMode.raster;
+    if (tileset == null || (isRaster && image == null)) {
       return const CircularProgressIndicator();
     }
     return Container(
         decoration: BoxDecoration(color: Colors.black45, border: Border.all()),
-        child: CustomPaint(
-          size: widget.options.size,
-          painter: TilePainter(tileset!, theme,
-              options: widget.options, image: image),
-        ));
+        child: isRaster
+            ? RawImage(
+                image: image!,
+                width: widget.options.size.width,
+                height: widget.options.size.height)
+            : CustomPaint(
+                size: widget.options.size,
+                painter: TilePainter(tileset!, theme, options: widget.options),
+              ));
   }
 
   void _loadTileset() async {
