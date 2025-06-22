@@ -1,17 +1,12 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' as m;
-import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
 import '../themes/theme.dart';
 import '../tileset.dart';
-import 'color_extension.dart';
-import 'shaders.dart';
 
 /// Experimental: renders tiles using flutter_gpu
 ///
