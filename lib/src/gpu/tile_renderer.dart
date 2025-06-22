@@ -61,7 +61,7 @@ class TileRenderer {
   }
 
   void render(ui.Canvas canvas, ui.Size size) {
-    scene.render(_camera, canvas, viewport: const ui.Offset(0, 0) & size);
+    scene.render(_camera, canvas, viewport: ui.Offset.zero & size);
   }
 
   Scene _createScene() {
