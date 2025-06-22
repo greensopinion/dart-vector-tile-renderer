@@ -68,16 +68,13 @@ class _TileState extends State<Tile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   ui.Image? image;
   bool _disposed = false;
-  bool _ready = false;
 
   @override
   void initState() {
     super.initState();
     TileRenderer.initialize.then((_) {
       if (!_disposed) {
-        setState(() {
-          _ready = true;
-        });
+        setState(() {});
       }
     });
     _loadTileset();

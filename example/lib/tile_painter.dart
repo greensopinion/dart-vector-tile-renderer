@@ -1,11 +1,6 @@
-import 'dart:math';
-
 import 'package:example/tile.dart';
 import 'package:flutter/material.dart' hide Theme;
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
-import 'dart:ui' as ui;
-import 'package:flutter_gpu/gpu.dart' as gpu;
-import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 
 class TilePainter extends CustomPainter {
   final Tileset tileset;
