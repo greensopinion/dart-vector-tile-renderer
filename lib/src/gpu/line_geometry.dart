@@ -20,16 +20,19 @@ class LineGeometry extends UnskinnedGeometry {
       List<double> vertices = List.empty(growable: true);
       List<int> indices = List.empty(growable: true);
 
+      const double above = 1;
+      const double below = -1;
+
       final segmentCount = pointCount - 1;
 
       for (int i = 0; i < segmentCount; i++) {
         double p0 = i + 0;
         double p1 = i + 1;
 
-        vertices.addAll([p1, 1, p0]);
-        vertices.addAll([p0, 1, p1]);
-        vertices.addAll([p0, 0, p1]);
-        vertices.addAll([p1, 0, p0]);
+        vertices.addAll([p1, above, p0]);
+        vertices.addAll([p0, above, p1]);
+        vertices.addAll([p0, below, p1]);
+        vertices.addAll([p1, below, p0]);
 
         indices.addAll([
           0, 1, 2, 2, 3, 0
