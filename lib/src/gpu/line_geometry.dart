@@ -55,6 +55,7 @@ class LineGeometry extends UnskinnedGeometry {
     super.bind(pass, transientsBuffer, modelTransform, cameraTransform, cameraPosition);
 
     bindPositions(transientsBuffer, pass);
+    bindLineStyle(transientsBuffer, pass);
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
@@ -62,7 +63,7 @@ class LineGeometry extends UnskinnedGeometry {
     final linePositionsSlot = vertexShader.getUniformSlot('LinePositions');
 
     final linePositionsView = transientsBuffer.emplace(
-      linePositions.buffer.asByteData(),
+      linePositions.buffer.asByteData(0, 4096),
     );
 
     pass.bindUniform(linePositionsSlot, linePositionsView);
