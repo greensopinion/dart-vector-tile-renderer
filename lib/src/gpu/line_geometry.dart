@@ -56,10 +56,12 @@ class LineGeometry extends UnskinnedGeometry {
 
     bindPositions(transientsBuffer, pass);
     bindLineStyle(transientsBuffer, pass);
+
+    pass.setPrimitiveType(gpu.PrimitiveType.triangle);
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
-    final linePositions = Float32List.fromList(points.map((it) => [(it.x / 2048) - 1, 1 - (it.y / 2048)]).flattened.toList());
+    final linePositions = Float32List.fromList(points.map((it) => [(it.x / 2048) - 1, 1 - (it.y / 2048), 0.0, 0.0]).flattened.toList());
     final linePositionsSlot = vertexShader.getUniformSlot('LinePositions');
 
     final linePositionsView = transientsBuffer.emplace(

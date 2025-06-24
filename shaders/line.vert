@@ -8,7 +8,7 @@ frame_info;
 #define MAX_POINTS 1024
 
 uniform LinePositions {
-    vec2 points[MAX_POINTS];
+    vec4 points[MAX_POINTS];
 }
 line_positions;
 
@@ -28,8 +28,8 @@ out vec4 v_color;
 
 void main() {
 
-  vec2 curr = line_positions.points[int(position.x)];
-  vec2 next = line_positions.points[int(position.z)];
+  vec2 curr = line_positions.points[int(position.x)].xy;
+  vec2 next = line_positions.points[int(position.z)].xy;
   float widthOffset = position.y * line_style.width / 2.0;
 
   vec2 unitDir = normalize(next - curr);
