@@ -6,5 +6,9 @@
     "SimpleFragment": {
         "type": "fragment",
         "file": "shaders/simple.frag"
+    },
+    "LineVertex": {
+        "type": "vertex",
+        "file": "shaders/line.vert"
     }
 }
