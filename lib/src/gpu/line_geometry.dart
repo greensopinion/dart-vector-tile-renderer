@@ -42,7 +42,7 @@ class LineGeometry extends UnskinnedGeometry {
 
       uploadVertexData(
         ByteData.sublistView(Float32List.fromList(vertices)),
-        8,
+        segmentCount * 4,
         ByteData.sublistView(Uint16List.fromList(indices)),
         indexType: gpu.IndexType.int16,
       );
@@ -59,11 +59,11 @@ class LineGeometry extends UnskinnedGeometry {
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
-    final linePositions = Float32List.fromList(points.map((it) => [it.x, it.y]).flattened.toList());
+    final linePositions = Float32List.fromList(points.map((it) => [(it.x / 2048) - 1, 1 - (it.y / 2048)]).flattened.toList());
     final linePositionsSlot = vertexShader.getUniformSlot('LinePositions');
 
     final linePositionsView = transientsBuffer.emplace(
-      linePositions.buffer.asByteData(0, 4096),
+      linePositions.buffer.asByteData(),
     );
 
     pass.bindUniform(linePositionsSlot, linePositionsView);
@@ -71,7 +71,7 @@ class LineGeometry extends UnskinnedGeometry {
 
   void bindLineStyle(HostBuffer transientsBuffer, RenderPass pass) {
     final lineStyleSlot = vertexShader.getUniformSlot('LineStyle');
-    final lineStyleView = transientsBuffer.emplace(Float32List.fromList([lineWidth]).buffer.asByteData());
+    final lineStyleView = transientsBuffer.emplace(Float32List.fromList([lineWidth / 2048]).buffer.asByteData());
     pass.bindUniform(lineStyleSlot, lineStyleView);
   }
 }
