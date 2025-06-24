@@ -31,8 +31,8 @@ class LineGeometry extends UnskinnedGeometry {
         double p1 = i + 1;
 
         vertices.addAll([p1, above, p0]);
-        vertices.addAll([p0, above, p1]);
         vertices.addAll([p0, below, p1]);
+        vertices.addAll([p0, above, p1]);
         vertices.addAll([p1, below, p0]);
 
         indices.addAll([
