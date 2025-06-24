@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _clipOffsetY;
   late TextEditingController _clipSize;
   TileOptions options = TileOptions(
-      size: const Size(256, 256),
+      size: const Size(512, 512),
       scale: 1.0,
       zoom: 15,
       xOffset: 0,
