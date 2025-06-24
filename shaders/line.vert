@@ -5,7 +5,7 @@ uniform FrameInfo {
 }
 frame_info;
 
-#define MAX_POINTS 512
+#define MAX_POINTS 1024
 
 uniform LinePositions {
     vec2 points[MAX_POINTS];
@@ -17,7 +17,14 @@ uniform LineStyle {
 }
 line_style;
 
+
 in vec3 position;
+
+out vec3 v_position;
+out vec3 v_normal;
+out vec3 v_viewvector;
+out vec2 v_texture_coords;
+out vec4 v_color;
 
 void main() {
 
@@ -31,30 +38,10 @@ void main() {
   vec2 result = curr + (widthOffset * perp);
 
   gl_Position = vec4(result, 0.0, 1.0);
+
+  v_position = vec3(result, 0.0);
+  v_viewvector = frame_info.camera_position - v_position;
+  v_normal = vec3(1,0,0);
+  v_texture_coords = vec2(0, 0);
+  v_color = vec4(0,0,0,1);
 }
-
-
-
-// line that consists of segments
-// each segment is a line between two points
-//
-// uniform: p1 - p2 - p3
-// uniform: thickness
-//
-// need: normal from the line p1-p2, above or below
-//
-// index formula indates which point, and above or below
-// each point is represented by three numbers:
-// 1. index into the position uniform for the point
-// 2. above or below the line (-1 or 1)
-// 3. index into the normal uniform for the source/destination point
-//
-//
-// vertices:
-//
-//  a  ---- b
-//  p1 ---- p2
-//. c  ---- d
-//
-// c, a, b, c, d, b
-//

@@ -22,6 +22,8 @@ class SceneLineBuilder {
     const double lineWidth = 20;
     final linePoints = feature.feature.modelLines.expand((it) => {it.points}).flattened;
 
-    scene.addMesh(Mesh(LineGeometry(linePoints, lineWidth), UnlitMaterial()));
+    if (linePoints.isNotEmpty) {
+      scene.addMesh(Mesh(LineGeometry(linePoints, lineWidth), UnlitMaterial()));
+    }
   }
 }
