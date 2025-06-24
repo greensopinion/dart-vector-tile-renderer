@@ -9,7 +9,8 @@ class TilePainter extends CustomPainter {
   late final TileRenderer _renderer;
   bool _readyChanged = false;
   TilePainter(this.tileset, this.theme, {required this.options}) {
-    _renderer = TileRenderer(theme: theme);
+    _renderer = TileRenderer(
+        theme: theme, logger: const Logger.console(), zoom: options.zoom);
     _renderer.tileset = tileset;
     TileRenderer.initialize.then((_) {
       _readyChanged = true;

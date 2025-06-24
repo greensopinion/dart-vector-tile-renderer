@@ -59,6 +59,13 @@ class DefaultLayer extends ThemeLayer {
   }
 
   @override
+  void accept(VisitorContext context, LayerVisitor visitor) {
+    final layerFeatures = context.tileset.resolver
+        .resolveFeatures(selector, context.zoom.truncate());
+    visitor.visitFeatures(context, type, style, layerFeatures);
+  }
+
+  @override
   String? get tileSource => selector.tileSelector.source;
 }
 
@@ -80,6 +87,16 @@ class BackgroundLayer extends ThemeLayer {
         ..style = PaintingStyle.fill
         ..color = color;
       context.canvas.drawRect(context.tileClip, paint);
+    }
+  }
+
+  @override
+  void accept(VisitorContext context, LayerVisitor visitor) {
+    final color = fillColor.evaluate(EvaluationContext(
+        () => {}, TileFeatureType.background, context.logger,
+        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
+    if (color != null) {
+      visitor.visitBackgound(context, color);
     }
   }
 

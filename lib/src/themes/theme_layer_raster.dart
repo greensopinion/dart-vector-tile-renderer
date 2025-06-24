@@ -77,5 +77,10 @@ class ThemeLayerRaster extends ThemeLayer {
   }
 
   @override
+  void accept(VisitorContext context, LayerVisitor visitor) {
+    // TODO: Implement visitor for raster layers
+  }
+
+  @override
   String? get tileSource => selector.tileSelector.source;
 }

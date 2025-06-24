@@ -4,6 +4,8 @@ import 'dart:math' as math;
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
+import 'package:vector_tile_renderer/src/gpu/scene_building_visitor.dart';
+import 'package:vector_tile_renderer/src/logger.dart';
 
 import '../themes/theme.dart';
 import '../tileset.dart';
@@ -17,7 +19,9 @@ class TileRenderer {
   static final Completer<void> _initializer = Completer<void>();
   static Future<void> initialize = _initializer.future;
 
+  final Logger logger;
   final Theme theme;
+  final double zoom;
   Tileset? _tileset;
 
   Tileset? get tileset => _tileset;
@@ -38,7 +42,10 @@ class TileRenderer {
     up: vm.Vector3(0, 1, 0),
   );
 
-  TileRenderer({required this.theme}) {
+  TileRenderer(
+      {required this.theme,
+      required this.zoom,
+      this.logger = const Logger.noop()}) {
     if (!_initializer.isCompleted) {
       Scene.initializeStaticResources().then((_) {
         _initializer.complete();
@@ -61,8 +68,19 @@ class TileRenderer {
 
   Scene _createScene() {
     Scene scene = Scene();
-    final mesh = Mesh(CuboidGeometry(vm.Vector3(256, 256, 0)), UnlitMaterial());
-    scene.addMesh(mesh);
+    final tileset = _tileset;
+    if (tileset == null) {
+      return scene;
+    }
+    final context = VisitorContext(
+      logger: logger,
+      tileset: tileset,
+      zoom: zoom,
+    );
+    final visitor = SceneBuildingVisitor(scene, context);
+    for (final layer in theme.layers) {
+      layer.accept(context, visitor);
+    }
     return scene;
   }
 }

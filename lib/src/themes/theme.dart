@@ -1,3 +1,9 @@
+import 'dart:ui';
+
+import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
+import 'package:vector_tile_renderer/src/themes/style.dart';
+import 'package:vector_tile_renderer/vector_tile_renderer.dart';
+
 import '../context.dart';
 
 class Theme {
@@ -46,6 +52,22 @@ enum ThemeLayerType {
   unsupported
 }
 
+class VisitorContext {
+  final Logger logger;
+  final Tileset tileset;
+  final double zoom;
+
+  VisitorContext(
+      {required this.logger, required this.tileset, required this.zoom});
+}
+
+abstract class LayerVisitor {
+  void visitFeatures(VisitorContext context, ThemeLayerType layerType,
+      Style style, Iterable<LayerFeature> features);
+
+  void visitBackgound(VisitorContext context, Color color);
+}
+
 /// Represents a layer in the theme. Can [render] to a [Context], and specifies
 /// its [type].
 abstract class ThemeLayer {
@@ -60,4 +82,6 @@ abstract class ThemeLayer {
   String? get tileSource;
 
   void render(Context context);
+
+  void accept(VisitorContext context, LayerVisitor visitor);
 }
