@@ -9,11 +9,31 @@ frame_info;
 
 uniform LinePositions {
     vec2 points[MAX_POINTS];
-};
+}
+line_positions;
 
 uniform LineStyle {
   float width;
-};
+}
+line_style;
+
+in vec3 position;
+
+void main() {
+
+  vec2 curr = line_positions.points[int(position.x)];
+  vec2 next = line_positions.points[int(position.z)];
+  float widthOffset = position.y * line_style.width / 2.0;
+
+  vec2 unitDir = normalize(next - curr);
+  vec2 perp = vec2(unitDir.y, -unitDir.x);
+
+  vec2 result = curr + (widthOffset * perp);
+
+  gl_Position = vec4(result, 0.0, 1.0);
+}
+
+
 
 // line that consists of segments
 // each segment is a line between two points
@@ -22,31 +42,19 @@ uniform LineStyle {
 // uniform: thickness
 //
 // need: normal from the line p1-p2, above or below
-// 
-// index formula indates which point, and above or below
-// each point is represented by three numbers: 
-// 1. index into the position uniform for the point
-// 2. above or below the line (0 or 1)
-// 3. index into the normal uniform for the source/destination point
-// 
 //
-// vertices: 
+// index formula indates which point, and above or below
+// each point is represented by three numbers:
+// 1. index into the position uniform for the point
+// 2. above or below the line (-1 or 1)
+// 3. index into the normal uniform for the source/destination point
+//
+//
+// vertices:
 //
 //  a  ---- b
 //  p1 ---- p2
 //. c  ---- d
 //
 // c, a, b, c, d, b
-// 
-
-in vec3 position;
-
-out vec3 v_position;
-
-
-void main() {
-
-  vec4 model_position = frame_info.model_transform * vec4(position, 1.0);
-  v_position = model_position.xyz;
-  gl_Position = frame_info.camera_transform * model_position;
-}
+//

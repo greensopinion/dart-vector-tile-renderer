@@ -25,8 +25,7 @@ class SceneBuildingVisitor extends LayerVisitor {
       case ThemeLayerType.background:
       case ThemeLayerType.raster:
       case ThemeLayerType.unsupported:
-        context.logger.warn(
-            () => 'Unsupported layer type $layerType for features: $features');
+        return;
     }
   }
 
