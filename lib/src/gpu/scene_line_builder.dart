@@ -22,8 +22,9 @@ class SceneLineBuilder {
   }
 
   void addLine(Style style, LayerFeature feature) {
+    const double lineWidth = 20;
     final linePoints = feature.feature.modelLines.expand((it) => {it.points}).flattened;
 
-    scene.addMesh(Mesh(LineGeometry(linePoints), UnlitMaterial()));
+    scene.addMesh(Mesh(LineGeometry(linePoints, lineWidth), UnlitMaterial()));
   }
 }
