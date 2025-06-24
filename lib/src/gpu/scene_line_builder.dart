@@ -1,5 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
@@ -22,7 +24,8 @@ class SceneLineBuilder {
     geometry.setVertexShader(shaderLibrary["LineVertex"]!);
     final pointCount = feature.feature.modelLines.expand((it) => {it.points}).length;
 
-    List<Vector3> vertices = List.empty(growable: true);
+    List<double> vertices = List.empty(growable: true);
+    List<int> indices = List.empty(growable: true);
 
     if (pointCount < 2) return;
 
@@ -31,14 +34,23 @@ class SceneLineBuilder {
     for (int i = 0; i < segmentCount; i++) {
       double p0 = i + 0;
       double p1 = i + 1;
-      vertices.add(Vector3(p0, 1, p1));
-      vertices.add(Vector3(p0, 0, p1));
-      vertices.add(Vector3(p1, 1, p0));
 
-      vertices.add(Vector3(p1, 1, p0));
-      vertices.add(Vector3(p1, 0, p0));
-      vertices.add(Vector3(p0, 0, p1));
+      vertices.addAll([p1, 1, p0]);
+      vertices.addAll([p0, 1, p1]);
+      vertices.addAll([p0, 0, p1]);
+      vertices.addAll([p1, 0, p0]);
+
+      indices.addAll([
+        0, 1, 2, 2, 3, 0
+      ].map((it) => it + (4 * i)));
     }
+
+    geometry.uploadVertexData(
+      ByteData.sublistView(Float32List.fromList(vertices)),
+      8,
+      ByteData.sublistView(Uint16List.fromList(indices)),
+      indexType: gpu.IndexType.int16,
+    );
 
     scene.addMesh(Mesh(geometry, UnlitMaterial()));
   }
