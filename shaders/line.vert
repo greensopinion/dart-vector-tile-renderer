@@ -9,7 +9,7 @@ frame_info;
 
 uniform LinePositions {
     vec2 points[MAX_POINTS];
-}
+};
 
 // line that consists of segments
 // each segment is a line between two points
