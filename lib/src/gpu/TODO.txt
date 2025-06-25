@@ -1,0 +1,5 @@
+
+
+Lines:
+ - Ensure that line points don't overflow the array buffer
+ - Fix scaling to use actual extent/tile size instead of hard coded values
