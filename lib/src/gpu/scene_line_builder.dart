@@ -33,7 +33,14 @@ class SceneLineBuilder {
     final linePoints = feature.feature.modelLines.expand((it) => {it.points}).flattened;
 
     if (linePoints.isNotEmpty && lineWidth > 0) {
-      scene.addMesh(Mesh(LineGeometry(linePoints, lineWidth), LineMaterial(color)));
+
+      Geometry geometry = LineGeometry(
+          points: linePoints,
+          lineWidth: lineWidth,
+          extent: feature.layer.extent
+      );
+
+      scene.addMesh(Mesh(geometry, LineMaterial(color)));
     }
   }
 }
