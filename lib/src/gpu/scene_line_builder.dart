@@ -3,7 +3,7 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 import 'package:vector_tile_renderer/src/gpu/line_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/line_material.dart';
+import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
 import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
@@ -40,7 +40,7 @@ class SceneLineBuilder {
           extent: feature.layer.extent
       );
 
-      scene.addMesh(Mesh(geometry, LineMaterial(color)));
+      scene.addMesh(Mesh(geometry, ColoredMaterial(color)));
     }
   }
 }
