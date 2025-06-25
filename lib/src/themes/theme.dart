@@ -65,7 +65,7 @@ abstract class LayerVisitor {
   void visitFeatures(VisitorContext context, ThemeLayerType layerType,
       Style style, Iterable<LayerFeature> features);
 
-  void visitBackgound(VisitorContext context, Color color);
+  void visitBackground(VisitorContext context, Color color);
 }
 
 /// Represents a layer in the theme. Can [render] to a [Context], and specifies

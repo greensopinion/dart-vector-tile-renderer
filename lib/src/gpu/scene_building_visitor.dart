@@ -1,7 +1,8 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
+import 'package:vector_tile_renderer/src/gpu/scene_background_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/scene_line_builder.dart';
-import 'package:vector_tile_renderer/src/model/tile_model.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 import 'package:vector_tile_renderer/src/themes/theme.dart';
@@ -30,7 +31,8 @@ class SceneBuildingVisitor extends LayerVisitor {
   }
 
   @override
-  void visitBackgound(VisitorContext context, Color color) {
-    //TODO
+  void visitBackground(VisitorContext context, Color color) {
+    SceneBackgroundBuilder(scene, context)
+        .addBackground(color.vector4);
   }
 }

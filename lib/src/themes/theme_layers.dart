@@ -96,7 +96,7 @@ class BackgroundLayer extends ThemeLayer {
         () => {}, TileFeatureType.background, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
     if (color != null) {
-      visitor.visitBackgound(context, color);
+      visitor.visitBackground(context, color);
     }
   }
 
