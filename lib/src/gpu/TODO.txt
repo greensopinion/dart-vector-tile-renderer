@@ -2,4 +2,4 @@
 
 Lines:
  - Ensure that line points don't overflow the array buffer
- - Fix scaling to use actual extent/tile size instead of hard coded scalars
+ - Fix line width to scale with actual extent/tile size instead of hard coded value
