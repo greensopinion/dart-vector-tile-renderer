@@ -73,7 +73,7 @@ class LineGeometry extends UnskinnedGeometry {
 
   void bindLineStyle(HostBuffer transientsBuffer, RenderPass pass) {
     final lineStyleSlot = vertexShader.getUniformSlot('LineStyle');
-    final lineStyleView = transientsBuffer.emplace(Float32List.fromList([lineWidth / 2048]).buffer.asByteData());
+    final lineStyleView = transientsBuffer.emplace(Float32List.fromList([lineWidth / 512]).buffer.asByteData());
     pass.bindUniform(lineStyleSlot, lineStyleView);
   }
 }
