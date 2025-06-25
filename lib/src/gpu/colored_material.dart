@@ -6,10 +6,10 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 
-class LineMaterial extends Material {
+class ColoredMaterial extends Material {
   Vector4 color;
 
-  LineMaterial(this.color) {
+  ColoredMaterial(this.color) {
     setFragmentShader(shaderLibrary["SimpleFragment"]!);
   }
 
