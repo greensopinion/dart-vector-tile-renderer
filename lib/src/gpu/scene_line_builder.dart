@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 import 'package:vector_tile_renderer/src/gpu/line_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/line_material.dart';
 import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
@@ -27,10 +29,11 @@ class SceneLineBuilder {
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
     final double lineWidth = style.linePaint?.evaluate(evaluationContext)?.strokeWidth ?? 0;
+    final Vector4 color = style.linePaint?.evaluate(evaluationContext)?.color.vector4 ?? Vector4(0, 0, 0, 0);
     final linePoints = feature.feature.modelLines.expand((it) => {it.points}).flattened;
 
     if (linePoints.isNotEmpty && lineWidth > 0) {
-      scene.addMesh(Mesh(LineGeometry(linePoints, lineWidth), LineMaterial()));
+      scene.addMesh(Mesh(LineGeometry(linePoints, lineWidth), LineMaterial(color)));
     }
   }
 }
