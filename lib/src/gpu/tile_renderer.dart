@@ -68,6 +68,7 @@ class TileRenderer {
 
   Scene _createScene() {
     Scene scene = Scene();
+    scene.antiAliasingMode = AntiAliasingMode.msaa;
     final tileset = _tileset;
     if (tileset == null) {
       return scene;
