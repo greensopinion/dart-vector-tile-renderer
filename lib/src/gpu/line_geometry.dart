@@ -11,9 +11,10 @@ import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 
 class LineGeometry extends UnskinnedGeometry {
   final Iterable<Point<double>> points;
-  double lineWidth;
+  final double lineWidth;
+  final int extent;
 
-  LineGeometry(this.points, this.lineWidth) {
+  LineGeometry({required this.points, required this.lineWidth, required this.extent}) {
     setVertexShader(shaderLibrary["LineVertex"]!);
 
     final pointCount = points.length;
@@ -61,7 +62,8 @@ class LineGeometry extends UnskinnedGeometry {
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
-    final linePositions = Float32List.fromList(points.map((it) => [(it.x / 2048) - 1, 1 - (it.y / 2048), 0.0, 0.0]).flattened.toList());
+    final double extentScale = 2 / extent;
+    final linePositions = Float32List.fromList(points.map((it) => [(it.x * extentScale) - 1, 1 - (it.y * extentScale), 0.0, 0.0]).flattened.toList());
     final linePositionsSlot = vertexShader.getUniformSlot('LinePositions');
 
     final linePositionsView = transientsBuffer.emplace(
