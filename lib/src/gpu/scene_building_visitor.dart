@@ -1,9 +1,9 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
-import 'package:vector_tile_renderer/src/gpu/scene_background_builder.dart';
-import 'package:vector_tile_renderer/src/gpu/scene_line_builder.dart';
-import 'package:vector_tile_renderer/src/gpu/scene_polygon_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/background/scene_background_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/polygon/scene_polygon_builder.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 import 'package:vector_tile_renderer/src/themes/theme.dart';
