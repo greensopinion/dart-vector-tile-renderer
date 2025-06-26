@@ -18,7 +18,7 @@ class SceneBuildingVisitor extends LayerVisitor {
       Style style, Iterable<LayerFeature> features) {
     switch (layerType) {
       case ThemeLayerType.line:
-        SceneLineBuilder(scene, context).addLines(style, features);
+        SceneLineBuilder(scene, context).addFeatures(style, features);
         break;
       case ThemeLayerType.fill:
       case ThemeLayerType.fillExtrusion:
