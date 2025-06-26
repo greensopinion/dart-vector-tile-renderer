@@ -3,6 +3,7 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 import 'package:vector_tile_renderer/src/gpu/scene_background_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/scene_line_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/scene_polygon_builder.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 import 'package:vector_tile_renderer/src/themes/theme.dart';
@@ -21,6 +22,8 @@ class SceneBuildingVisitor extends LayerVisitor {
         SceneLineBuilder(scene, context).addFeatures(style, features);
         break;
       case ThemeLayerType.fill:
+        ScenePolygonBuilder(scene, context).addPolygons(style, features);
+        break;
       case ThemeLayerType.fillExtrusion:
       case ThemeLayerType.symbol:
       case ThemeLayerType.background:

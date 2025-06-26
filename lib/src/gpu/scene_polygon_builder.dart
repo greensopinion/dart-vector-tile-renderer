@@ -1,7 +1,5 @@
-import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:dart_earcut/dart_earcut.dart';
 import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
@@ -13,6 +11,7 @@ import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../../vector_tile_renderer.dart';
+import 'earcut_polygons.dart';
 
 class ScenePolygonBuilder {
   final Scene scene;
