@@ -1,4 +1,5 @@
-import 'package:collection/collection.dart';
+import 'dart:math';
+
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
@@ -16,31 +17,36 @@ class SceneLineBuilder {
 
   SceneLineBuilder(this.scene, this.context);
 
-  void addLines(Style style, Iterable<LayerFeature> features) {
+  void addFeatures(Style style, Iterable<LayerFeature> features) {
     for (final feature in features) {
-      addLine(style, feature);
+      addLines(style, feature);
     }
   }
 
-  void addLine(Style style, LayerFeature feature) {
-
+  void addLines(Style style, LayerFeature feature) {
     EvaluationContext evaluationContext = EvaluationContext(
-            () => {}, TileFeatureType.none, context.logger,
+        () => {}, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-    final double lineWidth = style.linePaint?.evaluate(evaluationContext)?.strokeWidth ?? 0;
-    final Vector4 color = style.linePaint?.evaluate(evaluationContext)?.color.vector4 ?? Vector4(0, 0, 0, 0);
-    final linePoints = feature.feature.modelLines.expand((it) => {it.points}).flattened;
+    final double lineWidth =
+        style.linePaint?.evaluate(evaluationContext)?.strokeWidth ?? 0;
+    final Vector4 color =
+        style.linePaint?.evaluate(evaluationContext)?.color.vector4 ??
+            Vector4(0, 0, 0, 0);
 
-    if (linePoints.isNotEmpty && lineWidth > 0) {
-
-      Geometry geometry = LineGeometry(
-          points: linePoints,
-          lineWidth: lineWidth,
-          extent: feature.layer.extent
-      );
-
-      scene.addMesh(Mesh(geometry, ColoredMaterial(color)));
+    for (var line in feature.feature.modelLines) {
+      final linePoints = line.points;
+      if (linePoints.isNotEmpty && lineWidth > 0) {
+        addLine(linePoints, lineWidth, feature, color);
+      }
     }
+  }
+
+  void addLine(List<Point<double>> linePoints, double lineWidth,
+      LayerFeature feature, Vector4 color) {
+    Geometry geometry = LineGeometry(
+        points: linePoints, lineWidth: lineWidth, extent: feature.layer.extent);
+
+    scene.addMesh(Mesh(geometry, ColoredMaterial(color)));
   }
 }
