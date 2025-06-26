@@ -3,3 +3,7 @@
 Lines:
  - Ensure that line points don't overflow the array buffer
  - Fix line width to scale with actual extent/tile size instead of hard coded value
+ - line joins
+ - line ends
+ - mixed-color Lines
+ 

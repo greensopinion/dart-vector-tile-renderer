@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/gpu/gpu_integration_renderer.dart';
+
 import 'constants.dart';
 import 'context.dart';
 import 'features/feature_renderer.dart';
@@ -15,9 +17,11 @@ class Renderer {
   final Logger logger;
   final FeatureDispatcher featureRenderer;
   final TextPainterProvider painterProvider;
+  final bool experimentalGpuRendering;
   Renderer(
       {required this.theme,
       this.painterProvider = const DefaultTextPainterProvider(),
+      this.experimentalGpuRendering = false,
       Logger? logger})
       : logger = logger ?? const Logger.noop(),
         featureRenderer = FeatureDispatcher(logger ?? const Logger.noop());
@@ -46,7 +50,8 @@ class Renderer {
       final tileClip = clip ?? tileSpace;
       final optimizations = Optimizations(
           skipInBoundsChecks: clip == null ||
-              (tileClip.width - tileSpace.width).abs() < (tileSpace.width / 2));
+              (tileClip.width - tileSpace.width).abs() < (tileSpace.width / 2),
+          gpuRendering: experimentalGpuRendering);
       final context = Context(
           logger: logger,
           canvas: canvas,
@@ -59,11 +64,8 @@ class Renderer {
           tileClip: tileClip,
           optimizations: optimizations,
           textPainterProvider: painterProvider);
-      final effectiveTheme = theme.atZoom(zoom);
-      for (final themeLayer in effectiveTheme.layers) {
-        logger.log(() => 'rendering theme layer ${themeLayer.id}');
-        themeLayer.render(context);
-      }
+      GpuIntegrationRenderer(theme: theme)
+          .render(context, canvas, tileSpace.size);
       canvas.restore();
     });
   }

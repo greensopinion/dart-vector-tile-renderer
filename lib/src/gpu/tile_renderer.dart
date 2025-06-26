@@ -48,7 +48,9 @@ class TileRenderer {
       this.logger = const Logger.noop()}) {
     if (!_initializer.isCompleted) {
       Scene.initializeStaticResources().then((_) {
-        _initializer.complete();
+        if (!_initializer.isCompleted) {
+          _initializer.complete();
+        }
       });
     }
   }
