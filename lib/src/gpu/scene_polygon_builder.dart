@@ -27,46 +27,21 @@ class ScenePolygonBuilder {
   }
 
   void addPolygon(Style style, LayerFeature feature) {
-    EvaluationContext evaluationContext = EvaluationContext(
-        () => {}, TileFeatureType.none, context.logger,
-        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
     final polygons = feature.feature.modelPolygons;
-    final fillPaint =
-        style.fillPaint?.evaluate(evaluationContext)?.color.vector4 ??
-            Vector4(1, 0, 0, 1);
-
 
     for (final polygon in polygons) {
-      final flat = polygon.rings
-          .expand((ring) => ring.points)
-          .map((point) => <double>[point.x.toDouble(), point.y.toDouble()])
-          .expand((e) => e)
-          .toList();
 
+      EvaluationContext evaluationContext = EvaluationContext(
+              () => {}, TileFeatureType.none, context.logger,
+          zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-
-      final indices = Earcut.triangulateRaw(flat);
+      final fillPaint = style.fillPaint?.evaluate(evaluationContext)?.color.vector4 ?? Vector4(1, 0, 0, 1);
 
       final normalized = <double>[];
-      for (var i = 0; i < flat.length; i += 2) {
-        final x = flat[i], y = flat[i + 1];
-        normalized.addAll([
-          x / 2048.0 - 1,
-          1 - y / 2048.0,
-          0.0,
-        ]);
-      }
-
       final fixedIndices = <int>[];
-      for (int i = 0; i < indices.length; i += 3) {
-        fixedIndices.addAll([
-          indices[i],
-          indices[i + 2],
-          indices[i + 1],
-        ]);
-      }
 
+      triangulatePolygonToBuffers(polygon, normalized, fixedIndices);
 
       scene.addMesh(
         Mesh(
