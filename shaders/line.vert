@@ -26,8 +26,7 @@ out vec3 v_viewvector;
 out vec2 v_texture_coords;
 out vec4 v_color;
 
-void main() {
-
+vec2 getSegmentPos() {
   vec2 curr = line_positions.points[int(position.x)].xy;
   vec2 next = line_positions.points[int(position.z)].xy;
   float widthOffset = position.y * line_style.width / 2.0;
@@ -35,7 +34,17 @@ void main() {
   vec2 unitDir = normalize(next - curr);
   vec2 perp = vec2(unitDir.y, -unitDir.x);
 
-  vec2 result = curr + (widthOffset * perp);
+  return curr + (widthOffset * perp);
+}
+
+void main() {
+  vec2 result;
+
+  if (position.y == 0) {
+    result = line_positions.points[int(position.x)].xy;
+  } else if (position.y < 1.5) {
+    result = getSegmentPos();
+  }
 
   gl_Position = vec4(result, 0.0, 1.0);
 
