@@ -35,7 +35,11 @@ class ScenePolygonBuilder {
               () => {}, TileFeatureType.none, context.logger,
           zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-      final fillPaint = style.fillPaint?.evaluate(evaluationContext)?.color.vector4 ?? Vector4(1, 0, 0, 1);
+      final fillPaint = style.fillPaint?.evaluate(evaluationContext)?.color.vector4;
+
+      if (fillPaint == null) {
+        return;
+      }
 
       final normalized = <double>[];
       final fixedIndices = <int>[];

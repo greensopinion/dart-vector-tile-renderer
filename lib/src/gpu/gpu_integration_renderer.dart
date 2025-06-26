@@ -54,7 +54,9 @@ List<_LayerGroup> _groupLayersByEngine(
 
 _Engine _engineOf(ThemeLayer layer) {
   if (layer.type == ThemeLayerType.line ||
-      layer.type == ThemeLayerType.background) {
+      layer.type == ThemeLayerType.background ||
+      layer.type == ThemeLayerType.fill
+  ) {
     return _Engine.gpu;
   }
   return _Engine.canvas;
