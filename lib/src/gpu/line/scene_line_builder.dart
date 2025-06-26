@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
-import 'package:vector_tile_renderer/src/gpu/line_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/line/line_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
 import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 
-import '../../vector_tile_renderer.dart';
+import '../../../vector_tile_renderer.dart';
 
 class SceneLineBuilder {
   final Scene scene;

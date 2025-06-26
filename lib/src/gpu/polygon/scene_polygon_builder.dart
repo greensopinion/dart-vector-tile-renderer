@@ -10,7 +10,7 @@ import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 
-import '../../vector_tile_renderer.dart';
+import '../../../vector_tile_renderer.dart';
 import 'earcut_polygons.dart';
 
 class ScenePolygonBuilder {

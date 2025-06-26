@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:dart_earcut/dart_earcut.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
-import '../model/geometry_model.dart';
+import '../../model/geometry_model.dart';
 
 void triangulatePolygonToBuffers(
     TilePolygon polygon,
