@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
@@ -7,7 +6,6 @@ import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 import 'package:dart_earcut/dart_earcut.dart';
 
 class PolygonGeometry extends UnskinnedGeometry {
-
   PolygonGeometry(TilePolygon polygon) {
     setVertexShader(shaderLibrary["SimpleVertex"]!);
 
@@ -15,7 +13,6 @@ class PolygonGeometry extends UnskinnedGeometry {
     final fixedIndices = <int>[];
 
     triangulatePolygonToBuffers(polygon, normalized, fixedIndices);
-
 
     uploadVertexData(
       ByteData.sublistView(Float32List.fromList(normalized)),
@@ -26,17 +23,27 @@ class PolygonGeometry extends UnskinnedGeometry {
   }
 
   void triangulatePolygonToBuffers(
-      TilePolygon polygon,
-      List<double> outNormalized,
-      List<int> outIndices,
-      ) {
-    final flat = polygon.rings
-        .expand((ring) => ring.points)
-        .map((point) => [point.x.toDouble(), point.y.toDouble()])
-        .expand((e) => e)
-        .toList();
+    TilePolygon polygon,
+    List<double> outNormalized,
+    List<int> outIndices,
+  ) {
+    final flat = <double>[];
+    final holeIndices = <int>[];
 
-    final indices = Earcut.triangulateRaw(flat);
+    for (int i = 0; i < polygon.rings.length; i++) {
+      final ring = polygon.rings[i];
+
+      if (i > 0) {
+        holeIndices.add(flat.length ~/ 2);
+      }
+
+      for (final point in ring.points) {
+        flat.add(point.x.toDouble());
+        flat.add(point.y.toDouble());
+      }
+    }
+
+    final indices = Earcut.triangulateRaw(flat, holeIndices: holeIndices);
 
     for (var i = 0; i < flat.length; i += 2) {
       final x = flat[i], y = flat[i + 1];
@@ -55,5 +62,4 @@ class PolygonGeometry extends UnskinnedGeometry {
       ]);
     }
   }
-
 }
