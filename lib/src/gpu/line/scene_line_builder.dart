@@ -2,14 +2,14 @@ import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
-import 'package:vector_tile_renderer/src/gpu/line/line_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
-import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
-import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
-import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../../../vector_tile_renderer.dart';
+import '../../themes/expression/expression.dart';
+import '../../themes/feature_resolver.dart';
+import '../../themes/style.dart';
+import '../color_extension.dart';
+import '../colored_material.dart';
+import 'line_geometry.dart';
 
 class SceneLineBuilder {
   final Scene scene;
@@ -25,15 +25,15 @@ class SceneLineBuilder {
 
   void addLines(Style style, LayerFeature feature) {
     EvaluationContext evaluationContext = EvaluationContext(
-        () => {}, TileFeatureType.none, context.logger,
+        () => feature.feature.properties, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-    final double lineWidth =
-        style.linePaint?.evaluate(evaluationContext)?.strokeWidth ?? 0;
-    final Vector4 color =
-        style.linePaint?.evaluate(evaluationContext)?.color.vector4 ??
-            Vector4(0, 0, 0, 0);
-
+    final paint = style.linePaint?.evaluate(evaluationContext);
+    final lineWidth = paint?.strokeWidth;
+    final color = paint?.color.vector4;
+    if (lineWidth == null || color == null || lineWidth <= 0) {
+      return;
+    }
     for (var line in feature.feature.modelLines) {
       final linePoints = line.points;
       if (linePoints.isNotEmpty && lineWidth > 0) {
