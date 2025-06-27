@@ -1,4 +1,4 @@
-
+ - Get device max texture resolution instead of constant limit
 
 Lines:
  - Ensure that line points don't overflow the array buffer

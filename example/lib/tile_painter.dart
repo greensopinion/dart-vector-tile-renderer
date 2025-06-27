@@ -19,6 +19,7 @@ class TilePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
     _readyChanged = false;
     _renderer.render(canvas, size);
   }
