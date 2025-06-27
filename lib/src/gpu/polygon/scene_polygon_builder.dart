@@ -1,14 +1,14 @@
-import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
+import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
+import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry.dart';
+import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
+import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
+import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../../../vector_tile_renderer.dart';
-import '../../themes/expression/expression.dart';
-import '../../themes/feature_resolver.dart';
-import '../../themes/style.dart';
-import '../color_extension.dart';
-import '../colored_material.dart';
-import 'polygon_geometry.dart';
 
 class ScenePolygonBuilder {
   final Scene scene;
