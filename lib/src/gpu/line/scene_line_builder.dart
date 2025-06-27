@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/line/line_end_geometry.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
@@ -36,7 +37,7 @@ class SceneLineBuilder {
     }
     for (var line in feature.feature.modelLines) {
       final linePoints = line.points;
-      if (linePoints.isNotEmpty && lineWidth > 0) {
+      if (linePoints.length > 1 && lineWidth > 0) {
         addLine(linePoints, lineWidth, feature, color);
       }
     }
@@ -44,9 +45,14 @@ class SceneLineBuilder {
 
   void addLine(List<Point<double>> linePoints, double lineWidth,
       LayerFeature feature, Vector4 color) {
-    Geometry geometry = LineGeometry(
+    Geometry mainGeometry = LineGeometry(
         points: linePoints, lineWidth: lineWidth, extent: feature.layer.extent);
 
-    scene.addMesh(Mesh(geometry, ColoredMaterial(color)));
+    scene.addMesh(Mesh(mainGeometry, ColoredMaterial(color)));
+
+    Geometry endGeometry = LineEndGeometry(
+        points: linePoints, lineWidth: lineWidth, extent: feature.layer.extent);
+
+    scene.addMesh(Mesh(endGeometry, ColoredMaterial(color)));
   }
 }
