@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_end_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/line/line_end_material.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
@@ -53,6 +54,6 @@ class SceneLineBuilder {
     Geometry endGeometry = LineEndGeometry(
         points: linePoints, lineWidth: lineWidth, extent: feature.layer.extent);
 
-    scene.addMesh(Mesh(endGeometry, ColoredMaterial(color)));
+    scene.addMesh(Mesh(endGeometry, LineEndMaterial(color)));
   }
 }
