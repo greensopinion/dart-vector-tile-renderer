@@ -1,12 +1,9 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/gpu/gpu_integration_renderer.dart';
-
 import 'constants.dart';
-import 'context.dart';
 import 'features/feature_renderer.dart';
+import 'gpu/tile_renderer_composite.dart';
 import 'logger.dart';
-import 'optimizations.dart';
 import 'profiling.dart';
 import 'symbols/text_painter.dart';
 import 'themes/theme.dart';
@@ -43,30 +40,21 @@ class Renderer {
       required double zoom,
       required double rotation}) {
     profileSync('Render', () {
-      final tileSpace =
-          Rect.fromLTWH(0, 0, tileSize.toDouble(), tileSize.toDouble());
-      canvas.save();
-      canvas.clipRect(tileSpace);
-      final tileClip = clip ?? tileSpace;
-      final optimizations = Optimizations(
-          skipInBoundsChecks: clip == null ||
-              (tileClip.width - tileSpace.width).abs() < (tileSpace.width / 2),
-          gpuRendering: experimentalGpuRendering);
-      final context = Context(
-          logger: logger,
-          canvas: canvas,
-          featureRenderer: featureRenderer,
-          tileSource: tile,
-          zoomScaleFactor: zoomScaleFactor,
-          zoom: zoom,
-          rotation: rotation,
-          tileSpace: tileSpace,
-          tileClip: tileClip,
-          optimizations: optimizations,
-          textPainterProvider: painterProvider);
-      GpuIntegrationRenderer(theme: theme)
-          .render(context, canvas, tileSpace.size);
-      canvas.restore();
+      TileRendererComposite renderer = TileRendererComposite(
+        theme: theme,
+        tile: tile,
+        gpuRenderingEnabled: experimentalGpuRendering,
+        zoom: zoom,
+        painterProvider: painterProvider,
+        logger: logger,
+      );
+      renderer.render(
+        canvas,
+        Size(tileSize.toDouble(), tileSize.toDouble()),
+        clip: clip,
+        zoomScaleFactor: zoomScaleFactor,
+        rotation: rotation,
+      );
     });
   }
 }
