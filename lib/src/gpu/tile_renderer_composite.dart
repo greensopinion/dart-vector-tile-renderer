@@ -59,6 +59,7 @@ class TileRendererComposite {
     for (final group in _groups) {
       group.render(context, canvas, size);
     }
+    canvas.restore();
   }
 
   _Engine _engineOf(ThemeLayer layer) {
