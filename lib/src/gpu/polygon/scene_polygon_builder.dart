@@ -1,12 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
+import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
+import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry.dart';
+import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
+import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
+import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../../../vector_tile_renderer.dart';
-import '../../themes/expression/expression.dart';
-import '../../themes/feature_resolver.dart';
-import '../../themes/style.dart';
-import '../color_extension.dart';
-import '../colored_material.dart';
-import 'polygon_geometry.dart';
 
 class ScenePolygonBuilder {
   final Scene scene;
@@ -27,13 +30,32 @@ class ScenePolygonBuilder {
         () => feature.feature.properties, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-    final fillPaint = style.fillPaint?.evaluate(evaluationContext)?.color;
+    final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
+    if (outlinePaint != null) {
+      final lines = SceneLineBuilder(scene, context);
+
+      final outlineColor = outlinePaint.color.vector4;
+      final outlineWidth = outlinePaint.strokeWidth;
+
+      if (outlineWidth != null) {
+        for (final polygon in polygons) {
+          for (int i = 0; i < polygon.rings.length; i++) {
+            final points = polygon.rings[i].points;
+            lines.addLine(points, outlineWidth, feature, outlineColor);
+          }
+        }
+      }
+    }
+
+    final fillPaint = style.fillPaint?.evaluate(evaluationContext);
+
     if (fillPaint == null) {
       return;
     }
-    final color = fillPaint.vector4;
+    final fillColor = fillPaint.color.vector4;
+
     for (final polygon in polygons) {
-      scene.addMesh(Mesh(PolygonGeometry(polygon), ColoredMaterial(color)));
+      scene.addMesh(Mesh(PolygonGeometry(polygon), ColoredMaterial(fillColor)));
     }
   }
 }
