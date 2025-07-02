@@ -8,7 +8,7 @@ frame_info;
 #define MAX_POINTS 1024
 
 uniform LinePositions {
-    vec4 points[MAX_POINTS];
+  vec4 points[MAX_POINTS];
 }
 line_positions;
 
@@ -26,10 +26,10 @@ out vec3 v_viewvector;
 out vec2 v_texture_coords;
 out vec4 v_color;
 
-vec2 getSegmentPos() {
+vec2 getSegmentPos(float y, int offset) {
   vec2 curr = line_positions.points[int(position.x)].xy;
-  vec2 next = line_positions.points[int(position.z)].xy;
-  float widthOffset = position.y * line_style.width / 2.0;
+  vec2 next = line_positions.points[int(position.z) + offset].xy;
+  float widthOffset = y * line_style.width / 2.0;
 
   vec2 unitDir = normalize(next - curr);
   vec2 perp = vec2(unitDir.y, -unitDir.x);
@@ -43,7 +43,17 @@ void main() {
   if (position.y == 0) {
     result = line_positions.points[int(position.x)].xy;
   } else if (position.y < 1.5) {
-    result = getSegmentPos();
+    result = getSegmentPos(position.y, 0);
+  } else if (abs(position.y) == 2) {
+    vec2 o = line_positions.points[int(position.x)].xy;
+    vec2 a = getSegmentPos(position.y / 2, 0) - o;
+    vec2 b = getSegmentPos(position.y / 2, 2) - o;
+
+    vec2 c = (a + b) / 2;
+
+    float x = ((a.x * a.x / a.y) + a.y) / ((c.y / c.x) + (a.x / a.y));
+    float y = (c.y / c.x) * x;
+    result = vec2(x + o.x, y + o.y);
   }
 
   gl_Position = vec4(result, 0.0, 1.0);
