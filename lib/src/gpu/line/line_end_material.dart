@@ -4,14 +4,19 @@ import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
+import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../shaders.dart';
 
 class LineEndMaterial extends Material {
   Vector4 color;
 
-  LineEndMaterial(this.color) {
-    setFragmentShader(shaderLibrary["LineEndFragment"]!);
+  LineEndMaterial(this.color, LineCap capType) {
+    if (capType == LineCap.round) {
+      setFragmentShader(shaderLibrary["LineEndFragment"]!);
+    } else {
+      setFragmentShader(shaderLibrary["SimpleFragment"]!);
+    }
   }
 
   @override
