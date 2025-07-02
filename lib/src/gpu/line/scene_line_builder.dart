@@ -42,6 +42,14 @@ class SceneLineBuilder {
         addLine(linePoints, lineWidth, feature, color);
       }
     }
+
+    for (final polygon in feature.feature.modelPolygons) {
+      for (int i = 0; i < polygon.rings.length; i++) {
+        final ring = polygon.rings[i];
+        final points = List.of(ring.points)..add(ring.points.first);
+        addLine(points, lineWidth, feature, color);
+      }
+    }
   }
 
   void addLine(List<Point<double>> linePoints, double lineWidth,
