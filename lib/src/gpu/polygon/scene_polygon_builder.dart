@@ -36,15 +36,14 @@ class ScenePolygonBuilder {
 
       final outlineColor = outlinePaint.color.vector4;
       final outlineWidth = outlinePaint.strokeWidth;
-      final outlineDashes = outlinePaint.strokeDashPattern;
+      final outlineJoin = outlinePaint.lineJoin;
+      final outlineCap = outlinePaint.lineCap;
 
       if (outlineWidth != null) {
         for (final polygon in polygons) {
           for (int i = 0; i < polygon.rings.length; i++) {
-            final ring = polygon.rings[i];
-            final points = List.of(ring.points)..add(ring.points.first);
-            lines.addLine(
-                points, outlineWidth, feature, outlineColor, outlineDashes);
+            final points = polygon.rings[i].points;
+            lines.addLine(points, outlineWidth, feature.layer.extent, outlineColor, outlineJoin, outlineCap);
           }
         }
       }
