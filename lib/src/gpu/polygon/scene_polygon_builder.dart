@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
@@ -34,10 +32,7 @@ class ScenePolygonBuilder {
     if (outlinePaint != null) {
       final lines = SceneLineBuilder(scene, context);
 
-      final outlineColor = outlinePaint.color.vector4;
       final outlineWidth = outlinePaint.strokeWidth;
-      final outlineJoin = outlinePaint.lineJoin;
-      final outlineCap = outlinePaint.lineCap;
 
       if (outlineWidth != null) {
         for (final polygon in polygons) {

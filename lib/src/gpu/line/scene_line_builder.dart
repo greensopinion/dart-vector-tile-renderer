@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/line/line_end_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_material.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -11,7 +9,6 @@ import '../../themes/feature_resolver.dart';
 import '../../themes/paint_model.dart';
 import '../../themes/style.dart';
 import '../color_extension.dart';
-import '../colored_material.dart';
 import 'line_geometry.dart';
 
 class SceneLineBuilder {
