@@ -8,15 +8,11 @@ import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../shaders.dart';
 
-class LineEndMaterial extends Material {
+class LineMaterial extends Material {
   Vector4 color;
 
-  LineEndMaterial(this.color, LineCap capType) {
-    if (capType == LineCap.round) {
-      setFragmentShader(shaderLibrary["LineEndFragment"]!);
-    } else {
-      setFragmentShader(shaderLibrary["SimpleFragment"]!);
-    }
+  LineMaterial(this.color) {
+    setFragmentShader(shaderLibrary["LineFragment"]!);
   }
 
   @override

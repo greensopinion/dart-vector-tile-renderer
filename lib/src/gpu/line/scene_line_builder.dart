@@ -3,11 +3,12 @@ import 'dart:math';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_end_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/line/line_end_material.dart';
+import 'package:vector_tile_renderer/src/gpu/line/line_material.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
+import '../../themes/paint_model.dart';
 import '../../themes/style.dart';
 import '../color_extension.dart';
 import '../colored_material.dart';
@@ -37,14 +38,10 @@ class SceneLineBuilder {
       return;
     }
 
-    final color = paint.color.vector4;
-    final joinType = paint.lineJoin;
-    final capType = paint.lineCap;
-
     for (var line in feature.feature.modelLines) {
       final linePoints = line.points;
       if (linePoints.length > 1 && lineWidth > 0) {
-        addLine(linePoints, lineWidth, feature.layer.extent, color, joinType, capType);
+        addLine(linePoints, lineWidth, feature.layer.extent, paint);
       }
     }
   }
@@ -53,9 +50,7 @@ class SceneLineBuilder {
       List<Point<double>> linePoints,
       double lineWidth,
       int extent,
-      Vector4 color,
-      LineJoin? joinType,
-      LineCap? capType
+      PaintModel paint
   ) {
     Geometry mainGeometry = LineGeometry(
         points: linePoints,
@@ -63,16 +58,6 @@ class SceneLineBuilder {
         extent: extent
     );
 
-    scene.addMesh(Mesh(mainGeometry, ColoredMaterial(color)));
-
-    if (capType != null && capType != LineCap.butt) {
-      Geometry endGeometry = LineEndGeometry(
-        points: linePoints,
-        lineWidth: lineWidth,
-        extent: extent,
-      );
-
-      scene.addMesh(Mesh(endGeometry, LineEndMaterial(color, capType)));
-    }
+    scene.addMesh(Mesh(mainGeometry, LineMaterial(paint.color.vector4)));
   }
 }
