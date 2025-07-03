@@ -11,10 +11,6 @@
         "type": "vertex",
         "file": "shaders/line.vert"
     },
-    "LineEndVertex": {
-        "type": "vertex",
-        "file": "shaders/line_end.vert"
-    },
     "LineFragment": {
         "type": "fragment",
         "file": "shaders/line.frag"
