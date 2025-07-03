@@ -43,7 +43,7 @@ class ScenePolygonBuilder {
         for (final polygon in polygons) {
           for (int i = 0; i < polygon.rings.length; i++) {
             final points = polygon.rings[i].points;
-            lines.addLine(points, outlineWidth, feature.layer.extent, outlineColor, outlineJoin, outlineCap);
+            lines.addLine(points, outlineWidth, feature.layer.extent, outlinePaint);
           }
         }
       }

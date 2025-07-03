@@ -1,6 +1,8 @@
+
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
@@ -13,23 +15,8 @@ class LineGeometry extends UnskinnedGeometry {
   final double lineWidth;
   final int extent;
 
-  static const double raw = 0;
-
-  static const double above = 1;
-  static const double below = -1;
-  final List<double>? dashLengths;
-
-  LineGeometry(
-      {required this.points,
-      required this.lineWidth,
-      required this.extent,
-      this.dashLengths}) {
-    if (dashLengths != null) {
-      setVertexShader(shaderLibrary["DashedLineVertex"]!);
-    } else {
-      setVertexShader(shaderLibrary[
-          "LineVertex"]!); // get old file from older commits (keep name to be line)
-    }
+  LineGeometry({required this.points, required this.lineWidth, required this.extent}) {
+    setVertexShader(shaderLibrary["LineVertex"]!);
 
     final pointCount = points.length;
     if (pointCount > 1) {
@@ -39,56 +26,49 @@ class LineGeometry extends UnskinnedGeometry {
       final segmentCount = pointCount - 1;
 
       setupSegments(segmentCount, vertices, indices);
-      setupJoins(segmentCount, vertices, indices, LineJoin.bevel);
+      setupJoins(segmentCount, vertices, indices, LineJoin.round);
 
       uploadVertexData(
         ByteData.sublistView(Float32List.fromList(vertices)),
-        (vertices.length / 3).truncate(),
+        (vertices.length / 6).truncate(),
         ByteData.sublistView(Uint16List.fromList(indices)),
         indexType: gpu.IndexType.int16,
       );
     }
   }
 
-  void setupSegments(
-      int segmentCount, List<double> vertices, List<int> indices) {
+  void setupSegments(int segmentCount, List<double> vertices, List<int> indices) {
     for (int i = 0; i < segmentCount; i++) {
       double p0 = i + 0;
       double p1 = i + 1;
 
       vertices.addAll([
-        p1,
-        above,
-        p0,
-        p0,
-        below,
-        p1,
-        p0,
-        above,
-        p1,
-        p1,
-        below,
-        p0,
+        p1, p0, 0, 1, 0, 0,
+        p0, p1, 0,-1, 0, 0,
+        p0, p1, 0, 1, 0, 0,
+        p1, p0, 0,-1, 0, 0,
       ]);
 
-      indices.addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i)));
+      indices.addAll([
+        0, 1, 2, 2, 3, 0
+      ].map((it) => it + (4 * i)));
     }
   }
 
-  void setupJoins(int segmentCount, List<double> vertices, List<int> indices,
-      LineJoin type) {
+  void setupJoins(int segmentCount, List<double> vertices, List<int> indices, LineJoin type) {
     if (type == LineJoin.bevel) {
       setupJoinsBevel(vertices, segmentCount, indices);
+    } else if (type == LineJoin.round) {
+      setupJoinsRound(vertices, segmentCount, indices);
     }
   }
 
-  void setupJoinsBevel(
-      List<double> vertices, int segmentCount, List<int> indices) {
-    final startIndex = (vertices.length / 3).truncate();
+  void setupJoinsBevel(List<double> vertices, int segmentCount, List<int> indices) {
+    final startIndex = (vertices.length / 6).truncate();
     final joinCount = segmentCount - 1;
 
     for (int i = 0; i < joinCount; i++) {
-      vertices.addAll([i + 1, 0, 0]);
+      vertices.addAll([i + 1, 0, 0, 0, 0, 0]);
 
       int offset = i * 4;
 
@@ -103,32 +83,41 @@ class LineGeometry extends UnskinnedGeometry {
     }
   }
 
+  void setupJoinsRound(List<double> vertices, int segmentCount, List<int> indices) {
+    final startIndex = (vertices.length / 6).truncate();
+    final joinCount = segmentCount - 1;
+
+    for (int i = 0; i < joinCount; i++) {
+      vertices.addAll([i + 1, i + 0, 0,-1, -1, 1]);
+      vertices.addAll([i + 1, i + 0, 0, 1, -1, 1]);
+
+      int offset = i * 4;
+
+      int a = startIndex + (2 * i);
+      int b = startIndex + (2 * i) + 1;
+      int c = offset + 0;
+      int d = offset + 3;
+
+      indices.addAll([
+        c, d, b,
+        b, d, a
+      ]);
+    }
+  }
+
   @override
-  void bind(RenderPass pass, HostBuffer transientsBuffer,
-      Matrix4 modelTransform, Matrix4 cameraTransform, Vector3 cameraPosition) {
-    super.bind(pass, transientsBuffer, modelTransform, cameraTransform,
-        cameraPosition);
+  void bind(RenderPass pass, HostBuffer transientsBuffer, Matrix4 modelTransform, Matrix4 cameraTransform, Vector3 cameraPosition) {
+    super.bind(pass, transientsBuffer, modelTransform, cameraTransform, cameraPosition);
 
     bindPositions(transientsBuffer, pass);
     bindLineStyle(transientsBuffer, pass);
 
     pass.setPrimitiveType(gpu.PrimitiveType.triangle);
-
-    if (dashLengths != null) {
-      final double extentScale = extent / 2;
-      final extentScalingSlot = vertexShader.getUniformSlot('extentScalings');
-      final extentScalingView = transientsBuffer
-          .emplace(Float32List.fromList([extentScale]).buffer.asByteData());
-      pass.bindUniform(extentScalingSlot, extentScalingView);
-    }
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
     final double extentScale = 2 / extent;
-    final linePositions = Float32List.fromList(points
-        .expand((it) =>
-            [(it.x * extentScale) - 1, 1 - (it.y * extentScale), 0.0, 0.0])
-        .toList());
+    final linePositions = Float32List.fromList(points.expand((it) => [(it.x * extentScale) - 1, 1 - (it.y * extentScale), 0.0, 0.0]).toList());
     final linePositionsSlot = vertexShader.getUniformSlot('LinePositions');
 
     final linePositionsView = transientsBuffer.emplace(
@@ -140,8 +129,7 @@ class LineGeometry extends UnskinnedGeometry {
 
   void bindLineStyle(HostBuffer transientsBuffer, RenderPass pass) {
     final lineStyleSlot = vertexShader.getUniformSlot('LineStyle');
-    final lineStyleView = transientsBuffer
-        .emplace(Float32List.fromList([lineWidth / 256]).buffer.asByteData());
+    final lineStyleView = transientsBuffer.emplace(Float32List.fromList([lineWidth / 256]).buffer.asByteData());
     pass.bindUniform(lineStyleSlot, lineStyleView);
   }
 }

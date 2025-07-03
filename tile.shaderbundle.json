@@ -11,20 +11,12 @@
         "type": "vertex",
         "file": "shaders/line.vert"
     },
-    "DashedLineVertex": {
-        "type": "vertex",
-        "file": "shaders/dashed_line.vert"
-    },
     "LineEndVertex": {
         "type": "vertex",
         "file": "shaders/line_end.vert"
     },
-    "LineEndFragment": {
+    "LineFragment": {
         "type": "fragment",
-        "file": "shaders/line_end.frag"
-    },
-    "DashedLineFragment": {
-        "type": "fragment",
-        "file": "shaders/dashed_line.frag"
+        "file": "shaders/line.frag"
     }
 }
