@@ -26,6 +26,7 @@ class LineGeometry extends UnskinnedGeometry {
       final segmentCount = pointCount - 1;
 
       setupSegments(segmentCount, vertices, indices);
+      setupEnds(segmentCount, vertices, indices, LineCap.round);
       setupJoins(segmentCount, vertices, indices, LineJoin.round);
 
       uploadVertexData(
@@ -53,6 +54,29 @@ class LineGeometry extends UnskinnedGeometry {
         0, 1, 2, 2, 3, 0
       ].map((it) => it + (4 * i)));
     }
+  }
+
+  void setupEnds(int segmentCount, List<double> vertices, List<int> indices, LineCap type) {
+    if (type == LineCap.butt) return;
+    final round = type == LineCap.round ? 1.0 : 0.0;
+    final startIndex = (vertices.length / 6).truncate();
+
+    double a = segmentCount - 1;
+    double b = segmentCount - 0;
+
+    vertices.addAll([
+        0, 1, 0, -1, -1, round,
+        0, 1, 0,  1, -1, round,
+        b, a, 0, -1, -1, round,
+        b, a, 0,  1, -1, round,
+    ]);
+
+    indices.addAll([
+      startIndex, startIndex + 1, 1,
+      startIndex + 1, 2, 1,
+      startIndex + 3, startIndex - 4, startIndex - 1,
+      startIndex + 2, startIndex + 3, startIndex - 1,
+    ]);
   }
 
   void setupJoins(int segmentCount, List<double> vertices, List<int> indices, LineJoin type) {
