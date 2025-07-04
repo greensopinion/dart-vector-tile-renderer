@@ -1,3 +1,5 @@
+#pragma shader stage(vertex)
+
 uniform FrameInfo {
   mat4 model_transform;
   mat4 camera_transform;
@@ -5,18 +7,17 @@ uniform FrameInfo {
 }
 frame_info;
 
-#define MAX_POINTS 1024
-
-uniform LinePositions {
-  vec4 points[MAX_POINTS];
-}
-line_positions;
-
 uniform LineStyle {
   float width;
 }
 line_style;
 
+uniform Meta {
+  float num_points;
+}
+meta;
+
+uniform sampler2D points;
 
 in vec3 position;
 in vec2 uv;
@@ -27,6 +28,11 @@ out vec3 v_normal;
 out vec3 v_viewvector;
 out vec2 v_texture_coords;
 out vec4 v_color;
+
+vec2 getPoint(int i) {
+  float u = float(i) / (meta.num_points - 1.0);
+  return texture(points, vec2(u, 0)).xy;
+}
 
 vec2 getSegmentPos(vec2 curr, vec2 next, float flip) {
   float offsetDist = line_style.width / 2.0;
@@ -42,9 +48,9 @@ float eulerDist(vec2 vec) {
 }
 
 vec2 getMiterPos() {
-  vec2 origin = line_positions.points[int(position.y)].xy;
-  vec2 a = getSegmentPos(origin, line_positions.points[int(position.x)].xy, 1);
-  vec2 b = getSegmentPos(origin, line_positions.points[int(position.z)].xy, -1);
+  vec2 origin = getPoint(int(position.y));
+  vec2 a = getSegmentPos(origin, getPoint(int(position.x)), 1);
+  vec2 b = getSegmentPos(origin, getPoint(int(position.z)), -1);
   vec2 c = vec2((a.x + b.x) / 2, (a.y + b.y) / 2);
 
   vec2 vec = c - origin;
@@ -63,11 +69,10 @@ vec2 getMiterPos() {
 void main() {
   vec2 result;
   if (position.z == 0) {
-    result = getSegmentPos(line_positions.points[int(position.x)].xy, line_positions.points[int(position.y)].xy, 1);
+    result = getSegmentPos(getPoint(int(position.x)), getPoint(int(position.y)), 1);
   } else {
     result = getMiterPos();
   }
-
   gl_Position = vec4(result, 0.0, 1.0);
 
   v_position = vec3(result, 0.0);
