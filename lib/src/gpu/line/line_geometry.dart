@@ -166,14 +166,24 @@ class LineGeometry extends UnskinnedGeometry {
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
     final double extentScale = 2 / extent;
-    final linePositions = Float32List.fromList(points.expand((it) => [(it.x * extentScale) - 1, 1 - (it.y * extentScale), 0.0, 0.0]).toList());
-    final linePositionsSlot = vertexShader.getUniformSlot('LinePositions');
+    final pointsEncoded = Float32List.fromList(points.expand((it) => [((it.x * extentScale) - 1), (1 - (it.y * extentScale)), 0.0, 0.0]).toList()).buffer.asByteData();
 
-    final linePositionsView = transientsBuffer.emplace(
-      linePositions.buffer.asByteData(),
+    final texture = gpu.gpuContext.createTexture(
+        gpu.StorageMode.hostVisible,
+        points.length,
+        1,
+      format: gpu.PixelFormat.r32g32b32a32Float
     );
 
-    pass.bindUniform(linePositionsSlot, linePositionsView);
+    texture.overwrite(pointsEncoded);
+
+    final textureSlot = vertexShader.getUniformSlot("points");
+
+    pass.bindTexture(textureSlot, texture);
+
+    final slot = vertexShader.getUniformSlot('Meta');
+    final buffer = Float32List.fromList([points.length.toDouble()]);
+    pass.bindUniform(slot, transientsBuffer.emplace(buffer.buffer.asByteData()));
   }
 
   void bindLineStyle(HostBuffer transientsBuffer, RenderPass pass) {
