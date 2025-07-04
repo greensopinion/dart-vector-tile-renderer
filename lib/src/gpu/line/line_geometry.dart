@@ -27,7 +27,7 @@ class LineGeometry extends UnskinnedGeometry {
 
       setupSegments(segmentCount, vertices, indices);
       setupEnds(segmentCount, vertices, indices, LineCap.round);
-      setupJoins(segmentCount, vertices, indices, LineJoin.round);
+      setupJoins(segmentCount, vertices, indices, LineJoin.miter);
 
       uploadVertexData(
         ByteData.sublistView(Float32List.fromList(vertices)),
@@ -84,6 +84,9 @@ class LineGeometry extends UnskinnedGeometry {
       setupJoinsBevel(vertices, segmentCount, indices);
     } else if (type == LineJoin.round) {
       setupJoinsRound(vertices, segmentCount, indices);
+    } else {
+      setupJoinsBevel(vertices, segmentCount, indices);
+      setupJoinsMiter(vertices, segmentCount, indices);
     }
   }
 
@@ -103,6 +106,28 @@ class LineGeometry extends UnskinnedGeometry {
         offset + 3,
         offset + 6,
         startIndex + i,
+      ]);
+    }
+  }
+
+  void setupJoinsMiter(List<double> vertices, int segmentCount, List<int> indices) {
+    final startIndex = (vertices.length / 6).truncate();
+    final joinCount = segmentCount - 1;
+
+    for (int i = 0; i < joinCount; i++) {
+      vertices.addAll([i + 0, i + 1, i + 2, -1, 0, 0]);
+      vertices.addAll([i + 0, i + 1, i + 2, 1, 0, 0]);
+
+
+      int offset = i * 4;
+
+      indices.addAll([
+        offset,
+        offset + 5,
+        startIndex + (2 * i) + 1,
+        offset + 6,
+        offset + 3,
+        startIndex + (2 * i),
       ]);
     }
   }
