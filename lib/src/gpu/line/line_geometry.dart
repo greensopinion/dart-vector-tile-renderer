@@ -12,20 +12,24 @@ class LineGeometry extends UnskinnedGeometry {
   final Iterable<Point<double>> points;
   final double lineWidth;
   final int extent;
-  final List<double> dashLengths = [40.0, 40.0];
 
   static const double raw = 0;
 
   static const double above = 1;
   static const double below = -1;
+  final List<double>? dashLengths;
 
-  LineGeometry({
-    required this.points,
-    required this.lineWidth,
-    required this.extent,
-    List<double>? dashLengths,
-  }) /*: dashLengths = dashLengths ?? [40.0, 40.0]*/ {
-    setVertexShader(shaderLibrary["LineVertex"]!);
+  LineGeometry(
+      {required this.points,
+      required this.lineWidth,
+      required this.extent,
+      this.dashLengths}) {
+    if (dashLengths != null) {
+      setVertexShader(shaderLibrary["DashedLineVertex"]!);
+    } else {
+      setVertexShader(shaderLibrary[
+          "LineVertex"]!); // get old file from older commits (keep name to be line)
+    }
 
     final pointCount = points.length;
     if (pointCount > 1) {
@@ -110,17 +114,13 @@ class LineGeometry extends UnskinnedGeometry {
 
     pass.setPrimitiveType(gpu.PrimitiveType.triangle);
 
-    // final dashMeasurementsSlot =
-    //     vertexShader.getUniformSlot('dashMeasurements');
-    // final dashMeasurementsView = transientsBuffer
-    //     .emplace(Float32List.fromList(dashLengths!).buffer.asByteData());
-    // pass.bindUniform(dashMeasurementsSlot, dashMeasurementsView);
-
-    final double extentScale = extent / 2;
-    final extentScalingSlot = vertexShader.getUniformSlot('extentScalings');
-    final extentScalingView = transientsBuffer
-        .emplace(Float32List.fromList([extentScale]).buffer.asByteData());
-    pass.bindUniform(extentScalingSlot, extentScalingView);
+    if (dashLengths != null) {
+      final double extentScale = extent / 2;
+      final extentScalingSlot = vertexShader.getUniformSlot('extentScalings');
+      final extentScalingView = transientsBuffer
+          .emplace(Float32List.fromList([extentScale]).buffer.asByteData());
+      pass.bindUniform(extentScalingSlot, extentScalingView);
+    }
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
