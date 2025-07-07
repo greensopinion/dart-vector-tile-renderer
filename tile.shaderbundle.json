@@ -18,5 +18,9 @@
     "LineEndFragment": {
         "type": "fragment",
         "file": "shaders/line_end.frag"
+    },
+    "DashedLineFragment": {
+        "type": "fragment",
+        "file": "shaders/dashed_line.frag"
     }
 }

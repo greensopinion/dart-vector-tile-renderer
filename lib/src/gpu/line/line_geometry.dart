@@ -1,26 +1,30 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_gpu/gpu.dart';
+import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-
-import '../../themes/style.dart';
-import '../shaders.dart';
+import 'package:vector_tile_renderer/src/gpu/shaders.dart';
+import 'package:vector_tile_renderer/src/themes/style.dart';
 
 class LineGeometry extends UnskinnedGeometry {
   final Iterable<Point<double>> points;
   final double lineWidth;
   final int extent;
+  final List<double> dashLengths = [40.0, 40.0];
 
   static const double raw = 0;
 
   static const double above = 1;
   static const double below = -1;
 
-  LineGeometry(
-      {required this.points, required this.lineWidth, required this.extent}) {
+  LineGeometry({
+    required this.points,
+    required this.lineWidth,
+    required this.extent,
+    List<double>? dashLengths,
+  }) /*: dashLengths = dashLengths ?? [40.0, 40.0]*/ {
     setVertexShader(shaderLibrary["LineVertex"]!);
 
     final pointCount = points.length;
@@ -49,10 +53,18 @@ class LineGeometry extends UnskinnedGeometry {
       double p1 = i + 1;
 
       vertices.addAll([
-        p1, above, p0,
-        p0, below, p1,
-        p0, above, p1,
-        p1, below, p0,
+        p1,
+        above,
+        p0,
+        p0,
+        below,
+        p1,
+        p0,
+        above,
+        p1,
+        p1,
+        below,
+        p0,
       ]);
 
       indices.addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i)));
@@ -97,6 +109,18 @@ class LineGeometry extends UnskinnedGeometry {
     bindLineStyle(transientsBuffer, pass);
 
     pass.setPrimitiveType(gpu.PrimitiveType.triangle);
+
+    // final dashMeasurementsSlot =
+    //     vertexShader.getUniformSlot('dashMeasurements');
+    // final dashMeasurementsView = transientsBuffer
+    //     .emplace(Float32List.fromList(dashLengths!).buffer.asByteData());
+    // pass.bindUniform(dashMeasurementsSlot, dashMeasurementsView);
+
+    final double extentScale = extent / 2;
+    final extentScalingSlot = vertexShader.getUniformSlot('extentScalings');
+    final extentScalingView = transientsBuffer
+        .emplace(Float32List.fromList([extentScale]).buffer.asByteData());
+    pass.bindUniform(extentScalingSlot, extentScalingView);
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
