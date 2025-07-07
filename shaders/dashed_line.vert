@@ -17,14 +17,22 @@ uniform LineStyle {
 }
 line_style;
 
+uniform extentScalings {
+  float extentScale;
+}
+extent_scalings;
 
 in vec3 position;
+
+out float v_progress;
+out float v_length;
 
 out vec3 v_position;
 out vec3 v_normal;
 out vec3 v_viewvector;
 out vec2 v_texture_coords;
 out vec4 v_color;
+
 
 vec2 getSegmentPos() {
   vec2 curr = line_positions.points[int(position.x)].xy;
@@ -53,4 +61,18 @@ void main() {
   v_normal = vec3(1,0,0);
   v_texture_coords = vec2(0, 0);
   v_color = vec4(0,0,0,1);
+
+  vec2 curr = line_positions.points[int(position.x)].xy;
+  vec2 next = line_positions.points[int(position.z)].xy;
+
+  vec2 vec = next - curr;
+  float check = 0;
+  if (vec.x != 0) {
+    check = vec.x;
+  } else if (vec.y != 0) {
+    check = vec.y;
+  }
+  v_progress = sign(check);
+
+  v_length = length(vec) * extent_scalings.extentScale;
 }

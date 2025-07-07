@@ -11,6 +11,10 @@
         "type": "vertex",
         "file": "shaders/line.vert"
     },
+    "DashedLineVertex": {
+        "type": "vertex",
+        "file": "shaders/dashed_line.vert"
+    },
     "LineEndVertex": {
         "type": "vertex",
         "file": "shaders/line_end.vert"

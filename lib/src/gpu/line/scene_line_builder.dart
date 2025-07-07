@@ -81,7 +81,11 @@ class SceneLineBuilder {
         extent: feature.layer.extent,
         dashLengths: dashLengths);
 
-    scene.addMesh(Mesh(mainGeometry, DashedMaterial(color, dashLengths)));
+    if (dashLengths != null) {
+      scene.addMesh(Mesh(mainGeometry, DashedMaterial(color, dashLengths)));
+    } else {
+      scene.addMesh(Mesh(mainGeometry, ColoredMaterial(color)));
+    }
 
     Geometry endGeometry = LineEndGeometry(
         points: points, lineWidth: lineWidth, extent: feature.layer.extent);
