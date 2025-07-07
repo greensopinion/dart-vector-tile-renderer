@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/dashed_material.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_material.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -31,6 +33,8 @@ class SceneLineBuilder {
     final paint = style.linePaint?.evaluate(evaluationContext);
     final lineWidth = paint?.strokeWidth;
 
+    final dashLengths = paint?.strokeDashPattern;
+
     if (lineWidth == null || paint == null || lineWidth <= 0) {
       return;
     }
@@ -38,23 +42,33 @@ class SceneLineBuilder {
     for (var line in feature.feature.modelLines) {
       final linePoints = line.points;
       if (linePoints.length > 1 && lineWidth > 0) {
-        addLine(linePoints, lineWidth, feature.layer.extent, paint);
+        addLine(
+            linePoints, lineWidth, feature.layer.extent, paint, dashLengths);
+      }
+    }
+
+    for (final polygon in feature.feature.modelPolygons) {
+      for (int i = 0; i < polygon.rings.length; i++) {
+        final ring = polygon.rings[i];
+        final points = List.of(ring.points)..add(ring.points.first);
+        addLine(points, lineWidth, feature.layer.extent, paint, dashLengths);
       }
     }
   }
 
-  void addLine(
-      List<Point<double>> linePoints,
-      double lineWidth,
-      int extent,
-      PaintModel paint
-  ) {
+  void addLine(List<Point<double>> linePoints, double lineWidth, int extent,
+      PaintModel paint, List<double>? dashLengths) {
     Geometry mainGeometry = LineGeometry(
         points: linePoints,
         lineWidth: lineWidth,
-        extent: extent
-    );
+        extent: extent,
+        dashLengths: dashLengths);
 
-    scene.addMesh(Mesh(mainGeometry, LineMaterial(paint.color.vector4)));
+    if (dashLengths != null) {
+      scene.addMesh(
+          Mesh(mainGeometry, DashedMaterial(paint.color.vector4, dashLengths)));
+    } else {
+      scene.addMesh(Mesh(mainGeometry, LineMaterial(paint.color.vector4)));
+    }
   }
 }
