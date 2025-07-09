@@ -43,6 +43,6 @@ void main() {
         frag_color = paint.color;
     }
   } else {
-    frag_color = vec4(v_length, distInCycle, cycleLength, 0);
+    frag_color = alt_color;
   }
 }
