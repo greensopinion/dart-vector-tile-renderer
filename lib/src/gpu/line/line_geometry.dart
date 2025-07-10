@@ -33,8 +33,10 @@ class LineGeometry extends UnskinnedGeometry {
       final segmentCount = pointCount - 1;
 
       setupSegments(segmentCount, vertices, indices);
-      setupEnds(segmentCount, vertices, indices, LineCap.round);
-      setupJoins(segmentCount, vertices, indices, LineJoin.miter);
+      if (dashLengths == null) {
+        setupEnds(segmentCount, vertices, indices, LineCap.round);
+        setupJoins(segmentCount, vertices, indices, LineJoin.miter);
+      }
 
       uploadVertexData(
         ByteData.sublistView(Float32List.fromList(vertices)),

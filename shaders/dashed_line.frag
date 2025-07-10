@@ -19,6 +19,7 @@ in vec4 v_color;
 
 in float v_progress;
 in float v_length;
+in float cumulative_length;
 
 out vec4 frag_color;
 
@@ -28,20 +29,14 @@ void main() {
   vec4 alt_color = vec4(0, 0, 0, 0);
 
   float v_progressButPositiveAndNormalized = (v_progress + 1) / 2;
-  float lengthAlongLineInPixels = v_progressButPositiveAndNormalized * v_length;
+  float lengthAlongLineInPixels = v_progressButPositiveAndNormalized * v_length + cumulative_length;
+  float lengthNoCumulative = v_progressButPositiveAndNormalized * v_length;
 
   float cycleLength = dash_measurements.drawLength + dash_measurements.spaceLength;
   float distInCycle = mod(lengthAlongLineInPixels, cycleLength);
 
-  if (distInCycle < dash_measurements.drawLength) {
-    if (v_texture_coords.y != 0.0) {
-        float dist = length(v_texture_coords);
-        float inside = step(dist, 1.0);
-
-        frag_color = mix(alt_color, base_color, inside);
-    } else {
-        frag_color = paint.color;
-    }
+  if (distInCycle < dash_measurements.drawLength && v_length - lengthNoCumulative < dash_measurements.drawLength) {
+    frag_color = paint.color;
   } else {
     frag_color = alt_color;
   }
