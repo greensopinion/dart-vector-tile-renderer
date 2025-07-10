@@ -36,11 +36,27 @@ out vec4 v_color;
 
 out float v_progress;
 out float v_length;
+out float cumulative_length;
 
 vec2 getPoint(int i) {
   float u = float(i) / (meta.num_points - 1.0);
   return texture(points, vec2(u, 0)).xy;
 }
+
+float getCumulativeLength() {
+  float lengthSum = 0.0;
+  int currentIndex = int(position.x);
+
+  for (int i = 1; i <= currentIndex; i++) {
+    vec2 prev = getPoint(i - 1);
+    vec2 curr = getPoint(i);
+
+    lengthSum += length(curr - prev);
+  }
+
+  return lengthSum;
+}
+
 
 vec2 getSegmentPos(vec2 curr, vec2 next, float flip) {
   float offsetDist = line_style.width / 2.0;
@@ -99,7 +115,8 @@ void main() {
   } else if (vec.y != 0) {
     check = vec.y;
   }
-  v_progress = sign(check);
+  v_progress = 1;
 
   v_length = length(vec) * extent_scalings.extentScale;
+  cumulative_length = getCumulativeLength() * extent_scalings.extentScale;
 }
