@@ -10,8 +10,9 @@ import '../shaders.dart';
 
 class LineMaterial extends Material {
   Vector4 color;
+  List<double>? dashLengths;
 
-  LineMaterial(this.color) {
+  LineMaterial(this.color, this.dashLengths) {
     setFragmentShader(shaderLibrary["LineFragment"]!);
   }
 
@@ -20,10 +21,18 @@ class LineMaterial extends Material {
       RenderPass pass, HostBuffer transientsBuffer, Environment environment) {
     super.bind(pass, transientsBuffer, environment);
 
+    dashLengths ??= [64.0, 0];
+
+    final dashMeasurementsSlot =
+        fragmentShader.getUniformSlot('dashMeasurements');
+    final dashMeasurementsView = transientsBuffer
+        .emplace(Float32List.fromList(dashLengths!).buffer.asByteData());
+    pass.bindUniform(dashMeasurementsSlot, dashMeasurementsView);
+
     final colorBytes =
-    Float32List.fromList([color.x, color.y, color.z, color.w])
-        .buffer
-        .asByteData();
+        Float32List.fromList([color.x, color.y, color.z, color.w])
+            .buffer
+            .asByteData();
 
     pass.bindUniform(
       fragmentShader.getUniformSlot("Paint"),

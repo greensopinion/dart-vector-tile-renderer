@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/dashed_material.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_material.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -64,11 +62,7 @@ class SceneLineBuilder {
         extent: extent,
         dashLengths: dashLengths);
 
-    if (dashLengths != null) {
-      scene.addMesh(
-          Mesh(mainGeometry, DashedMaterial(paint.color.vector4, dashLengths)));
-    } else {
-      scene.addMesh(Mesh(mainGeometry, LineMaterial(paint.color.vector4)));
-    }
+    scene.addMesh(
+        Mesh(mainGeometry, LineMaterial(paint.color.vector4, dashLengths)));
   }
 }

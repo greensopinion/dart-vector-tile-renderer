@@ -36,7 +36,13 @@ void main() {
   float distInCycle = mod(lengthAlongLineInPixels, cycleLength);
 
   if (distInCycle < dash_measurements.drawLength && v_length - lengthNoCumulative < dash_measurements.drawLength) {
-    frag_color = paint.color;
+    if (v_texture_coords.y != 0.0) {
+        float dist = length(v_texture_coords);
+        float inside = step(dist, 1.0);
+        frag_color = mix(alt_color, base_color, inside);
+    } else {
+        frag_color = paint.color;
+    }
   } else {
     frag_color = alt_color;
   }

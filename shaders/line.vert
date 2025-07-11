@@ -1,5 +1,6 @@
 #pragma shader stage(vertex)
 
+// TODO: adapt line vert to not be reused with dashed_line vert! make it so there's no copied code to reduce maintenance costs :D
 uniform FrameInfo {
   mat4 model_transform;
   mat4 camera_transform;
@@ -17,6 +18,11 @@ uniform Meta {
 }
 meta;
 
+uniform extentScalings {
+  float extentScale;
+}
+extent_scalings;
+
 uniform sampler2D points;
 
 in vec3 position;
@@ -29,9 +35,27 @@ out vec3 v_viewvector;
 out vec2 v_texture_coords;
 out vec4 v_color;
 
+out float v_progress;
+out float v_length;
+out float cumulative_length;
+
 vec2 getPoint(int i) {
   float u = float(i) / (meta.num_points - 1.0);
   return texture(points, vec2(u, 0)).xy;
+}
+
+float getCumulativeLength() {
+  float lengthSum = 0.0;
+  int currentIndex = int(position.x);
+
+  for (int i = 1; i <= currentIndex; i++) {
+    vec2 prev = getPoint(i - 1);
+    vec2 curr = getPoint(i);
+
+    lengthSum += length(curr - prev);
+  }
+
+  return lengthSum;
 }
 
 vec2 getSegmentPos(vec2 curr, vec2 next, float flip) {
@@ -80,4 +104,20 @@ void main() {
   v_normal = vec3(1,0,0);
   v_texture_coords = vec2(uv.x, uv.y * round);
   v_color = vec4(0,0,0,1);
-}
+
+
+  vec2 curr = getPoint(int(position.x));
+  vec2 next = getPoint(int(position.z));
+
+  vec2 vec = next - curr;
+  float check = 0;
+  if (vec.x != 0) {
+    check = vec.x;
+  } else if (vec.y != 0) {
+    check = vec.y;
+  }
+  v_progress = 1;
+
+  v_length = length(vec) * extent_scalings.extentScale;
+  cumulative_length = getCumulativeLength() * extent_scalings.extentScale;
+} 

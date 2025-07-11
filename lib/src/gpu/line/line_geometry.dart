@@ -19,11 +19,7 @@ class LineGeometry extends UnskinnedGeometry {
       required this.lineWidth,
       required this.extent,
       this.dashLengths}) {
-    if (dashLengths != null) {
-      setVertexShader(shaderLibrary["DashedLineVertex"]!);
-    } else {
-      setVertexShader(shaderLibrary["LineVertex"]!);
-    }
+    setVertexShader(shaderLibrary["LineVertex"]!);
 
     final pointCount = points.length;
     if (pointCount > 1) {
@@ -222,13 +218,11 @@ class LineGeometry extends UnskinnedGeometry {
 
     pass.setPrimitiveType(gpu.PrimitiveType.triangle);
 
-    if (dashLengths != null) {
-      final double extentScale = extent / 2;
-      final extentScalingSlot = vertexShader.getUniformSlot('extentScalings');
-      final extentScalingView = transientsBuffer
-          .emplace(Float32List.fromList([extentScale]).buffer.asByteData());
-      pass.bindUniform(extentScalingSlot, extentScalingView);
-    }
+    final double extentScale = extent / 2;
+    final extentScalingSlot = vertexShader.getUniformSlot('extentScalings');
+    final extentScalingView = transientsBuffer
+        .emplace(Float32List.fromList([extentScale]).buffer.asByteData());
+    pass.bindUniform(extentScalingSlot, extentScalingView);
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
