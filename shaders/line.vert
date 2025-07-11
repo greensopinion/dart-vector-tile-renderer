@@ -35,7 +35,6 @@ out vec3 v_viewvector;
 out vec2 v_texture_coords;
 out vec4 v_color;
 
-out float v_progress;
 out float v_length;
 out float cumulative_length;
 
@@ -116,7 +115,6 @@ void main() {
   } else if (vec.y != 0) {
     check = vec.y;
   }
-  v_progress = 1;
 
   v_length = length(vec) * extent_scalings.extentScale;
   cumulative_length = getCumulativeLength() * extent_scalings.extentScale;
