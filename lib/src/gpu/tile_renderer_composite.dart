@@ -66,7 +66,9 @@ class TileRendererComposite {
     if (gpuRenderingEnabled) {
       if (layer.type == ThemeLayerType.line ||
           layer.type == ThemeLayerType.background ||
-          layer.type == ThemeLayerType.fill) {
+          layer.type == ThemeLayerType.fill ||
+          layer.type == ThemeLayerType.symbol
+      ) {
         return _Engine.gpu;
       }
     }

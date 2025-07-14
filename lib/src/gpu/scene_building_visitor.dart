@@ -1,6 +1,7 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/symbol/scene_symbol_builder.dart';
 
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
@@ -27,6 +28,7 @@ class SceneBuildingVisitor extends LayerVisitor {
         break;
       case ThemeLayerType.fillExtrusion:
       case ThemeLayerType.symbol:
+        SceneSymbolBuilder(scene, context).addSymbols(style, features);
       case ThemeLayerType.background:
       case ThemeLayerType.raster:
       case ThemeLayerType.unsupported:

@@ -20,6 +20,6 @@ void main() {
   v_position = position;
   v_viewvector = frame_info.camera_position - v_position;
   v_normal = vec3(1,0,0);
-  v_texture_coords = vec2(0, 0);
-  v_color = vec4(0,0,0,1);
+  v_texture_coords = vec2(position.x + 1, 1 - position.y) / 2.0;
+  v_color = vec4(1,1,1,1);
 }
