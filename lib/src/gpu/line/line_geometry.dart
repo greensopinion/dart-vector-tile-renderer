@@ -14,10 +14,15 @@ class LineGeometry extends UnskinnedGeometry {
   final int extent;
   final List<double>? dashLengths;
 
+  final LineJoin lineJoins;
+  final LineCap lineCaps;
+
   LineGeometry(
       {required this.points,
       required this.lineWidth,
       required this.extent,
+      required this.lineJoins,
+      required this.lineCaps,
       this.dashLengths}) {
     setVertexShader(shaderLibrary["LineVertex"]!);
 
@@ -30,8 +35,8 @@ class LineGeometry extends UnskinnedGeometry {
 
       setupSegments(segmentCount, vertices, indices);
       if (dashLengths == null) {
-        setupEnds(segmentCount, vertices, indices, LineCap.round);
-        setupJoins(segmentCount, vertices, indices, LineJoin.miter);
+        setupEnds(segmentCount, vertices, indices, lineCaps);
+        setupJoins(segmentCount, vertices, indices, lineJoins);
       }
 
       uploadVertexData(
