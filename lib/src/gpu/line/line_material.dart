@@ -24,7 +24,7 @@ class LineMaterial extends Material {
     dashLengths ??= [64.0, 0];
 
     final dashMeasurementsSlot =
-        fragmentShader.getUniformSlot('dashMeasurements');
+        fragmentShader.getUniformSlot('DashMeasurements');
     final dashMeasurementsView = transientsBuffer
         .emplace(Float32List.fromList(dashLengths!).buffer.asByteData());
     pass.bindUniform(dashMeasurementsSlot, dashMeasurementsView);
