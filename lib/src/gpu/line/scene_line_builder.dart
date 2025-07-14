@@ -59,6 +59,8 @@ class SceneLineBuilder {
         points: linePoints,
         lineWidth: lineWidth,
         extent: extent,
+        lineCaps: paint.lineCap ?? LineCap.DEFAULT,
+        lineJoins: paint.lineJoin ?? LineJoin.DEFAULT,
         dashLengths: dashLengths);
 
     scene.addMesh(
