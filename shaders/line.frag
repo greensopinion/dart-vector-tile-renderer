@@ -3,7 +3,7 @@ uniform Paint {
 }
 paint;
 
-uniform dashMeasurements {
+uniform DashMeasurements {
   float drawLength;
   float spaceLength;
 }
