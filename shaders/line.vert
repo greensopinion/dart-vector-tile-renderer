@@ -1,6 +1,5 @@
 #pragma shader stage(vertex)
 
-// TODO: adapt line vert to not be reused with dashed_line vert! make it so there's no copied code to reduce maintenance costs :D
 uniform FrameInfo {
   mat4 model_transform;
   mat4 camera_transform;
