@@ -17,6 +17,10 @@ class LineGeometry extends UnskinnedGeometry {
   final LineJoin lineJoins;
   final LineCap lineCaps;
 
+  late Texture texture = gpu.gpuContext.createTexture(
+      gpu.StorageMode.hostVisible, points.length, 1,
+      format: gpu.PixelFormat.r32g32b32a32Float);
+
   LineGeometry(
       {required this.points,
       required this.lineWidth,
@@ -242,10 +246,6 @@ class LineGeometry extends UnskinnedGeometry {
             .toList())
         .buffer
         .asByteData();
-
-    final texture = gpu.gpuContext.createTexture(
-        gpu.StorageMode.hostVisible, points.length, 1,
-        format: gpu.PixelFormat.r32g32b32a32Float);
 
     texture.overwrite(pointsEncoded);
 
