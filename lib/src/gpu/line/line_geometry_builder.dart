@@ -10,9 +10,10 @@ import '../../themes/style.dart';
 class LineGeometryBuilder {
   int vertexOffset = 0;
   int indexOffset = 0;
-  List<double> finalVertices = List.empty(growable: true);
-  List<int> finalIndices = List.empty(growable: true);
-  List<Point<double>> finalPoints = List.empty(growable: true);
+  List<double> vertices = List.empty(growable: true);
+  List<int> indices = List.empty(growable: true);
+
+  int startIndex = 0;
 
   LineGeometry build(
       List<TileLine> lines,
@@ -23,41 +24,32 @@ class LineGeometryBuilder {
       List<double>? dashLengths
       ) {
     for (var line in lines) {
+      startIndex = 0;
       var points = line.points;
       var pointCount = points.length;
 
-      final (vertices, indices) = setupLine(pointCount, lineCaps, lineJoins);
-
-      finalVertices.addAll(vertices);
-      finalIndices.addAll(indices.map((it) => it + indexOffset));
-      finalPoints.addAll(points);
+      setupLine(pointCount, lineCaps, lineJoins);
 
       vertexOffset += pointCount;
-      indexOffset += (vertices.length / 6).truncate();
+      indexOffset += startIndex;
     }
 
-    return LineGeometry(points: finalPoints, vertices: finalVertices, indices: finalIndices, lineWidth: lineWidth, extent: extent, dashLengths: dashLengths);
+    return LineGeometry(points: lines.expand((it) => it.points), vertices: vertices, indices: indices, lineWidth: lineWidth, extent: extent, dashLengths: dashLengths);
   }
 
-  (List<double> vertices, List<int> indices) setupLine(
+  setupLine(
       int pointCount,
       LineCap lineCaps,
       LineJoin lineJoins,
       ) {
-    final vertices = <double>[];
-    final indices = <int>[];
-
     final segmentCount = pointCount - 1;
 
-    setupSegments(segmentCount, vertices, indices);
-    setupEnds(segmentCount, vertices, indices, lineCaps);
-    setupJoins(segmentCount, vertices, indices, lineJoins);
-
-    return (vertices, indices);
+    setupSegments(segmentCount);
+    setupEnds(segmentCount, lineCaps);
+    setupJoins(segmentCount, lineJoins);
   }
 
-  void setupSegments(
-      int segmentCount, List<double> vertices, List<int> indices) {
+  void setupSegments(int segmentCount) {
     for (int i = 0; i < segmentCount; i++) {
       double p0 = i + vertexOffset + 0;
       double p1 = i + vertexOffset + 1;
@@ -69,15 +61,14 @@ class LineGeometryBuilder {
         p1, p0, 0,-1, 0, 0,
       ]);
 
-      indices.addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i)));
+      indices.addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i) + indexOffset));
     }
+    startIndex += max(segmentCount * 4, 0);
   }
 
-  void setupEnds(int segmentCount, List<double> vertices, List<int> indices,
-      LineCap type) {
+  void setupEnds(int segmentCount, LineCap type) {
     if (type == LineCap.butt) return;
     final round = type == LineCap.round ? 1.0 : 0.0;
-    final startIndex = (vertices.length / 6).truncate();
 
     double a = vertexOffset + 0;
     double b = vertexOffset + 1;
@@ -104,24 +95,23 @@ class LineGeometryBuilder {
       startIndex + 2,
       startIndex + 3,
       startIndex - 1,
-    ]);
+    ].map((it) => it + indexOffset));
+    startIndex += 4;
+
   }
 
-  void setupJoins(int segmentCount, List<double> vertices, List<int> indices,
-      LineJoin type) {
+  void setupJoins(int segmentCount, LineJoin type) {
     if (type == LineJoin.bevel) {
-      setupJoinsBevel(vertices, segmentCount, indices);
+      setupJoinsBevel(segmentCount);
     } else if (type == LineJoin.round) {
-      setupJoinsRound(vertices, segmentCount, indices);
+      setupJoinsRound(segmentCount);
     } else {
-      setupJoinsBevel(vertices, segmentCount, indices);
-      setupJoinsMiter(vertices, segmentCount, indices);
+      setupJoinsBevel(segmentCount);
+      setupJoinsMiter(segmentCount);
     }
   }
 
-  void setupJoinsBevel(
-      List<double> vertices, int segmentCount, List<int> indices) {
-    final startIndex = (vertices.length / 6).truncate();
+  void setupJoinsBevel(int segmentCount) {
     final joinCount = segmentCount - 1;
 
     for (int i = 0; i < joinCount; i++) {
@@ -136,13 +126,12 @@ class LineGeometryBuilder {
         offset + 3,
         offset + 6,
         startIndex + i,
-      ]);
+      ].map((it) => it + indexOffset));
     }
+    startIndex += max(joinCount, 0);
   }
 
-  void setupJoinsMiter(
-      List<double> vertices, int segmentCount, List<int> indices) {
-    final startIndex = (vertices.length / 6).truncate();
+  void setupJoinsMiter(int segmentCount) {
     final joinCount = segmentCount - 1;
 
     for (int i = 0; i < joinCount; i++) {
@@ -158,13 +147,12 @@ class LineGeometryBuilder {
         offset + 6,
         offset + 3,
         startIndex + (2 * i),
-      ]);
+      ].map((it) => it + indexOffset));
     }
+    startIndex += max(2 * joinCount, 0);
   }
 
-  void setupJoinsRound(
-      List<double> vertices, int segmentCount, List<int> indices) {
-    final startIndex = (vertices.length / 6).truncate();
+  void setupJoinsRound(int segmentCount) {
     final joinCount = segmentCount - 1;
 
     for (int i = 0; i < joinCount; i++) {
@@ -178,7 +166,8 @@ class LineGeometryBuilder {
       int c = offset + 0;
       int d = offset + 3;
 
-      indices.addAll([c, d, b, b, d, a]);
+      indices.addAll([c, d, b, b, d, a].map((it) => it + indexOffset));
     }
+    startIndex += max(2 * joinCount, 0);
   }
 }
