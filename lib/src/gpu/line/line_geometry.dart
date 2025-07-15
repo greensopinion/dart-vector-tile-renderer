@@ -15,6 +15,11 @@ class LineGeometry extends UnskinnedGeometry {
   final int extent;
   final List<double>? dashLengths;
 
+  late ByteData pointsEncoded = Float32List.fromList(
+      points.expand((it) => [it.x, it.y, 0.0, 0.0]).toList())
+      .buffer
+      .asByteData();
+
   late Texture texture = gpu.gpuContext
       .createTexture(gpu.StorageMode.hostVisible, points.length, 1, format: gpu.PixelFormat.r32g32b32a32Float);
 
@@ -26,6 +31,8 @@ class LineGeometry extends UnskinnedGeometry {
       required this.extent,
       this.dashLengths}) {
     setVertexShader(shaderLibrary["LineVertex"]!);
+
+    texture.overwrite(pointsEncoded);
 
     uploadVertexData(
       ByteData.sublistView(Float32List.fromList(vertices)),
@@ -52,14 +59,6 @@ class LineGeometry extends UnskinnedGeometry {
   }
 
   void bindPositions(HostBuffer transientsBuffer, RenderPass pass) {
-    final double extentScale = 2 / extent;
-    final pointsEncoded = Float32List.fromList(
-            points.expand((it) => [((it.x * extentScale) - 1), (1 - (it.y * extentScale)), 0.0, 0.0]).toList())
-        .buffer
-        .asByteData();
-
-    texture.overwrite(pointsEncoded);
-
     final textureSlot = vertexShader.getUniformSlot("points");
 
     pass.bindTexture(textureSlot, texture);

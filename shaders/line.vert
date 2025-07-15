@@ -39,7 +39,8 @@ out float cumulative_length;
 
 vec2 getPoint(int i) {
   float u = float(i) / (meta.num_points - 1.0);
-  return texture(points, vec2(u, 0)).xy;
+  vec2 value = texture(points, vec2(u, 0)).xy;
+  return vec2((value.x / extent_scalings.extentScale) - 1, 1 - (value.y / extent_scalings.extentScale));
 }
 
 float getCumulativeLength() {
