@@ -15,6 +15,10 @@
         "type": "fragment",
         "file": "shaders/line.frag"
     },
+    "RasterVertex": {
+        "type": "vertex",
+        "file": "shaders/raster.vert"
+    },
     "BlurredFragment": {
         "type": "fragment",
         "file": "shaders/blurred.frag"
