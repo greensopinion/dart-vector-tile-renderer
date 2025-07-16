@@ -19,8 +19,8 @@
         "type": "vertex",
         "file": "shaders/raster.vert"
     },
-    "BlurredFragment": {
+    "RasterFragment": {
         "type": "fragment",
-        "file": "shaders/blurred.frag"
+        "file": "shaders/raster.frag"
     }
 }
