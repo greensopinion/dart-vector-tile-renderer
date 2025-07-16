@@ -3,6 +3,7 @@
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/blurred_unlit_material.dart';
+import 'package:vector_tile_renderer/src/gpu/raster/raster_geometry.dart';
 import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -31,7 +32,7 @@ class RasterLayerBuilder {
         UnlitMaterial material = BlurredUnlitMaterial(colorTexture: texture, resampling: resampling);
         material.baseColorFactor = Vector4(1.0, 1.0, 1.0, opacity);
 
-        scene.addMesh(Mesh(BackgroundGeometry(), material));
+        scene.addMesh(Mesh(RasterGeometry(tile), material));
       }
     }
   }
