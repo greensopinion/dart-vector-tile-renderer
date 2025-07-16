@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:example/tile_painter.dart';
 import 'package:flutter/material.dart';
@@ -117,10 +118,11 @@ class _TileState extends State<Tile> {
   void _loadTileset() async {
     tile_model.Tile tile = await loadVectorTile('assets/11_325_699_openmaptiles.pbf');
     tile_model.Tile contour = await loadVectorTile('assets/11_325_699_contour.pbf');
+    RasterTile hillShade = await loadRasterTile('assets/11_325_699_hillshade.png');
     final tileset =
         TilesetPreprocessor(theme).preprocess(Tileset({'openmaptiles': tile, 'contour': contour}), zoom: 14);
     setState(() {
-      tileSource = TileSource(tileset: tileset);
+      tileSource = TileSource(tileset: tileset, rasterTileset: RasterTileset(tiles: {'hillshade': hillShade}));
     });
     _maybeLoadImage();
   }
@@ -140,6 +142,14 @@ class _TileState extends State<Tile> {
       }
     }
     return tileData.toTile();
+  }
+
+  Future<RasterTile> loadRasterTile(String path) async {
+    final tileBuffer = await DefaultAssetBundle.of(context).load(path);
+    final Uint8List bytes = tileBuffer.buffer.asUint8List();
+
+    final image = await decodeImageFromList(bytes.buffer.asUint8List());
+    return RasterTile(image: image, scope: const Rect.fromLTRB(0, 0, 256, 256));
   }
 
   void _maybeLoadImage() async {
