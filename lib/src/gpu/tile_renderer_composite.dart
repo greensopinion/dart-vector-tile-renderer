@@ -122,7 +122,7 @@ class _GpuLayerGroup extends _LayerGroup {
     if (renderer == null) {
       renderer = TileRenderer(
           theme: effectiveTheme, zoom: context.zoom, logger: context.logger);
-      renderer.tileset = context.tileSource.tileset;
+      renderer.tileSource = context.tileSource;
       this.renderer = renderer;
     }
     renderer.render(canvas, size);

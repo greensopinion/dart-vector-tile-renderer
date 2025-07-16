@@ -66,7 +66,7 @@ class Tile extends StatefulWidget {
 }
 
 class _TileState extends State<Tile> {
-  Tileset? tileset;
+  TileSource? tileSource;
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   ui.Image? image;
   bool _disposed = false;
@@ -94,14 +94,14 @@ class _TileState extends State<Tile> {
     super.didUpdateWidget(tile);
     image?.dispose();
     image = null;
-    tileset = null;
+    tileSource = null;
     _loadTileset();
   }
 
   @override
   Widget build(BuildContext context) {
     final isRaster = widget.options.renderMode == RenderMode.raster;
-    if (tileset == null || (isRaster && image == null)) {
+    if (tileSource == null || (isRaster && image == null)) {
       return const CircularProgressIndicator();
     }
     return Container(
@@ -110,22 +110,22 @@ class _TileState extends State<Tile> {
             ? RawImage(image: image!, width: widget.options.size.width, height: widget.options.size.height)
             : CustomPaint(
                 size: widget.options.size,
-                painter: TilePainter(tileset!, theme, options: widget.options),
+                painter: TilePainter(tileSource!, theme, options: widget.options),
               ));
   }
 
   void _loadTileset() async {
-    tile_model.Tile tile = await loadTile('assets/11_325_699_openmaptiles.pbf');
-    tile_model.Tile contour = await loadTile('assets/11_325_699_contour.pbf');
+    tile_model.Tile tile = await loadVectorTile('assets/11_325_699_openmaptiles.pbf');
+    tile_model.Tile contour = await loadVectorTile('assets/11_325_699_contour.pbf');
     final tileset =
         TilesetPreprocessor(theme).preprocess(Tileset({'openmaptiles': tile, 'contour': contour}), zoom: 14);
     setState(() {
-      this.tileset = tileset;
+      tileSource = TileSource(tileset: tileset);
     });
     _maybeLoadImage();
   }
 
-  Future<tile_model.Tile> loadTile(String path) async {
+  Future<tile_model.Tile> loadVectorTile(String path) async {
     final tileBuffer = await DefaultAssetBundle.of(context).load(path);
     final tileBytes = tileBuffer.buffer.asUint8List(tileBuffer.offsetInBytes, tileBuffer.lengthInBytes);
     var tileData = TileFactory(theme, const Logger.noop()).createTileData(VectorTileReader().read(tileBytes));
@@ -143,8 +143,8 @@ class _TileState extends State<Tile> {
   }
 
   void _maybeLoadImage() async {
-    if (widget.options.renderMode == RenderMode.raster && image == null && tileset != null) {
-      final image = await ImageRenderer(theme: theme, scale: 2).render(TileSource(tileset: tileset!),
+    if (widget.options.renderMode == RenderMode.raster && image == null && tileSource != null) {
+      final image = await ImageRenderer(theme: theme, scale: 2).render(tileSource!,
           zoom: widget.options.zoom, zoomScaleFactor: pow(2, widget.options.scale).toDouble());
       if (_disposed) {
         image.dispose();
