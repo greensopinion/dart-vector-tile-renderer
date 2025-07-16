@@ -26,7 +26,9 @@ class RasterLayerBuilder {
     if (opacity > 0.0) {
       final texture = tile.texture;
       if (texture != null) {
-        UnlitMaterial material = BlurredUnlitMaterial(colorTexture: texture);
+        final resampling = paintModel.rasterResampling.evaluate(evaluationContext);
+
+        UnlitMaterial material = BlurredUnlitMaterial(colorTexture: texture, resampling: resampling);
         material.baseColorFactor = Vector4(1.0, 1.0, 1.0, opacity);
 
         scene.addMesh(Mesh(BackgroundGeometry(), material));

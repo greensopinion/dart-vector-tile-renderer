@@ -5,10 +5,23 @@ import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
 
 class BlurredUnlitMaterial extends UnlitMaterial {
+  late gpu.SamplerOptions sampler;
 
-  BlurredUnlitMaterial({gpu.Texture? colorTexture}) {
+  BlurredUnlitMaterial({required gpu.Texture colorTexture, String? resampling}) {
     setFragmentShader(shaderLibrary['BlurredFragment']!);
     baseColorTexture = Material.whitePlaceholder(colorTexture);
+
+    if (resampling == "nearest") {
+      sampler = gpu.SamplerOptions();
+    } else {
+      sampler = gpu.SamplerOptions(
+        minFilter: gpu.MinMagFilter.linear,
+        magFilter: gpu.MinMagFilter.linear,
+        mipFilter: gpu.MipFilter.linear,
+        widthAddressMode: gpu.SamplerAddressMode.clampToEdge,
+        heightAddressMode: gpu.SamplerAddressMode.clampToEdge,
+      );
+    }
   }
 
   @override
@@ -35,13 +48,7 @@ class BlurredUnlitMaterial extends UnlitMaterial {
     pass.bindTexture(
       fragmentShader.getUniformSlot('base_color_texture'),
       baseColorTexture,
-      sampler: gpu.SamplerOptions(
-        minFilter: gpu.MinMagFilter.linear,
-        magFilter: gpu.MinMagFilter.linear,
-        mipFilter: gpu.MipFilter.linear,
-        widthAddressMode: gpu.SamplerAddressMode.clampToEdge,
-        heightAddressMode: gpu.SamplerAddressMode.clampToEdge,
-      ),
+      sampler: sampler
     );
   }
 }
