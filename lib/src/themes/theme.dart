@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
+import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import '../context.dart';
@@ -66,6 +67,8 @@ abstract class LayerVisitor {
       Style style, Iterable<LayerFeature> features);
 
   void visitBackground(VisitorContext context, Color color);
+
+  void visitRasterLayer(VisitorContext context, RasterTile image, RasterPaintModel paintModel);
 }
 
 /// Represents a layer in the theme. Can [render] to a [Context], and specifies

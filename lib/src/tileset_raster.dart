@@ -1,12 +1,20 @@
 import 'dart:ui';
 
+import 'package:flutter_gpu/gpu.dart';
+import 'package:flutter_scene/scene.dart';
+
 /// A raster tile is an image with a corresponding scope defining the portion of
 /// the image that is in scope for the tile.
 class RasterTile {
   final Image image;
   final Rect scope;
+  Texture? texture;
 
-  RasterTile({required this.image, required this.scope});
+  RasterTile({required this.image, required this.scope}) {
+    gpuTextureFromImage(image).then((result) {
+      texture = result;
+    });
+  }
 }
 
 /// A raster tileset is a collection of raster tiles (images) by `'source'` ID,
