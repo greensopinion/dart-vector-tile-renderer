@@ -2,6 +2,7 @@
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/raster/blurred_unlit_material.dart';
 import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -25,8 +26,7 @@ class RasterLayerBuilder {
     if (opacity > 0.0) {
       final texture = tile.texture;
       if (texture != null) {
-        UnlitMaterial material = UnlitMaterial();
-        material.baseColorTexture = texture;
+        UnlitMaterial material = BlurredUnlitMaterial(colorTexture: texture);
         material.baseColorFactor = Vector4(1.0, 1.0, 1.0, opacity);
 
         scene.addMesh(Mesh(BackgroundGeometry(), material));
