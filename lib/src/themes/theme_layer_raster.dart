@@ -78,7 +78,10 @@ class ThemeLayerRaster extends ThemeLayer {
 
   @override
   void accept(VisitorContext context, LayerVisitor visitor) {
-    // TODO: Implement visitor for raster layers
+    final image = context.tileSource.rasterTileset.tiles[tileSource];
+    if (image != null) {
+      visitor.visitRasterLayer(context, image, paintModel);
+    }
   }
 
   @override
