@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
+import '../../vector_tile_renderer.dart';
 import '../logger.dart';
 import '../themes/theme.dart';
 import '../tileset.dart';
@@ -22,12 +23,12 @@ class TileRenderer {
   final Logger logger;
   final Theme theme;
   final double zoom;
-  Tileset? _tileset;
+  TileSource? _tileSource;
 
-  Tileset? get tileset => _tileset;
-  set tileset(Tileset? value) {
-    if (_tileset != value) {
-      _tileset = value;
+  TileSource? get tileSource => _tileSource;
+  set tileSource(TileSource? value) {
+    if (_tileSource != value) {
+      _tileSource = value;
       _scene = null;
     }
   }
@@ -98,13 +99,13 @@ class TileRenderer {
   Scene _createScene() {
     Scene scene = Scene();
     scene.antiAliasingMode = AntiAliasingMode.msaa;
-    final tileset = _tileset;
-    if (tileset == null) {
+    final tileSource = _tileSource;
+    if (tileSource == null) {
       return scene;
     }
     final context = VisitorContext(
       logger: logger,
-      tileset: tileset,
+      tileSource: tileSource,
       zoom: zoom,
     );
     final visitor = SceneBuildingVisitor(scene, context);

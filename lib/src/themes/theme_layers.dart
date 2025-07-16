@@ -60,7 +60,7 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   void accept(VisitorContext context, LayerVisitor visitor) {
-    final layerFeatures = context.tileset.resolver
+    final layerFeatures = context.tileSource.tileset.resolver
         .resolveFeatures(selector, context.zoom.truncate());
     visitor.visitFeatures(context, type, style, layerFeatures);
   }

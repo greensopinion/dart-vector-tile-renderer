@@ -54,11 +54,11 @@ enum ThemeLayerType {
 
 class VisitorContext {
   final Logger logger;
-  final Tileset tileset;
+  final TileSource tileSource;
   final double zoom;
 
   VisitorContext(
-      {required this.logger, required this.tileset, required this.zoom});
+      {required this.logger, required this.tileSource, required this.zoom});
 }
 
 abstract class LayerVisitor {

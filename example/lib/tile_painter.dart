@@ -3,15 +3,15 @@ import 'package:flutter/material.dart' hide Theme;
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 class TilePainter extends CustomPainter {
-  final Tileset tileset;
+  final TileSource tileSource;
   final Theme theme;
   final TileOptions options;
   late final TileRenderer _renderer;
   bool _readyChanged = false;
-  TilePainter(this.tileset, this.theme, {required this.options}) {
+  TilePainter(this.tileSource, this.theme, {required this.options}) {
     _renderer = TileRenderer(
         theme: theme, logger: const Logger.console(), zoom: options.zoom);
-    _renderer.tileset = tileset;
+    _renderer.tileSource = tileSource;
     TileRenderer.initialize.then((_) {
       _readyChanged = true;
     });
