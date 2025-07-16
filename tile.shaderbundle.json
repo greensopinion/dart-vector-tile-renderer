@@ -14,5 +14,9 @@
     "LineFragment": {
         "type": "fragment",
         "file": "shaders/line.frag"
+    },
+    "BlurredFragment": {
+        "type": "fragment",
+        "file": "shaders/blurred.frag"
     }
 }
