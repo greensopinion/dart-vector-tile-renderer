@@ -4,11 +4,11 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
 
-class BlurredUnlitMaterial extends UnlitMaterial {
+class RasterMaterial extends UnlitMaterial {
   late gpu.SamplerOptions sampler;
 
-  BlurredUnlitMaterial({required gpu.Texture colorTexture, String? resampling}) {
-    setFragmentShader(shaderLibrary['BlurredFragment']!);
+  RasterMaterial({required gpu.Texture colorTexture, String? resampling}) {
+    setFragmentShader(shaderLibrary['RasterFragment']!);
     baseColorTexture = Material.whitePlaceholder(colorTexture);
 
     if (resampling == "nearest") {
@@ -37,8 +37,8 @@ class BlurredUnlitMaterial extends UnlitMaterial {
 
     var fragInfo = Float32List.fromList([
       baseColorFactor.r, baseColorFactor.g,
-      baseColorFactor.b, baseColorFactor.a, // color
-      vertexColorWeight, // vertex_color_weight
+      baseColorFactor.b, baseColorFactor.a,
+      vertexColorWeight,
     ]);
     pass.bindUniform(
       fragmentShader.getUniformSlot("FragInfo"),
