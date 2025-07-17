@@ -95,7 +95,7 @@ vec2 getMiterPos() {
   vec2 resultDir = normalize(vec);
   float resultLength = (pow(eulerDist(c - a), 2)) / vecLength;
 
-  return c + (resultDir * resultLength);
+  return c + (resultDir * min(resultLength, line_style.width * 4));
 }
 
 void main() {
