@@ -8,20 +8,14 @@ import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 
 class LineGeometry extends UnskinnedGeometry {
-  final Iterable<Point<double>> points;
+  final List<Point<double>> points;
   final List<double> vertices;
   final List<int> indices;
   final double lineWidth;
   final int extent;
   final List<double>? dashLengths;
 
-  late ByteData pointsEncoded = Float32List.fromList(
-      points.expand((it) => [it.x, it.y, 0.0, 0.0]).toList())
-      .buffer
-      .asByteData();
-
-  late Texture texture = gpu.gpuContext
-      .createTexture(gpu.StorageMode.hostVisible, points.length, 1, format: gpu.PixelFormat.r32g32b32a32Float);
+  late Texture texture = createTexture();
 
   LineGeometry(
       {required this.points,
@@ -31,8 +25,6 @@ class LineGeometry extends UnskinnedGeometry {
       required this.extent,
       this.dashLengths}) {
     setVertexShader(shaderLibrary["LineVertex"]!);
-
-    texture.overwrite(pointsEncoded);
 
     uploadVertexData(
       ByteData.sublistView(Float32List.fromList(vertices)),
@@ -64,7 +56,7 @@ class LineGeometry extends UnskinnedGeometry {
     pass.bindTexture(textureSlot, texture);
 
     final slot = vertexShader.getUniformSlot('Meta');
-    final buffer = Float32List.fromList([points.length.toDouble()]);
+    final buffer = Float32List.fromList([texture.width.toDouble(), texture.height.toDouble()]);
     pass.bindUniform(slot, transientsBuffer.emplace(buffer.buffer.asByteData()));
   }
 
@@ -73,4 +65,29 @@ class LineGeometry extends UnskinnedGeometry {
     final lineStyleView = transientsBuffer.emplace(Float32List.fromList([lineWidth / 256]).buffer.asByteData());
     pass.bindUniform(lineStyleSlot, lineStyleView);
   }
+
+  Texture createTexture() {
+    final int totalPoints = points.length;
+
+    final int width = totalPoints < _maxWidth ? totalPoints : _maxWidth;
+    final int height = (totalPoints / width).ceil();
+
+    final texture =  gpu.gpuContext
+        .createTexture(gpu.StorageMode.hostVisible, width, height, format: gpu.PixelFormat.r32g32b32a32Float);
+
+
+    final Float32List flatFloats = Float32List(width * height * 4);
+    for (int i = 0; i < points.length; i++) {
+      flatFloats[i * 4 + 0] = points[i].x;
+      flatFloats[i * 4 + 1] = points[i].y;
+    }
+
+    final ByteData pointsEncoded = flatFloats.buffer.asByteData();
+
+    texture.overwrite(pointsEncoded);
+
+    return texture;
+  }
+
+  static const int _maxWidth = 8192;
 }

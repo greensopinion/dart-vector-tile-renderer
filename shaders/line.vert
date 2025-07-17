@@ -13,7 +13,8 @@ uniform LineStyle {
 line_style;
 
 uniform Meta {
-  float num_points;
+  float texture_width;
+  float texture_height;
 }
 meta;
 
@@ -38,9 +39,17 @@ out float v_length;
 out float cumulative_length;
 
 vec2 getPoint(int i) {
-  float u = float(i) / (meta.num_points - 1.0);
-  vec2 value = texture(points, vec2(u, 0)).xy;
-  return vec2((value.x / extent_scalings.extentScale) - 1, 1 - (value.y / extent_scalings.extentScale));
+  int x = i % int(meta.texture_width);
+  int y = i / int(meta.texture_width);
+
+  vec2 uv = (vec2(x, y) + 0.5) / vec2(meta.texture_width, meta.texture_height);
+
+  vec2 value = texture(points, uv).xy;
+
+  return vec2(
+  (value.x / extent_scalings.extentScale) - 1.0,
+  1.0 - (value.y / extent_scalings.extentScale)
+  );
 }
 
 float getCumulativeLength() {

@@ -34,7 +34,7 @@ class LineGeometryBuilder {
       indexOffset += startIndex;
     }
 
-    return LineGeometry(points: lines.expand((it) => it.points), vertices: vertices, indices: indices, lineWidth: lineWidth, extent: extent, dashLengths: dashLengths);
+    return LineGeometry(points: lines.expand((it) => it.points).toList(), vertices: vertices, indices: indices, lineWidth: lineWidth, extent: extent, dashLengths: dashLengths);
   }
 
   setupLine(
