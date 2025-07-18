@@ -28,17 +28,6 @@ class ScenePolygonBuilder {
         () => feature.feature.properties, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-    final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
-    if (outlinePaint != null) {
-      final lines = SceneLineBuilder(scene, context);
-
-      final outlineWidth = outlinePaint.strokeWidth;
-
-      if (outlineWidth != null) {
-        lines.addLines(style, feature);
-      }
-    }
-
     final fillPaint = style.fillPaint?.evaluate(evaluationContext);
 
     if (fillPaint == null) {
