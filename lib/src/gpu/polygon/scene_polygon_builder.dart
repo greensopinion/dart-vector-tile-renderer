@@ -22,8 +22,6 @@ class ScenePolygonBuilder {
   }
 
   void addPolygon(Style style, LayerFeature feature) {
-    final polygons = feature.feature.modelPolygons;
-
     EvaluationContext evaluationContext = EvaluationContext(
         () => feature.feature.properties, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
@@ -35,8 +33,11 @@ class ScenePolygonBuilder {
     }
     final fillColor = fillPaint.color.vector4;
 
-    for (final polygon in polygons) {
-      scene.addMesh(Mesh(PolygonGeometry(polygon), ColoredMaterial(fillColor)));
+    final earcutPolygons = feature.feature.earcutPolygons;
+
+    for (final earcutPolygon in earcutPolygons) {
+      scene.addMesh(
+          Mesh(PolygonGeometry(earcutPolygon), ColoredMaterial(fillColor)));
     }
   }
 }
