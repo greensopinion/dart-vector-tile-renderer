@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'geometry_model.dart';
 import 'geometry_model_ui.dart';
+import 'package:dart_earcut/dart_earcut.dart';
 
 class Tile {
   final List<TileLayer> layers;
@@ -43,6 +44,60 @@ class BoundedPath {
   }
 }
 
+class TriangulatedPolygon {
+  final List<double> normalizedVertices;
+  final List<int> indices;
+
+  TriangulatedPolygon({
+    required this.normalizedVertices,
+    required this.indices,
+  });
+
+  factory TriangulatedPolygon.fromTilePolygon(TilePolygon polygon) {
+    final flat = <double>[];
+    final holeIndices = <int>[];
+
+    for (int i = 0; i < polygon.rings.length; i++) {
+      final ring = polygon.rings[i];
+
+      if (i > 0) {
+        holeIndices.add(flat.length ~/ 2);
+      }
+
+      for (final point in ring.points) {
+        flat.add(point.x.toDouble());
+        flat.add(point.y.toDouble());
+      }
+    }
+
+    final indicesRaw = Earcut.triangulateRaw(flat, holeIndices: holeIndices);
+
+    final normalized = <double>[];
+    for (var i = 0; i < flat.length; i += 2) {
+      final x = flat[i], y = flat[i + 1];
+      normalized.addAll([
+        x / 2048.0 - 1,
+        1 - y / 2048.0,
+        0.0,
+      ]);
+    }
+
+    final fixedIndices = <int>[];
+    for (int i = 0; i < indicesRaw.length; i += 3) {
+      fixedIndices.addAll([
+        indicesRaw[i],
+        indicesRaw[i + 2],
+        indicesRaw[i + 1],
+      ]);
+    }
+
+    return TriangulatedPolygon(
+      normalizedVertices: normalized,
+      indices: fixedIndices,
+    );
+  }
+}
+
 class TileFeature {
   final TileFeatureType type;
   final Map<String, dynamic> properties;
@@ -52,6 +107,7 @@ class TileFeature {
   List<Offset>? _points;
   List<BoundedPath>? _paths;
   BoundedPath? _compoundPath;
+  List<TriangulatedPolygon>? _earcutPolygons;
 
   TileFeature(
       {required this.type,
@@ -91,6 +147,8 @@ class TileFeature {
       type == TileFeatureType.linestring || type == TileFeatureType.polygon;
 
   bool get hasPoints => type == TileFeatureType.point;
+
+  bool get hasPolygons => type == TileFeatureType.polygon;
 
   BoundedPath get compoundPath {
     var compoundPath = _compoundPath;
@@ -136,6 +194,18 @@ class TileFeature {
       _paths = paths;
     }
     return paths;
+  }
+
+  List<TriangulatedPolygon> get earcutPolygons {
+    var earcutPolygons = _earcutPolygons;
+    if (earcutPolygons == null) {
+      final polygons = modelPolygons;
+      earcutPolygons = polygons
+          .map((polygon) => TriangulatedPolygon.fromTilePolygon(polygon))
+          .toList();
+      _earcutPolygons = earcutPolygons;
+    }
+    return earcutPolygons;
   }
 }
 
