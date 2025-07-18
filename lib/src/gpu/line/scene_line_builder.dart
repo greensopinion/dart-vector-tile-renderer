@@ -20,36 +20,46 @@ class SceneLineBuilder {
   SceneLineBuilder(this.scene, this.context);
 
   void addFeatures(Style style, Iterable<LayerFeature> features) {
+    Map<PaintModel, List<TileLine>> featureGroups = {};
     for (final feature in features) {
-      addLines(style, feature);
+      final result = getLines(style, feature);
+      if (result != null) {
+        final (paint, lines) = result;
+
+        if (!featureGroups.containsKey(paint)) {
+          featureGroups[paint] = [];
+        }
+
+        featureGroups[paint]!.addAll(lines);
+      }
     }
+    featureGroups.forEach((paint, lines) {
+      addMesh(lines, paint.strokeWidth!, features.first.layer.extent, paint, paint.strokeDashPattern);
+    });
   }
 
-  void addLines(Style style, LayerFeature feature) {
+  (PaintModel, Iterable<TileLine>)? getLines(Style style, LayerFeature feature) {
     EvaluationContext evaluationContext = EvaluationContext(
         () => feature.feature.properties, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
 
     final paint = style.linePaint?.evaluate(evaluationContext);
-    final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
 
-    final lineWidth = paint?.strokeWidth ?? outlinePaint?.strokeWidth;
-    final dashLengths = paint?.strokeDashPattern;
+    if (paint != null && paint.strokeWidth != null && paint.strokeWidth! > 0) {
+      if (feature.feature.modelLines.isNotEmpty) {
+        return (paint, feature.feature.modelLines);
+      } else if (
+      feature.feature.modelPolygons.isNotEmpty) {
 
-    if (lineWidth == null || paint == null || lineWidth <= 0) {
-      return;
-    }
-    if (feature.feature.modelLines.isNotEmpty) {
-      addMesh(feature.feature.modelLines, lineWidth, feature.layer.extent, paint, dashLengths);
-    }
+        var outlines = feature.feature.modelPolygons
+            .expand((poly) => {poly.rings.map((ring) => TileLine(List.of(ring.points)..add(ring.points.first)))})
+            .flattened
+            .toList();
 
-    if (feature.feature.modelPolygons.isNotEmpty) {
-      var outlines = feature.feature.modelPolygons
-          .expand((poly) => {poly.rings.map((ring) => TileLine(List.of(ring.points)..add(ring.points.first)))})
-          .flattened
-          .toList();
-      addMesh(outlines, lineWidth, feature.layer.extent, paint, dashLengths);
+        return (paint, outlines);
+      }
     }
+    return null;
   }
 
   void addMesh(List<TileLine> lines, double lineWidth, int extent, PaintModel paint, List<double>? dashLengths) {
