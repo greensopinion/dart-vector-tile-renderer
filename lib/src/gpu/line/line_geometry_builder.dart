@@ -42,7 +42,7 @@ class LineGeometryBuilder {
     final segmentCount = points.length - 1;
 
     setupSegments(points, segmentCount);
-    // setupEnds(points, segmentCount, lineCaps);
+    setupEnds(points, segmentCount, lineCaps);
     // setupJoins(points, segmentCount, lineJoins);
   }
 
@@ -63,39 +63,39 @@ class LineGeometryBuilder {
     startIndex += max(segmentCount * 4, 0);
   }
 
-  // void setupEnds(List<Point<double>> points, int segmentCount, LineCap type) {
-  //   if (type == LineCap.butt) return;
-  //   final round = type == LineCap.round ? 1.0 : 0.0;
-  //
-  //   double a = vertexOffset + 0;
-  //   double b = vertexOffset + 1;
-  //   double c = vertexOffset + segmentCount - 1;
-  //   double d = vertexOffset + segmentCount - 0;
-  //
-  //   vertices.addAll([
-  //     a, b, 0,-1,-1, round,
-  //     a, b, 0, 1,-1, round,
-  //     d, c, 0,-1,-1, round,
-  //     d, c, 0, 1,-1, round,
-  //   ]);
-  //
-  //   indices.addAll([
-  //     startIndex,
-  //     startIndex + 1,
-  //     1,
-  //     startIndex + 1,
-  //     2,
-  //     1,
-  //     startIndex + 3,
-  //     startIndex - 4,
-  //     startIndex - 1,
-  //     startIndex + 2,
-  //     startIndex + 3,
-  //     startIndex - 1,
-  //   ].map((it) => it + indexOffset));
-  //   startIndex += 4;
-  //
-  // }
+  void setupEnds(List<Point<double>> points, int segmentCount, LineCap type) {
+    if (type == LineCap.butt) return;
+    final round = type == LineCap.round ? 1.0 : 0.0;
+
+    Point<double> a = points[0];
+    Point<double> b = points[1];
+    Point<double> c = points[segmentCount - 1];
+    Point<double> d = points[segmentCount - 0];
+
+    vertices.addAll([
+      a.x, a.y, b.x, b.y,-1,-1, round,
+      a.x, a.y, b.x, b.y, 1,-1, round,
+      d.x, d.y, c.x, c.y,-1,-1, round,
+      d.x, d.y, c.x, c.y, 1,-1, round,
+    ]);
+
+    indices.addAll([
+      startIndex,
+      startIndex + 1,
+      1,
+      startIndex + 1,
+      2,
+      1,
+      startIndex + 3,
+      startIndex - 4,
+      startIndex - 1,
+      startIndex + 2,
+      startIndex + 3,
+      startIndex - 1,
+    ].map((it) => it + indexOffset));
+    startIndex += 4;
+  }
+
   //
   // void setupJoins(List<Point<double>> points, int segmentCount, LineJoin type) {
   //   if (type == LineJoin.bevel) {
