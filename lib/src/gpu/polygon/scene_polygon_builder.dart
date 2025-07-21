@@ -35,9 +35,7 @@ class ScenePolygonBuilder {
 
     final earcutPolygons = feature.feature.earcutPolygons;
 
-    for (final earcutPolygon in earcutPolygons) {
-      scene.addMesh(
-          Mesh(PolygonGeometry(earcutPolygon), ColoredMaterial(fillColor)));
-    }
+    scene.addMesh(
+        Mesh(PolygonGeometry(earcutPolygons.normalizedVertices, earcutPolygons.indices), ColoredMaterial(fillColor)));
   }
 }
