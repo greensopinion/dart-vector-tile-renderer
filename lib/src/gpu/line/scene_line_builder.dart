@@ -20,21 +20,27 @@ class SceneLineBuilder {
   SceneLineBuilder(this.scene, this.context);
 
   void addFeatures(Style style, Iterable<LayerFeature> features) {
-    Map<PaintModel, List<TileLine>> featureGroups = {};
+    Map<PaintModel, List<List<TileLine>>> featureGroups = {};
     for (final feature in features) {
       final result = getLines(style, feature);
       if (result != null) {
         final (paint, lines) = result;
 
         if (!featureGroups.containsKey(paint)) {
-          featureGroups[paint] = [];
+          featureGroups[paint] = [[]];
         }
 
-        featureGroups[paint]!.addAll(lines);
+        if (featureGroups[paint]!.last.map((it) => it.points.length).fold(0.0, (a, b) => a + b) > 4096) {
+          featureGroups[paint]!.add([]);
+        }
+
+        featureGroups[paint]!.last.addAll(lines);
       }
     }
-    featureGroups.forEach((paint, lines) {
-      addMesh(lines, paint.strokeWidth!, features.first.layer.extent, paint, paint.strokeDashPattern);
+    featureGroups.forEach((paint, lineGroups) {
+      for (var lines in lineGroups) {
+        addMesh(lines, paint.strokeWidth!, features.first.layer.extent, paint, paint.strokeDashPattern);
+      }
     });
   }
 
