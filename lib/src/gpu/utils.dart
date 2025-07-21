@@ -17,3 +17,15 @@ void configureRenderPass(RenderPass pass) {
 
   pass.setColorBlendEquation(blendEquation);
 }
+
+String formatBytes(int size) {
+  if (size < 1000) {
+    return "$size B";
+  } else if (size < 1000000) {
+    return "${(size / 100).truncate() / 10} KB";
+  } else if (size < 1000000000) {
+    return "${(size / 100000).truncate() / 10} MB";
+  } else {
+    return "${(size / 100000000).truncate() / 10} GB";
+  }
+}
