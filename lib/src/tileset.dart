@@ -59,13 +59,17 @@ class TilesetPreprocessor {
         if (_initializeGeometry) {
           for (final feature in features) {
             final f = feature.feature;
-            if (f.hasPolygons) {
-              f.earcutPolygons;
-            }
             if (f.hasPaths) {
               f.paths;
             } else if (f.hasPoints) {
               f.points;
+            }
+          }
+        } else {
+          for (final feature in features) {
+            final f = feature.feature;
+            if (f.hasPolygons) {
+              f.earcutPolygons;
             }
           }
         }
