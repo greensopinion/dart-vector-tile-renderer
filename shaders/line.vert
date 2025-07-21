@@ -12,12 +12,6 @@ uniform LineStyle {
 }
 line_style;
 
-uniform Meta {
-  float texture_width;
-  float texture_height;
-}
-meta;
-
 uniform extentScalings {
   float extentScale;
 }
