@@ -58,10 +58,14 @@ class TilesetPreprocessor {
             themeLayer.selector, zoom.truncate());
         if (_initializeGeometry) {
           for (final feature in features) {
-            if (feature.feature.hasPaths) {
-              feature.feature.paths;
-            } else if (feature.feature.hasPoints) {
-              feature.feature.points;
+            final f = feature.feature;
+            if (f.hasPolygons) {
+              f.earcutPolygons;
+            }
+            if (f.hasPaths) {
+              f.paths;
+            } else if (f.hasPoints) {
+              f.points;
             }
           }
         }
