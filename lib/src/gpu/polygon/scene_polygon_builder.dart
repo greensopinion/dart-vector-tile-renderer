@@ -8,6 +8,7 @@ import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../../../vector_tile_renderer.dart';
+import '../../themes/paint_model.dart';
 
 class ScenePolygonBuilder {
   final Scene scene;
@@ -16,26 +17,37 @@ class ScenePolygonBuilder {
   ScenePolygonBuilder(this.scene, this.context);
 
   void addPolygons(Style style, Iterable<LayerFeature> features) {
+    Map<PaintModel, List<TriangulatedPolygon>> featureGroups = {};
+
     for (final feature in features) {
-      addPolygon(style, feature);
+      EvaluationContext evaluationContext = EvaluationContext(
+              () => feature.feature.properties, TileFeatureType.none, context.logger,
+          zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
+
+      final paint = style.fillPaint?.evaluate(evaluationContext);
+
+      if (paint == null) {
+        continue;
+      }
+
+      if (!featureGroups.containsKey(paint)) {
+        featureGroups[paint] = [];
+      }
+      final group = featureGroups[paint]!;
+
+      if (group.isEmpty || group.last.normalizedVertices.length > 200000) {
+
+        group.add(feature.feature.earcutPolygons);
+      } else {
+        group.last.combine(feature.feature.earcutPolygons);
+      }
     }
-  }
 
-  void addPolygon(Style style, LayerFeature feature) {
-    EvaluationContext evaluationContext = EvaluationContext(
-        () => feature.feature.properties, TileFeatureType.none, context.logger,
-        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
-
-    final fillPaint = style.fillPaint?.evaluate(evaluationContext);
-
-    if (fillPaint == null) {
-      return;
-    }
-    final fillColor = fillPaint.color.vector4;
-
-    final earcutPolygons = feature.feature.earcutPolygons;
-
-    scene.addMesh(
-        Mesh(PolygonGeometry(earcutPolygons.normalizedVertices, earcutPolygons.indices), ColoredMaterial(fillColor)));
+    featureGroups.forEach((paint, polygons) {
+      for (var polygon in polygons) {
+        scene.addMesh(
+            Mesh(PolygonGeometry(polygon.normalizedVertices, polygon.indices), ColoredMaterial(paint.color.vector4)));
+      }
+    });
   }
 }

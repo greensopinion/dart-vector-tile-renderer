@@ -96,6 +96,12 @@ class TriangulatedPolygon {
       indices: fixedIndices,
     );
   }
+
+  void combine(TriangulatedPolygon other) {
+    int offset = (normalizedVertices.length / 3).truncate();
+    indices.addAll(other.indices.map((it) => (it + offset)));
+    normalizedVertices.addAll(other.normalizedVertices);
+  }
 }
 
 class TileFeature {
