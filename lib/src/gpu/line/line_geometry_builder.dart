@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_geometry.dart';
 
 import '../../model/geometry_model.dart';
@@ -43,12 +44,12 @@ class LineGeometryBuilder {
 
     setupSegments(points, segmentCount);
     setupEnds(points, segmentCount, lineCaps);
-    // setupJoins(points, segmentCount, lineJoins);
+    setupJoins(points, lineJoins);
   }
 
   void setupSegments(List<Point<double>> points, int segmentCount) {
     for (int i = 0; i < segmentCount; i++) {
-      Point<double> p0 = points[i + 0];
+      Point<double> p0 = points[i];
       Point<double> p1 = points[i + 1];
 
       vertices.addAll([
@@ -70,7 +71,7 @@ class LineGeometryBuilder {
     Point<double> a = points[0];
     Point<double> b = points[1];
     Point<double> c = points[segmentCount - 1];
-    Point<double> d = points[segmentCount - 0];
+    Point<double> d = points[segmentCount];
 
     vertices.addAll([
       a.x, a.y, b.x, b.y,-1,-1, round,
@@ -96,75 +97,113 @@ class LineGeometryBuilder {
     startIndex += 4;
   }
 
-  //
-  // void setupJoins(List<Point<double>> points, int segmentCount, LineJoin type) {
-  //   if (type == LineJoin.bevel) {
-  //     setupJoinsBevel(segmentCount);
-  //   } else if (type == LineJoin.round) {
-  //     setupJoinsRound(segmentCount);
-  //   } else {
-  //     setupJoinsBevel(segmentCount);
-  //     setupJoinsMiter(segmentCount);
-  //   }
-  // }
-  //
-  // void setupJoinsBevel(int segmentCount) {
-  //   final joinCount = segmentCount - 1;
-  //
-  //   for (int i = 0; i < joinCount; i++) {
-  //     vertices.addAll([i + vertexOffset + 1, 0, 0, 0, 0, 0]);
-  //
-  //     int offset = i * 4;
-  //
-  //     indices.addAll([
-  //       offset + 5,
-  //       offset,
-  //       startIndex + i,
-  //       offset + 3,
-  //       offset + 6,
-  //       startIndex + i,
-  //     ].map((it) => it + indexOffset));
-  //   }
-  //   startIndex += max(joinCount, 0);
-  // }
-  //
-  // void setupJoinsMiter(int segmentCount) {
-  //   final joinCount = segmentCount - 1;
-  //
-  //   for (int i = 0; i < joinCount; i++) {
-  //     vertices.addAll([i + vertexOffset + 0, i + vertexOffset + 1, i + vertexOffset + 2, -1, 0, 0]);
-  //     vertices.addAll([i + vertexOffset + 0, i + vertexOffset + 1, i + vertexOffset + 2, 1, 0, 0]);
-  //
-  //     int offset = i * 4;
-  //
-  //     indices.addAll([
-  //       offset,
-  //       offset + 5,
-  //       startIndex + (2 * i) + 1,
-  //       offset + 6,
-  //       offset + 3,
-  //       startIndex + (2 * i),
-  //     ].map((it) => it + indexOffset));
-  //   }
-  //   startIndex += max(2 * joinCount, 0);
-  // }
-  //
-  // void setupJoinsRound(int segmentCount) {
-  //   final joinCount = segmentCount - 1;
-  //
-  //   for (int i = 0; i < joinCount; i++) {
-  //     vertices.addAll([i + vertexOffset + 1, i + vertexOffset + 0, 0, -1, -1, 1]);
-  //     vertices.addAll([i + vertexOffset + 1, i + vertexOffset + 0, 0, 1, -1, 1]);
-  //
-  //     int offset = i * 4;
-  //
-  //     int a = startIndex + (2 * i);
-  //     int b = startIndex + (2 * i) + 1;
-  //     int c = offset + 0;
-  //     int d = offset + 3;
-  //
-  //     indices.addAll([c, d, b, b, d, a].map((it) => it + indexOffset));
-  //   }
-  //   startIndex += max(2 * joinCount, 0);
-  // }
+
+  void setupJoins(List<Point<double>> points, LineJoin type) {
+    if (type == LineJoin.bevel) {
+      setupJoinsBevel(points);
+    } else if (type == LineJoin.round) {
+      setupJoinsRound(points);
+    } else {
+      setupJoinsBevel(points);
+      setupJoinsMiter(points);
+    }
+  }
+
+  void setupJoinsRound(List<Point<double>> points) {
+    final joinCount = points.length - 2;
+
+    for (int i = 0; i < joinCount; i++) {
+      Point<double> p0 = points[i];
+      Point<double> p1 = points[i + 1];
+
+
+
+      vertices.addAll([p1.x, p1.y, p0.x, p0.y,-1, -1, 1]);
+      vertices.addAll([p1.x, p1.y, p0.x, p0.y, 1, -1, 1]);
+
+      int offset = i * 4;
+
+      int a = startIndex + (2 * i);
+      int b = startIndex + (2 * i) + 1;
+      int c = offset + 0;
+      int d = offset + 3;
+
+      indices.addAll([c, d, b, b, d, a].map((it) => it + indexOffset));
+    }
+    startIndex += max(2 * joinCount, 0);
+  }
+
+  void setupJoinsBevel(List<Point<double>> points) {
+    final joinCount = points.length - 2;
+
+    for (int i = 0; i < joinCount; i++) {
+      Point<double> p = points[i + 1];
+
+      vertices.addAll([
+        p.x, p.y, 0, 0, 0, 0, 0
+      ]);
+
+      int offset = i * 4;
+
+      indices.addAll([
+        offset + 5,
+        offset,
+        startIndex + i,
+        offset + 3,
+        offset + 6,
+        startIndex + i,
+      ].map((it) => it + indexOffset));
+    }
+    startIndex += max(joinCount, 0);
+  }
+
+  void setupJoinsMiter(List<Point<double>> points) {
+
+    final joinCount = points.length - 2;
+
+    Vector2 perp(Vector2 v, int flip) => Vector2(v.y * flip, -v.x * flip);
+
+    for (int i = 0; i < joinCount; i++) {
+
+      final p0 = Vector2(points[i].x, points[i].y);
+      final p1 = Vector2(points[i + 2].x, points[i + 2].y);
+
+
+      final origin = Vector2(points[i + 1].x, points[i + 1].y);
+      final a = perp((p0 - origin).normalized(), -1);
+      final b = perp((p1 - origin).normalized(), 1);
+
+      final j = a.dot(b);
+      if (j > 0.9999 || j < -0.9999) {
+        startIndex -= 2;
+        continue;
+      }
+
+      a.add(origin);
+      b.add(origin);
+
+      final c = (a + b).scaled(0.5);
+
+      final vec = (c - origin);
+      final resultLength = (c - a).length2 / vec.length2;
+
+      final out = vec.scaled(1 + resultLength);
+
+      vertices.addAll([c.x, c.y, c.x, c.y + 1, out.x, -out.y, 0]);
+
+      vertices.addAll([origin.x, origin.y, origin.x, origin.y + 1, -out.x, out.y, 0]);
+
+      int offset = i * 4;
+
+      indices.addAll([
+        offset + 6,
+        offset + 3,
+        startIndex + (2 * i),
+        offset,
+        offset + 5,
+        startIndex + (2 * i) + 1,
+      ].map((it) => it + indexOffset));
+    }
+    startIndex += max(2 * joinCount, 0);
+  }
 }
