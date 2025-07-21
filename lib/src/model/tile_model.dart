@@ -107,7 +107,7 @@ class TileFeature {
   List<Offset>? _points;
   List<BoundedPath>? _paths;
   BoundedPath? _compoundPath;
-  List<TriangulatedPolygon>? _earcutPolygons;
+  TriangulatedPolygon? _earcutPolygons;
 
   TileFeature(
       {required this.type,
@@ -196,13 +196,22 @@ class TileFeature {
     return paths;
   }
 
-  List<TriangulatedPolygon> get earcutPolygons {
+  TriangulatedPolygon get earcutPolygons {
     var earcutPolygons = _earcutPolygons;
     if (earcutPolygons == null) {
       final polygons = modelPolygons;
-      earcutPolygons = polygons
-          .map((polygon) => TriangulatedPolygon.fromTilePolygon(polygon))
-          .toList();
+      final triangulated = polygons.map((polygon) => TriangulatedPolygon.fromTilePolygon(polygon)).toList();
+
+      List<double> vertices = [];
+      List<int> indices = [];
+
+      for (var it in triangulated) {
+        indices.addAll(it.indices.map((i) => i + (vertices.length / 3).truncate()));
+        vertices.addAll(it.normalizedVertices);
+      }
+
+      earcutPolygons = TriangulatedPolygon(normalizedVertices: vertices, indices: indices);
+
       _earcutPolygons = earcutPolygons;
     }
     return earcutPolygons;

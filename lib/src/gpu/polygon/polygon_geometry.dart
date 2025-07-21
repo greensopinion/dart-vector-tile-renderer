@@ -5,16 +5,13 @@ import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 import 'package:vector_tile_renderer/src/model/tile_model.dart';
 
 class PolygonGeometry extends UnskinnedGeometry {
-  PolygonGeometry(TriangulatedPolygon earcutPolygon) {
+  PolygonGeometry(List<double> vertices, List<int> indices) {
     setVertexShader(shaderLibrary["SimpleVertex"]!);
 
-    final normalized = earcutPolygon.normalizedVertices;
-    final fixedIndices = earcutPolygon.indices;
-
     uploadVertexData(
-      ByteData.sublistView(Float32List.fromList(normalized)),
-      normalized.length ~/ 3,
-      ByteData.sublistView(Uint16List.fromList(fixedIndices)),
+      ByteData.sublistView(Float32List.fromList(vertices)),
+      vertices.length ~/ 3,
+      ByteData.sublistView(Uint16List.fromList(indices)),
       indexType: gpu.IndexType.int16,
     );
   }
