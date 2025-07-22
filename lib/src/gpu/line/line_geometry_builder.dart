@@ -10,6 +10,7 @@ class LineGeometryBuilder {
   int indexOffset = 0;
   List<double> vertices = List.empty(growable: true);
   List<int> indices = List.empty(growable: true);
+  List<double> cumulativeLengths = List.empty(growable: true);
 
   int startIndex = 0;
 
@@ -31,7 +32,7 @@ class LineGeometryBuilder {
     }
 
     return LineGeometry(
-        points: lines.expand((it) => it.points).toList(),
+        // points: lines.expand((it) => it.points).toList(),
         vertices: vertices,
         indices: indices,
         lineWidth: lineWidth,
