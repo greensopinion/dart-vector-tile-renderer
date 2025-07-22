@@ -116,7 +116,7 @@ class _TileState extends State<Tile> {
   }
 
   void _loadTileset() async {
-    tile_model.Tile tile = await loadVectorTile('assets/11_325_699_openmaptiles.pbf');
+    tile_model.Tile tile = await loadVectorTile('assets/sample_tile.pbf');
     tile_model.Tile contour = await loadVectorTile('assets/11_325_699_contour.pbf');
     RasterTile hillShade = await loadRasterTile('assets/11_325_699_hillshade.png');
     final tileset =
