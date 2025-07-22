@@ -21,7 +21,7 @@ in vec2 point_a;
 in vec2 point_b;
 in vec2 offset;
 in float roundness;
-in float vertex_cumulative_length; // Direct cumulative length value
+in float vertex_cumulative_length;
 
 out vec3 v_position;
 out vec3 v_normal;
@@ -59,6 +59,5 @@ void main() {
   v_texture_coords = vec2(offset.x, offset.y * roundness);
   v_color = vec4(0, 0, 0, 1);
 
-  // Use the direct cumulative length value and scale it
-  cumulative_length = extent_scalings.extentScale * vertex_cumulative_length;
+  cumulative_length = vertex_cumulative_length * 2;
 }

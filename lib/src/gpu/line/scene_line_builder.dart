@@ -44,7 +44,7 @@ class SceneLineBuilder {
     featureGroups.forEach((paint, lineGroups) {
       for (var lines in lineGroups) {
         addMesh(lines, paint.strokeWidth!, features.first.layer.extent, paint,
-            [100.0, 100.0]);
+            paint.strokeDashPattern);
       }
     });
   }

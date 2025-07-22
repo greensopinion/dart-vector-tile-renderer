@@ -15,11 +15,17 @@ class LineGeometryBuilder {
 
   LineGeometry build(List<TileLine> lines, LineCap lineCaps, LineJoin lineJoins,
       double lineWidth, int extent, List<double>? dashLengths) {
+    double totalCumulativeLength = 0.0;
+
     for (var line in lines) {
       startIndex = 0;
       var points = line.points;
 
-      setupLine(points, lineCaps, lineJoins);
+      setupLine(points, lineCaps, lineJoins, totalCumulativeLength);
+
+      if (cumulativeLengths.isNotEmpty) {
+        totalCumulativeLength = cumulativeLengths.last;
+      }
 
       indexOffset += startIndex;
     }
@@ -30,18 +36,18 @@ class LineGeometryBuilder {
         indices: indices,
         lineWidth: lineWidth,
         extent: extent,
-        dashLengths: dashLengths,
-        cumulativeLengths: cumulativeLengths);
+        dashLengths: dashLengths);
   }
 
   setupLine(
     List<Point<double>> points,
     LineCap lineCaps,
     LineJoin lineJoins,
+    double startingCumulativeLength,
   ) {
     final segmentCount = points.length - 1;
 
-    computeCumulativeDistances(points, segmentCount);
+    computeCumulativeDistances(points, segmentCount, startingCumulativeLength);
     setupSegments(points, segmentCount);
     setupEnds(points, segmentCount, lineCaps);
     setupJoins(points, lineJoins);
@@ -52,7 +58,6 @@ class LineGeometryBuilder {
       Point<double> p0 = points[i];
       Point<double> p1 = points[i + 1];
 
-      // Get cumulative lengths for this segment
       double cumulativeLength0 =
           i < cumulativeLengths.length ? cumulativeLengths[i] : 0.0;
       double cumulativeLength1 =
@@ -66,7 +71,7 @@ class LineGeometryBuilder {
         1,
         0,
         0,
-        cumulativeLength1, // Add cumulative length for p1
+        cumulativeLength1,
         p0.x,
         p0.y,
         p1.x,
@@ -74,7 +79,7 @@ class LineGeometryBuilder {
         -1,
         0,
         0,
-        cumulativeLength0, // Add cumulative length for p0
+        cumulativeLength0,
         p0.x,
         p0.y,
         p1.x,
@@ -82,7 +87,7 @@ class LineGeometryBuilder {
         1,
         0,
         0,
-        cumulativeLength0, // Add cumulative length for p0
+        cumulativeLength0,
         p1.x,
         p1.y,
         p0.x,
@@ -90,7 +95,7 @@ class LineGeometryBuilder {
         -1,
         0,
         0,
-        cumulativeLength1, // Add cumulative length for p1
+        cumulativeLength1,
       ]);
 
       indices
@@ -109,7 +114,8 @@ class LineGeometryBuilder {
     Point<double> d = points[segmentCount];
 
     // Get cumulative lengths for start and end points
-    double startCumulativeLength = cumulativeLengths.isNotEmpty ? 0.0 : 0.0;
+    double startCumulativeLength =
+        cumulativeLengths.isNotEmpty ? cumulativeLengths.first : 0.0;
     double endCumulativeLength =
         cumulativeLengths.isNotEmpty ? cumulativeLengths.last : 0.0;
 
@@ -121,7 +127,7 @@ class LineGeometryBuilder {
       -1,
       -1,
       round,
-      startCumulativeLength, // Add cumulative length for start
+      startCumulativeLength,
       a.x,
       a.y,
       b.x,
@@ -129,7 +135,7 @@ class LineGeometryBuilder {
       1,
       -1,
       round,
-      startCumulativeLength, // Add cumulative length for start
+      startCumulativeLength,
       d.x,
       d.y,
       c.x,
@@ -137,7 +143,7 @@ class LineGeometryBuilder {
       -1,
       -1,
       round,
-      endCumulativeLength, // Add cumulative length for end
+      endCumulativeLength,
       d.x,
       d.y,
       c.x,
@@ -145,7 +151,7 @@ class LineGeometryBuilder {
       1,
       -1,
       round,
-      endCumulativeLength, // Add cumulative length for end
+      endCumulativeLength,
     ]);
 
     indices.addAll([
@@ -183,7 +189,6 @@ class LineGeometryBuilder {
       Point<double> p0 = points[i];
       Point<double> p1 = points[i + 1];
 
-      // Get cumulative length for the join point
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
@@ -209,7 +214,6 @@ class LineGeometryBuilder {
     for (int i = 0; i < joinCount; i++) {
       Point<double> p = points[i + 1];
 
-      // Get cumulative length for the join point
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
@@ -258,7 +262,6 @@ class LineGeometryBuilder {
 
       final out = vec.scaled(1 + resultLength);
 
-      // Get cumulative length for the join point
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
@@ -288,5 +291,20 @@ class LineGeometryBuilder {
       ].map((it) => it + indexOffset));
     }
     startIndex += max(2 * joinCount, 0);
+  }
+
+  void computeCumulativeDistances(List<Point<double>> points, int segmentCount,
+      double startingCumulativeLength) {
+    cumulativeLengths.clear();
+    cumulativeLengths.add(startingCumulativeLength);
+
+    double sum = startingCumulativeLength;
+    for (int i = 1; i < points.length; i++) {
+      final dx = points[i].x - points[i - 1].x;
+      final dy = points[i].y - points[i - 1].y;
+      final segmentLength = sqrt(dx * dx + dy * dy);
+      sum += segmentLength;
+      cumulativeLengths.add(sum);
+    }
   }
 }
