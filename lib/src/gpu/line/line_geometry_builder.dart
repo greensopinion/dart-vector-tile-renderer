@@ -1,5 +1,3 @@
-
-
 import 'dart:math';
 
 import 'package:vector_math/vector_math.dart';
@@ -15,14 +13,8 @@ class LineGeometryBuilder {
 
   int startIndex = 0;
 
-  LineGeometry build(
-      List<TileLine> lines,
-      LineCap lineCaps,
-      LineJoin lineJoins,
-      double lineWidth,
-      int extent,
-      List<double>? dashLengths
-      ) {
+  LineGeometry build(List<TileLine> lines, LineCap lineCaps, LineJoin lineJoins,
+      double lineWidth, int extent, List<double>? dashLengths) {
     for (var line in lines) {
       startIndex = 0;
       var points = line.points;
@@ -32,16 +24,24 @@ class LineGeometryBuilder {
       indexOffset += startIndex;
     }
 
-    return LineGeometry(vertices: vertices, indices: indices, lineWidth: lineWidth, extent: extent, dashLengths: dashLengths);
+    return LineGeometry(
+        points: lines.expand((it) => it.points).toList(),
+        vertices: vertices,
+        indices: indices,
+        lineWidth: lineWidth,
+        extent: extent,
+        dashLengths: dashLengths,
+        cumulativeLengths: cumulativeLengths);
   }
 
   setupLine(
-      List<Point<double>> points,
-      LineCap lineCaps,
-      LineJoin lineJoins,
-      ) {
+    List<Point<double>> points,
+    LineCap lineCaps,
+    LineJoin lineJoins,
+  ) {
     final segmentCount = points.length - 1;
 
+    computeCumulativeDistances(points, segmentCount);
     setupSegments(points, segmentCount);
     setupEnds(points, segmentCount, lineCaps);
     setupJoins(points, lineJoins);
@@ -52,14 +52,49 @@ class LineGeometryBuilder {
       Point<double> p0 = points[i];
       Point<double> p1 = points[i + 1];
 
+      // Get cumulative lengths for this segment
+      double cumulativeLength0 =
+          i < cumulativeLengths.length ? cumulativeLengths[i] : 0.0;
+      double cumulativeLength1 =
+          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
+
       vertices.addAll([
-        p1.x, p1.y, p0.x, p0.y, 1, 0, 0,
-        p0.x, p0.y, p1.x, p1.y,-1, 0, 0,
-        p0.x, p0.y, p1.x, p1.y, 1, 0, 0,
-        p1.x, p1.y, p0.x, p0.y,-1, 0, 0,
+        p1.x,
+        p1.y,
+        p0.x,
+        p0.y,
+        1,
+        0,
+        0,
+        cumulativeLength1, // Add cumulative length for p1
+        p0.x,
+        p0.y,
+        p1.x,
+        p1.y,
+        -1,
+        0,
+        0,
+        cumulativeLength0, // Add cumulative length for p0
+        p0.x,
+        p0.y,
+        p1.x,
+        p1.y,
+        1,
+        0,
+        0,
+        cumulativeLength0, // Add cumulative length for p0
+        p1.x,
+        p1.y,
+        p0.x,
+        p0.y,
+        -1,
+        0,
+        0,
+        cumulativeLength1, // Add cumulative length for p1
       ]);
 
-      indices.addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i) + indexOffset));
+      indices
+          .addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i) + indexOffset));
     }
     startIndex += max(segmentCount * 4, 0);
   }
@@ -73,11 +108,44 @@ class LineGeometryBuilder {
     Point<double> c = points[segmentCount - 1];
     Point<double> d = points[segmentCount];
 
+    // Get cumulative lengths for start and end points
+    double startCumulativeLength = cumulativeLengths.isNotEmpty ? 0.0 : 0.0;
+    double endCumulativeLength =
+        cumulativeLengths.isNotEmpty ? cumulativeLengths.last : 0.0;
+
     vertices.addAll([
-      a.x, a.y, b.x, b.y,-1,-1, round,
-      a.x, a.y, b.x, b.y, 1,-1, round,
-      d.x, d.y, c.x, c.y,-1,-1, round,
-      d.x, d.y, c.x, c.y, 1,-1, round,
+      a.x,
+      a.y,
+      b.x,
+      b.y,
+      -1,
+      -1,
+      round,
+      startCumulativeLength, // Add cumulative length for start
+      a.x,
+      a.y,
+      b.x,
+      b.y,
+      1,
+      -1,
+      round,
+      startCumulativeLength, // Add cumulative length for start
+      d.x,
+      d.y,
+      c.x,
+      c.y,
+      -1,
+      -1,
+      round,
+      endCumulativeLength, // Add cumulative length for end
+      d.x,
+      d.y,
+      c.x,
+      c.y,
+      1,
+      -1,
+      round,
+      endCumulativeLength, // Add cumulative length for end
     ]);
 
     indices.addAll([
@@ -97,7 +165,6 @@ class LineGeometryBuilder {
     startIndex += 4;
   }
 
-
   void setupJoins(List<Point<double>> points, LineJoin type) {
     if (type == LineJoin.bevel) {
       setupJoinsBevel(points);
@@ -116,10 +183,13 @@ class LineGeometryBuilder {
       Point<double> p0 = points[i];
       Point<double> p1 = points[i + 1];
 
+      // Get cumulative length for the join point
+      double joinCumulativeLength =
+          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
-
-      vertices.addAll([p1.x, p1.y, p0.x, p0.y,-1, -1, 1]);
-      vertices.addAll([p1.x, p1.y, p0.x, p0.y, 1, -1, 1]);
+      vertices
+          .addAll([p1.x, p1.y, p0.x, p0.y, -1, -1, 1, joinCumulativeLength]);
+      vertices.addAll([p1.x, p1.y, p0.x, p0.y, 1, -1, 1, joinCumulativeLength]);
 
       int offset = i * 4;
 
@@ -139,9 +209,11 @@ class LineGeometryBuilder {
     for (int i = 0; i < joinCount; i++) {
       Point<double> p = points[i + 1];
 
-      vertices.addAll([
-        p.x, p.y, 0, 0, 0, 0, 0
-      ]);
+      // Get cumulative length for the join point
+      double joinCumulativeLength =
+          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
+
+      vertices.addAll([p.x, p.y, 0, 0, 0, 0, 0, joinCumulativeLength]);
 
       int offset = i * 4;
 
@@ -158,16 +230,13 @@ class LineGeometryBuilder {
   }
 
   void setupJoinsMiter(List<Point<double>> points) {
-
     final joinCount = points.length - 2;
 
     Vector2 perp(Vector2 v, int flip) => Vector2(v.y * flip, -v.x * flip);
 
     for (int i = 0; i < joinCount; i++) {
-
       final p0 = Vector2(points[i].x, points[i].y);
       final p1 = Vector2(points[i + 2].x, points[i + 2].y);
-
 
       final origin = Vector2(points[i + 1].x, points[i + 1].y);
       final a = perp((p0 - origin).normalized(), -1);
@@ -189,9 +258,23 @@ class LineGeometryBuilder {
 
       final out = vec.scaled(1 + resultLength);
 
-      vertices.addAll([c.x, c.y, c.x, c.y + 1, out.x, -out.y, 0]);
+      // Get cumulative length for the join point
+      double joinCumulativeLength =
+          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
-      vertices.addAll([origin.x, origin.y, origin.x, origin.y + 1, -out.x, out.y, 0]);
+      vertices.addAll(
+          [c.x, c.y, c.x, c.y + 1, out.x, -out.y, 0, joinCumulativeLength]);
+
+      vertices.addAll([
+        origin.x,
+        origin.y,
+        origin.x,
+        origin.y + 1,
+        -out.x,
+        out.y,
+        0,
+        joinCumulativeLength
+      ]);
 
       int offset = i * 4;
 

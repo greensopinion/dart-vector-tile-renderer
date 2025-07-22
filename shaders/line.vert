@@ -21,6 +21,7 @@ in vec2 point_a;
 in vec2 point_b;
 in vec2 offset;
 in float roundness;
+in float vertex_cumulative_length; // Direct cumulative length value
 
 out vec3 v_position;
 out vec3 v_normal;
@@ -48,18 +49,16 @@ void main() {
   vec2 curr = scalePoint(point_a);
   vec2 next = scalePoint(point_b);
 
-  vec2 result = getSegmentPos(curr, next);
+  vec2 segment_pos = getSegmentPos(curr, next);
 
-  gl_Position = vec4(result, 0.0, 1.0);
+  gl_Position = vec4(segment_pos, 0.0, 1.0);
 
-  v_position = vec3(result, 0.0);
+  v_position = vec3(segment_pos, 0.0);
   v_viewvector = frame_info.camera_position - v_position;
-  v_normal = vec3(1,0,0);
+  v_normal = vec3(1, 0, 0);
   v_texture_coords = vec2(offset.x, offset.y * roundness);
-  v_color = vec4(0,0,0,1);
+  v_color = vec4(0, 0, 0, 1);
 
-  vec2 vec = next - curr;
-
-  v_length = length(vec) * extent_scalings.extentScale;
-  cumulative_length = extent_scalings.extentScale;
-} 
+  // Use the direct cumulative length value and scale it
+  cumulative_length = extent_scalings.extentScale * vertex_cumulative_length;
+}

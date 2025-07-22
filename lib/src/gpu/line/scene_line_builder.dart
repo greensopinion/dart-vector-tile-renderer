@@ -30,7 +30,11 @@ class SceneLineBuilder {
           featureGroups[paint] = [[]];
         }
 
-        if (featureGroups[paint]!.last.map((it) => it.points.length).fold(0.0, (a, b) => a + b) > 4096) {
+        if (featureGroups[paint]!
+                .last
+                .map((it) => it.points.length)
+                .fold(0.0, (a, b) => a + b) >
+            4096) {
           featureGroups[paint]!.add([]);
         }
 
@@ -39,12 +43,14 @@ class SceneLineBuilder {
     }
     featureGroups.forEach((paint, lineGroups) {
       for (var lines in lineGroups) {
-        addMesh(lines, paint.strokeWidth!, features.first.layer.extent, paint, paint.strokeDashPattern);
+        addMesh(lines, paint.strokeWidth!, features.first.layer.extent, paint,
+            [100.0, 100.0]);
       }
     });
   }
 
-  (PaintModel, Iterable<TileLine>)? getLines(Style style, LayerFeature feature) {
+  (PaintModel, Iterable<TileLine>)? getLines(
+      Style style, LayerFeature feature) {
     EvaluationContext evaluationContext = EvaluationContext(
         () => feature.feature.properties, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
@@ -54,11 +60,12 @@ class SceneLineBuilder {
     if (paint != null && paint.strokeWidth != null && paint.strokeWidth! > 0) {
       if (feature.feature.modelLines.isNotEmpty) {
         return (paint, feature.feature.modelLines);
-      } else if (
-      feature.feature.modelPolygons.isNotEmpty) {
-
+      } else if (feature.feature.modelPolygons.isNotEmpty) {
         var outlines = feature.feature.modelPolygons
-            .expand((poly) => {poly.rings.map((ring) => TileLine(List.of(ring.points)..add(ring.points.first)))})
+            .expand((poly) => {
+                  poly.rings.map((ring) =>
+                      TileLine(List.of(ring.points)..add(ring.points.first)))
+                })
             .flattened
             .toList();
 
@@ -68,10 +75,17 @@ class SceneLineBuilder {
     return null;
   }
 
-  void addMesh(List<TileLine> lines, double lineWidth, int extent, PaintModel paint, List<double>? dashLengths) {
+  void addMesh(List<TileLine> lines, double lineWidth, int extent,
+      PaintModel paint, List<double>? dashLengths) {
     Geometry mainGeometry = LineGeometryBuilder().build(
-        lines, paint.lineCap ?? LineCap.DEFAULT, paint.lineJoin ?? LineJoin.DEFAULT, lineWidth, extent, dashLengths);
+        lines,
+        paint.lineCap ?? LineCap.DEFAULT,
+        paint.lineJoin ?? LineJoin.DEFAULT,
+        lineWidth,
+        extent,
+        dashLengths);
 
-    scene.addMesh(Mesh(mainGeometry, LineMaterial(paint.color.vector4, dashLengths)));
+    scene.addMesh(
+        Mesh(mainGeometry, LineMaterial(paint.color.vector4, dashLengths)));
   }
 }
