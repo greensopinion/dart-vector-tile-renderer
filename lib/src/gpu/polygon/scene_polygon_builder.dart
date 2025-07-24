@@ -21,8 +21,12 @@ class ScenePolygonBuilder {
 
     for (final feature in features) {
       EvaluationContext evaluationContext = EvaluationContext(
-              () => feature.feature.properties, TileFeatureType.none, context.logger,
-          zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
+          () => feature.feature.properties,
+          TileFeatureType.none,
+          context.logger,
+          zoom: context.zoom,
+          zoomScaleFactor: 1.0,
+          hasImage: (_) => false);
 
       final paint = style.fillPaint?.evaluate(evaluationContext);
 
@@ -36,7 +40,6 @@ class ScenePolygonBuilder {
       final group = featureGroups[paint]!;
 
       if (group.isEmpty || group.last.normalizedVertices.length > 200000) {
-
         group.add(feature.feature.earcutPolygons);
       } else {
         group.last.combine(feature.feature.earcutPolygons);
@@ -45,8 +48,11 @@ class ScenePolygonBuilder {
 
     featureGroups.forEach((paint, polygons) {
       for (var polygon in polygons) {
-        scene.addMesh(
-            Mesh(PolygonGeometry(polygon.normalizedVertices, polygon.indices), ColoredMaterial(paint.color.vector4)));
+        scene.addMesh(Mesh(
+            PolygonGeometry(polygon.normalizedVertices, polygon.indices),
+            ColoredMaterial(paint.color.vector4,
+                antialiasingEnabled:
+                    scene.antiAliasingMode == AntiAliasingMode.msaa)));
       }
     });
   }

@@ -4,15 +4,17 @@ import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
-import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../shaders.dart';
 
 class LineMaterial extends Material {
   Vector4 color;
   List<double>? dashLengths;
+  bool antialiasingEnabled;
+  double edgeWidth;
 
-  LineMaterial(this.color, this.dashLengths) {
+  LineMaterial(this.color, this.dashLengths,
+      {this.antialiasingEnabled = true, this.edgeWidth = 0.5}) {
     setFragmentShader(shaderLibrary["LineFragment"]!);
   }
 
@@ -37,6 +39,16 @@ class LineMaterial extends Material {
     pass.bindUniform(
       fragmentShader.getUniformSlot("Paint"),
       transientsBuffer.emplace(colorBytes),
+    );
+
+    final aaBytes =
+        Float32List.fromList([antialiasingEnabled ? 1.0 : 0.0, edgeWidth])
+            .buffer
+            .asByteData();
+
+    pass.bindUniform(
+      fragmentShader.getUniformSlot("AntiAliasing"),
+      transientsBuffer.emplace(aaBytes),
     );
 
     configureRenderPass(pass);

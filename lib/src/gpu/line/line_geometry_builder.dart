@@ -114,7 +114,6 @@ class LineGeometryBuilder {
     Point<double> c = points[segmentCount - 1];
     Point<double> d = points[segmentCount];
 
-    // Get cumulative lengths for start and end points
     double startCumulativeLength =
         cumulativeLengths.isNotEmpty ? cumulativeLengths.first : 0.0;
     double endCumulativeLength =

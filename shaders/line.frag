@@ -9,6 +9,12 @@ uniform DashMeasurements {
 }
 dash_measurements;
 
+uniform AntiAliasing {
+  float enabled;
+  float edgeWidth;
+}
+antialiasing;
+
 in vec3 v_position;
 in vec3 v_normal;
 in vec3 v_viewvector;
@@ -35,10 +41,40 @@ void main() {
   if (distInCycle < dash_measurements.drawLength && v_length - v_length < dash_measurements.drawLength) {
     if (v_texture_coords.y != 0.0) {
         float dist = length(v_texture_coords);
-        float inside = step(dist, 1.0);
-        frag_color = mix(alt_color, base_color, inside);
+        
+        if (antialiasing.enabled > 0.5) {
+          float edge_width = antialiasing.edgeWidth;
+          float solid_radius = 1.4 - edge_width;
+          float alpha;
+          
+          if (dist <= solid_radius) {
+            alpha = 1.0;
+          } else {
+            alpha = smoothstep(1.0, solid_radius, dist);
+          }
+          
+          frag_color = vec4(base_color.rgb, base_color.a * alpha);
+        } else {
+          float inside = step(dist, 1.0);
+          frag_color = mix(alt_color, base_color, inside);
+        }
     } else {
-        frag_color = paint.color;
+        if (antialiasing.enabled > 0.5) {
+          float dist = abs(v_texture_coords.y);
+          float edge_width = antialiasing.edgeWidth;
+          float solid_radius = 1.5 - edge_width;
+          float alpha;
+          
+          if (dist <= solid_radius) {
+            alpha = 1.0;
+          } else {
+            alpha = smoothstep(2.0, solid_radius, dist);
+          }
+          
+          frag_color = vec4(base_color.rgb, base_color.a * alpha);
+        } else {
+          frag_color = paint.color;
+        }
     }
   } else {
     frag_color = alt_color;
