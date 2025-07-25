@@ -8,10 +8,10 @@ import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
 
 class RasterLayerBuilder {
-  final Scene scene;
+  final SceneGraph graph;
   final VisitorContext context;
 
-  RasterLayerBuilder(this.scene, this.context);
+  RasterLayerBuilder(this.graph, this.context);
 
   void build(RasterTile tile, RasterPaintModel paintModel) {
 
@@ -29,7 +29,7 @@ class RasterLayerBuilder {
         RasterMaterial material = RasterMaterial(colorTexture: texture, resampling: resampling);
         material.baseColorFactor = Vector4(1.0, 1.0, 1.0, opacity);
 
-        scene.addMesh(Mesh(RasterGeometry(tile), material));
+        graph.addMesh(Mesh(RasterGeometry(tile), material));
       }
     }
   }

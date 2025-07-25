@@ -11,10 +11,10 @@ import '../../../vector_tile_renderer.dart';
 import '../../themes/paint_model.dart';
 
 class ScenePolygonBuilder {
-  final Scene scene;
+  final SceneGraph graph;
   final VisitorContext context;
 
-  ScenePolygonBuilder(this.scene, this.context);
+  ScenePolygonBuilder(this.graph, this.context);
 
   void addPolygons(Style style, Iterable<LayerFeature> features) {
     Map<PaintModel, List<TriangulatedPolygon>> featureGroups = {};
@@ -45,7 +45,7 @@ class ScenePolygonBuilder {
 
     featureGroups.forEach((paint, polygons) {
       for (var polygon in polygons) {
-        scene.addMesh(
+        graph.addMesh(
             Mesh(PolygonGeometry(polygon.normalizedVertices, polygon.indices), ColoredMaterial(paint.color.vector4)));
       }
     });

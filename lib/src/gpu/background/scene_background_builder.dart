@@ -6,12 +6,12 @@ import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
 import '../../../vector_tile_renderer.dart';
 
 class SceneBackgroundBuilder {
-  final Scene scene;
+  final SceneGraph graph;
   final VisitorContext context;
 
-  SceneBackgroundBuilder(this.scene, this.context);
+  SceneBackgroundBuilder(this.graph, this.context);
 
   void addBackground(Vector4 color) {
-    scene.addMesh(Mesh(BackgroundGeometry(), ColoredMaterial(color)));
+    graph.addMesh(Mesh(BackgroundGeometry(), ColoredMaterial(color)));
   }
 }

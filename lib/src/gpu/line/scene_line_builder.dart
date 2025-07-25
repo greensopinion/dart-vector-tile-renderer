@@ -14,10 +14,10 @@ import '../../themes/style.dart';
 import '../color_extension.dart';
 
 class SceneLineBuilder {
-  final Scene scene;
+  final SceneGraph graph;
   final VisitorContext context;
 
-  SceneLineBuilder(this.scene, this.context);
+  SceneLineBuilder(this.graph, this.context);
 
   void addFeatures(Style style, Iterable<LayerFeature> features) {
     Map<PaintModel, List<List<TileLine>>> featureGroups = {};
@@ -85,7 +85,6 @@ class SceneLineBuilder {
         extent,
         dashLengths);
 
-    scene.addMesh(
-        Mesh(mainGeometry, LineMaterial(paint.color.vector4, dashLengths)));
+    graph.addMesh(Mesh(mainGeometry, LineMaterial(paint.color.vector4, dashLengths)));
   }
 }
