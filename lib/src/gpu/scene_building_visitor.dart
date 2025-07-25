@@ -20,6 +20,12 @@ class SceneBuildingVisitor extends LayerVisitor {
 
   SceneBuildingVisitor(this.graph, this.context);
 
+  void visitAllFeatures(Theme theme) {
+    for (final layer in theme.layers) {
+      layer.accept(context, this);
+    }
+  }
+
   @override
   void visitFeatures(VisitorContext context, ThemeLayerType layerType,
       Style style, Iterable<LayerFeature> features) {

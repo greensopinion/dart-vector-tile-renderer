@@ -108,10 +108,8 @@ class TileRenderer {
       tileSource: tileSource,
       zoom: zoom,
     );
-    final visitor = SceneBuildingVisitor(scene, context);
-    for (final layer in theme.layers) {
-      layer.accept(context, visitor);
-    }
+    SceneBuildingVisitor(scene, context).visitAllFeatures(theme);
+
     return scene;
   }
 }
