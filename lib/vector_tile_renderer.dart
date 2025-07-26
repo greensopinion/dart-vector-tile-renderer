@@ -23,3 +23,4 @@ export 'src/tile_source.dart';
 export 'src/tileset.dart' hide InternalTileset;
 export 'src/tileset_raster.dart';
 export 'src/vector_tile_reader.dart';
+export 'src/gpu/scene_building_visitor.dart';

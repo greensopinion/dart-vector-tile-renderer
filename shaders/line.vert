@@ -51,7 +51,9 @@ void main() {
 
   vec2 segment_pos = getSegmentPos(curr, next);
 
-  gl_Position = vec4(segment_pos, 0.0, 1.0);
+  mat4 transform = frame_info.model_transform;
+
+  gl_Position = transform * vec4(segment_pos, 0.0, 1.0);
 
   v_position = vec3(segment_pos, 0.0);
   v_viewvector = frame_info.camera_position - v_position;
