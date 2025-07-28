@@ -9,8 +9,11 @@ import 'shaders.dart';
 
 class ColoredMaterial extends Material {
   Vector4 color;
+  bool antialiasingEnabled;
+  double edgeWidth;
 
-  ColoredMaterial(this.color) {
+  ColoredMaterial(this.color,
+      {this.antialiasingEnabled = true, this.edgeWidth = 0.5}) {
     setFragmentShader(shaderLibrary["SimpleFragment"]!);
   }
 

@@ -1,4 +1,3 @@
-
 import 'package:flutter_gpu/gpu.dart';
 
 void configureRenderPass(RenderPass pass) {

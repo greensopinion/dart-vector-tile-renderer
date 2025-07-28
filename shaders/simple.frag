@@ -4,6 +4,12 @@ uniform Paint {
 }
 paint;
 
+uniform AntiAliasing {
+  float enabled;
+  float edgeWidth;
+}
+antialiasing;
+
 out vec4 frag_color;
 
 void main() {
