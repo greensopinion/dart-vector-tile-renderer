@@ -7,15 +7,11 @@ uniform FrameInfo {
 }
 frame_info;
 
-uniform LineStyle {
+uniform LineGeometry {
   float width;
-}
-line_style;
-
-uniform extentScalings {
   float extentScale;
 }
-extent_scalings;
+line_geometry;
 
 in vec2 point_a;
 in vec2 point_b;
@@ -33,11 +29,11 @@ out float v_length;
 out float cumulative_length;
 
 vec2 scalePoint(vec2 p) {
-  return vec2((p.x / extent_scalings.extentScale) - 1, 1 - (p.y / extent_scalings.extentScale));
+  return vec2((p.x / line_geometry.extentScale) - 1, 1 - (p.y / line_geometry.extentScale));
 }
 
 vec2 getSegmentPos(vec2 curr, vec2 next) {
-  float offsetDist = line_style.width / 2.0;
+  float offsetDist = line_geometry.width / 2.0;
 
   vec2 unitDir = normalize(next - curr);
   vec2 perp = vec2(unitDir.y, -unitDir.x);
@@ -61,5 +57,6 @@ void main() {
   v_texture_coords = vec2(offset.x, offset.y * roundness);
   v_color = vec4(0, 0, 0, 1);
 
+  v_length = distance(curr, next) * line_geometry.width;
   cumulative_length = vertex_cumulative_length * 2;
 }

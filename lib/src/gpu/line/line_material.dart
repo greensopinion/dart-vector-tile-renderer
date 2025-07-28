@@ -23,21 +23,14 @@ class LineMaterial extends Material {
 
     dashLengths ??= [64.0, 0];
 
-    final dashMeasurementsSlot =
-        fragmentShader.getUniformSlot('DashMeasurements');
-    final dashMeasurementsView = transientsBuffer
-        .emplace(Float32List.fromList(dashLengths!).buffer.asByteData());
-    pass.bindUniform(dashMeasurementsSlot, dashMeasurementsView);
-
-    final colorBytes =
-        Float32List.fromList([color.x, color.y, color.z, color.w])
-            .buffer
-            .asByteData();
-
-    pass.bindUniform(
-      fragmentShader.getUniformSlot("Paint"),
-      transientsBuffer.emplace(colorBytes),
-    );
+    final lineMaterialSlot = fragmentShader.getUniformSlot('LineMaterial');
+    final lineMaterialView = transientsBuffer.emplace(
+        Float32List.fromList([
+          color.x, color.y, color.z, color.w,  // color
+          dashLengths![0],  // drawLength
+          dashLengths![1],  // spaceLength
+        ]).buffer.asByteData());
+    pass.bindUniform(lineMaterialSlot, lineMaterialView);
 
     configureRenderPass(pass);
   }

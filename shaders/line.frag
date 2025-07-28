@@ -1,13 +1,9 @@
-uniform Paint {
+uniform LineMaterial {
   vec4 color;
-}
-paint;
-
-uniform DashMeasurements {
   float drawLength;
   float spaceLength;
 }
-dash_measurements;
+line_material;
 
 in vec3 v_position;
 in vec3 v_normal;
@@ -29,21 +25,21 @@ void main() {
       return;
   }
 
-  vec4 base_color = paint.color;
+  vec4 base_color = line_material.color;
   vec4 alt_color = vec4(0, 0, 0, 0);
 
   float line_length_pixels = v_length + cumulative_length;
 
-  float cycleLength = dash_measurements.drawLength + dash_measurements.spaceLength;
+  float cycleLength = line_material.drawLength + line_material.spaceLength;
   float distInCycle = mod(line_length_pixels, cycleLength);
 
-  if (distInCycle < dash_measurements.drawLength && v_length - v_length < dash_measurements.drawLength) {
+  if (distInCycle < line_material.drawLength && v_length - v_length < line_material.drawLength) {
     if (v_texture_coords.y != 0.0) {
         float dist = length(v_texture_coords);
         float inside = step(dist, 1.0);
         frag_color = mix(alt_color, base_color, inside);
     } else {
-        frag_color = paint.color;
+        frag_color = line_material.color;
     }
   } else {
     frag_color = alt_color;
