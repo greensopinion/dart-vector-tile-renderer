@@ -3,7 +3,7 @@ uniform LineMaterial {
   float drawLength;
   float spaceLength;
 }
-dash_measurements;
+line_material;
 
 uniform AntiAliasing {
   float enabled;
@@ -45,7 +45,7 @@ void main() {
         
         if (antialiasing.enabled > 0.5) {
           float edge_width = antialiasing.edgeWidth;
-          float solid_radius = 1.4 - edge_width;
+          float solid_radius = 1.49 - edge_width;
           float alpha;
           
           if (dist <= solid_radius) {
@@ -74,7 +74,7 @@ void main() {
           
           frag_color = vec4(base_color.rgb, base_color.a * alpha);
         } else {
-          frag_color = paint.color;
+          frag_color = base_color;
         }
     }
   } else {

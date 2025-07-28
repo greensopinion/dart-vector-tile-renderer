@@ -1,14 +1,15 @@
-
 uniform Paint {
   vec4 color;
 }
 paint;
 
-uniform AntiAliasing {
-  float enabled;
-  float edgeWidth;
-}
-antialiasing;
+in vec3 v_position;
+in vec3 v_normal;
+in vec3 v_viewvector;
+
+in vec2 v_texture_coords;
+
+in vec4 v_color;
 
 out vec4 frag_color;
 

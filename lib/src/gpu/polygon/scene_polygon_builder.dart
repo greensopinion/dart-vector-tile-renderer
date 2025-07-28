@@ -48,11 +48,9 @@ class ScenePolygonBuilder {
 
     featureGroups.forEach((paint, polygons) {
       for (var polygon in polygons) {
-        scene.addMesh(Mesh(
+        graph.addMesh(Mesh(
             PolygonGeometry(polygon.normalizedVertices, polygon.indices),
-            ColoredMaterial(paint.color.vector4,
-                antialiasingEnabled:
-                    scene.antiAliasingMode == AntiAliasingMode.msaa)));
+            ColoredMaterial(paint.color.vector4, antialiasingEnabled: true)));
       }
     });
   }

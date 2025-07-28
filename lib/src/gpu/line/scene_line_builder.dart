@@ -85,10 +85,9 @@ class SceneLineBuilder {
         extent,
         dashLengths);
 
-    scene.addMesh(Mesh(
+    graph.addMesh(Mesh(
         mainGeometry,
         LineMaterial(paint.color.vector4, dashLengths,
-            antialiasingEnabled:
-                scene.antiAliasingMode == AntiAliasingMode.msaa)));
+            antialiasingEnabled: true)));
   }
 }
