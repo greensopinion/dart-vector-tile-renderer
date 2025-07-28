@@ -34,21 +34,20 @@ class LineGeometry extends UnskinnedGeometry {
     super.bind(pass, transientsBuffer, modelTransform, cameraTransform,
         cameraPosition);
 
-    bindLineStyle(transientsBuffer, pass);
+    bindLineConfig(transientsBuffer, pass);
 
     pass.setPrimitiveType(gpu.PrimitiveType.triangle);
-
-    final double extentScale = extent / 2;
-    final extentScalingSlot = vertexShader.getUniformSlot('extentScalings');
-    final extentScalingView = transientsBuffer
-        .emplace(Float32List.fromList([extentScale]).buffer.asByteData());
-    pass.bindUniform(extentScalingSlot, extentScalingView);
   }
 
-  void bindLineStyle(HostBuffer transientsBuffer, RenderPass pass) {
-    final lineStyleSlot = vertexShader.getUniformSlot('LineStyle');
-    final lineStyleView = transientsBuffer
-        .emplace(Float32List.fromList([lineWidth / 256]).buffer.asByteData());
-    pass.bindUniform(lineStyleSlot, lineStyleView);
+  void bindLineConfig(HostBuffer transientsBuffer, RenderPass pass) {
+    final double extentScale = extent / 2;
+    
+    final lineGeometrySlot = vertexShader.getUniformSlot('LineGeometry');
+    final lineGeometryView = transientsBuffer.emplace(
+        Float32List.fromList([
+          lineWidth / 256,  // width
+          extentScale,      // extentScale
+        ]).buffer.asByteData());
+    pass.bindUniform(lineGeometrySlot, lineGeometryView);
   }
 }

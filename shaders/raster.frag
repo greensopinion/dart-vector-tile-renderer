@@ -15,6 +15,11 @@ in vec4 v_color;
 out vec4 frag_color;
 
 void main() {
+    if (abs(v_position.x) > 1.0 || abs(v_position.y) > 1.0) {
+        frag_color = vec4(0, 0, 0, 0);
+        return;
+    }
+
     vec4 textureColor = texture(base_color_texture, v_texture_coords);
     float a = textureColor.a;
     if (a > 0) {
