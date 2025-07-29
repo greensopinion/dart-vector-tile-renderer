@@ -39,7 +39,11 @@ class ScenePolygonBuilder {
       }
       final group = featureGroups[paint]!;
 
-      if (group.isEmpty || group.last.normalizedVertices.length > 200000) {
+      if (group.isEmpty) {
+        group.add(TriangulatedPolygon(normalizedVertices: [], indices: []));
+      }
+
+      if (group.last.normalizedVertices.length > 200000) {
         group.add(feature.feature.earcutPolygons);
       } else {
         group.last.combine(feature.feature.earcutPolygons);
