@@ -33,5 +33,6 @@ class ColoredMaterial extends Material {
     );
 
     configureRenderPass(pass);
+    pass.setWindingOrder(WindingOrder.clockwise);
   }
 }

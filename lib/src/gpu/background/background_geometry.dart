@@ -13,8 +13,8 @@ class BackgroundGeometry extends UnskinnedGeometry {
   ]));
 
   static final _indices = ByteData.sublistView(Uint16List.fromList([
-    0, 1, 2,
-    2, 3, 0,
+    0, 2, 1,
+    2, 0, 3,
   ]));
 
   BackgroundGeometry() {

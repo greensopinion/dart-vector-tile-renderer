@@ -70,7 +70,7 @@ class TriangulatedPolygon {
       }
     }
 
-    final indicesRaw = Earcut.triangulateRaw(flat, holeIndices: holeIndices);
+    final indices = Earcut.triangulateRaw(flat, holeIndices: holeIndices);
 
     final normalized = <double>[];
     for (var i = 0; i < flat.length; i += 2) {
@@ -82,18 +82,9 @@ class TriangulatedPolygon {
       ]);
     }
 
-    final fixedIndices = <int>[];
-    for (int i = 0; i < indicesRaw.length; i += 3) {
-      fixedIndices.addAll([
-        indicesRaw[i],
-        indicesRaw[i + 2],
-        indicesRaw[i + 1],
-      ]);
-    }
-
     return TriangulatedPolygon(
       normalizedVertices: normalized,
-      indices: fixedIndices,
+      indices: indices,
     );
   }
 
