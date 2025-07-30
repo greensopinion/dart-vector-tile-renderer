@@ -6,11 +6,12 @@ class TilePainter extends CustomPainter {
   final TileSource tileSource;
   final Theme theme;
   final TileOptions options;
+  final GeometryWorkers geometryWorkers;
   late final TileRenderer _renderer;
   bool _readyChanged = false;
-  TilePainter(this.tileSource, this.theme, {required this.options}) {
+  TilePainter(this.tileSource, this.theme, this.geometryWorkers, {required this.options}) {
     _renderer = TileRenderer(
-        theme: theme, logger: const Logger.console(), zoom: options.zoom);
+        theme: theme, logger: const Logger.console(), zoom: options.zoom, geometryWorkers: geometryWorkers);
     _renderer.tileSource = tileSource;
     TileRenderer.initialize.then((_) {
       _readyChanged = true;

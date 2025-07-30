@@ -8,16 +8,12 @@ import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/shaders.dart';
 
 class LineGeometry extends UnskinnedGeometry {
-  final double lineWidth;
-  final int extent;
-  final List<double>? dashLengths;
+  late double lineWidth;
+  late int extent;
+  late List<double>? dashLengths;
 
-  LineGeometry(
-      {required vertices,
-      required indices,
-      required this.lineWidth,
-      required this.extent,
-      this.dashLengths}) {
+  LineGeometry(List<double> vertices,
+      List<int> indices) {
     setVertexShader(shaderLibrary["LineVertex"]!);
 
     uploadVertexData(

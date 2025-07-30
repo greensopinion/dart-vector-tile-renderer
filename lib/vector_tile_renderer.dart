@@ -9,6 +9,7 @@ export 'src/logger.dart';
 export 'src/model/tile_data_model.dart';
 export 'src/model/tile_factory.dart';
 export 'src/model/tile_model.dart';
+export 'src/gpu/concurrent/main/geometry_workers.dart';
 export 'src/model/transform/tile_clip.dart';
 export 'src/model/transform/tile_translate.dart';
 export 'src/renderer.dart';

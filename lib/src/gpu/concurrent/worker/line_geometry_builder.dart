@@ -1,10 +1,9 @@
 import 'dart:math';
 
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/line/line_geometry.dart';
 
-import '../../model/geometry_model.dart';
-import '../../themes/style.dart';
+import '../../../model/geometry_model.dart';
+import '../shared/keys.dart';
 
 class LineGeometryBuilder {
   int indexOffset = 0;
@@ -14,15 +13,13 @@ class LineGeometryBuilder {
 
   int startIndex = 0;
 
-  LineGeometry build(List<TileLine> lines, LineCap lineCaps, LineJoin lineJoins,
-      double lineWidth, int extent, List<double>? dashLengths) {
+  (List<double>, List<int>) build(List<List<TilePoint>> lines, LineEnd lineCaps, LineJoin lineJoins) {
     double totalCumulativeLength = 0.0;
 
     for (var line in lines) {
       startIndex = 0;
-      var points = line.points;
 
-      setupLine(points, lineCaps, lineJoins, totalCumulativeLength);
+      setupLine(line, lineCaps, lineJoins, totalCumulativeLength);
 
       if (cumulativeLengths.isNotEmpty) {
         totalCumulativeLength = cumulativeLengths.last;
@@ -31,18 +28,12 @@ class LineGeometryBuilder {
       indexOffset += startIndex;
     }
 
-    return LineGeometry(
-        // points: lines.expand((it) => it.points).toList(),
-        vertices: vertices,
-        indices: indices,
-        lineWidth: lineWidth,
-        extent: extent,
-        dashLengths: dashLengths);
+    return (vertices, indices);
   }
 
   setupLine(
-    List<Point<double>> points,
-    LineCap lineCaps,
+    List<TilePoint> points, 
+    LineEnd lineCaps,
     LineJoin lineJoins,
     double startingCumulativeLength,
   ) {
@@ -54,10 +45,10 @@ class LineGeometryBuilder {
     setupJoins(points, lineJoins);
   }
 
-  void setupSegments(List<Point<double>> points, int segmentCount) {
+  void setupSegments(List<TilePoint> points, int segmentCount) {
     for (int i = 0; i < segmentCount; i++) {
-      Point<double> p0 = points[i];
-      Point<double> p1 = points[i + 1];
+      TilePoint p0 = points[i];
+      TilePoint p1 = points[i + 1];
 
       double cumulativeLength0 =
           i < cumulativeLengths.length ? cumulativeLengths[i] : 0.0;
@@ -105,14 +96,14 @@ class LineGeometryBuilder {
     startIndex += max(segmentCount * 4, 0);
   }
 
-  void setupEnds(List<Point<double>> points, int segmentCount, LineCap type) {
-    if (type == LineCap.butt) return;
-    final round = type == LineCap.round ? 1.0 : 0.0;
+  void setupEnds(List<TilePoint> points, int segmentCount, LineEnd type) {
+    if (type == LineEnd.butt) return;
+    final round = type == LineEnd.round ? 1.0 : 0.0;
 
-    Point<double> a = points[0];
-    Point<double> b = points[1];
-    Point<double> c = points[segmentCount - 1];
-    Point<double> d = points[segmentCount];
+    TilePoint a = points[0];
+    TilePoint b = points[1];
+    TilePoint c = points[segmentCount - 1];
+    TilePoint d = points[segmentCount];
 
     double startCumulativeLength =
         cumulativeLengths.isNotEmpty ? cumulativeLengths.first : 0.0;
@@ -171,7 +162,7 @@ class LineGeometryBuilder {
     startIndex += 4;
   }
 
-  void setupJoins(List<Point<double>> points, LineJoin type) {
+  void setupJoins(List<TilePoint> points, LineJoin type) {
     if (type == LineJoin.bevel) {
       setupJoinsBevel(points);
     } else if (type == LineJoin.round) {
@@ -182,12 +173,12 @@ class LineGeometryBuilder {
     }
   }
 
-  void setupJoinsRound(List<Point<double>> points) {
+  void setupJoinsRound(List<TilePoint> points) {
     final joinCount = points.length - 2;
 
     for (int i = 0; i < joinCount; i++) {
-      Point<double> p0 = points[i];
-      Point<double> p1 = points[i + 1];
+      TilePoint p0 = points[i];
+      TilePoint p1 = points[i + 1];
 
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
@@ -208,11 +199,11 @@ class LineGeometryBuilder {
     startIndex += max(2 * joinCount, 0);
   }
 
-  void setupJoinsBevel(List<Point<double>> points) {
+  void setupJoinsBevel(List<TilePoint> points) {
     final joinCount = points.length - 2;
 
     for (int i = 0; i < joinCount; i++) {
-      Point<double> p = points[i + 1];
+      TilePoint p = points[i + 1];
 
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
@@ -233,7 +224,7 @@ class LineGeometryBuilder {
     startIndex += max(joinCount, 0);
   }
 
-  void setupJoinsMiter(List<Point<double>> points) {
+  void setupJoinsMiter(List<TilePoint> points) {
     final joinCount = points.length - 2;
 
     Vector2 perp(Vector2 v, int flip) => Vector2(v.y * flip, -v.x * flip);
@@ -293,7 +284,7 @@ class LineGeometryBuilder {
     startIndex += max(2 * joinCount, 0);
   }
 
-  void computeCumulativeDistances(List<Point<double>> points, int segmentCount,
+  void computeCumulativeDistances(List<TilePoint> points, int segmentCount,
       double startingCumulativeLength) {
     cumulativeLengths.clear();
     cumulativeLengths.add(startingCumulativeLength);

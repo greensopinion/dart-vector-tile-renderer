@@ -72,6 +72,9 @@ class _TileState extends State<Tile> {
   ui.Image? image;
   bool _disposed = false;
 
+  TilePainter? painter;
+  final geometryWorkers = GeometryWorkers();
+
   @override
   void initState() {
     super.initState();
@@ -105,13 +108,15 @@ class _TileState extends State<Tile> {
     if (tileSource == null || (isRaster && image == null)) {
       return const CircularProgressIndicator();
     }
+
+    painter ??= TilePainter(tileSource!, theme, geometryWorkers, options: widget.options);
     return Container(
         decoration: BoxDecoration(color: Colors.black45, border: Border.all()),
         child: isRaster
             ? RawImage(image: image!, width: widget.options.size.width, height: widget.options.size.height)
             : CustomPaint(
                 size: widget.options.size,
-                painter: TilePainter(tileSource!, theme, options: widget.options),
+                painter: painter,
               ));
   }
 

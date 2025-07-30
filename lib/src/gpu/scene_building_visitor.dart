@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/concurrent/main/geometry_workers.dart';
 import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
 import 'package:vector_tile_renderer/src/tileset_raster.dart';
@@ -17,8 +18,9 @@ import 'polygon/scene_polygon_builder.dart';
 class SceneBuildingVisitor extends LayerVisitor {
   final SceneGraph graph;
   final VisitorContext context;
+  final GeometryWorkers geometryWorkers;
 
-  SceneBuildingVisitor(this.graph, this.context);
+  SceneBuildingVisitor(this.graph, this.context, this.geometryWorkers);
 
   void visitAllFeatures(Theme theme) {
     for (final layer in theme.layers) {
@@ -31,7 +33,7 @@ class SceneBuildingVisitor extends LayerVisitor {
       Style style, Iterable<LayerFeature> features) {
     switch (layerType) {
       case ThemeLayerType.line:
-        SceneLineBuilder(graph, context).addFeatures(style, features);
+        SceneLineBuilder(graph, context, geometryWorkers).addFeatures(style, features);
         break;
       case ThemeLayerType.fill:
         ScenePolygonBuilder(graph, context).addPolygons(style, features);

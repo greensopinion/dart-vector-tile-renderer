@@ -8,7 +8,6 @@ import 'package:vector_math/vector_math.dart' as vm;
 import '../../vector_tile_renderer.dart';
 import '../logger.dart';
 import '../themes/theme.dart';
-import '../tileset.dart';
 import 'scene_building_visitor.dart';
 
 /// Experimental: renders tiles using flutter_gpu
@@ -19,6 +18,8 @@ import 'scene_building_visitor.dart';
 class TileRenderer {
   static final Completer<void> _initializer = Completer<void>();
   static Future<void> initialize = _initializer.future;
+
+  final GeometryWorkers geometryWorkers;
 
   final Logger logger;
   final Theme theme;
@@ -46,7 +47,8 @@ class TileRenderer {
   TileRenderer(
       {required this.theme,
       required this.zoom,
-      this.logger = const Logger.noop()}) {
+        required this.geometryWorkers,
+        this.logger = const Logger.noop()}) {
     if (!_initializer.isCompleted) {
       Scene.initializeStaticResources().then((_) {
         if (!_initializer.isCompleted) {
@@ -108,7 +110,7 @@ class TileRenderer {
       tileSource: tileSource,
       zoom: zoom,
     );
-    SceneBuildingVisitor(scene, context).visitAllFeatures(theme);
+    SceneBuildingVisitor(scene, context, geometryWorkers).visitAllFeatures(theme);
 
     return scene;
   }
