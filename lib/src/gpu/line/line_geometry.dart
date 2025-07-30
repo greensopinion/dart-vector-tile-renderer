@@ -12,16 +12,12 @@ class LineGeometry extends UnskinnedGeometry {
   late int extent;
   late List<double>? dashLengths;
 
-  LineGeometry(List<double> vertices,
-      List<int> indices) {
+  LineGeometry(ByteData vertices, ByteData indices) {
     setVertexShader(shaderLibrary["LineVertex"]!);
 
-    uploadVertexData(
-      ByteData.sublistView(Float32List.fromList(vertices)),
-      (vertices.length / 8).truncate(),
-      ByteData.sublistView(Uint16List.fromList(indices)),
-      indexType: gpu.IndexType.int16,
-    );
+    final vertexCount = vertices.lengthInBytes ~/ 32;
+
+    uploadVertexData(vertices, vertexCount, indices);
   }
 
   @override

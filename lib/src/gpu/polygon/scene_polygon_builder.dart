@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
@@ -53,7 +55,7 @@ class ScenePolygonBuilder {
     featureGroups.forEach((paint, polygons) {
       for (var polygon in polygons) {
         graph.addMesh(Mesh(
-            PolygonGeometry(polygon.normalizedVertices, polygon.indices),
+            PolygonGeometry(ByteData.sublistView(Float32List.fromList(polygon.normalizedVertices)), ByteData.sublistView(Uint16List.fromList(polygon.indices))),
             ColoredMaterial(paint.color.vector4, antialiasingEnabled: true)));
       }
     });

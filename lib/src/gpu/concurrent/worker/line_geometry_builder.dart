@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
 
@@ -13,7 +14,7 @@ class LineGeometryBuilder {
 
   int startIndex = 0;
 
-  (List<double>, List<int>) build(List<List<TilePoint>> lines, LineEnd lineCaps, LineJoin lineJoins) {
+  (ByteData, ByteData) build(List<List<TilePoint>> lines, LineEnd lineCaps, LineJoin lineJoins) {
     double totalCumulativeLength = 0.0;
 
     for (var line in lines) {
@@ -28,7 +29,10 @@ class LineGeometryBuilder {
       indexOffset += startIndex;
     }
 
-    return (vertices, indices);
+    return (
+      ByteData.sublistView(Float32List.fromList(vertices)),
+      ByteData.sublistView(Uint16List.fromList(indices))
+    );
   }
 
   setupLine(
