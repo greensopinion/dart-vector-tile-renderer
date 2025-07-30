@@ -26,7 +26,7 @@ out vec4 frag_color;
 
 void main() {
 
-  if (abs(v_position.x) > 1.0 || abs(v_position.y) > 1.0) {
+  if (abs(v_position.x) > 1.001 || abs(v_position.y) > 1.001) {
       frag_color = vec4(0, 0, 0, 0);
       return;
   }
