@@ -7,6 +7,7 @@ import 'package:vector_tile_renderer/src/gpu/concurrent/main/transferable_geomet
 import 'package:vector_tile_renderer/src/gpu/concurrent/main/util/concurrent_hashmap.dart';
 import 'package:vector_tile_renderer/src/gpu/concurrent/shared/keys.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry.dart';
 
 import '../worker/main.dart' as worker;
 import '../../../model/geometry_model.dart';
@@ -53,21 +54,32 @@ class GeometryWorkers extends ChangeNotifier {
     });
   }
 
-  Future<LineGeometry> submitLines(List<List<TilePoint>> lines, LineJoin lineJoins, LineEnd lineEnds) {
+  Future<T> _submitGeometry<T extends Geometry>(Map<String, dynamic> data) {
     return _setup.future.then((_){
       final String jobId = UniqueKey().toString();
+      data[GeometryKeys.jobId] = jobId;
 
-      _sendPort.send({
-        GeometryKeys.jobId: jobId,
-        GeometryKeys.type: GeometryType.line.index,
-        LineKeys.lines: lines,
-        LineKeys.joins: lineJoins.index,
-        LineKeys.ends: lineEnds.index
-      });
+      _sendPort.send(data);
 
-      final Completer<LineGeometry> completer = Completer();
+      final Completer<T> completer = Completer();
       _inFlightRequests.put(jobId, completer);
       return completer.future;
+    });
+  }
+
+  Future<LineGeometry> submitLines(List<List<TilePoint>> lines, LineJoin lineJoins, LineEnd lineEnds) {
+    return _submitGeometry<LineGeometry>({
+      GeometryKeys.type: GeometryType.line.index,
+      LineKeys.lines: lines,
+      LineKeys.joins: lineJoins.index,
+      LineKeys.ends: lineEnds.index
+    });
+  }
+
+  Future<PolygonGeometry> submitPolygons(List<TilePolygon> polygons) {
+    return _submitGeometry<PolygonGeometry>({
+      GeometryKeys.type: GeometryType.poly.index,
+      PolyKeys.polygons: polygons
     });
   }
 }

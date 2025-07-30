@@ -1,8 +1,6 @@
 import 'model/tile_model.dart';
-import 'profiling.dart';
 import 'themes/feature_resolver.dart';
 import 'themes/theme.dart';
-import 'themes/theme_layers.dart';
 
 /// A tileset is a collection of vector tiles by `'source'` ID,
 /// as defined by the theme
@@ -48,33 +46,10 @@ class TilesetPreprocessor {
   ///
   /// Returns a pre-processed tileset.
   Tileset preprocess(Tileset tileset, {required double zoom}) {
-    return profileSync('PreprocessTileset', () {
-      final featureResolver = tileset.resolver is CachingLayerFeatureResolver
-          ? tileset.resolver
-          : CachingLayerFeatureResolver(tileset.resolver);
+    final featureResolver = tileset.resolver is CachingLayerFeatureResolver
+        ? tileset.resolver
+        : CachingLayerFeatureResolver(tileset.resolver);
 
-      for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
-        final features = featureResolver.resolveFeatures(
-            themeLayer.selector, zoom.truncate());
-        if (_initializeGeometry) {
-          for (final feature in features) {
-            final f = feature.feature;
-            if (f.hasPaths) {
-              // f.paths;
-            } else if (f.hasPoints) {
-              // f.points;
-            }
-          }
-        } else {
-          for (final feature in features) {
-            final f = feature.feature;
-            if (f.hasPolygons) {
-              f.earcutPolygons;
-            }
-          }
-        }
-      }
-      return Tileset._preprocessed(tileset, featureResolver);
-    });
+    return Tileset._preprocessed(tileset, featureResolver);
   }
 }

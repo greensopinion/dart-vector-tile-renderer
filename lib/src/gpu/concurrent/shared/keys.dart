@@ -15,6 +15,10 @@ class LineKeys {
   static const ends = "en";
 }
 
+class PolyKeys {
+  static const polygons = "pg";
+}
+
 enum LineJoin {
   bevel, round, miter;
 }

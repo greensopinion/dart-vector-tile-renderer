@@ -3,8 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
-import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
-import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry.dart';
+import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
@@ -12,14 +11,20 @@ import 'package:vector_tile_renderer/src/themes/style.dart';
 import '../../../vector_tile_renderer.dart';
 import '../../themes/paint_model.dart';
 
+class FeatureGroup {
+  final List<TilePolygon> polygons = [];
+  int size = 0;
+}
+
 class ScenePolygonBuilder {
   final SceneGraph graph;
   final VisitorContext context;
+  final GeometryWorkers geometryWorkers;
 
-  ScenePolygonBuilder(this.graph, this.context);
+  ScenePolygonBuilder(this.graph, this.context, this.geometryWorkers);
 
   void addPolygons(Style style, Iterable<LayerFeature> features) {
-    Map<PaintModel, List<TriangulatedPolygon>> featureGroups = {};
+    Map<PaintModel, List<FeatureGroup>> featureGroups = {};
 
     for (final feature in features) {
       EvaluationContext evaluationContext = EvaluationContext(
@@ -31,33 +36,40 @@ class ScenePolygonBuilder {
           hasImage: (_) => false);
 
       final paint = style.fillPaint?.evaluate(evaluationContext);
+      final polygons = feature.feature.modelPolygons;
 
-      if (paint == null) {
+      if (paint == null || polygons.isEmpty) {
         continue;
       }
 
       if (!featureGroups.containsKey(paint)) {
-        featureGroups[paint] = [];
-      }
-      final group = featureGroups[paint]!;
-
-      if (group.isEmpty) {
-        group.add(TriangulatedPolygon(normalizedVertices: [], indices: []));
+        featureGroups[paint] = [FeatureGroup()];
       }
 
-      if (group.last.normalizedVertices.length > 200000) {
-        group.add(feature.feature.earcutPolygons);
-      } else {
-        group.last.combine(feature.feature.earcutPolygons);
+      if (featureGroups[paint]!.last.size > 4096) {
+        featureGroups[paint]!.add(FeatureGroup());
       }
+
+      final group = featureGroups[paint]!.last;
+
+      group.size += getPointCount(polygons);
+
+      group.polygons.addAll(polygons);
     }
 
-    featureGroups.forEach((paint, polygons) {
-      for (var polygon in polygons) {
-        graph.addMesh(Mesh(
-            PolygonGeometry(ByteData.sublistView(Float32List.fromList(polygon.normalizedVertices)), ByteData.sublistView(Uint16List.fromList(polygon.indices))),
-            ColoredMaterial(paint.color.vector4, antialiasingEnabled: true)));
+    featureGroups.forEach((paint, polygonGroup) {
+      for (var polygons in polygonGroup) {
+        addMesh(polygons.polygons, paint);
       }
     });
   }
+
+  Future<void> addMesh(List<TilePolygon> polygons, PaintModel paint) async {
+    final geometry = await geometryWorkers.submitPolygons(polygons);
+
+    graph.addMesh(Mesh(geometry, ColoredMaterial(paint.color.vector4, antialiasingEnabled: true)));
+  }
+
+  int getPointCount(List<TilePolygon> polygons) =>
+      polygons.fold(0, (sum, value) => sum += value.rings.fold(0, (a, b) => a + b.points.length));
 }
