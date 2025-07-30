@@ -60,9 +60,9 @@ class TilesetPreprocessor {
           for (final feature in features) {
             final f = feature.feature;
             if (f.hasPaths) {
-              f.paths;
+              // f.paths;
             } else if (f.hasPoints) {
-              f.points;
+              // f.points;
             }
           }
         } else {
