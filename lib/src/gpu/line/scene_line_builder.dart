@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/line/line_material.dart';
@@ -13,6 +11,11 @@ import '../../themes/style.dart';
 import '../color_extension.dart';
 import '../concurrent/shared/keys.dart' as keys;
 
+class FeatureGroup {
+  final List<List<TilePoint>> lines = [];
+  int size = 0;
+}
+
 class SceneLineBuilder {
   final SceneGraph graph;
   final VisitorContext context;
@@ -21,30 +24,30 @@ class SceneLineBuilder {
   SceneLineBuilder(this.graph, this.context, this.geometryWorkers);
 
   void addFeatures(Style style, Iterable<LayerFeature> features) {
-    Map<PaintModel, List<List<List<TilePoint>>>> featureGroups = {};
+    Map<PaintModel, List<FeatureGroup>> featureGroups = {};
     for (final feature in features) {
       final result = getLines(style, feature);
       if (result != null) {
         final (paint, lines) = result;
 
         if (!featureGroups.containsKey(paint)) {
-          featureGroups[paint] = [[]];
+          featureGroups[paint] = [FeatureGroup()];
         }
 
-        if (featureGroups[paint]!
-                .last
-                .map((it) => it.length)
-                .fold(0.0, (a, b) => a + b) >
-            4096) {
-          featureGroups[paint]!.add([]);
+        if (featureGroups[paint]!.last.size > 4096) {
+          featureGroups[paint]!.add(FeatureGroup());
         }
-
-        featureGroups[paint]!.last.addAll(lines);
+        
+        var group = featureGroups[paint]!.last;
+        
+        group.size += lines.fold(0, (sum, line) => sum + line.length);
+            
+        group.lines.addAll(lines);
       }
     }
     featureGroups.forEach((paint, lineGroups) {
       for (var lines in lineGroups) {
-        addMesh(lines, paint.strokeWidth!, features.first.layer.extent, paint,
+        addMesh(lines.lines, paint.strokeWidth!, features.first.layer.extent, paint,
             paint.strokeDashPattern);
       }
     });
