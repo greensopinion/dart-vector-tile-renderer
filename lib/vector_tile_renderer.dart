@@ -28,7 +28,6 @@ export 'src/tileset_raster.dart';
 export 'src/vector_tile_reader.dart';
 export 'src/factories/tile_renderer_factory.dart';
 export 'src/services/text_rendering_service.dart';
-export 'src/preprocessing/tile_preprocessing_strategy.dart';
 export 'src/caching/cache_provider.dart';
 export 'src/coordinates/coordinate_transformer.dart';
 export 'src/gpu/rendering/scene_renderer.dart';
