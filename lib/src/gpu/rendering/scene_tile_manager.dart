@@ -68,11 +68,14 @@ class SceneTileManager {
   void updateTiles(List<SceneTileIdentity> tiles, SceneTileModelProvider modelProvider) {
     final tileKeys = tiles.map((tile) => tile.key()).toSet();
     final existingNodes = scene.root.children.toList(growable: false);
-    
+
+    List<Node> forRemoval = [];
+    List<Future<void>> tileBuilding = [];
+
     // Remove nodes for tiles that are no longer visible
     for (final node in existingNodes) {
       if (!tileKeys.contains(node.name)) {
-        scene.remove(node);
+        forRemoval.add(node);
       }
     }
     
@@ -86,18 +89,26 @@ class SceneTileManager {
       if (model == null || model.disposed || model.tileset == null) {
         // Remove node if model is not available or disposed
         if (existingNode != null) {
-          scene.remove(existingNode);
+          forRemoval.add(existingNode);
         }
       } else {
         // Add node if it doesn't exist
         if (existingNode == null && !_inFlightTiles.contains(tile)) {
-          _createTileNode(tile, model);
+          tileBuilding.add(_createTileNode(tile, model));
         }
       }
     }
+
+    Future.wait(tileBuilding).then((a) => {
+      for (var node in forRemoval) {
+        if (node.parent == scene.root) {
+          scene.remove(node)
+        }
+      }
+    });
   }
   
-  void _createTileNode(SceneTileIdentity tile, SceneTileData model) {
+  Future<void> _createTileNode(SceneTileIdentity tile, SceneTileData model) async {
     final node = Node(name: tile.key());
     _inFlightTiles.add(tile);
     
@@ -110,7 +121,7 @@ class SceneTileManager {
       zoom: zoomProvider(),
     );
     
-    SceneBuildingVisitor(node, visitorContext, geometryWorkers)
+    await SceneBuildingVisitor(node, visitorContext, geometryWorkers)
         .visitAllFeatures(model.theme).then((a) {
           _inFlightTiles.remove(tile);
           scene.add(node);
