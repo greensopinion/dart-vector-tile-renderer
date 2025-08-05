@@ -23,7 +23,7 @@ class SceneLineBuilder {
 
   SceneLineBuilder(this.graph, this.context, this.geometryWorkers);
 
-  void addFeatures(Style style, Iterable<LayerFeature> features) {
+  Future<void> addFeatures(Style style, Iterable<LayerFeature> features) async {
     Map<PaintModel, List<FeatureGroup>> featureGroups = {};
     for (final feature in features) {
       final result = getLines(style, feature);
@@ -45,12 +45,23 @@ class SceneLineBuilder {
         group.lines.addAll(lines);
       }
     }
+    final meshFutures = <Future<void>>[];
+
     featureGroups.forEach((paint, lineGroups) {
       for (var lines in lineGroups) {
-        addMesh(lines.lines, paint.strokeWidth!, features.first.layer.extent, paint,
-            paint.strokeDashPattern);
+        meshFutures.add(
+          addMesh(
+            lines.lines,
+            paint.strokeWidth!,
+            features.first.layer.extent,
+            paint,
+            paint.strokeDashPattern,
+          ),
+        );
       }
     });
+
+    await Future.wait(meshFutures);
   }
 
   (PaintModel, Iterable<List<TilePoint>>)? getLines(

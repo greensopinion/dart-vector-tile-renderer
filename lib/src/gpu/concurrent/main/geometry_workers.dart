@@ -56,7 +56,7 @@ class GeometryWorkers extends ChangeNotifier {
 
   Future<T> _submitGeometry<T extends Geometry>(Map<String, dynamic> data) {
     return _setup.future.then((_){
-      final String jobId = UniqueKey().toString();
+      final String jobId = identityHashCode(UniqueKey()).toString();
       data[GeometryKeys.jobId] = jobId;
 
       _sendPort.send(data);

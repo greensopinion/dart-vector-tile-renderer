@@ -23,7 +23,7 @@ class ScenePolygonBuilder {
 
   ScenePolygonBuilder(this.graph, this.context, this.geometryWorkers);
 
-  void addPolygons(Style style, Iterable<LayerFeature> features) {
+  Future<void> addPolygons(Style style, Iterable<LayerFeature> features) async {
     Map<PaintModel, List<FeatureGroup>> featureGroups = {};
 
     for (final feature in features) {
@@ -57,11 +57,17 @@ class ScenePolygonBuilder {
       group.polygons.addAll(polygons);
     }
 
+    final polygonFutures = <Future<void>>[];
+
     featureGroups.forEach((paint, polygonGroup) {
       for (var polygons in polygonGroup) {
-        addMesh(polygons.polygons, paint);
+        polygonFutures.add(
+          addMesh(polygons.polygons, paint),
+        );
       }
     });
+
+    await Future.wait(polygonFutures);
   }
 
   Future<void> addMesh(List<TilePolygon> polygons, PaintModel paint) async {

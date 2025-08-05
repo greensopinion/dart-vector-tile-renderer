@@ -59,10 +59,10 @@ class DefaultLayer extends ThemeLayer {
   }
 
   @override
-  void accept(VisitorContext context, LayerVisitor visitor) {
+  Future<void> accept(VisitorContext context, LayerVisitor visitor) async {
     final layerFeatures = context.tileSource.tileset.resolver
         .resolveFeatures(selector, context.zoom.truncate());
-    visitor.visitFeatures(context, type, style, layerFeatures);
+    return visitor.visitFeatures(context, type, style, layerFeatures);
   }
 
   @override
@@ -91,7 +91,7 @@ class BackgroundLayer extends ThemeLayer {
   }
 
   @override
-  void accept(VisitorContext context, LayerVisitor visitor) {
+  Future<void> accept(VisitorContext context, LayerVisitor visitor) async {
     final color = fillColor.evaluate(EvaluationContext(
         () => {}, TileFeatureType.background, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));

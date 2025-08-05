@@ -55,6 +55,8 @@ class SceneTileManager {
   final Scene scene;
   final GeometryWorkers geometryWorkers;
   final double Function() zoomProvider;
+
+  final Set<SceneTileIdentity> _inFlightTiles = {};
   
   SceneTileManager({
     required this.scene,
@@ -88,7 +90,7 @@ class SceneTileManager {
         }
       } else {
         // Add node if it doesn't exist
-        if (existingNode == null) {
+        if (existingNode == null && !_inFlightTiles.contains(tile)) {
           _createTileNode(tile, model);
         }
       }
@@ -97,6 +99,7 @@ class SceneTileManager {
   
   void _createTileNode(SceneTileIdentity tile, SceneTileData model) {
     final node = Node(name: tile.key());
+    _inFlightTiles.add(tile);
     
     final visitorContext = VisitorContext(
       logger: const Logger.noop(),
@@ -108,8 +111,9 @@ class SceneTileManager {
     );
     
     SceneBuildingVisitor(node, visitorContext, geometryWorkers)
-        .visitAllFeatures(model.theme);
-    
-    scene.add(node);
+        .visitAllFeatures(model.theme).then((a) {
+          _inFlightTiles.remove(tile);
+          scene.add(node);
+        });
   }
 }

@@ -63,7 +63,7 @@ class VisitorContext {
 }
 
 abstract class LayerVisitor {
-  void visitFeatures(VisitorContext context, ThemeLayerType layerType,
+  Future<void> visitFeatures(VisitorContext context, ThemeLayerType layerType,
       Style style, Iterable<LayerFeature> features);
 
   void visitBackground(VisitorContext context, Color color);
@@ -86,5 +86,5 @@ abstract class ThemeLayer {
 
   void render(Context context);
 
-  void accept(VisitorContext context, LayerVisitor visitor);
+  Future<void> accept(VisitorContext context, LayerVisitor visitor);
 }

@@ -22,22 +22,21 @@ class SceneBuildingVisitor extends LayerVisitor {
 
   SceneBuildingVisitor(this.graph, this.context, this.geometryWorkers);
 
-  void visitAllFeatures(Theme theme) {
-    for (final layer in theme.layers) {
-      layer.accept(context, this);
-    }
+  Future<void> visitAllFeatures(Theme theme) async {
+
+    final futures = theme.layers.map((layer) => layer.accept(context, this));
+
+    await Future.wait(futures);
   }
 
   @override
-  void visitFeatures(VisitorContext context, ThemeLayerType layerType,
-      Style style, Iterable<LayerFeature> features) {
+  Future<void> visitFeatures(VisitorContext context, ThemeLayerType layerType,
+      Style style, Iterable<LayerFeature> features) async {
     switch (layerType) {
       case ThemeLayerType.line:
-        SceneLineBuilder(graph, context, geometryWorkers).addFeatures(style, features);
-        break;
+        return SceneLineBuilder(graph, context, geometryWorkers).addFeatures(style, features);
       case ThemeLayerType.fill:
-        ScenePolygonBuilder(graph, context, geometryWorkers).addPolygons(style, features);
-        break;
+        return ScenePolygonBuilder(graph, context, geometryWorkers).addPolygons(style, features);
       case ThemeLayerType.fillExtrusion:
       case ThemeLayerType.symbol:
       case ThemeLayerType.background:
