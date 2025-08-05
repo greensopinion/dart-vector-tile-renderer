@@ -16,7 +16,7 @@ void _workerEntryPoint(SendPort sendPort) {
   worker.main([], sendPort);
 }
 
-class GeometryWorkers extends ChangeNotifier {
+class GeometryWorkers  {
 
   GeometryWorkers() {
     _runSetup();
@@ -43,12 +43,6 @@ class GeometryWorkers extends ChangeNotifier {
         _inFlightRequests.get(jobId).then((completer) {
           completer?.complete(TransferableGeometry(data).unpack());
           _inFlightRequests.remove(jobId);
-
-          _inFlightRequests.length.then((length) {
-            if (length == 0) {
-              notifyListeners();
-            }
-          });
         });
       }
     });

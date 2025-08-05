@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/concurrent/main/geometry_workers.dart';
 import 'package:vector_tile_renderer/src/gpu/scene_building_visitor.dart';
@@ -51,31 +52,36 @@ class SceneTileIdentity {
 }
 
 /// Manages scene nodes for vector tiles, handling lifecycle and updates
-class SceneTileManager {
+class SceneTileManager extends ChangeNotifier {
   final Scene scene;
-  final GeometryWorkers geometryWorkers;
+  final GeometryWorkers geometryWorkers = GeometryWorkers();
   final double Function() zoomProvider;
 
-  final Set<SceneTileIdentity> _inFlightTiles = {};
-  
+  final Map<String, Future<dynamic>> _inFlightTiles = {};
+  final Set<Node> _forRemoval = {};
+
+
   SceneTileManager({
     required this.scene,
-    required this.geometryWorkers, 
     required this.zoomProvider,
   });
 
-  /// Updates the scene with the given tiles, adding new ones and removing obsolete ones
-  void updateTiles(List<SceneTileIdentity> tiles, SceneTileModelProvider modelProvider) {
-    final tileKeys = tiles.map((tile) => tile.key()).toSet();
-    final existingNodes = scene.root.children.toList(growable: false);
+  Future<void> updateTiles(List<SceneTileIdentity> tiles, SceneTileModelProvider modelProvider) async {
 
-    List<Node> forRemoval = [];
-    List<Future<void>> tileBuilding = [];
+    return _updateTilesSynchronized(tiles, modelProvider);
+  }
+
+  /// Updates the scene with the given tiles, adding new ones and removing obsolete ones
+  Future<void> _updateTilesSynchronized(List<SceneTileIdentity> tiles, SceneTileModelProvider modelProvider) async {
+    final tileKeys = tiles.map((tile) => tile.key()).toSet();
+
+    int newTiles = 0;
 
     // Remove nodes for tiles that are no longer visible
-    for (final node in existingNodes) {
+    for (final node in scene.root.children) {
       if (!tileKeys.contains(node.name)) {
-        forRemoval.add(node);
+        _forRemoval.add(node);
+        _inFlightTiles.remove(node.name);
       }
     }
     
@@ -85,32 +91,34 @@ class SceneTileManager {
       final existingNode = scene.root.children
           .where((node) => node.name == tile.key())
           .firstOrNull;
-      
-      if (model == null || model.disposed || model.tileset == null) {
-        // Remove node if model is not available or disposed
-        if (existingNode != null) {
-          forRemoval.add(existingNode);
-        }
-      } else {
+
+      _forRemoval.remove(existingNode);
+
+      if (model != null && !model.disposed && model.tileset != null) {
         // Add node if it doesn't exist
-        if (existingNode == null && !_inFlightTiles.contains(tile)) {
-          tileBuilding.add(_createTileNode(tile, model));
+        if (existingNode == null && !_inFlightTiles.keys.contains(tile.key())) {
+          _inFlightTiles[tile.key()] = _createTileNode(tile, model);
+          newTiles++;
         }
       }
     }
 
-    Future.wait(tileBuilding).then((a) => {
-      for (var node in forRemoval) {
-        if (node.parent == scene.root) {
-          scene.remove(node)
-        }
+    await Future.wait(_inFlightTiles.values);
+
+    for (var node in _forRemoval.toSet()) {
+      if (node.parent == scene.root && !tiles.any((it) => it.key() == node.name)) {
+        scene.remove(node);
+        _forRemoval.remove(node);
       }
-    });
+    }
+
+    if (newTiles > 0) {
+      notifyListeners();
+    }
   }
   
   Future<void> _createTileNode(SceneTileIdentity tile, SceneTileData model) async {
     final node = Node(name: tile.key());
-    _inFlightTiles.add(tile);
     
     final visitorContext = VisitorContext(
       logger: const Logger.noop(),
@@ -120,11 +128,12 @@ class SceneTileManager {
       ),
       zoom: zoomProvider(),
     );
-    
-    await SceneBuildingVisitor(node, visitorContext, geometryWorkers)
-        .visitAllFeatures(model.theme).then((a) {
-          _inFlightTiles.remove(tile);
-          scene.add(node);
-        });
+
+    await SceneBuildingVisitor(node, visitorContext, geometryWorkers).visitAllFeatures(model.theme);
+
+    if (_inFlightTiles.containsKey(tile.key())) {
+      scene.add(node);
+      _inFlightTiles.remove(tile.key());
+    }
   }
 }
