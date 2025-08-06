@@ -1,12 +1,11 @@
 import 'dart:math';
-import 'dart:typed_data';
 
-import 'package:example/tile_painter.dart';
+import 'package:example/tile_model_provider.dart';
+import 'package:example/tile_positioner.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 // import again due to shadowed class name
 import 'package:vector_tile_renderer/src/model/tile_model.dart' as tile_model;
-import 'dart:ui' as ui;
 
 enum RenderMode { vector, raster }
 
@@ -67,69 +66,57 @@ class Tile extends StatefulWidget {
 }
 
 class _TileState extends State<Tile> {
-  TileSource? tileSource;
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
-  ui.Image? image;
   bool _disposed = false;
 
-  TilePainter? painter;
-  final geometryWorkers = GeometryWorkers();
+  VectorSceneRenderer renderer = VectorSceneRenderer(context: TilePositioningContext());
+
+  late final sceneTileManager = SceneTileManager(
+    scene: renderer.scene,
+    zoomProvider: () => zoom,
+  );
+
+  double get zoom => widget.options.zoom;
+
 
   @override
   void initState() {
     super.initState();
-    TileRenderer.initialize.then((_) {
-      if (!_disposed) {
-        setState(() {});
-      }
-    });
-    _loadTileset();
+    _setup();
+  }
+
+  Future<void> _setup() async {
+    final tileset = await _loadTileset();
+
+    await sceneTileManager.updateTiles(
+        [const SceneTileIdentity(0, 0, 0)],
+        ExampleTileModelProvider(tileset, theme)
+    );
+
+    if (!_disposed) {
+      setState(() {});
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
     _disposed = true;
-    image?.dispose();
-  }
-
-  @override
-  void didUpdateWidget(Tile tile) {
-    super.didUpdateWidget(tile);
-    image?.dispose();
-    image = null;
-    tileSource = null;
-    _loadTileset();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isRaster = widget.options.renderMode == RenderMode.raster;
-    if (tileSource == null || (isRaster && image == null)) {
-      return const CircularProgressIndicator();
-    }
 
-    painter ??= TilePainter(tileSource!, theme, geometryWorkers, options: widget.options);
     return Container(
         decoration: BoxDecoration(color: Colors.black45, border: Border.all()),
-        child: isRaster
-            ? RawImage(image: image!, width: widget.options.size.width, height: widget.options.size.height)
-            : CustomPaint(
-                size: widget.options.size,
-                painter: painter,
-              ));
+        constraints: BoxConstraints(maxWidth: widget.options.size.width, maxHeight: widget.options.size.height),
+        child: renderer
+    );
   }
 
-  void _loadTileset() async {
+  Future<Tileset> _loadTileset() async {
     tile_model.Tile tile = await loadVectorTile('assets/sample_tile.pbf');
-    tile_model.Tile contour = await loadVectorTile('assets/11_325_699_contour.pbf');
-    RasterTile hillShade = await loadRasterTile('assets/11_325_699_hillshade.png');
-    final tileset =
-        TilesetPreprocessor(theme).preprocess(Tileset({'openmaptiles': tile, 'contour': contour}), zoom: 14);
-    setState(() {
-      tileSource = TileSource(tileset: tileset, rasterTileset: RasterTileset(tiles: {'hillshade': hillShade}));
-    });
-    _maybeLoadImage();
+    return Tileset({'openmaptiles': tile});
   }
 
   Future<tile_model.Tile> loadVectorTile(String path) async {
@@ -149,25 +136,25 @@ class _TileState extends State<Tile> {
     return tileData.toTile();
   }
 
-  Future<RasterTile> loadRasterTile(String path) async {
-    final tileBuffer = await DefaultAssetBundle.of(context).load(path);
-    final Uint8List bytes = tileBuffer.buffer.asUint8List();
-
-    final image = await decodeImageFromList(bytes.buffer.asUint8List());
-    return RasterTile(image: image, scope: const Rect.fromLTRB(0, 0, 256, 256));
-  }
-
-  void _maybeLoadImage() async {
-    if (widget.options.renderMode == RenderMode.raster && image == null && tileSource != null) {
-      final image = await ImageRenderer(theme: theme, scale: 2).render(tileSource!,
-          zoom: widget.options.zoom, zoomScaleFactor: pow(2, widget.options.scale).toDouble());
-      if (_disposed) {
-        image.dispose();
-      } else {
-        setState(() {
-          this.image = image;
-        });
-      }
-    }
-  }
+  // Future<RasterTile> loadRasterTile(String path) async {
+  //   final tileBuffer = await DefaultAssetBundle.of(context).load(path);
+  //   final Uint8List bytes = tileBuffer.buffer.asUint8List();
+  //
+  //   final image = await decodeImageFromList(bytes.buffer.asUint8List());
+  //   return RasterTile(image: image, scope: const Rect.fromLTRB(0, 0, 256, 256));
+  // }
+  //
+  // void _maybeLoadImage() async {
+  //   if (widget.options.renderMode == RenderMode.raster && image == null && tileSource != null) {
+  //     final image = await ImageRenderer(theme: theme, scale: 2).render(tileSource!,
+  //         zoom: widget.options.zoom, zoomScaleFactor: pow(2, widget.options.scale).toDouble());
+  //     if (_disposed) {
+  //       image.dispose();
+  //     } else {
+  //       setState(() {
+  //         this.image = image;
+  //       });
+  //     }
+  //   }
+  // }
 }

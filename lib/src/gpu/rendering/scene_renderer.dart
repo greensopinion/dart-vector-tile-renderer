@@ -40,6 +40,11 @@ class VectorScenePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+
+    if (canvas.getLocalClipBounds().width > 1000000) {
+      canvas.clipRect(ui.Rect.fromLTWH(0.0, 0.0, size.width, size.height));
+    }
+
     // Apply tile transforms to all nodes in the scene
     scene.root.children.forEach((Node node) {
       final tileId = TileNodeUtils.parseFromNodeName(node.name);
