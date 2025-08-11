@@ -22,5 +22,9 @@
     "RasterFragment": {
         "type": "fragment",
         "file": "shaders/raster.frag"
+    },
+    "TextFragment": {
+        "type": "fragment",
+        "file": "shaders/text.frag"
     }
 }

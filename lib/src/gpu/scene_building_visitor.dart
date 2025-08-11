@@ -5,6 +5,7 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/concurrent/main/geometry_workers.dart';
 import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/text/text_layer_visitor.dart';
 import 'package:vector_tile_renderer/src/tileset_raster.dart';
 
 import '../themes/feature_resolver.dart';
@@ -39,6 +40,7 @@ class SceneBuildingVisitor extends LayerVisitor {
         return ScenePolygonBuilder(graph, context, geometryWorkers).addPolygons(style, features);
       case ThemeLayerType.fillExtrusion:
       case ThemeLayerType.symbol:
+        return TextLayerVisitor(graph, context, geometryWorkers).addFeatures(style, features);
       case ThemeLayerType.background:
       case ThemeLayerType.raster:
       case ThemeLayerType.unsupported:
