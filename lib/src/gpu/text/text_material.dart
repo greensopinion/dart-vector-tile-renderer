@@ -32,6 +32,8 @@ class TextMaterial extends UnlitMaterial {
 
     configureRenderPass(pass);
 
+    pass.setDepthCompareOperation(gpu.CompareFunction.always);
+
     var fragInfo = Float32List.fromList([
       baseColorFactor.r, baseColorFactor.g,
       baseColorFactor.b, baseColorFactor.a,

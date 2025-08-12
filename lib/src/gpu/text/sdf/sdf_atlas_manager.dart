@@ -13,7 +13,7 @@ class SdfAtlasManager {
     final chars = str.codeUnits;
     final (min, max) = _getBounds(chars);
 
-    return _getAtlas(AtlasID(font: fontFamily, charStart: min, charCount: max - min));
+    return _getAtlas(AtlasID(font: fontFamily, charStart: 0, charCount: 256)); //fixme
   }
 
   FutureOr<GlyphAtlas> _getAtlas(AtlasID id) {

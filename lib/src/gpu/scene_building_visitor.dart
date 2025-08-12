@@ -39,6 +39,7 @@ class SceneBuildingVisitor extends LayerVisitor {
       case ThemeLayerType.fill:
         return ScenePolygonBuilder(graph, context, geometryWorkers).addPolygons(style, features);
       case ThemeLayerType.fillExtrusion:
+        return;
       case ThemeLayerType.symbol:
         return TextLayerVisitor(graph, context, geometryWorkers).addFeatures(style, features);
       case ThemeLayerType.background:

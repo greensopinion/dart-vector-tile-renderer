@@ -38,18 +38,14 @@ class TextLayerVisitor {
       }).firstOrNull;
 
       if (point == null) {
-        print("no point, skipping");
         continue;
       }
 
       if (text == null || text.isEmpty) {
-        print("null text, skipping");
         continue;
       }
 
-      print("text: $text, point: $point");
-
-      futures.add(TextBuilder(_atlasManager).addText(text, 20 * 16, point.x, point.y, 4096, graph));
+      futures.add(TextBuilder(_atlasManager).addText(text, 10, point.x / 16, point.y / 16, 2, graph));
     }
     await Future.wait(futures);
   }
