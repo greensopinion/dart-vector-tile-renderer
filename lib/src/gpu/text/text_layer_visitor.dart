@@ -45,7 +45,7 @@ class TextLayerVisitor {
         continue;
       }
 
-      futures.add(TextBuilder(_atlasManager).addText(text, 10, point.x / 16, point.y / 16, 2, graph));
+      futures.add(TextBuilder(_atlasManager).addText(text, 64, point.x, point.y, 4096, graph));
     }
     await Future.wait(futures);
   }

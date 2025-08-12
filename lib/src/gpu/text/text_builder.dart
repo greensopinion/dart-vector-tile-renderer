@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_atlas_manager.dart';
+import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
 
 class BoundingBox {
@@ -81,10 +82,10 @@ class TextBuilder {
 
       // Add vertices for this character (offset by current position)
       tempVertices.addAll([
-        charMinX, charMinY, 0, 0, 0, -1, left, bottom, 0, 0, 0, 1, // bottom-left
-        charMaxX, charMinY, 0, 0, 0, -1, right, bottom, 0, 0, 0, 1, // bottom-right
-        charMaxX, charMaxY, 0, 0, 0, -1, right, top, 0, 0, 0, 1, // top-right
-        charMinX, charMaxY, 0, 0, 0, -1, left, top, 0, 0, 0, 1, // top-left
+        charMinX, charMinY, 0, left, bottom,
+        charMaxX, charMinY, 0, right, bottom,
+        charMaxX, charMaxY, 0, right, top,
+        charMinX, charMaxY, 0, left, top,
       ]);
 
       // Add indices for this character's quad (two triangles)
@@ -107,31 +108,21 @@ class TextBuilder {
 
     // Apply centering offset to all vertices
     final vertices = <double>[];
-    for (int i = 0; i < tempVertices.length; i += 12) {
+    for (int i = 0; i < tempVertices.length; i += 5) {
       // 12 values per vertex (pos + normal + uv + color)
       vertices.addAll([
         tempVertices[i] + centerOffsetX + xPos,
         tempVertices[i + 1] + centerOffsetY - yPos,
         tempVertices[i + 2], // z
-        tempVertices[i + 3], // normal x
-        tempVertices[i + 4], // normal y
-        tempVertices[i + 5], // normal z
-        tempVertices[i + 6], // u
-        tempVertices[i + 7], // v
-        tempVertices[i + 8], // color r
-        tempVertices[i + 9], // color g
-        tempVertices[i + 10], // color b
-        tempVertices[i + 11], // color a
+        tempVertices[i + 3], // u
+        tempVertices[i + 4], // v
+
       ]);
     }
 
-    // Create geometry and upload all vertex data at once
-    final geom = UnskinnedGeometry();
-    geom.uploadVertexData(
-      ByteData.sublistView(Float32List.fromList(vertices)),
-      vertexIndex, // total number of vertices
-      ByteData.sublistView(Uint16List.fromList(indices)),
-      indexType: IndexType.int16,
+    final geom = TextGeometry(
+        ByteData.sublistView(Float32List.fromList(vertices)),
+        ByteData.sublistView(Uint16List.fromList(indices))
     );
 
     final mat = TextMaterial(spritesheet, 0.05, 0.8);

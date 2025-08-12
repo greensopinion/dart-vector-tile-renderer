@@ -23,6 +23,10 @@
         "type": "fragment",
         "file": "shaders/raster.frag"
     },
+    "TextVertex": {
+        "type": "vertex",
+        "file": "shaders/text.vert"
+    },
     "TextFragment": {
         "type": "fragment",
         "file": "shaders/text.frag"
