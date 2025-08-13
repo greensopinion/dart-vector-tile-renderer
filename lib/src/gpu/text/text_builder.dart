@@ -25,16 +25,12 @@ class BoundingBox {
 }
 
 class TextBuilder {
-  late Texture spritesheet;
   final SdfAtlasManager atlasManager;
 
   TextBuilder(this.atlasManager);
 
   Future<void> addText(String text, int fontSize, double x, double y, int canvasSize, SceneGraph scene) async {
     final atlas = await atlasManager.getAtlasForString(text, "Roboto Regular");
-    spritesheet = gpuContext.createTexture(StorageMode.hostVisible, atlas.atlasWidth, atlas.atlasHeight,
-        format: PixelFormat.r8UNormInt);
-    spritesheet.overwrite(atlas.bitmapData.buffer.asByteData());
 
     final tempVertices = <double>[];
     final indices = <int>[];
@@ -125,8 +121,7 @@ class TextBuilder {
         ByteData.sublistView(Uint16List.fromList(indices))
     );
 
-    final mat = TextMaterial(spritesheet, 0.05, 0.8);
-    mat.baseColorTexture = spritesheet;
+    final mat = TextMaterial(atlas.texture, 0.05, 0.8);
 
     scene.addMesh(Mesh(geom, mat));
   }

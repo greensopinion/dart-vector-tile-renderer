@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:math' as math;
 
+import 'package:flutter_gpu/gpu.dart';
+
 const int formatVersion = 2;
 
 class GlyphMetrics {
@@ -77,6 +79,9 @@ class GlyphAtlas {
   final int charCodeStart;
   final int charCodeEnd;
   final int gridCols;
+
+  late final Texture texture = gpuContext.createTexture(StorageMode.hostVisible, atlasWidth, atlasHeight,
+      format: PixelFormat.r8UNormInt);
   
   GlyphAtlas({
     required this.bitmapData,
@@ -92,7 +97,9 @@ class GlyphAtlas {
     required this.charCodeStart,
     required this.charCodeEnd,
     required this.gridCols,
-  });
+  }) {
+    texture.overwrite(bitmapData.buffer.asByteData());
+  }
   
   /// Calculate the number of grid rows based on character range and grid columns
   int get gridRows => ((charCodeEnd - charCodeStart + 1) / gridCols).ceil();
