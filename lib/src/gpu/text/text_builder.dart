@@ -90,8 +90,8 @@ class TextBuilder {
 
       // Add indices for this character's quad (two triangles)
       indices.addAll([
-        vertexIndex + 0, vertexIndex + 1, vertexIndex + 2, // first triangle
-        vertexIndex + 2, vertexIndex + 3, vertexIndex + 0, // second triangle
+        vertexIndex + 0, vertexIndex + 2, vertexIndex + 1, // first triangle
+        vertexIndex + 2, vertexIndex + 0, vertexIndex + 3, // second triangle
       ]);
       final advance = scaling * glyphMetrics.glyphAdvance;
 

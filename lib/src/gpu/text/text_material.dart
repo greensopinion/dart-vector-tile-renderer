@@ -1,38 +1,37 @@
 import 'dart:typed_data';
-import 'package:flutter_gpu/gpu.dart' as gpu;
+import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 
 import '../shaders.dart';
 import '../utils.dart';
 
 class TextMaterial extends UnlitMaterial {
-  late gpu.SamplerOptions sampler;
+  late SamplerOptions sampler;
   final double smoothness;
   final double threshold;
 
-  TextMaterial(gpu.Texture sdf, this.smoothness, this.threshold) {
+  TextMaterial(Texture sdf, this.smoothness, this.threshold) {
     setFragmentShader(shaderLibrary['TextFragment']!);
     baseColorTexture = sdf;
 
-    sampler = gpu.SamplerOptions(
-      minFilter: gpu.MinMagFilter.linear,
-      magFilter: gpu.MinMagFilter.linear,
-      mipFilter: gpu.MipFilter.linear,
-      widthAddressMode: gpu.SamplerAddressMode.clampToEdge,
-      heightAddressMode: gpu.SamplerAddressMode.clampToEdge,
+    sampler = SamplerOptions(
+      minFilter: MinMagFilter.linear,
+      magFilter: MinMagFilter.linear,
+      mipFilter: MipFilter.linear,
+      widthAddressMode: SamplerAddressMode.clampToEdge,
+      heightAddressMode: SamplerAddressMode.clampToEdge,
     );
   }
 
   @override
   void bind(
-      gpu.RenderPass pass,
-      gpu.HostBuffer transientsBuffer,
+      RenderPass pass,
+      HostBuffer transientsBuffer,
       Environment environment,
       ) {
 
     configureRenderPass(pass);
-
-    pass.setDepthCompareOperation(gpu.CompareFunction.always);
+    pass.setWindingOrder(WindingOrder.clockwise);
 
     var fragInfo = Float32List.fromList([
       baseColorFactor.r, baseColorFactor.g,
