@@ -18,10 +18,11 @@ import 'polygon/scene_polygon_builder.dart';
 
 class SceneBuildingVisitor extends LayerVisitor {
   final SceneGraph graph;
+  final SceneGraph textGraph;
   final VisitorContext context;
   final GeometryWorkers geometryWorkers;
 
-  SceneBuildingVisitor(this.graph, this.context, this.geometryWorkers);
+  SceneBuildingVisitor(this.graph, this.textGraph, this.context, this.geometryWorkers);
 
   Future<void> visitAllFeatures(Theme theme) async {
 
@@ -41,7 +42,7 @@ class SceneBuildingVisitor extends LayerVisitor {
       case ThemeLayerType.fillExtrusion:
         return;
       case ThemeLayerType.symbol:
-        return TextLayerVisitor(graph, context, geometryWorkers).addFeatures(style, features);
+        return TextLayerVisitor(textGraph, context, geometryWorkers).addFeatures(style, features);
       case ThemeLayerType.background:
       case ThemeLayerType.raster:
       case ThemeLayerType.unsupported:

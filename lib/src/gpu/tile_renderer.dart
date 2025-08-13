@@ -110,7 +110,7 @@ class TileRenderer {
       tileSource: tileSource,
       zoom: zoom,
     );
-    SceneBuildingVisitor(scene, context, geometryWorkers).visitAllFeatures(theme);
+    SceneBuildingVisitor(scene, scene, context, geometryWorkers).visitAllFeatures(theme);
 
     return scene;
   }
