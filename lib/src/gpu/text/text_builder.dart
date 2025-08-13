@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_atlas_manager.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
@@ -38,14 +37,14 @@ class TextBuilder {
 
     final fontScale = fontSize / atlas.fontSize;
     final canvasScale = 2 / canvasSize;
-
     final scaling = fontScale * canvasScale;
 
     double offsetX = 0.0; // Horizontal offset for character positioning
     int vertexIndex = 0; // Track current vertex index for indices
 
-    double xPos = (x - canvasSize / 2) * canvasScale;
-    double yPos = (y - canvasSize / 2) * canvasScale;
+    // Convert world position to anchor position
+    final anchorX = (x - canvasSize / 2) * canvasScale;
+    final anchorY = (y - canvasSize / 2) * canvasScale;
 
     // Process each character in the text
     for (final charCode in text.codeUnits) {
@@ -67,7 +66,7 @@ class TextBuilder {
       final halfHeight = scaling * atlas.cellHeight / 2;
       final halfWidth = scaling * atlas.cellWidth / 2;
 
-      // Calculate character bounds
+      // Calculate character bounds (relative to text origin)
       final charMinX = offsetX - halfWidth;
       final charMaxX = offsetX + halfWidth;
       final charMinY = -halfHeight;
@@ -76,7 +75,7 @@ class TextBuilder {
       // Update bounding box
       boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
 
-      // Add vertices for this character (offset by current position)
+      // Add vertices for this character with relative offsets
       tempVertices.addAll([
         charMinX, charMinY, 0, left, bottom,
         charMaxX, charMinY, 0, right, bottom,
@@ -98,27 +97,25 @@ class TextBuilder {
       vertexIndex += 4;
     }
 
-    // Calculate centering offset
     final centerOffsetX = boundingBox.centerOffsetX;
     final centerOffsetY = boundingBox.centerOffsetY;
 
-    // Apply centering offset to all vertices
     final vertices = <double>[];
     for (int i = 0; i < tempVertices.length; i += 5) {
-      // 12 values per vertex (pos + normal + uv + color)
       vertices.addAll([
-        tempVertices[i] + centerOffsetX + xPos,
-        tempVertices[i + 1] + centerOffsetY - yPos,
-        tempVertices[i + 2], // z
-        tempVertices[i + 3], // u
-        tempVertices[i + 4], // v
-
+        tempVertices[i] + centerOffsetX,     // offset_x (relative to anchor)
+        tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
+        tempVertices[i + 3],                 // u
+        tempVertices[i + 4],                 // v
+        anchorX,                             // anchor_x
+        -anchorY,                            // anchor_y (negated for correct orientation)
       ]);
     }
 
     final geom = TextGeometry(
         ByteData.sublistView(Float32List.fromList(vertices)),
-        ByteData.sublistView(Uint16List.fromList(indices))
+        ByteData.sublistView(Uint16List.fromList(indices)),
+        6
     );
 
     final mat = TextMaterial(atlas.texture, 0.05, 0.8);
