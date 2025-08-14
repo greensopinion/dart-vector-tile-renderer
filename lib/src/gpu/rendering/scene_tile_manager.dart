@@ -129,12 +129,7 @@ class SceneTileManager extends ChangeNotifier {
       zoom: zoomProvider(),
     );
 
-    final featureNode = Node();
-    final symbolNode = Node();
-    node.add(featureNode);
-    node.add(symbolNode);
-
-    await SceneBuildingVisitor(featureNode, symbolNode, visitorContext, geometryWorkers).visitAllFeatures(model.theme);
+    await SceneBuildingVisitor(node, visitorContext, geometryWorkers).visitAllFeatures(model.theme);
 
     if (_inFlightTiles.containsKey(tile.key())) {
       scene.add(node);

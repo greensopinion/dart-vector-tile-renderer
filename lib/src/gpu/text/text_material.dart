@@ -51,4 +51,7 @@ class TextMaterial extends UnlitMaterial {
         sampler: sampler
     );
   }
+
+  @override
+  bool isOpaque() => false;
 }
