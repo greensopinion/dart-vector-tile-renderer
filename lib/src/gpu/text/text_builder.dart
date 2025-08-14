@@ -118,7 +118,7 @@ class TextBuilder {
         6
     );
 
-    final mat = TextMaterial(atlas.texture, 0.05, 0.8);
+    final mat = TextMaterial(atlas.texture, 0.08, 0.75);
 
     scene.addMesh(Mesh(geom, mat));
   }
