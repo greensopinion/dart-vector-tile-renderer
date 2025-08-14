@@ -26,23 +26,15 @@ class LineMaterial extends Material {
     dashLengths ??= [64.0, 0];
 
     final lineMaterialSlot = fragmentShader.getUniformSlot('LineMaterial');
-    final lineMaterialView = transientsBuffer.emplace(
-        Float32List.fromList([
-          color.x, color.y, color.z, color.w,  // color
-          dashLengths![0],  // drawLength
-          dashLengths![1],  // spaceLength
-        ]).buffer.asByteData());
+    final lineMaterialView = transientsBuffer.emplace(Float32List.fromList([
+      color.x,
+      color.y,
+      color.z,
+      color.w,
+      dashLengths![0],
+      dashLengths![1],
+    ]).buffer.asByteData());
     pass.bindUniform(lineMaterialSlot, lineMaterialView);
-
-    final aaBytes =
-        Float32List.fromList([antialiasingEnabled ? 1.0 : 0.0, edgeWidth])
-            .buffer
-            .asByteData();
-
-    pass.bindUniform(
-      fragmentShader.getUniformSlot("AntiAliasing"),
-      transientsBuffer.emplace(aaBytes),
-    );
 
     configureRenderPass(pass);
   }

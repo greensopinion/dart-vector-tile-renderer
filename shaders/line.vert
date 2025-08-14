@@ -19,11 +19,7 @@ in vec2 offset;
 in float roundness;
 in float vertex_cumulative_length;
 
-out vec3 v_position;
-out vec3 v_normal;
-out vec3 v_viewvector;
 out vec2 v_texture_coords;
-out vec4 v_color;
 
 out float v_length;
 out float cumulative_length;
@@ -53,11 +49,7 @@ void main() {
 
   gl_Position = frame_info.model_transform * frame_info.camera_transform * vec4(segment_pos, 0.0, 1.0);
 
-  v_position = vec3(segment_pos, 0.0);
-  v_viewvector = frame_info.camera_position - v_position;
-  v_normal = vec3(1, 0, 0);
   v_texture_coords = vec2(offset.x, offset.y * roundness);
-  v_color = vec4(0, 0, 0, 1);
 
   v_length = distance(curr, next) * line_geometry.width;
   cumulative_length = vertex_cumulative_length * 2;
