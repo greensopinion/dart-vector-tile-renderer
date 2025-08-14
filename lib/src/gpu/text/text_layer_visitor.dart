@@ -32,6 +32,7 @@ class TextLayerVisitor {
 
       final text = symbolLayout.text?.text.evaluate(evaluationContext);
 
+      double? textSize = style.symbolLayout?.text?.textSize.evaluate(evaluationContext);
 
       final point = feature.feature.modelPoints.firstOrNull ?? feature.feature.modelLines.map((it) {
         return it.points[it.points.length ~/ 2];
@@ -41,7 +42,7 @@ class TextLayerVisitor {
         continue;
       }
 
-      if (text == null || text.isEmpty) {
+      if (text == null || text.isEmpty || textSize == null) {
         continue;
       }
 
@@ -49,7 +50,7 @@ class TextLayerVisitor {
         continue;
       }
 
-      futures.add(TextBuilder(_atlasManager).addText(text, 64, point.x, point.y, 4096, graph));
+      futures.add(TextBuilder(_atlasManager).addText(text, textSize.toInt() * 6, point.x, point.y, 4096, graph));
     }
     await Future.wait(futures);
   }
