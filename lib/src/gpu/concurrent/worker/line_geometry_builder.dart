@@ -14,7 +14,29 @@ class LineGeometryBuilder {
 
   int startIndex = 0;
 
-  (ByteData, ByteData) build(List<List<TilePoint>> lines, LineEnd lineCaps, LineJoin lineJoins) {
+  void _addVertex(
+      double point_a1,
+      double point_a2,
+      double point_b1,
+      double point_b2,
+      double offset1,
+      double offset2,
+      double roundness,
+      double cumulativeLength) {
+    vertices.addAll([
+      point_a1,
+      point_a2,
+      point_b1,
+      point_b2,
+      offset1,
+      offset2,
+      roundness,
+      cumulativeLength
+    ]);
+  }
+
+  (ByteData, ByteData) build(
+      List<List<TilePoint>> lines, LineEnd lineCaps, LineJoin lineJoins) {
     double totalCumulativeLength = 0.0;
 
     for (var line in lines) {
@@ -36,7 +58,7 @@ class LineGeometryBuilder {
   }
 
   setupLine(
-    List<TilePoint> points, 
+    List<TilePoint> points,
     LineEnd lineCaps,
     LineJoin lineJoins,
     double startingCumulativeLength,
@@ -59,40 +81,10 @@ class LineGeometryBuilder {
       double cumulativeLength1 =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
-      vertices.addAll([
-        p1.x,
-        p1.y,
-        p0.x,
-        p0.y,
-        1,
-        0,
-        0,
-        cumulativeLength1,
-        p0.x,
-        p0.y,
-        p1.x,
-        p1.y,
-        -1,
-        0,
-        0,
-        cumulativeLength0,
-        p0.x,
-        p0.y,
-        p1.x,
-        p1.y,
-        1,
-        0,
-        0,
-        cumulativeLength0,
-        p1.x,
-        p1.y,
-        p0.x,
-        p0.y,
-        -1,
-        0,
-        0,
-        cumulativeLength1,
-      ]);
+      _addVertex(p1.x, p1.y, p0.x, p0.y, 1, 0, 0, cumulativeLength1);
+      _addVertex(p0.x, p0.y, p1.x, p1.y, -1, 0, 0, cumulativeLength0);
+      _addVertex(p0.x, p0.y, p1.x, p1.y, 1, 0, 0, cumulativeLength0);
+      _addVertex(p1.x, p1.y, p0.x, p0.y, -1, 0, 0, cumulativeLength1);
 
       indices
           .addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i) + indexOffset));
@@ -114,40 +106,10 @@ class LineGeometryBuilder {
     double endCumulativeLength =
         cumulativeLengths.isNotEmpty ? cumulativeLengths.last : 0.0;
 
-    vertices.addAll([
-      a.x,
-      a.y,
-      b.x,
-      b.y,
-      -1,
-      -1,
-      round,
-      startCumulativeLength,
-      a.x,
-      a.y,
-      b.x,
-      b.y,
-      1,
-      -1,
-      round,
-      startCumulativeLength,
-      d.x,
-      d.y,
-      c.x,
-      c.y,
-      -1,
-      -1,
-      round,
-      endCumulativeLength,
-      d.x,
-      d.y,
-      c.x,
-      c.y,
-      1,
-      -1,
-      round,
-      endCumulativeLength,
-    ]);
+    _addVertex(a.x, a.y, b.x, b.y, -1, -1, round, startCumulativeLength);
+    _addVertex(a.x, a.y, b.x, b.y, 1, -1, round, startCumulativeLength);
+    _addVertex(d.x, d.y, c.x, c.y, -1, -1, round, endCumulativeLength);
+    _addVertex(d.x, d.y, c.x, c.y, 1, -1, round, endCumulativeLength);
 
     indices.addAll([
       startIndex,
@@ -187,9 +149,8 @@ class LineGeometryBuilder {
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
-      vertices
-          .addAll([p1.x, p1.y, p0.x, p0.y, -1, -1, 1, joinCumulativeLength]);
-      vertices.addAll([p1.x, p1.y, p0.x, p0.y, 1, -1, 1, joinCumulativeLength]);
+      _addVertex(p1.x, p1.y, p0.x, p0.y, -1, -1, 1, joinCumulativeLength);
+      _addVertex(p1.x, p1.y, p0.x, p0.y, 1, -1, 1, joinCumulativeLength);
 
       int offset = i * 4;
 
@@ -212,7 +173,7 @@ class LineGeometryBuilder {
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
-      vertices.addAll([p.x, p.y, 0, 0, 0, 0, 0, joinCumulativeLength]);
+      _addVertex(p.x, p.y, 0, 0, 0, 0, 0, joinCumulativeLength);
 
       int offset = i * 4;
 
@@ -260,19 +221,10 @@ class LineGeometryBuilder {
       double joinCumulativeLength =
           (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
 
-      vertices.addAll(
-          [c.x, c.y, c.x, c.y + 1, out.x, -out.y, 0, joinCumulativeLength]);
-
-      vertices.addAll([
-        origin.x,
-        origin.y,
-        origin.x,
-        origin.y + 1,
-        -out.x,
-        out.y,
-        0,
-        joinCumulativeLength
-      ]);
+      _addVertex(
+          c.x, c.y, c.x, c.y + 1, out.x, -out.y, 0, joinCumulativeLength);
+      _addVertex(origin.x, origin.y, origin.x, origin.y + 1, -out.x, out.y, 0,
+          joinCumulativeLength);
 
       int offset = i * 4;
 
