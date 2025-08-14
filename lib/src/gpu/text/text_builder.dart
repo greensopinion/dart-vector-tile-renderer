@@ -21,6 +21,9 @@ class BoundingBox {
   double get centerOffsetX => -(minX + maxX) / 2;
 
   double get centerOffsetY => -(minY + maxY) / 2;
+
+  double get sizeX => maxX - minX;
+  double get sizeY => maxY - minY;
 }
 
 class TextBuilder {
@@ -107,15 +110,17 @@ class TextBuilder {
         tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
         tempVertices[i + 3],                 // u
         tempVertices[i + 4],                 // v
-        anchorX,                             // anchor_x
-        -anchorY,                            // anchor_y (negated for correct orientation)
+        anchorX - (boundingBox.sizeX / 2),
+        -anchorY - (boundingBox.sizeY / 2),
+        anchorX + (boundingBox.sizeX / 2),
+        -anchorY + (boundingBox.sizeY / 2),
       ]);
     }
 
     final geom = TextGeometry(
         ByteData.sublistView(Float32List.fromList(vertices)),
         ByteData.sublistView(Uint16List.fromList(indices)),
-        6
+        8
     );
 
     final mat = TextMaterial(atlas.texture, 0.08, 0.75);
