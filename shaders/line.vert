@@ -32,13 +32,15 @@ vec2 scalePoint(vec2 p) {
   return vec2((p.x / line_geometry.extentScale) - 1, 1 - (p.y / line_geometry.extentScale));
 }
 
-vec2 getSegmentPos(vec2 curr, vec2 next, mat4 transform) {
+vec2 getSegmentPos(vec2 curr, vec2 next) {
   float offsetDist = line_geometry.width / 2.0;
 
   vec2 unitDir = normalize(next - curr);
   vec2 perp = vec2(unitDir.y, -unitDir.x);
 
-  float scale = (transform[0].x + transform[1].y) / 2.0;
+  mat4 transform = frame_info.model_transform;
+
+  float scale = transform[0][0] / line_geometry.extentScale;
 
   return curr + (clamp(offset.x, -5, 5) * offsetDist * perp / scale) + (clamp(offset.y, -5, 5) * offsetDist * unitDir / scale);
 }
@@ -47,11 +49,9 @@ void main() {
   vec2 curr = scalePoint(point_a);
   vec2 next = scalePoint(point_b);
 
-  mat4 transform = frame_info.model_transform;
+  vec2 segment_pos = getSegmentPos(curr, next);
 
-  vec2 segment_pos = getSegmentPos(curr, next, transform);
-
-  gl_Position = transform * vec4(segment_pos, 0.0, 1.0);
+  gl_Position = frame_info.model_transform * frame_info.camera_transform * vec4(segment_pos, 0.0, 1.0);
 
   v_position = vec3(segment_pos, 0.0);
   v_viewvector = frame_info.camera_position - v_position;

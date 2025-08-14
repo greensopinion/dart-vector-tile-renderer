@@ -18,11 +18,11 @@ out vec4 v_color;
 void main() {
     mat4 transform = frame_info.model_transform;
 
-    float scale = (transform[0].x + transform[1].y) / 2;
+    float scale = transform[0][0] / 1024;
 
     vec3 world_position = vec3(anchor.x + (offset.x / scale), anchor.y + (offset.y / scale), 0.0);
     
-    gl_Position = transform * vec4(world_position, 1.0);
+    gl_Position = frame_info.model_transform * frame_info.camera_transform * vec4(world_position, 1.0);
 
     v_position = world_position;
     v_viewvector = frame_info.camera_position - v_position;

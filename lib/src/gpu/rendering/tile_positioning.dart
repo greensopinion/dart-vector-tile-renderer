@@ -40,13 +40,9 @@ class GridBasedTilePositioner implements TilePositioner {
     final ndcX = (centerX / canvasSize.width) * 2.0 - 1.0;
     final ndcY = 1.0 - (centerY / canvasSize.height) * 2.0;
 
-    // Convert size to NDC scale
-    final ndcScaleX = (width / canvasSize.width);
-    final ndcScaleY = (height / canvasSize.height);
-
     return vm.Matrix4.identity()
       ..translate(ndcX, ndcY, 0.0)
-      ..scale(ndcScaleX, ndcScaleY, 1.0);
+      ..scale(width, height, 1.0);
   }
   
   @override

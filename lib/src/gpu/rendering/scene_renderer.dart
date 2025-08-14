@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
+import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
 
 import 'tile_positioning.dart';
 
@@ -41,6 +42,7 @@ class VectorScenePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
 
+    // Clip canvas if not clipped already
     if (canvas.getLocalClipBounds().width > 1000000) {
       canvas.clipRect(ui.Rect.fromLTWH(0.0, 0.0, size.width, size.height));
     }
@@ -60,19 +62,13 @@ class VectorScenePainter extends CustomPainter {
     canvas.scale(1 / pixelRatio);
 
     // Render the scene
-    scene.render(_defaultCamera, canvas);
+    scene.render(OrthographicCamera(pixelRatio), canvas);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 
   // Default camera configuration for 2D tile rendering
-  static final Camera _defaultCamera = PerspectiveCamera(
-    fovRadiansY: math.pi / 2, // 90 degrees
-    position: vm.Vector3(0, 0, -128),
-    target: vm.Vector3(0, 0, 0),
-    up: vm.Vector3(0, 1, 0),
-  );
 }
 
 /// Context required for scene rendering operations
