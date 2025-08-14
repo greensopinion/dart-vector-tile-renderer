@@ -5,9 +5,10 @@ uniform FrameInfo {
 }
 frame_info;
 
-in vec2 offset;      // Character offset relative to anchor
-in vec2 uv;          // Texture coordinates
-in vec2 anchor;      // Anchor position in world space
+in vec2 offset;
+in vec2 uv;
+in vec2 aabbMin;
+in vec2 aabbMax;
 
 out vec3 v_position;
 out vec3 v_normal;
@@ -17,6 +18,7 @@ out vec4 v_color;
 
 void main() {
     mat4 transform = frame_info.model_transform;
+    vec2 anchor = (aabbMin + aabbMax) / 2;
 
     float scale = transform[0][0] / 1024;
 

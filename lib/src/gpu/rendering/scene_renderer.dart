@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
+import 'package:vector_tile_renderer/src/gpu/rendering/scene_tile_manager.dart';
 
 import 'tile_positioning.dart';
 
 /// A Flutter widget that renders a flutter_scene Scene with proper tile positioning
 class VectorSceneRenderer extends StatefulWidget {
-  final Scene scene = Scene();
+  final Scene _scene = Scene();
   final SceneRenderingContext context;
+  late final SceneTileManager sceneTileManager = SceneTileManager(scene: _scene, zoomProvider: () => context.zoom);
 
   VectorSceneRenderer({
     super.key, 
@@ -26,7 +28,7 @@ class VectorSceneRendererState extends State<VectorSceneRenderer> {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: VectorScenePainter(widget.scene, widget.context),
+      painter: VectorScenePainter(widget._scene, widget.context),
       child: const SizedBox.expand(),
     );
   }
@@ -34,10 +36,10 @@ class VectorSceneRendererState extends State<VectorSceneRenderer> {
 
 /// Custom painter that handles the actual scene rendering with tile positioning
 class VectorScenePainter extends CustomPainter {
-  final Scene scene;
+  final Scene _scene;
   final SceneRenderingContext renderingContext;
   
-  VectorScenePainter(this.scene, this.renderingContext);
+  VectorScenePainter(this._scene, this.renderingContext);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -48,7 +50,7 @@ class VectorScenePainter extends CustomPainter {
     }
 
     // Apply tile transforms to all nodes in the scene
-    scene.root.children.forEach((Node node) {
+    _scene.root.children.forEach((Node node) {
       final tileId = TileNodeUtils.parseFromNodeName(node.name);
       if (tileId != null) {
         final positioner = renderingContext.createTilePositioner(tileId.z);
@@ -62,7 +64,7 @@ class VectorScenePainter extends CustomPainter {
     canvas.scale(1 / pixelRatio);
 
     // Render the scene
-    scene.render(OrthographicCamera(pixelRatio), canvas);
+    _scene.render(OrthographicCamera(pixelRatio), canvas);
   }
 
   @override
@@ -75,6 +77,8 @@ class VectorScenePainter extends CustomPainter {
 abstract class SceneRenderingContext {
   /// Creates a tile positioner for the given zoom level
   TilePositioner createTilePositioner(int zoom);
+
+  double get zoom;
 }
 
 /// Utility functions for working with tile identities in node names

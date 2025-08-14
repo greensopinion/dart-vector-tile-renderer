@@ -1,13 +1,19 @@
-
-
 import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 class TilePositioningContext extends SceneRenderingContext {
+
+  final double Function() _zoomProvider;
+
+  TilePositioningContext(this._zoomProvider);
+
   @override
   TilePositioner createTilePositioner(int zoom) => ExampleTilePositioner();
+
+  @override
+  double get zoom => _zoomProvider.call();
 }
 
 class ExampleTilePositioner extends TilePositioner {

@@ -69,12 +69,9 @@ class _TileState extends State<Tile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   bool _disposed = false;
 
-  VectorSceneRenderer renderer = VectorSceneRenderer(context: TilePositioningContext());
+  late VectorSceneRenderer renderer = VectorSceneRenderer(context: TilePositioningContext(() => zoom));
 
-  late final sceneTileManager = SceneTileManager(
-    scene: renderer.scene,
-    zoomProvider: () => zoom,
-  );
+  late final sceneTileManager = renderer.sceneTileManager;
 
   double get zoom => widget.options.zoom;
 
