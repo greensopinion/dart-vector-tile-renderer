@@ -12,6 +12,7 @@ class TextLayerVisitor {
   final SceneGraph graph;
   final VisitorContext context;
   final GeometryWorkers geometryWorkers;
+  final Set<String> alreadyAdded = <String>{};
 
   TextLayerVisitor(this.graph, this.context, this.geometryWorkers);
 
@@ -42,9 +43,10 @@ class TextLayerVisitor {
         continue;
       }
 
-      if (text == null || text.isEmpty || textSize == null) {
+      if (text == null || text.isEmpty || textSize == null || alreadyAdded.contains(text)) {
         continue;
       }
+      alreadyAdded.add(text);
 
       if (point.x < 0 || point.x > 4096 || point.y < 0 || point.y > 4096) {
         continue;
