@@ -8,9 +8,9 @@ import '../shared/keys.dart';
 
 class LineGeometryBuilder {
   int indexOffset = 0;
-  List<double> vertices = List.empty(growable: true);
-  List<int> indices = List.empty(growable: true);
-  List<double> cumulativeLengths = List.empty(growable: true);
+  final BytesBuilder _vertexBytesBuilder = BytesBuilder(copy: false);
+  final BytesBuilder _indexBytesBuilder = BytesBuilder(copy: false);
+  late Float32List _cumulativeLengths;
 
   int startIndex = 0;
 
@@ -23,7 +23,7 @@ class LineGeometryBuilder {
       double offset2,
       double roundness,
       double cumulativeLength) {
-    vertices.addAll([
+    final vertexData = Float32List.fromList([
       point_a1,
       point_a2,
       point_b1,
@@ -33,6 +33,12 @@ class LineGeometryBuilder {
       roundness,
       cumulativeLength
     ]);
+    _vertexBytesBuilder.add(vertexData.buffer.asUint8List());
+  }
+
+  void _addIndices(List<int> indexList) {
+    final indexData = Uint16List.fromList(indexList);
+    _indexBytesBuilder.add(indexData.buffer.asUint8List());
   }
 
   (ByteData, ByteData) build(
@@ -44,16 +50,16 @@ class LineGeometryBuilder {
 
       setupLine(line, lineCaps, lineJoins, totalCumulativeLength);
 
-      if (cumulativeLengths.isNotEmpty) {
-        totalCumulativeLength = cumulativeLengths.last;
+      if (_cumulativeLengths.isNotEmpty) {
+        totalCumulativeLength = _cumulativeLengths.last;
       }
 
       indexOffset += startIndex;
     }
 
     return (
-      ByteData.sublistView(Float32List.fromList(vertices)),
-      ByteData.sublistView(Uint16List.fromList(indices))
+      ByteData.sublistView(_vertexBytesBuilder.takeBytes()),
+      ByteData.sublistView(_indexBytesBuilder.takeBytes())
     );
   }
 
@@ -77,17 +83,17 @@ class LineGeometryBuilder {
       TilePoint p1 = points[i + 1];
 
       double cumulativeLength0 =
-          i < cumulativeLengths.length ? cumulativeLengths[i] : 0.0;
+          i < _cumulativeLengths.length ? _cumulativeLengths[i] : 0.0;
       double cumulativeLength1 =
-          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
+          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
 
       _addVertex(p1.x, p1.y, p0.x, p0.y, 1, 0, 0, cumulativeLength1);
       _addVertex(p0.x, p0.y, p1.x, p1.y, -1, 0, 0, cumulativeLength0);
       _addVertex(p0.x, p0.y, p1.x, p1.y, 1, 0, 0, cumulativeLength0);
       _addVertex(p1.x, p1.y, p0.x, p0.y, -1, 0, 0, cumulativeLength1);
 
-      indices
-          .addAll([0, 1, 2, 2, 3, 0].map((it) => it + (4 * i) + indexOffset));
+      _addIndices(
+          [0, 1, 2, 2, 3, 0].map((it) => it + (4 * i) + indexOffset).toList());
     }
     startIndex += max(segmentCount * 4, 0);
   }
@@ -102,16 +108,16 @@ class LineGeometryBuilder {
     TilePoint d = points[segmentCount];
 
     double startCumulativeLength =
-        cumulativeLengths.isNotEmpty ? cumulativeLengths.first : 0.0;
+        _cumulativeLengths.isNotEmpty ? _cumulativeLengths.first : 0.0;
     double endCumulativeLength =
-        cumulativeLengths.isNotEmpty ? cumulativeLengths.last : 0.0;
+        _cumulativeLengths.isNotEmpty ? _cumulativeLengths.last : 0.0;
 
     _addVertex(a.x, a.y, b.x, b.y, -1, -1, round, startCumulativeLength);
     _addVertex(a.x, a.y, b.x, b.y, 1, -1, round, startCumulativeLength);
     _addVertex(d.x, d.y, c.x, c.y, -1, -1, round, endCumulativeLength);
     _addVertex(d.x, d.y, c.x, c.y, 1, -1, round, endCumulativeLength);
 
-    indices.addAll([
+    _addIndices([
       startIndex,
       startIndex + 1,
       1,
@@ -124,7 +130,7 @@ class LineGeometryBuilder {
       startIndex + 2,
       startIndex + 3,
       startIndex - 1,
-    ].map((it) => it + indexOffset));
+    ].map((it) => it + indexOffset).toList());
     startIndex += 4;
   }
 
@@ -147,7 +153,7 @@ class LineGeometryBuilder {
       TilePoint p1 = points[i + 1];
 
       double joinCumulativeLength =
-          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
+          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
 
       _addVertex(p1.x, p1.y, p0.x, p0.y, -1, -1, 1, joinCumulativeLength);
       _addVertex(p1.x, p1.y, p0.x, p0.y, 1, -1, 1, joinCumulativeLength);
@@ -159,7 +165,7 @@ class LineGeometryBuilder {
       int c = offset + 0;
       int d = offset + 3;
 
-      indices.addAll([c, d, b, b, d, a].map((it) => it + indexOffset));
+      _addIndices([c, d, b, b, d, a].map((it) => it + indexOffset).toList());
     }
     startIndex += max(2 * joinCount, 0);
   }
@@ -171,20 +177,20 @@ class LineGeometryBuilder {
       TilePoint p = points[i + 1];
 
       double joinCumulativeLength =
-          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
+          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
 
       _addVertex(p.x, p.y, 0, 0, 0, 0, 0, joinCumulativeLength);
 
       int offset = i * 4;
 
-      indices.addAll([
+      _addIndices([
         offset + 5,
         offset,
         startIndex + i,
         offset + 3,
         offset + 6,
         startIndex + i,
-      ].map((it) => it + indexOffset));
+      ].map((it) => it + indexOffset).toList());
     }
     startIndex += max(joinCount, 0);
   }
@@ -219,7 +225,7 @@ class LineGeometryBuilder {
       final out = vec.scaled(1 + resultLength);
 
       double joinCumulativeLength =
-          (i + 1) < cumulativeLengths.length ? cumulativeLengths[i + 1] : 0.0;
+          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
 
       _addVertex(
           c.x, c.y, c.x, c.y + 1, out.x, -out.y, 0, joinCumulativeLength);
@@ -228,22 +234,22 @@ class LineGeometryBuilder {
 
       int offset = i * 4;
 
-      indices.addAll([
+      _addIndices([
         offset + 6,
         offset + 3,
         startIndex + (2 * i),
         offset,
         offset + 5,
         startIndex + (2 * i) + 1,
-      ].map((it) => it + indexOffset));
+      ].map((it) => it + indexOffset).toList());
     }
     startIndex += max(2 * joinCount, 0);
   }
 
   void computeCumulativeDistances(List<TilePoint> points, int segmentCount,
       double startingCumulativeLength) {
-    cumulativeLengths.clear();
-    cumulativeLengths.add(startingCumulativeLength);
+    _cumulativeLengths = Float32List(points.length);
+    _cumulativeLengths[0] = startingCumulativeLength;
 
     double sum = startingCumulativeLength;
     for (int i = 1; i < points.length; i++) {
@@ -251,7 +257,7 @@ class LineGeometryBuilder {
       final dy = points[i].y - points[i - 1].y;
       final segmentLength = sqrt(dx * dx + dy * dy);
       sum += segmentLength;
-      cumulativeLengths.add(sum);
+      _cumulativeLengths[i] = sum;
     }
   }
 }
