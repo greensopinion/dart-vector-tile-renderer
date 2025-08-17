@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'geometry_model.dart';
+import 'geometry_model_ui.dart';
+import 'lazy_value.dart';
 
 class Tile {
   final List<TileLayer> layers;
@@ -70,10 +72,63 @@ class TileFeature {
 
   bool get hasPolygons => type == TileFeatureType.polygon;
 
-  /// included so the project compiles without deleting old rendering code
-  get paths => null;
-  get compoundPath => null;
-  get points => null;
+  final _points = LazyValue<List<Offset>>();
+  final _paths = LazyValue<List<BoundedPath>>();
+  final _compoundPath = LazyValue<BoundedPath>();
+
+  List<Offset> get points => _points.get(_computePoints);
+  List<BoundedPath> get paths => _paths.get(_computePaths);
+  BoundedPath get compoundPath => _compoundPath.get(_computeCompoundPath);
+
+  List<Offset> _computePoints() {
+    if (type != TileFeatureType.point) {
+      throw StateError('Feature does not have points');
+    }
+    final modelPoints = _modelPoints;
+    if (modelPoints != null) {
+      final uiGeometry = UiGeometry();
+      return modelPoints
+          .map((e) => uiGeometry.createPoint(e))
+          .toList(growable: false);
+    }
+    return [];
+  }
+
+  List<BoundedPath> _computePaths() {
+    if (type == TileFeatureType.point) {
+      throw StateError('Cannot get paths from a point feature');
+    }
+    final modelLines = _modelLines;
+    if (modelLines != null) {
+      assert(type == TileFeatureType.linestring);
+      final uiGeometry = UiGeometry();
+      return modelLines
+          .map((e) => BoundedPath(uiGeometry.createLine(e)))
+          .toList(growable: false);
+    }
+    final modelPolygons = _modelPolygons;
+    if (modelPolygons != null) {
+      assert(type == TileFeatureType.polygon);
+      final uiGeometry = UiGeometry();
+      return modelPolygons
+          .map((e) => BoundedPath(uiGeometry.createPolygon(e)))
+          .toList(growable: false);
+    }
+    return [];
+  }
+
+  BoundedPath _computeCompoundPath() {
+    final paths = this.paths;
+    if (paths.length == 1) {
+      return paths.first;
+    } else {
+      final linesPath = Path();
+      for (final line in paths) {
+        linesPath.addPath(line.path, Offset.zero);
+      }
+      return BoundedPath(linesPath);
+    }
+  }
 }
 
 enum TileFeatureType { point, linestring, polygon, background, none }
