@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/concurrent/main/geometry_workers.dart';
 import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
@@ -19,9 +20,9 @@ import 'polygon/scene_polygon_builder.dart';
 class SceneBuildingVisitor extends LayerVisitor {
   final SceneGraph graph;
   final VisitorContext context;
-  final GeometryWorkers geometryWorkers;
+  static final GeometryWorkers geometryWorkers = GeometryWorkers();
 
-  SceneBuildingVisitor(this.graph, this.context, this.geometryWorkers);
+  SceneBuildingVisitor(this.graph, this.context);
 
   Future<void> visitAllFeatures(Theme theme) async {
 
@@ -50,8 +51,8 @@ class SceneBuildingVisitor extends LayerVisitor {
   }
 
   @override
-  void visitBackground(VisitorContext context, Color color) {
-    SceneBackgroundBuilder(graph, context).addBackground(color.vector4);
+  void visitBackground(VisitorContext context, Vector4 color) {
+    SceneBackgroundBuilder(graph, context).addBackground(color);
   }
 
   @override

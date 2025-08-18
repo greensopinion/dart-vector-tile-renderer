@@ -1,0 +1,68 @@
+import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+import 'package:vector_tile_renderer/src/themes/theme.dart';
+
+import '../../vector_tile_renderer.dart';
+import '../themes/feature_resolver.dart';
+import '../themes/style.dart';
+import '../themes/theme_layer_raster.dart';
+
+class TilePreRenderer {
+  TileRenderData preRender(Theme theme, double zoom, Tileset tileset) {
+    final data = TileRenderData();
+
+    DefaultLayerVisitor(
+        data, tileset, zoom
+    ).visitAllFeatures(theme);
+
+    return data;
+  }
+}
+
+
+
+class DefaultLayerVisitor extends LayerVisitor {
+
+  final TileRenderData tileRenderData;
+  late final VisitorContext context;
+
+  DefaultLayerVisitor(this.tileRenderData, Tileset tileset, double zoom) {
+    context = VisitorContext(
+        logger: const Logger.noop(),
+        tileSource: TileSource(tileset: tileset),
+        zoom: zoom
+    );
+  }
+
+  void visitAllFeatures(Theme theme) {
+    for (var layer in theme.layers) {
+      layer.accept(context, this);
+    }
+  }
+
+  @override
+  void visitFeatures(VisitorContext context, ThemeLayerType layerType,
+      Style style, Iterable<LayerFeature> features) {
+    switch (layerType) {
+      case ThemeLayerType.line:
+        return;
+      case ThemeLayerType.fill:
+        return;
+      case ThemeLayerType.symbol:
+        return;
+      case ThemeLayerType.fillExtrusion:
+      case ThemeLayerType.background:
+      case ThemeLayerType.raster:
+      case ThemeLayerType.unsupported:
+        return;
+    }
+  }
+
+  @override
+  void visitBackground(VisitorContext context, Vector4 color) {
+  }
+
+  @override
+  void visitRasterLayer(VisitorContext context, RasterTile image, RasterPaintModel paintModel) {
+  }
+}

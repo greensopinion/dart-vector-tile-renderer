@@ -54,7 +54,6 @@ class SceneTileIdentity {
 /// Manages scene nodes for vector tiles, handling lifecycle and updates
 class SceneTileManager extends ChangeNotifier {
   final Scene scene;
-  final GeometryWorkers geometryWorkers = GeometryWorkers();
   final double Function() zoomProvider;
 
   final Map<String, Future<dynamic>> _inFlightTiles = {};
@@ -129,7 +128,7 @@ class SceneTileManager extends ChangeNotifier {
       zoom: zoomProvider(),
     );
 
-    await SceneBuildingVisitor(node, visitorContext, geometryWorkers).visitAllFeatures(model.theme);
+    await SceneBuildingVisitor(node, visitorContext).visitAllFeatures(model.theme);
 
     if (_inFlightTiles.containsKey(tile.key())) {
       scene.add(node);

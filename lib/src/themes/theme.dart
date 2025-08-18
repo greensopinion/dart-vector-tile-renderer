@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
 import 'package:vector_tile_renderer/src/themes/style.dart';
 import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
@@ -63,10 +65,10 @@ class VisitorContext {
 }
 
 abstract class LayerVisitor {
-  Future<void> visitFeatures(VisitorContext context, ThemeLayerType layerType,
+  FutureOr<void> visitFeatures(VisitorContext context, ThemeLayerType layerType,
       Style style, Iterable<LayerFeature> features);
 
-  void visitBackground(VisitorContext context, Color color);
+  void visitBackground(VisitorContext context, Vector4 color);
 
   void visitRasterLayer(VisitorContext context, RasterTile image, RasterPaintModel paintModel);
 }

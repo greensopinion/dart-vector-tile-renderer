@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
+
 import '../constants.dart';
 import '../context.dart';
 import '../features/tile_space_mapper.dart';
@@ -96,7 +98,7 @@ class BackgroundLayer extends ThemeLayer {
         () => {}, TileFeatureType.background, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
     if (color != null) {
-      visitor.visitBackground(context, color);
+      visitor.visitBackground(context, color.vector4);
     }
   }
 

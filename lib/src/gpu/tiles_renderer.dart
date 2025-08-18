@@ -6,6 +6,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_prerenderer.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'concurrent/main/geometry_workers.dart';
@@ -42,8 +44,6 @@ class TilesRenderer {
   static final Completer<void> _initializer = Completer<void>();
   static Future<void> initialize = _initializer.future;
 
-  final geometryWorkers = GeometryWorkers();
-
   final _positionByKey = <String, Rect>{};
 
   Scene? _scene;
@@ -68,6 +68,11 @@ class TilesRenderer {
     return scene;
   }
 
+
+  static TileRenderData preRender((Theme, double, Tileset) args) =>
+      TilePreRenderer().preRender(args.$1, args.$2, args.$3);
+
+
   void update(Theme theme, double zoom, List<TileUiModel> models) {
     final scene = this.scene;
     final nodesByKey =
@@ -87,7 +92,7 @@ class TilesRenderer {
           zoom: zoom,
         );
 
-        SceneBuildingVisitor(node, visitorContext, geometryWorkers)
+        SceneBuildingVisitor(node, visitorContext)
             .visitAllFeatures(theme);
       }
       _positionByKey[key] = model.position;
@@ -118,6 +123,5 @@ class TilesRenderer {
   }
 
   void dispose() {
-    geometryWorkers.dispose();
   }
 }
