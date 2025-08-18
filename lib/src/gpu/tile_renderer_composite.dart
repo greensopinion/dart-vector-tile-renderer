@@ -67,8 +67,7 @@ class TileRendererComposite {
       if (layer.type == ThemeLayerType.line ||
           layer.type == ThemeLayerType.background ||
           layer.type == ThemeLayerType.fill ||
-          layer.type == ThemeLayerType.raster
-      ) {
+          layer.type == ThemeLayerType.raster) {
         return _Engine.gpu;
       }
     }
@@ -81,14 +80,15 @@ class TileRendererComposite {
       final engine = _engineOf(layer);
       final _LayerGroup group;
       if (groups.isEmpty || groups.last.engine != engine) {
-        switch (engine) {
-          case _Engine.gpu:
-            group = _GpuLayerGroup(theme, engine);
-            break;
-          case _Engine.canvas:
-            group = _CanvasLayerGroup(theme, engine);
-            break;
-        }
+        // switch (engine) {
+        //   case _Engine.gpu:
+        //     group = _GpuLayerGroup(theme, engine);
+        //     break;
+        //   case _Engine.canvas:
+        //     group = _CanvasLayerGroup(theme, engine);
+        //     break;
+        // }
+        group = _CanvasLayerGroup(theme, engine);
         groups.add(group);
       } else {
         group = groups.last;
@@ -113,7 +113,7 @@ abstract class _LayerGroup {
 }
 
 class _GpuLayerGroup extends _LayerGroup {
-  TileRenderer? renderer;
+  TilesRenderer? renderer;
 
   _GpuLayerGroup(super.theme, super.engine);
 
@@ -121,14 +121,14 @@ class _GpuLayerGroup extends _LayerGroup {
   void render(Context context, Canvas canvas, Size size) {
     var renderer = this.renderer;
     if (renderer == null) {
-      renderer = TileRenderer(
-          theme: effectiveTheme, zoom: context.zoom,
-          geometryWorkers: GeometryWorkers(),
-          logger: context.logger);
-      renderer.tileSource = context.tileSource;
+      // renderer = TilesRenderer(
+      //     theme: effectiveTheme, zoom: context.zoom,
+      //     geometryWorkers: GeometryWorkers(),
+      //     logger: context.logger);
+      // renderer.tileSource = context.tileSource;
       this.renderer = renderer;
     }
-    renderer.render(canvas, size);
+    // renderer.render(canvas, size);
   }
 }
 

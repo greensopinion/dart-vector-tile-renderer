@@ -1,15 +1,14 @@
-import 'dart:typed_data';
-
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
-import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
-import 'package:vector_tile_renderer/src/model/geometry_model.dart';
-import 'package:vector_tile_renderer/src/themes/expression/expression.dart';
-import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
-import 'package:vector_tile_renderer/src/themes/style.dart';
 
 import '../../../vector_tile_renderer.dart';
+import '../../model/geometry_model.dart';
+import '../../themes/expression/expression.dart';
+import '../../themes/feature_resolver.dart';
 import '../../themes/paint_model.dart';
+import '../../themes/style.dart';
+import '../color_extension.dart';
+import '../colored_material.dart';
+import '../concurrent/main/geometry_workers.dart';
 
 class FeatureGroup {
   final List<TilePolygon> polygons = [];
@@ -73,9 +72,12 @@ class ScenePolygonBuilder {
   Future<void> addMesh(List<TilePolygon> polygons, PaintModel paint) async {
     final geometry = await geometryWorkers.submitPolygons(polygons);
 
-    graph.addMesh(Mesh(geometry, ColoredMaterial(paint.color.vector4, antialiasingEnabled: true)));
+    graph.addMesh(Mesh(geometry,
+        ColoredMaterial(paint.color.vector4, antialiasingEnabled: true)));
   }
 
-  int getPointCount(List<TilePolygon> polygons) =>
-      polygons.fold(0, (sum, value) => sum += value.rings.fold(0, (a, b) => a + b.points.length));
+  int getPointCount(List<TilePolygon> polygons) => polygons.fold(
+      0,
+      (sum, value) =>
+          sum += value.rings.fold(0, (a, b) => a + b.points.length));
 }

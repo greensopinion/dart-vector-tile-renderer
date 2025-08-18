@@ -1,38 +1,37 @@
-
 import 'dart:async';
 import 'dart:isolate';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/concurrent/main/transferable_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/concurrent/main/util/concurrent_hashmap.dart';
-import 'package:vector_tile_renderer/src/gpu/concurrent/shared/keys.dart';
-import 'package:vector_tile_renderer/src/gpu/line/line_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry.dart';
 
-import '../worker/main.dart' as worker;
 import '../../../model/geometry_model.dart';
+import '../../line/line_geometry.dart';
+import '../../polygon/polygon_geometry.dart';
+import '../shared/keys.dart';
+import '../worker/main.dart' as worker;
+import 'transferable_geometry.dart';
+import 'util/concurrent_hashmap.dart';
 
 void _workerEntryPoint(SendPort sendPort) {
   worker.main([], sendPort);
 }
 
-class GeometryWorkers  {
-
+class GeometryWorkers {
   GeometryWorkers() {
     _runSetup();
   }
-
+  bool _disposed = false;
+  late final Isolate isolate;
   late final SendPort _sendPort;
   final Completer<void> _setup = Completer();
 
-
-
-  final ConcurrentHashMap<String, Completer<Geometry>> _inFlightRequests = ConcurrentHashMap();
+  final ConcurrentHashMap<String, Completer<Geometry>> _inFlightRequests =
+      ConcurrentHashMap();
 
   Future<void> _runSetup() async {
     final receivePort = ReceivePort();
 
-    await Isolate.spawn(_workerEntryPoint, receivePort.sendPort);
+    isolate = await Isolate.spawn(_workerEntryPoint, receivePort.sendPort);
 
     receivePort.listen((data) {
       if (data is SendPort && !_setup.isCompleted) {
@@ -49,7 +48,7 @@ class GeometryWorkers  {
   }
 
   Future<T> _submitGeometry<T extends Geometry>(Map<String, dynamic> data) {
-    return _setup.future.then((_){
+    return _setup.future.then((_) {
       final String jobId = identityHashCode(UniqueKey()).toString();
       data[GeometryKeys.jobId] = jobId;
 
@@ -61,7 +60,8 @@ class GeometryWorkers  {
     });
   }
 
-  Future<LineGeometry> submitLines(List<List<TilePoint>> lines, LineJoin lineJoins, LineEnd lineEnds) {
+  Future<LineGeometry> submitLines(
+      List<List<TilePoint>> lines, LineJoin lineJoins, LineEnd lineEnds) {
     return _submitGeometry<LineGeometry>({
       GeometryKeys.type: GeometryType.line.index,
       LineKeys.lines: lines,
@@ -76,5 +76,11 @@ class GeometryWorkers  {
       PolyKeys.polygons: polygons
     });
   }
-}
 
+  void dispose() {
+    if (!_disposed) {
+      _disposed = true;
+      isolate.kill();
+    }
+  }
+}
