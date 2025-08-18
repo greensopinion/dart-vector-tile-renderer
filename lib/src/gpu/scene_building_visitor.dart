@@ -25,38 +25,17 @@ class SceneBuildingVisitor extends LayerVisitor {
   SceneBuildingVisitor(this.graph, this.context);
 
   Future<void> visitAllFeatures(Theme theme) async {
-
-    final futures = theme.layers.map((layer) => layer.accept(context, this));
-
-    await Future.wait(futures);
   }
 
   @override
-  Future<void> visitFeatures(VisitorContext context, ThemeLayerType layerType,
-      Style style, Iterable<LayerFeature> features) async {
-    switch (layerType) {
-      case ThemeLayerType.line:
-        return SceneLineBuilder(graph, context, geometryWorkers).addFeatures(style, features);
-      case ThemeLayerType.fill:
-        return ScenePolygonBuilder(graph, context, geometryWorkers).addPolygons(style, features);
-      case ThemeLayerType.fillExtrusion:
-        return;
-      case ThemeLayerType.symbol:
-        return TextLayerVisitor(graph, context, geometryWorkers).addFeatures(style, features);
-      case ThemeLayerType.background:
-      case ThemeLayerType.raster:
-      case ThemeLayerType.unsupported:
-        return;
-    }
-  }
+  void visitFeatures(VisitorContext context, ThemeLayerType layerType,
+      Style style, Iterable<LayerFeature> features) {}
 
   @override
   void visitBackground(VisitorContext context, Vector4 color) {
-    SceneBackgroundBuilder(graph, context).addBackground(color);
   }
 
   @override
   void visitRasterLayer(VisitorContext context, RasterTile image, RasterPaintModel paintModel) {
-    RasterLayerBuilder(graph, context).build(image, paintModel);
   }
 }

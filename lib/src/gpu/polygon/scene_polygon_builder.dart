@@ -1,4 +1,7 @@
-import 'package:flutter_scene/scene.dart';
+import 'dart:typed_data';
+
+import 'package:vector_tile_renderer/src/gpu/concurrent/worker/polygon_geometry_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../model/geometry_model.dart';
@@ -6,8 +9,8 @@ import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/paint_model.dart';
 import '../../themes/style.dart';
+import '../bucket_unpacker.dart';
 import '../color_extension.dart';
-import '../colored_material.dart';
 import '../concurrent/main/geometry_workers.dart';
 
 class FeatureGroup {
@@ -16,13 +19,12 @@ class FeatureGroup {
 }
 
 class ScenePolygonBuilder {
-  final SceneGraph graph;
+  final TileRenderData renderData;
   final VisitorContext context;
-  final GeometryWorkers geometryWorkers;
 
-  ScenePolygonBuilder(this.graph, this.context, this.geometryWorkers);
+  ScenePolygonBuilder(this.renderData, this.context);
 
-  Future<void> addPolygons(Style style, Iterable<LayerFeature> features) async {
+  void addPolygons(Style style, Iterable<LayerFeature> features) {
     Map<PaintModel, List<FeatureGroup>> featureGroups = {};
 
     for (final feature in features) {
@@ -56,24 +58,24 @@ class ScenePolygonBuilder {
       group.polygons.addAll(polygons);
     }
 
-    final polygonFutures = <Future<void>>[];
-
     featureGroups.forEach((paint, polygonGroup) {
       for (var polygons in polygonGroup) {
-        polygonFutures.add(
-          addMesh(polygons.polygons, paint),
-        );
+        addMesh(polygons.polygons, paint);
       }
     });
-
-    await Future.wait(polygonFutures);
   }
 
-  Future<void> addMesh(List<TilePolygon> polygons, PaintModel paint) async {
-    final geometry = await geometryWorkers.submitPolygons(polygons);
+  void addMesh(List<TilePolygon> polygons, PaintModel paint) {
+    final (vertices, indices) = PolygonGeometryBuilder().build(polygons);
 
-    graph.addMesh(Mesh(geometry,
-        ColoredMaterial(paint.color.vector4, antialiasingEnabled: true)));
+    final color = paint.color.vector4;
+
+    final ByteData uniform = Float32List.fromList([color.x, color.y, color.z, color.w]).buffer.asByteData();
+
+    renderData.addMesh(PackedMesh(
+        PackedGeometry(vertices: vertices, indices: indices, type: GeometryType.polygon),
+        PackedMaterial(uniform: uniform, type: MaterialType.colored)
+    ));
   }
 
   int getPointCount(List<TilePolygon> polygons) => polygons.fold(

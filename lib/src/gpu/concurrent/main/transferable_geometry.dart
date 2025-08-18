@@ -20,8 +20,8 @@ class TransferableGeometry {
   }
 
   static final _constructors = [
-        (a, b) => LineGeometry(a, b),
-        (a, b) => PolygonGeometry(a, b)
+        (a, b) => LineGeometry(a),
+        (a, b) => PolygonGeometry(a)
   ];
 
   Geometry unpack() {

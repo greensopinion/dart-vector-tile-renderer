@@ -5,12 +5,12 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
+import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_prerenderer.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../vector_tile_renderer.dart';
-import 'concurrent/main/geometry_workers.dart';
 import 'position_transform.dart';
 import 'scene_building_visitor.dart';
 
@@ -27,12 +27,16 @@ class TileUiModel {
   final Rect position;
   final Tileset tileset;
   final RasterTileset rasterTileset;
+  final TileRenderData? renderData;
 
   TileUiModel(
       {required this.tileId,
       required this.position,
       required this.tileset,
-      required this.rasterTileset});
+      required this.rasterTileset,
+      required this.renderData
+      }
+  );
 }
 
 /// Experimental: renders tiles using flutter_gpu
@@ -85,15 +89,16 @@ class TilesRenderer {
       if (node == null) {
         node = Node(name: key);
 
-        final visitorContext = VisitorContext(
-          logger: const Logger.noop(),
-          tileSource: TileSource(
-              tileset: model.tileset, rasterTileset: model.rasterTileset),
-          zoom: zoom,
-        );
-
-        SceneBuildingVisitor(node, visitorContext)
-            .visitAllFeatures(theme);
+        // final visitorContext = VisitorContext(
+        //   logger: const Logger.noop(),
+        //   tileSource: TileSource(
+        //       tileset: model.tileset, rasterTileset: model.rasterTileset),
+        //   zoom: zoom,
+        // );
+        //
+        // SceneBuildingVisitor(node, visitorContext)
+        //     .visitAllFeatures(theme);
+        BucketUnpacker().unpackOnto(node, model.renderData!);
       }
       _positionByKey[key] = model.position;
       scene.add(node);

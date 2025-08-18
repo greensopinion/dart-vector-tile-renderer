@@ -6,18 +6,21 @@ import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/shaders.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 class LineGeometry extends UnskinnedGeometry {
   late double lineWidth;
   late int extent;
   late List<double>? dashLengths;
+  late final ByteData _uniform;
 
-  LineGeometry(ByteData vertices, ByteData indices) {
+  LineGeometry(PackedGeometry packed) {
     setVertexShader(shaderLibrary["LineVertex"]!);
 
-    final vertexCount = vertices.lengthInBytes ~/ 32;
+    _uniform = packed.uniform!;
 
-    uploadVertexData(vertices, vertexCount, indices);
+    final vertexCount = packed.vertices.lengthInBytes ~/ 32;
+    uploadVertexData(packed.vertices, vertexCount, packed.indices);
   }
 
   @override
@@ -26,20 +29,8 @@ class LineGeometry extends UnskinnedGeometry {
     super.bind(pass, transientsBuffer, modelTransform, cameraTransform,
         cameraPosition);
 
-    bindLineConfig(transientsBuffer, pass);
-
-    pass.setPrimitiveType(gpu.PrimitiveType.triangle);
-  }
-
-  void bindLineConfig(HostBuffer transientsBuffer, RenderPass pass) {
-    final double extentScale = extent / 2;
-    
     final lineGeometrySlot = vertexShader.getUniformSlot('LineGeometry');
-    final lineGeometryView = transientsBuffer.emplace(
-        Float32List.fromList([
-          lineWidth / 512,  // width
-          extentScale,      // extentScale
-        ]).buffer.asByteData());
+    final lineGeometryView = transientsBuffer.emplace(_uniform);
     pass.bindUniform(lineGeometrySlot, lineGeometryView);
   }
 }

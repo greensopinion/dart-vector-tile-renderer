@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:collection/collection.dart';
-import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
+import 'package:vector_tile_renderer/src/gpu/concurrent/worker/line_geometry_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../model/geometry_model.dart';
@@ -7,10 +11,8 @@ import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/paint_model.dart';
 import '../../themes/style.dart';
-import '../color_extension.dart';
-import '../concurrent/main/geometry_workers.dart';
+import '../bucket_unpacker.dart';
 import '../concurrent/shared/keys.dart' as keys;
-import 'line_material.dart';
 
 class FeatureGroup {
   final List<List<TilePoint>> lines = [];
@@ -18,16 +20,15 @@ class FeatureGroup {
 }
 
 class SceneLineBuilder {
-  final SceneGraph graph;
+  final TileRenderData renderData;
   final VisitorContext context;
-  final GeometryWorkers geometryWorkers;
 
-  SceneLineBuilder(this.graph, this.context, this.geometryWorkers);
+  SceneLineBuilder(this.renderData, this.context);
 
-  Future<void> addFeatures(Style style, Iterable<LayerFeature> features) async {
+  void addFeatures(Style style, Iterable<LayerFeature> features) {
     Map<PaintModel, List<FeatureGroup>> featureGroups = {};
     for (final feature in features) {
-      final result = getLines(style, feature);
+      final result = _getLines(style, feature);
       if (result != null) {
         final (paint, lines) = result;
 
@@ -46,26 +47,21 @@ class SceneLineBuilder {
         group.lines.addAll(lines);
       }
     }
-    final meshFutures = <Future<void>>[];
 
     featureGroups.forEach((paint, lineGroups) {
       for (var lines in lineGroups) {
-        meshFutures.add(
-          addMesh(
-            lines.lines,
-            paint.strokeWidth!,
-            features.first.layer.extent,
-            paint,
-            paint.strokeDashPattern,
-          ),
+        _addMesh(
+          lines.lines,
+          paint.strokeWidth!,
+          features.first.layer.extent,
+          paint,
+          paint.strokeDashPattern,
         );
       }
     });
-
-    await Future.wait(meshFutures);
   }
 
-  (PaintModel, Iterable<List<TilePoint>>)? getLines(
+  (PaintModel, Iterable<List<TilePoint>>)? _getLines(
       Style style, LayerFeature feature) {
     EvaluationContext evaluationContext = EvaluationContext(
         () => feature.feature.properties, TileFeatureType.none, context.logger,
@@ -91,22 +87,34 @@ class SceneLineBuilder {
     return null;
   }
 
-  Future<void> addMesh(List<List<TilePoint>> lines, double lineWidth,
-      int extent, PaintModel paint, List<double>? dashLengths) async {
-    final geometry = await geometryWorkers.submitLines(
-        lines,
-        keys.LineJoin.values.firstWhere(
-            (it) => it.name == (paint.lineJoin ?? LineJoin.DEFAULT).name),
-        keys.LineEnd.values.firstWhere(
-            (it) => it.name == (paint.lineCap ?? LineCap.DEFAULT).name));
+  void _addMesh(List<List<TilePoint>> lines, double lineWidth,
+      int extent, PaintModel paint, List<double>? dashLengths) {
+    final (vertices, indices) = LineGeometryBuilder().build(
+      lines,
+      keys.LineEnd.values.firstWhere((it) => it.name == (paint.lineCap ?? LineCap.DEFAULT).name),
+      keys.LineJoin.values.firstWhere((it) => it.name == (paint.lineJoin ?? LineJoin.DEFAULT).name),
+    );
 
-    geometry.dashLengths = dashLengths;
-    geometry.extent = extent;
-    geometry.lineWidth = lineWidth;
+    final ByteData geomUniform = Float32List.fromList([
+      lineWidth / 512,
+      extent / 2,
+    ]).buffer.asByteData();
 
-    graph.addMesh(Mesh(
-        geometry,
-        LineMaterial(paint.color.vector4, dashLengths,
-            antialiasingEnabled: true)));
+    final color = paint.color.vector4;
+
+    final ByteData materialUniform = Float32List.fromList([
+      color.x,
+      color.y,
+      color.z,
+      color.w,
+      dashLengths?[0] ?? 64.0,
+      dashLengths?[1] ?? 0.0,
+    ]).buffer.asByteData();
+
+    renderData.addMesh(
+      PackedMesh(
+          PackedGeometry(vertices: vertices, indices: indices, uniform: geomUniform, type: GeometryType.line),
+          PackedMaterial(uniform: materialUniform, type: MaterialType.line))
+    );
   }
 }

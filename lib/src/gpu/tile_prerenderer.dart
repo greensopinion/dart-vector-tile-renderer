@@ -1,4 +1,6 @@
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/polygon/scene_polygon_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/themes/theme.dart';
 
@@ -45,9 +47,9 @@ class DefaultLayerVisitor extends LayerVisitor {
       Style style, Iterable<LayerFeature> features) {
     switch (layerType) {
       case ThemeLayerType.line:
-        return;
+        return SceneLineBuilder(tileRenderData, context).addFeatures(style, features);
       case ThemeLayerType.fill:
-        return;
+        return ScenePolygonBuilder(tileRenderData, context).addPolygons(style, features);
       case ThemeLayerType.symbol:
         return;
       case ThemeLayerType.fillExtrusion:
