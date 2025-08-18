@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
+import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'concurrent/main/geometry_workers.dart';
@@ -47,13 +48,6 @@ class TilesRenderer {
 
   Scene? _scene;
 
-  final Camera _camera = PerspectiveCamera(
-    fovRadiansY: math.pi / 2, // 90 degrees
-    position: vm.Vector3(
-        0, 0, -128), // Move camera back far enough to see the full object
-    target: vm.Vector3(0, 0, 0), // Looking at the origin
-    up: vm.Vector3(0, 1, 0),
-  );
 
   TilesRenderer() {
     if (!_initializer.isCompleted) {
@@ -102,8 +96,10 @@ class TilesRenderer {
   }
 
   void render(ui.Canvas canvas, ui.Size size) {
-    ui.Size canvasScale = getCanvasScale(canvas);
-    canvas.scale(canvasScale.width, canvasScale.height);
+    // Apply device pixel ratio scaling
+    final view = ui.PlatformDispatcher.instance.views.first;
+    final pixelRatio = view.display.devicePixelRatio;
+    canvas.scale(1 / pixelRatio);
 
     for (final node in scene.root.children) {
       final position = _positionByKey[node.name];
@@ -111,31 +107,8 @@ class TilesRenderer {
         node.localTransform = tileTransformMatrix(position, size);
       }
     }
-    scene.render(_camera, canvas,
+    scene.render(OrthographicCamera(pixelRatio), canvas,
         viewport: ui.Offset.zero & canvas.getLocalClipBounds().size);
-  }
-
-  ui.Size getCanvasScale(ui.Canvas canvas) {
-    ui.Size src = canvas.getLocalClipBounds().size;
-    ui.Size dest = canvas.getDestinationClipBounds().size;
-
-    final view = ui.PlatformDispatcher.instance.views.first;
-    final pixelRatio = view.display.devicePixelRatio;
-
-    final resultSize =
-        ui.Size(dest.width * pixelRatio, dest.height * pixelRatio);
-    final result =
-        ui.Size(src.width / resultSize.width, src.height / resultSize.height);
-
-    if (result.isFinite &&
-        resultSize.isFinite &&
-        resultSize.longestSide < _maxTextureSize) {
-      return result;
-    } else {
-      // scale to max size -1 for floating point safety
-      return ui.Size(src.width / (_maxTextureSize - 1),
-          src.height / (_maxTextureSize - 1));
-    }
   }
 
   Scene _createScene() {
@@ -148,5 +121,3 @@ class TilesRenderer {
     geometryWorkers.dispose();
   }
 }
-
-const int _maxTextureSize = 16384;

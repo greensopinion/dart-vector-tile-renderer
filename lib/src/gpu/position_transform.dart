@@ -9,11 +9,7 @@ vm.Matrix4 tileTransformMatrix(Rect position, Size canvasSize) {
   final ndcX = (center.dx / canvasSize.width) * 2.0 - 1.0;
   final ndcY = 1.0 - (center.dy / canvasSize.height) * 2.0;
 
-  // Convert size to NDC scale
-  final ndcScaleX = (position.width / canvasSize.width);
-  final ndcScaleY = (position.height / canvasSize.height);
-
   return vm.Matrix4.identity()
     ..translate(ndcX, ndcY, 0.0)
-    ..scale(ndcScaleX, ndcScaleY, 1.0);
+    ..scale(position.width, position.height, 1.0);
 }
