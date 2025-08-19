@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
@@ -13,14 +14,14 @@ import '../themes/style.dart';
 import '../themes/theme_layer_raster.dart';
 
 class TilePreRenderer {
-  TileRenderData preRender(Theme theme, double zoom, Tileset tileset) {
+  TransferableTypedData preRender(Theme theme, double zoom, Tileset tileset) {
     final data = TileRenderData();
 
     DefaultLayerVisitor(
         data, tileset, zoom
     ).visitAllFeatures(theme);
 
-    return data;
+    return data.pack();
   }
 }
 

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:math' as math;
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
@@ -12,7 +14,6 @@ import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'position_transform.dart';
-import 'scene_building_visitor.dart';
 
 class TileId {
   final int z;
@@ -27,7 +28,7 @@ class TileUiModel {
   final Rect position;
   final Tileset tileset;
   final RasterTileset rasterTileset;
-  final TileRenderData? renderData;
+  final Uint8List? renderData;
 
   TileUiModel(
       {required this.tileId,
@@ -73,7 +74,7 @@ class TilesRenderer {
   }
 
 
-  static TileRenderData preRender((Theme, double, Tileset) args) =>
+  static TransferableTypedData preRender((Theme, double, Tileset) args) =>
       TilePreRenderer().preRender(args.$1, args.$2, args.$3);
 
 
@@ -98,7 +99,7 @@ class TilesRenderer {
         //
         // SceneBuildingVisitor(node, visitorContext)
         //     .visitAllFeatures(theme);
-        BucketUnpacker().unpackOnto(node, model.renderData!);
+        BucketUnpacker().unpackOnto(node, TileRenderData.unpack(model.renderData!));
       }
       _positionByKey[key] = model.position;
       scene.add(node);
