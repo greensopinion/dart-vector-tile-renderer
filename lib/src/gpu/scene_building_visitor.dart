@@ -20,16 +20,23 @@ import 'polygon/scene_polygon_builder.dart';
 class SceneBuildingVisitor extends LayerVisitor {
   final SceneGraph graph;
   final VisitorContext context;
-  static final GeometryWorkers geometryWorkers = GeometryWorkers();
 
   SceneBuildingVisitor(this.graph, this.context);
 
   Future<void> visitAllFeatures(Theme theme) async {
+    for (var layer in theme.layers) {
+      layer.accept(context, this);
+    }
   }
 
   @override
   void visitFeatures(VisitorContext context, ThemeLayerType layerType,
-      Style style, Iterable<LayerFeature> features) {}
+      Style style, Iterable<LayerFeature> features) {
+
+    if (layerType == ThemeLayerType.symbol) {
+      TextLayerVisitor(graph, context).addFeatures(style, features);
+    }
+  }
 
   @override
   void visitBackground(VisitorContext context, Vector4 color) {

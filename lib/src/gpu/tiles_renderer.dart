@@ -9,6 +9,7 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
+import 'package:vector_tile_renderer/src/gpu/scene_building_visitor.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_prerenderer.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
@@ -90,16 +91,19 @@ class TilesRenderer {
       if (node == null) {
         node = Node(name: key);
 
-        // final visitorContext = VisitorContext(
-        //   logger: const Logger.noop(),
-        //   tileSource: TileSource(
-        //       tileset: model.tileset, rasterTileset: model.rasterTileset),
-        //   zoom: zoom,
-        // );
-        //
-        // SceneBuildingVisitor(node, visitorContext)
-        //     .visitAllFeatures(theme);
+
         BucketUnpacker().unpackOnto(node, TileRenderData.unpack(model.renderData!));
+
+
+        final visitorContext = VisitorContext(
+          logger: const Logger.noop(),
+          tileSource: TileSource(
+              tileset: model.tileset, rasterTileset: model.rasterTileset),
+          zoom: zoom,
+        );
+
+        SceneBuildingVisitor(node, visitorContext)
+            .visitAllFeatures(theme);
       }
       _positionByKey[key] = model.position;
       scene.add(node);

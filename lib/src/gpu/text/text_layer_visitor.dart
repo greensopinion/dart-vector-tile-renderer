@@ -11,10 +11,9 @@ import 'text_builder.dart';
 class TextLayerVisitor {
   final SceneGraph graph;
   final VisitorContext context;
-  final GeometryWorkers geometryWorkers;
   final Set<String> alreadyAdded = <String>{};
 
-  TextLayerVisitor(this.graph, this.context, this.geometryWorkers);
+  TextLayerVisitor(this.graph, this.context);
 
   Future<void> addFeatures(Style style, Iterable<LayerFeature> features) async {
     final List<Future<dynamic>> futures = [];
