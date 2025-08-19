@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/polygon/scene_polygon_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
@@ -62,6 +65,12 @@ class DefaultLayerVisitor extends LayerVisitor {
 
   @override
   void visitBackground(VisitorContext context, Vector4 color) {
+    final uniform = Float32List.fromList([color.x, color.y, color.z, color.w]).buffer.asByteData();
+
+    tileRenderData.addMesh(PackedMesh(
+        PackedGeometry(vertices: ByteData(0), indices: ByteData(0), type: GeometryType.background),
+        PackedMaterial(uniform: uniform, type: MaterialType.colored)
+    ));
   }
 
   @override
