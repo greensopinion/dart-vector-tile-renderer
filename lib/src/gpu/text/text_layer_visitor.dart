@@ -1,4 +1,5 @@
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
@@ -36,29 +37,30 @@ class TextLayerVisitor {
       double? textSize =
           style.symbolLayout?.text?.textSize.evaluate(evaluationContext);
 
+      final paint = style.textPaint?.evaluate(evaluationContext);
+
+      if (text == null ||
+          text.isEmpty ||
+          textSize == null ||
+          alreadyAdded.contains(text) ||
+          paint == null
+      ) {
+        continue;
+      }
+
       final point = feature.feature.modelPoints.firstOrNull ??
           feature.feature.modelLines.map((it) {
             return it.points[it.points.length ~/ 2];
           }).firstOrNull;
 
-      if (point == null) {
+      if (point == null || point.x < 0 || point.x > 4096 || point.y < 0 || point.y > 4096) {
         continue;
       }
 
-      if (text == null ||
-          text.isEmpty ||
-          textSize == null ||
-          alreadyAdded.contains(text)) {
-        continue;
-      }
       alreadyAdded.add(text);
 
-      if (point.x < 0 || point.x > 4096 || point.y < 0 || point.y > 4096) {
-        continue;
-      }
-
       futures.add(TextBuilder(_atlasManager)
-          .addText(text, textSize.toInt() * 6, point.x, point.y, 4096, graph));
+          .addText(text, paint.color.vector4, textSize.toInt() * 6, point.x, point.y, 4096, graph));
     }
     await Future.wait(futures);
   }

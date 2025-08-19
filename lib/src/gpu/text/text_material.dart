@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart';
 
 import '../shaders.dart';
 import '../utils.dart';
@@ -10,9 +11,10 @@ class TextMaterial extends UnlitMaterial {
   final double smoothness;
   final double threshold;
 
-  TextMaterial(Texture sdf, this.smoothness, this.threshold) {
+  TextMaterial(Texture sdf, this.smoothness, this.threshold, Vector4 color) {
     setFragmentShader(shaderLibrary['TextFragment']!);
     baseColorTexture = sdf;
+    baseColorFactor = color;
 
     sampler = SamplerOptions(
       minFilter: MinMagFilter.linear,
