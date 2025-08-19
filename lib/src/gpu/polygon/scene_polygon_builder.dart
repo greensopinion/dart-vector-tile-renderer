@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:vector_tile_renderer/src/gpu/concurrent/worker/polygon_geometry_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -11,7 +11,6 @@ import '../../themes/paint_model.dart';
 import '../../themes/style.dart';
 import '../bucket_unpacker.dart';
 import '../color_extension.dart';
-import '../concurrent/main/geometry_workers.dart';
 
 class FeatureGroup {
   final List<TilePolygon> polygons = [];

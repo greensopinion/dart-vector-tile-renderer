@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
 
-import '../../../model/geometry_model.dart';
-import '../shared/keys.dart';
+import '../../model/geometry_model.dart';
+import '../../themes/style.dart';
 
 class LineGeometryBuilder {
   int indexOffset = 0;
@@ -42,7 +42,7 @@ class LineGeometryBuilder {
   }
 
   (ByteData, ByteData) build(
-      List<List<TilePoint>> lines, LineEnd lineCaps, LineJoin lineJoins) {
+      List<List<TilePoint>> lines, LineCap lineCaps, LineJoin lineJoins) {
     double totalCumulativeLength = 0.0;
 
     for (var line in lines) {
@@ -65,7 +65,7 @@ class LineGeometryBuilder {
 
   setupLine(
     List<TilePoint> points,
-    LineEnd lineCaps,
+    LineCap lineCaps,
     LineJoin lineJoins,
     double startingCumulativeLength,
   ) {
@@ -98,9 +98,9 @@ class LineGeometryBuilder {
     startIndex += max(segmentCount * 4, 0);
   }
 
-  void setupEnds(List<TilePoint> points, int segmentCount, LineEnd type) {
-    if (type == LineEnd.butt) return;
-    final round = type == LineEnd.round ? 1.0 : 0.0;
+  void setupEnds(List<TilePoint> points, int segmentCount, LineCap type) {
+    if (type == LineCap.butt) return;
+    final round = type == LineCap.round ? 1.0 : 0.0;
 
     TilePoint a = points[0];
     TilePoint b = points[1];

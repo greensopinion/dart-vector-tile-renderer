@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/concurrent/main/geometry_workers.dart';
 import 'package:vector_tile_renderer/src/gpu/scene_building_visitor.dart';
 import 'package:vector_tile_renderer/src/logger.dart';
 import 'package:vector_tile_renderer/src/themes/theme.dart';

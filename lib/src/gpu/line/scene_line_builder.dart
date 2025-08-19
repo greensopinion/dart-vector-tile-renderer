@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
-import 'package:vector_tile_renderer/src/gpu/concurrent/worker/line_geometry_builder.dart';
+import 'package:vector_tile_renderer/src/gpu/line/line_geometry_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -12,7 +12,6 @@ import '../../themes/feature_resolver.dart';
 import '../../themes/paint_model.dart';
 import '../../themes/style.dart';
 import '../bucket_unpacker.dart';
-import '../concurrent/shared/keys.dart' as keys;
 
 class FeatureGroup {
   final List<List<TilePoint>> lines = [];
@@ -91,8 +90,8 @@ class SceneLineBuilder {
       int extent, PaintModel paint, List<double>? dashLengths) {
     final (vertices, indices) = LineGeometryBuilder().build(
       lines,
-      keys.LineEnd.values.firstWhere((it) => it.name == (paint.lineCap ?? LineCap.DEFAULT).name),
-      keys.LineJoin.values.firstWhere((it) => it.name == (paint.lineJoin ?? LineJoin.DEFAULT).name),
+      paint.lineCap ?? LineCap.DEFAULT,
+      paint.lineJoin ?? LineJoin.DEFAULT,
     );
 
     final ByteData geomUniform = Float32List.fromList([

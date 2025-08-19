@@ -4,7 +4,6 @@ import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
-import '../concurrent/main/geometry_workers.dart';
 import 'sdf/sdf_atlas_manager.dart';
 import 'text_builder.dart';
 

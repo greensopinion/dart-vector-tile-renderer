@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/concurrent/main/geometry_workers.dart';
 import 'package:vector_tile_renderer/src/gpu/line/scene_line_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_layer_visitor.dart';
