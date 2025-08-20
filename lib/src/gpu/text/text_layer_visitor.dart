@@ -39,6 +39,8 @@ class TextLayerVisitor {
 
       final paint = style.textPaint?.evaluate(evaluationContext);
 
+      final textHalo = (style.textHalo?.evaluate(evaluationContext) ?? []).firstOrNull;
+
       if (text == null ||
           text.isEmpty ||
           textSize == null ||
@@ -59,8 +61,21 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
-      futures.add(TextBuilder(_atlasManager)
-          .addText(text, paint.color.vector4, textSize.toInt() * 6, point.x, point.y, 4096, graph));
+      Future<void> haloFuture;
+
+      if (textHalo == null) {
+        haloFuture = Future.sync((){});
+      } else {
+        haloFuture = TextBuilder(_atlasManager)
+            .addText(text, textHalo.color.vector4, textSize.toInt() * 6, 1.5, point.x, point.y, 4096, graph);
+      }
+
+      futures.add(
+        haloFuture.then((_){
+          TextBuilder(_atlasManager)
+              .addText(text, paint.color.vector4, textSize.toInt() * 6, 1.0, point.x, point.y, 4096, graph);
+        })
+      );
     }
     await Future.wait(futures);
   }

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_scene/scene.dart';
@@ -32,7 +33,7 @@ class TextBuilder {
 
   TextBuilder(this.atlasManager);
 
-  Future<void> addText(String text, Vector4 color, int fontSize, double x, double y, int canvasSize, SceneGraph scene) async {
+  Future<void> addText(String text, Vector4 color, int fontSize, double expand, double x, double y, int canvasSize, SceneGraph scene) async {
     final atlas = await atlasManager.getAtlasForString(text, "Roboto Regular");
 
     final tempVertices = <double>[];
@@ -124,8 +125,13 @@ class TextBuilder {
         8
     );
 
-    final mat = TextMaterial(atlas.texture, 0.08, 0.75, color);
+    final mat = TextMaterial(atlas.texture, 0.08, 0.75 / expand, color);
 
-    scene.addMesh(Mesh(geom, mat));
+    final node = Node();
+
+    node.addMesh(Mesh(geom, mat));
+    node.localTransform = node.localTransform..translate(0.0, 0.0, 0.00001 * expand);
+
+    scene.add(node);
   }
 }

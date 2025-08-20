@@ -34,6 +34,7 @@ class TextMaterial extends UnlitMaterial {
 
     configureRenderPass(pass);
     pass.setWindingOrder(WindingOrder.clockwise);
+    pass.setDepthCompareOperation(CompareFunction.always);
 
     var fragInfo = Float32List.fromList([
       baseColorFactor.r, baseColorFactor.g,
