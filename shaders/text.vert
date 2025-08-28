@@ -22,7 +22,9 @@ void main() {
 
     float scale = 0.5;
 
-    vec3 world_position = vec3(anchor.x + (offset.x / scale), anchor.y + (offset.y / scale), 0.0);
+    vec4 finalOffset = frame_info.camera_transform * vec4(offset, 0, 0);
+
+    vec3 world_position = vec3(anchor.x + (finalOffset.x / scale), anchor.y + (finalOffset.y / scale), 0.0);
     
     gl_Position = frame_info.model_transform * vec4(world_position, 1.0);
 

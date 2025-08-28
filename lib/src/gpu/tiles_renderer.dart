@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
-import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
+import 'package:vector_tile_renderer/src/gpu/orthographic_camera.dart';
 import 'package:vector_tile_renderer/src/gpu/scene_building_visitor.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_prerenderer.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
@@ -119,7 +119,7 @@ class TilesRenderer {
         node.localTransform = tileTransformMatrix(position, size, rotation);
       }
     }
-    scene.render(OrthographicCamera(pixelRatio), canvas,
+    scene.render(OrthographicCamera(pixelRatio, rotation), canvas,
         viewport: ui.Offset.zero & canvas.getLocalClipBounds().size);
   }
 
