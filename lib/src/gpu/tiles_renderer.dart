@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:isolate';
-import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart' as vm;
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/rendering/orthographic_camera.dart';
 import 'package:vector_tile_renderer/src/gpu/scene_building_visitor.dart';
@@ -75,7 +72,7 @@ class TilesRenderer {
   }
 
 
-  static TransferableTypedData preRender((Theme, double, Tileset) args) =>
+  static Uint8List preRender((Theme, double, Tileset) args) =>
       TilePreRenderer().preRender(args.$1, args.$2, args.$3);
 
 

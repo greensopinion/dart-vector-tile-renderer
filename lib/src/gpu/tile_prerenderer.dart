@@ -14,7 +14,7 @@ import '../themes/style.dart';
 import '../themes/theme_layer_raster.dart';
 
 class TilePreRenderer {
-  TransferableTypedData preRender(Theme theme, double zoom, Tileset tileset) {
+  Uint8List preRender(Theme theme, double zoom, Tileset tileset) {
     final data = TileRenderData();
 
     DefaultLayerVisitor(

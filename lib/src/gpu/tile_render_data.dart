@@ -26,7 +26,7 @@ class TileRenderData {
     return result;
   }
 
-  TransferableTypedData pack() {
+  Uint8List pack() {
     final builder = BytesBuilder();
     
     _writeHeader(builder, data.length);
@@ -35,7 +35,7 @@ class TileRenderData {
       _writeMesh(builder, mesh);
     }
     
-    return TransferableTypedData.fromList([builder.takeBytes()]);
+    return builder.takeBytes();
   }
 
   static int _readHeader(ByteData view) {
