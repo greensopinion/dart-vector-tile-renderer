@@ -107,7 +107,7 @@ class TilesRenderer {
     }
   }
 
-  void render(ui.Canvas canvas, ui.Size size) {
+  void render(ui.Canvas canvas, ui.Size size, double rotation) {
     // Apply device pixel ratio scaling
     final view = ui.PlatformDispatcher.instance.views.first;
     final pixelRatio = view.display.devicePixelRatio;
@@ -116,7 +116,7 @@ class TilesRenderer {
     for (final node in scene.root.children) {
       final position = _positionByKey[node.name];
       if (position != null) {
-        node.localTransform = tileTransformMatrix(position, size);
+        node.localTransform = tileTransformMatrix(position, size, rotation);
       }
     }
     scene.render(OrthographicCamera(pixelRatio), canvas,

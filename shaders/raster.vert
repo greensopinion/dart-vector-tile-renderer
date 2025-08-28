@@ -15,9 +15,7 @@ out vec2 v_texture_coords;
 out vec4 v_color;
 
 void main() {
-    mat4 transform = frame_info.model_transform;
-
-    gl_Position = frame_info.model_transform * frame_info.camera_transform * vec4(position, 1.0);
+    gl_Position = frame_info.model_transform * vec4(position, 1.0);
 
     v_position = position;
     v_viewvector = frame_info.camera_position - v_position;

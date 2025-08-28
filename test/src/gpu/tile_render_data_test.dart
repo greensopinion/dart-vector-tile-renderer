@@ -9,7 +9,7 @@ void main() {
       final originalData = TileRenderData();
       
       final packed = originalData.pack();
-      final bytes = packed.materialize().asUint8List();
+      final bytes = packed;
       final unpacked = TileRenderData.unpack(bytes);
       
       expect(unpacked.data.length, equals(0));
@@ -37,7 +37,7 @@ void main() {
       
       // Pack and unpack
       final packed = originalData.pack();
-      final bytes = packed.materialize().asUint8List();
+      final bytes = packed;
       final unpacked = TileRenderData.unpack(bytes);
       
       // Verify unpacked data
@@ -88,7 +88,7 @@ void main() {
       
       // Pack and unpack
       final packed = originalData.pack();
-      final bytes = packed.materialize().asUint8List();
+      final bytes = packed;
       final unpacked = TileRenderData.unpack(bytes);
       
       // Verify unpacked data
@@ -143,7 +143,7 @@ void main() {
       
       // Pack and unpack
       final packed = originalData.pack();
-      final bytes = packed.materialize().asUint8List();
+      final bytes = packed;
       final unpacked = TileRenderData.unpack(bytes);
       
       // Verify unpacked data
@@ -217,7 +217,7 @@ void main() {
       
       // Pack and unpack
       final packed = originalData.pack();
-      final bytes = packed.materialize().asUint8List();
+      final bytes = packed;
       final unpacked = TileRenderData.unpack(bytes);
       
       // Verify unpacked data
@@ -268,7 +268,7 @@ void main() {
       
       // Pack and unpack
       final packed = originalData.pack();
-      final bytes = packed.materialize().asUint8List();
+      final bytes = packed;
       final unpacked = TileRenderData.unpack(bytes);
       
       // Verify the data integrity

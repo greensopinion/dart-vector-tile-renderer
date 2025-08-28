@@ -36,7 +36,7 @@ vec2 getSegmentPos(vec2 curr, vec2 next) {
 
   mat4 transform = frame_info.model_transform;
 
-  float scale = transform[0][0] / line_geometry.extentScale;
+  float scale = 0.5;
 
   return curr + (clamp(offset.x, -5, 5) * offsetDist * perp / scale) + (clamp(offset.y, -5, 5) * offsetDist * unitDir / scale);
 }
@@ -47,7 +47,7 @@ void main() {
 
   vec2 segment_pos = getSegmentPos(curr, next);
 
-  gl_Position = frame_info.model_transform * frame_info.camera_transform * vec4(segment_pos, 0.0, 1.0);
+  gl_Position = frame_info.model_transform * vec4(segment_pos, 0.0, 1.0);
 
   v_texture_coords = vec2(offset.x, offset.y * roundness);
 
