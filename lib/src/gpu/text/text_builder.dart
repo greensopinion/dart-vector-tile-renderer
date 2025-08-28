@@ -130,6 +130,9 @@ class TextBuilder {
     final node = Node();
 
     node.addMesh(Mesh(geom, mat));
+
+    /// force symbols in front of other layers. We do it this way to ensure that text does not get drawn underneath
+    /// layers from a neighboring tile. TODO: instead, group layers from all tiles together and draw the groups in order
     node.localTransform = node.localTransform..translate(0.0, 0.0, 0.00001 * expand);
 
     scene.add(node);
