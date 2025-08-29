@@ -103,6 +103,8 @@ class TextBuilder {
       vertexIndex += 4;
     }
 
+    if (tempVertices.isEmpty) return;
+
     final centerOffsetX = boundingBox.centerOffsetX;
     final centerOffsetY = boundingBox.centerOffsetY;
 
