@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
       clipOffsetX: 0,
       clipOffsetY: 0,
       clipSize: 0,
-      renderMode: RenderMode.vector);
+      renderMode: RenderMode.shader);
 
   @override
   void initState() {

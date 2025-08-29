@@ -5,7 +5,7 @@ import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 // import again due to shadowed class name
 import 'package:vector_tile_renderer/src/model/tile_model.dart' as tile_model;
 
-enum RenderMode { vector, raster }
+enum RenderMode { shader, canvas }
 
 class TileOptions {
   final Size size;
@@ -68,7 +68,8 @@ class _TileState extends State<Tile> {
   bool _disposed = false;
   late Tileset _tileset;
 
-  final TilesRenderer renderer = TilesRenderer();
+  final TilesRenderer gpuRenderer = TilesRenderer();
+  late final Renderer canvasRenderer = Renderer(theme: theme);
 
   double get zoom => widget.options.zoom;
 
@@ -95,7 +96,15 @@ class _TileState extends State<Tile> {
 
   @override
   Widget build(BuildContext context) {
+    switch(widget.options.renderMode) {
+      case RenderMode.shader:
+        return buildGpu();
+      case RenderMode.canvas:
+        return buildCanvas();
+    }
+  }
 
+  Container buildGpu() {
     final options = widget.options;
     final position = Rect.fromLTWH(options.xOffset, options.yOffset, options.size.width, options.size.height);
 
@@ -106,12 +115,23 @@ class _TileState extends State<Tile> {
       renderData: TilesRenderer.preRender((theme, zoom, _tileset)),
     );
 
-    renderer.update(theme, zoom, [model]);
+    gpuRenderer.update(theme, zoom, [model]);
 
     return Container(
-        decoration: BoxDecoration(color: Colors.black45, border: Border.all()),
         constraints: BoxConstraints(maxWidth: widget.options.size.width, maxHeight: widget.options.size.height),
-        child: SizedBox.expand(child: CustomPaint(painter: TilePainter(renderer))));
+        child: Stack(children: [
+          SizedBox.expand(child: CustomPaint(painter: GpuTilePainter(gpuRenderer))),
+          Container(decoration: BoxDecoration(border: Border.all()))
+        ]));
+  }
+
+  Container buildCanvas() {
+    return Container(
+        constraints: BoxConstraints(maxWidth: widget.options.size.width, maxHeight: widget.options.size.height),
+        child: Stack(children: [
+          SizedBox.expand(child: CustomPaint(painter: CanvasTilePainter(canvasRenderer, widget.options, _tileset))),
+          Container(decoration: BoxDecoration(border: Border.all()))
+        ]));
   }
 
   Future<Tileset> _loadTileset() async {
@@ -137,15 +157,37 @@ class _TileState extends State<Tile> {
   }
 }
 
-class TilePainter extends CustomPainter{
+class GpuTilePainter extends CustomPainter{
   final TilesRenderer renderer;
 
-  TilePainter(this.renderer);
+  GpuTilePainter(this.renderer);
 
   @override
   void paint(Canvas canvas, Size size) {
     canvas.clipRect(Offset.zero & size);
     renderer.render(canvas, size, 0.0);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+
+class CanvasTilePainter extends CustomPainter{
+  final Renderer renderer;
+  final TileOptions options;
+  final Tileset tileset;
+
+  CanvasTilePainter(this.renderer, this.options, this.tileset);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.clipRect(Offset.zero & size);
+
+    final scale = size.width / 256.0;
+    canvas.scale(scale);
+
+    renderer.render(canvas, TileSource(tileset: tileset), zoomScaleFactor: scale, zoom: options.zoom, rotation: 0.0);
   }
 
   @override
