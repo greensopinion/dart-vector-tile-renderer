@@ -130,7 +130,7 @@ class TextBuilder {
     final geom = TextGeometry(
         ByteData.sublistView(Float32List.fromList(vertices)),
         ByteData.sublistView(Uint16List.fromList(indices)),
-        ByteData.sublistView(Float32List.fromList([dynamicRotationScale, -rotation]))
+        ByteData.sublistView(Float32List.fromList([dynamicRotationScale, -normalizeToPi(rotation)]))
     );
 
     final mat = TextMaterial(atlas.texture, 0.08, 0.75 / expand, color);
@@ -144,5 +144,22 @@ class TextBuilder {
     node.localTransform = node.localTransform..translate(0.0, 0.0, 0.00001 * expand);
 
     scene.add(node);
+  }
+
+  static double normalizeToPi(double angle) {
+    // bring into [-π, π)
+    angle = angle % (2 * pi);
+    if (angle >= pi) {
+      angle -= 2 * pi;
+    }
+
+    // now fold into [-π/2, π/2)
+    if (angle < -pi / 2) {
+      angle += pi;
+    } else if (angle >= pi / 2) {
+      angle -= pi;
+    }
+
+    return angle;
   }
 }
