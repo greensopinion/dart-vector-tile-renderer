@@ -130,7 +130,7 @@ class TextBuilder {
     final geom = TextGeometry(
         ByteData.sublistView(Float32List.fromList(vertices)),
         ByteData.sublistView(Uint16List.fromList(indices)),
-        ByteData.sublistView(Float32List.fromList([dynamicRotationScale]))
+        ByteData.sublistView(Float32List.fromList([dynamicRotationScale, -rotation]))
     );
 
     final mat = TextMaterial(atlas.texture, 0.08, 0.75 / expand, color);
@@ -141,9 +141,7 @@ class TextBuilder {
 
     /// force symbols in front of other layers. We do it this way to ensure that text does not get drawn underneath
     /// layers from a neighboring tile. TODO: instead, group layers from all tiles together and draw the groups in order
-    node.localTransform = node.localTransform
-      ..translate(0.0, 0.0, 0.00001 * expand)
-      ..rotateZ(rotation);
+    node.localTransform = node.localTransform..translate(0.0, 0.0, 0.00001 * expand);
 
     scene.add(node);
   }

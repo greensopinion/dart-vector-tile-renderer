@@ -7,6 +7,7 @@ frame_info;
 
 uniform TextGeometry {
     float rotation_scale;
+    float rotation;
 }
 text_geometry;
 
@@ -27,12 +28,20 @@ void main() {
 
     float scale = 0.5;
 
-    vec2 finalOffset;
+    vec4 finalOffset;
     if (text_geometry.rotation_scale > 0) {
-        finalOffset = (frame_info.camera_transform * vec4(offset, 0, 0)).xy;
+        finalOffset = (frame_info.camera_transform * vec4(offset, 0, 0));
     } else {
-        finalOffset = offset;
+        finalOffset = vec4(offset, 0.0, 0.0);
     }
+    float rot = text_geometry.rotation;
+
+    finalOffset = mat4(
+        cos(rot), sin(rot), 0, 0,
+        -sin(rot), cos(rot), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 0
+    ) * finalOffset;
 
     vec3 world_position = vec3(anchor.x + (finalOffset.x / scale), anchor.y + (finalOffset.y / scale), 0.0);
     
