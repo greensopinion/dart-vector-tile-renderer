@@ -6,6 +6,7 @@ import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_atlas_manager.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
+import 'package:vector_tile_renderer/src/themes/style.dart';
 
 class BoundingBox {
   double minX = double.infinity;
@@ -33,7 +34,7 @@ class TextBuilder {
 
   TextBuilder(this.atlasManager);
 
-  Future<void> addText(String text, Vector4 color, int fontSize, double expand, double x, double y, int canvasSize, SceneGraph scene) async {
+  Future<void> addText(String text, Vector4 color, int fontSize, double expand, double x, double y, int canvasSize, SceneGraph scene, double rotation, RotationAlignment rotationAlignment) async {
     final atlas = await atlasManager.getAtlasForString(text, "Roboto Regular");
 
     final tempVertices = <double>[];
@@ -119,10 +120,17 @@ class TextBuilder {
       ]);
     }
 
+    final double dynamicRotationScale;
+    if (rotationAlignment == RotationAlignment.viewport) {
+      dynamicRotationScale = 1.0;
+    } else {
+      dynamicRotationScale = 0.0;
+    }
+
     final geom = TextGeometry(
         ByteData.sublistView(Float32List.fromList(vertices)),
         ByteData.sublistView(Uint16List.fromList(indices)),
-        8
+        ByteData.sublistView(Float32List.fromList([dynamicRotationScale]))
     );
 
     final mat = TextMaterial(atlas.texture, 0.08, 0.75 / expand, color);
@@ -133,7 +141,9 @@ class TextBuilder {
 
     /// force symbols in front of other layers. We do it this way to ensure that text does not get drawn underneath
     /// layers from a neighboring tile. TODO: instead, group layers from all tiles together and draw the groups in order
-    node.localTransform = node.localTransform..translate(0.0, 0.0, 0.00001 * expand);
+    node.localTransform = node.localTransform
+      ..translate(0.0, 0.0, 0.00001 * expand)
+      ..rotateZ(rotation);
 
     scene.add(node);
   }

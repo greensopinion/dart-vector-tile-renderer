@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/features/symbol_rotation.dart';
 import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
 
 import '../../../vector_tile_renderer.dart';
@@ -41,6 +44,10 @@ class TextLayerVisitor {
 
       final textHalo = (style.textHalo?.evaluate(evaluationContext) ?? []).firstOrNull;
 
+      var layoutPlacement = style.symbolLayout?.placement.evaluate(evaluationContext) ?? LayoutPlacement.DEFAULT;
+
+      final rotationAlignment = style.symbolLayout?.textRotationAlignment(evaluationContext, layoutPlacement: layoutPlacement) ?? RotationAlignment.map;
+
       if (text == null ||
           text.isEmpty ||
           textSize == null ||
@@ -49,14 +56,25 @@ class TextLayerVisitor {
       ) {
         continue;
       }
+      final line = feature.feature.modelLines.firstOrNull;
 
       final point = feature.feature.modelPoints.firstOrNull ??
-          feature.feature.modelLines.map((it) {
-            return it.points[it.points.length ~/ 2];
-          }).firstOrNull;
+          () {
+            if (line == null) return null;
+            return line.points[line.points.length ~/ 2];
+          }.call();
 
       if (point == null || point.x < 0 || point.x > 4096 || point.y < 0 || point.y > 4096) {
         continue;
+      }
+
+      var rotation = 0.0;
+
+      if (rotationAlignment == RotationAlignment.map && line != null && line.points.length > 1) {
+        final newRot = atan2(line.points.last.y - line.points.first.y, line.points.last.x - line.points.first.x);
+        if (newRot.isFinite) {
+          rotation = newRot;
+        }
       }
 
       alreadyAdded.add(text);
@@ -67,13 +85,13 @@ class TextLayerVisitor {
         haloFuture = Future.sync((){});
       } else {
         haloFuture = TextBuilder(_atlasManager)
-            .addText(text, textHalo.color.vector4, textSize.toInt() * 6, 1.5, point.x, point.y, 4096, graph);
+            .addText(text, textHalo.color.vector4, textSize.toInt() * 6, 1.5, point.x, point.y, 4096, graph, rotation, rotationAlignment);
       }
 
       futures.add(
         haloFuture.then((_){
           TextBuilder(_atlasManager)
-              .addText(text, paint.color.vector4, textSize.toInt() * 6, 1.0, point.x, point.y, 4096, graph);
+              .addText(text, paint.color.vector4, textSize.toInt() * 6, 1.0, point.x, point.y, 4096, graph, rotation, rotationAlignment);
         })
       );
     }

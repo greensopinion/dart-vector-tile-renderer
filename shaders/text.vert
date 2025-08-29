@@ -5,6 +5,11 @@ uniform FrameInfo {
 }
 frame_info;
 
+uniform TextGeometry {
+    float rotation_scale;
+}
+text_geometry;
+
 in vec2 offset;
 in vec2 uv;
 in vec2 aabbMin;
@@ -22,7 +27,12 @@ void main() {
 
     float scale = 0.5;
 
-    vec4 finalOffset = frame_info.camera_transform * vec4(offset, 0, 0);
+    vec2 finalOffset;
+    if (text_geometry.rotation_scale > 0) {
+        finalOffset = (frame_info.camera_transform * vec4(offset, 0, 0)).xy;
+    } else {
+        finalOffset = offset;
+    }
 
     vec3 world_position = vec3(anchor.x + (finalOffset.x / scale), anchor.y + (finalOffset.y / scale), 0.0);
     
