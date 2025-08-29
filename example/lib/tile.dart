@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:example/tile_model_provider.dart';
-import 'package:example/tile_positioner.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 // import again due to shadowed class name
@@ -68,10 +66,9 @@ class Tile extends StatefulWidget {
 class _TileState extends State<Tile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   bool _disposed = false;
+  late Tileset _tileset;
 
-  late VectorSceneRenderer renderer = VectorSceneRenderer(context: TilePositioningContext(() => zoom));
-
-  late final sceneTileManager = renderer.sceneTileManager;
+  final TilesRenderer renderer = TilesRenderer();
 
   double get zoom => widget.options.zoom;
 
@@ -83,12 +80,7 @@ class _TileState extends State<Tile> {
   }
 
   Future<void> _setup() async {
-    final tileset = await _loadTileset();
-
-    await sceneTileManager.updateTiles(
-        [const SceneTileIdentity(0, 0, 0)],
-        ExampleTileModelProvider(tileset, theme)
-    );
+    _tileset = await _loadTileset();
 
     if (!_disposed) {
       setState(() {});
@@ -104,11 +96,22 @@ class _TileState extends State<Tile> {
   @override
   Widget build(BuildContext context) {
 
+    final options = widget.options;
+    final position = Rect.fromLTWH(options.xOffset, options.yOffset, options.size.width, options.size.height);
+
+    final model = TileUiModel(
+      tileId: TileId(z: zoom.truncate(), x: 0, y: 0),
+      position: position, tileset: _tileset,
+      rasterTileset: const RasterTileset(tiles: {}),
+      renderData: TilesRenderer.preRender((theme, zoom, _tileset)),
+    );
+
+    renderer.update(theme, zoom, [model]);
+
     return Container(
         decoration: BoxDecoration(color: Colors.black45, border: Border.all()),
         constraints: BoxConstraints(maxWidth: widget.options.size.width, maxHeight: widget.options.size.height),
-        child: renderer
-    );
+        child: SizedBox.expand(child: CustomPaint(painter: TilePainter(renderer))));
   }
 
   Future<Tileset> _loadTileset() async {
@@ -132,26 +135,19 @@ class _TileState extends State<Tile> {
     }
     return tileData.toTile();
   }
+}
 
-  // Future<RasterTile> loadRasterTile(String path) async {
-  //   final tileBuffer = await DefaultAssetBundle.of(context).load(path);
-  //   final Uint8List bytes = tileBuffer.buffer.asUint8List();
-  //
-  //   final image = await decodeImageFromList(bytes.buffer.asUint8List());
-  //   return RasterTile(image: image, scope: const Rect.fromLTRB(0, 0, 256, 256));
-  // }
-  //
-  // void _maybeLoadImage() async {
-  //   if (widget.options.renderMode == RenderMode.raster && image == null && tileSource != null) {
-  //     final image = await ImageRenderer(theme: theme, scale: 2).render(tileSource!,
-  //         zoom: widget.options.zoom, zoomScaleFactor: pow(2, widget.options.scale).toDouble());
-  //     if (_disposed) {
-  //       image.dispose();
-  //     } else {
-  //       setState(() {
-  //         this.image = image;
-  //       });
-  //     }
-  //   }
-  // }
+class TilePainter extends CustomPainter{
+  final TilesRenderer renderer;
+
+  TilePainter(this.renderer);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.clipRect(Offset.zero & size);
+    renderer.render(canvas, size, 0.0);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
