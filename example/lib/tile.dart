@@ -78,8 +78,9 @@ class _MapTileState extends State<MapTile> {
   }
 
   Future<void> _setup() async {
+    TilesRenderer();
     _tileset = await _loadTileset();
-
+    await TilesRenderer.initialize;
     if (!_disposed) {
       setState(() {});
     }
