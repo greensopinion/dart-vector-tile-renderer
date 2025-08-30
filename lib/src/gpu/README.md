@@ -1,12 +1,31 @@
 
 # Development
 
----
+## Flutter Version
+
+Generally we try to follow the flutter main channel, however occasionally Flutter can have changes that break the renderer in unexpected ways.
+
+
+The last known working version of Flutter:
+
+```sh
+cd ~/development/flutter
+git checkout  29a2f674ca2312e34a3ef796701c297dc3be1ae6
+flutter doctor
+flutter precache
+```
+
+Once Flutter has stabilized, we should be able to do this:
+
+```sh
+flutter channel main && flutter upgrade
+```
+
 ## Project Setup
 
 In IOS and MacOS, set `FLTEnableFlutterGPU` to true in the Info.plist
 
-```
+```xml
     <key>FLTEnableImpeller</key>
     <true/>
     <key>FLTEnableFlutterGPU</key>
@@ -19,7 +38,7 @@ On Android, set `io.flutter.embedding.android.EnableFlutterGPU` to true in metad
 
 To build shaders:
 
-```
+```sh
 flutter clean && flutter pub get
 cd example && flutter run
 ```
