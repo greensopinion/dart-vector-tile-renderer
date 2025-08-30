@@ -66,13 +66,12 @@ class Tile extends StatefulWidget {
 class _TileState extends State<Tile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   bool _disposed = false;
-  late Tileset _tileset;
+  Tileset? _tileset;
 
   final TilesRenderer gpuRenderer = TilesRenderer();
   late final Renderer canvasRenderer = Renderer(theme: theme);
 
   double get zoom => widget.options.zoom;
-
 
   @override
   void initState() {
@@ -96,7 +95,7 @@ class _TileState extends State<Tile> {
 
   @override
   Widget build(BuildContext context) {
-    switch(widget.options.renderMode) {
+    switch (widget.options.renderMode) {
       case RenderMode.shader:
         return buildGpu();
       case RenderMode.canvas:
@@ -106,30 +105,47 @@ class _TileState extends State<Tile> {
 
   Container buildGpu() {
     final options = widget.options;
-    final position = Rect.fromLTWH(options.xOffset, options.yOffset, options.size.width, options.size.height);
-
+    final position = Rect.fromLTWH(options.xOffset, options.yOffset,
+        options.size.width, options.size.height);
+    final tileset = _tileset;
+    if (tileset == null) {
+      return _progressIndicator();
+    }
     final model = TileUiModel(
       tileId: TileId(z: zoom.truncate(), x: 0, y: 0),
-      position: position, tileset: _tileset,
+      position: position,
+      tileset: tileset,
       rasterTileset: const RasterTileset(tiles: {}),
-      renderData: TilesRenderer.preRender((theme, zoom, _tileset)),
+      renderData: TilesRenderer.preRender((theme, zoom, tileset)),
     );
 
     gpuRenderer.update(theme, zoom, [model]);
 
     return Container(
-        constraints: BoxConstraints(maxWidth: widget.options.size.width, maxHeight: widget.options.size.height),
+        constraints: BoxConstraints(
+            maxWidth: widget.options.size.width,
+            maxHeight: widget.options.size.height),
         child: Stack(children: [
-          SizedBox.expand(child: CustomPaint(painter: GpuTilePainter(gpuRenderer))),
+          SizedBox.expand(
+              child: CustomPaint(painter: GpuTilePainter(gpuRenderer))),
           Container(decoration: BoxDecoration(border: Border.all()))
         ]));
   }
 
   Container buildCanvas() {
+    final tileset = _tileset;
+    if (tileset == null) {
+      return _progressIndicator();
+    }
     return Container(
-        constraints: BoxConstraints(maxWidth: widget.options.size.width, maxHeight: widget.options.size.height),
+        constraints: BoxConstraints(
+            maxWidth: widget.options.size.width,
+            maxHeight: widget.options.size.height),
         child: Stack(children: [
-          SizedBox.expand(child: CustomPaint(painter: CanvasTilePainter(canvasRenderer, widget.options, _tileset))),
+          SizedBox.expand(
+              child: CustomPaint(
+                  painter: CanvasTilePainter(
+                      canvasRenderer, widget.options, tileset))),
           Container(decoration: BoxDecoration(border: Border.all()))
         ]));
   }
@@ -141,23 +157,34 @@ class _TileState extends State<Tile> {
 
   Future<tile_model.Tile> loadVectorTile(String path) async {
     final tileBuffer = await DefaultAssetBundle.of(context).load(path);
-    final tileBytes = tileBuffer.buffer.asUint8List(tileBuffer.offsetInBytes, tileBuffer.lengthInBytes);
-    var tileData = TileFactory(theme, const Logger.noop()).createTileData(VectorTileReader().read(tileBytes));
+    final tileBytes = tileBuffer.buffer
+        .asUint8List(tileBuffer.offsetInBytes, tileBuffer.lengthInBytes);
+    var tileData = TileFactory(theme, const Logger.noop())
+        .createTileData(VectorTileReader().read(tileBytes));
     if (widget.options.clipSize > 0) {
       final clipSize = widget.options.clipSize;
       final clipOffsetX = widget.options.clipOffsetX;
       final clipOffsetY = widget.options.clipOffsetY;
-      final clip = TileClip(bounds: Rectangle(clipOffsetX, clipOffsetY, clipSize, clipSize));
+      final clip = TileClip(
+          bounds: Rectangle(clipOffsetX, clipOffsetY, clipSize, clipSize));
       tileData = clip.clip(tileData);
       if (clipOffsetX > 0 || clipOffsetY > 0) {
-        tileData = TileTranslate(Point(-clipOffsetX, -clipOffsetY)).translate(tileData);
+        tileData = TileTranslate(Point(-clipOffsetX, -clipOffsetY))
+            .translate(tileData);
       }
     }
     return tileData.toTile();
   }
+
+  Container _progressIndicator() => Container(
+        constraints: BoxConstraints(
+            maxWidth: widget.options.size.width,
+            maxHeight: widget.options.size.height),
+        child: const SizedBox.expand(child: CircularProgressIndicator()),
+      );
 }
 
-class GpuTilePainter extends CustomPainter{
+class GpuTilePainter extends CustomPainter {
   final TilesRenderer renderer;
 
   GpuTilePainter(this.renderer);
@@ -172,8 +199,7 @@ class GpuTilePainter extends CustomPainter{
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
-
-class CanvasTilePainter extends CustomPainter{
+class CanvasTilePainter extends CustomPainter {
   final Renderer renderer;
   final TileOptions options;
   final Tileset tileset;
@@ -187,7 +213,8 @@ class CanvasTilePainter extends CustomPainter{
     final scale = size.width / 256.0;
     canvas.scale(scale);
 
-    renderer.render(canvas, TileSource(tileset: tileset), zoomScaleFactor: scale, zoom: options.zoom, rotation: 0.0);
+    renderer.render(canvas, TileSource(tileset: tileset),
+        zoomScaleFactor: scale, zoom: options.zoom, rotation: 0.0);
   }
 
   @override
