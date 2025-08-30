@@ -1,3 +1,5 @@
+#include "shaders/utils.glsl"
+
 uniform FrameInfo {
     mat4 model_transform;
     mat4 camera_transform;
@@ -23,18 +25,17 @@ out vec2 v_texture_coords;
 out vec4 v_color;
 
 void main() {
-    mat4 transform = frame_info.model_transform;
+    mat4 transform = frame_info.camera_transform;
     vec2 anchor = (aabbMin + aabbMax) / 2;
 
-    float scale = 0.5;
+    float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
 
-    vec4 finalOffset;
-    if (text_geometry.rotation_scale > 0) {
-        finalOffset = (frame_info.camera_transform * vec4(offset, 0, 0));
-    } else {
-        finalOffset = vec4(offset, 0.0, 0.0);
-    }
+    vec4 finalOffset = vec4(offset, 0.0, 0.0);
     float rot = text_geometry.rotation;
+
+    if (text_geometry.rotation_scale > 0) {
+        rot -= atan(transform[1][0], transform[0][0]);
+    }
 
     finalOffset = mat4(
         cos(rot), sin(rot), 0, 0,

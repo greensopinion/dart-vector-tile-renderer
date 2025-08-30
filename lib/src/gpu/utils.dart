@@ -1,4 +1,5 @@
 import 'package:flutter_gpu/gpu.dart';
+import 'package:vector_math/vector_math.dart';
 
 void configureRenderPass(RenderPass pass) {
   pass.setDepthWriteEnable(true);
@@ -16,6 +17,14 @@ void configureRenderPass(RenderPass pass) {
 
   pass.setColorBlendEquation(blendEquation);
 }
+
+double getScaleFactor(Matrix4 cameraTransform, Matrix4 modelTransform) {
+  final matrix = Matrix4.identity()..transposeMultiply(modelTransform)..transposeMultiply(cameraTransform);
+
+  return Vector2(matrix.row0.x, matrix.row1.x).length / _tileSize;
+}
+
+const _tileSize = 256;
 
 String formatBytes(int size) {
   if (size < 1000) {

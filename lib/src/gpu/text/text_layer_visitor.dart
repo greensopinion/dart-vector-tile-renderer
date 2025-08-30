@@ -85,13 +85,13 @@ class TextLayerVisitor {
         haloFuture = Future.sync((){});
       } else {
         haloFuture = TextBuilder(_atlasManager)
-            .addText(text, textHalo.color.vector4, textSize.toInt() * 6, 1.5, point.x, point.y, 4096, graph, rotation, rotationAlignment);
+            .addText(text, textHalo.color.vector4, textSize.toInt() * 16, 1.5, point.x, point.y, 4096, graph, rotation, rotationAlignment);
       }
 
       futures.add(
         haloFuture.then((_){
           TextBuilder(_atlasManager)
-              .addText(text, paint.color.vector4, textSize.toInt() * 6, 1.0, point.x, point.y, 4096, graph, rotation, rotationAlignment);
+              .addText(text, paint.color.vector4, textSize.toInt() * 16, 1.0, point.x, point.y, 4096, graph, rotation, rotationAlignment);
         })
       );
     }
