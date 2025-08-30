@@ -40,8 +40,8 @@ cd example && flutter run
  - done
    - caps + joins
    - thickness
- - todo
    - variable thickness
+ - todo
    - verify that dashed lines look correct
 
 ## Raster
@@ -53,8 +53,8 @@ cd example && flutter run
    - text size
    - point/line alignment
    - rotation alignment
- - todo
    - variable size
+  - todo
    - different fonts
    - batching optimizations
    - concurrent pre-render optimizations
