@@ -9,7 +9,9 @@ import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';
 import 'orthographic_camera.dart';
 import 'position_transform.dart';
-import 'scene_building_visitor.dart';
+import 'text/atlas_creating_text_visitor.dart';
+import 'text/scene_building_text_visitor.dart';
+import 'text/sdf/sdf_atlas_manager.dart';
 import 'tile_prerenderer.dart';
 import 'tile_render_data.dart';
 
@@ -46,10 +48,11 @@ class TilesRenderer {
   static Future<void> initialize = _initializer.future;
 
   final _positionByKey = <String, Rect>{};
-
+  SdfAtlasManager sdfAtlasManager = SdfAtlasManager();
+  Theme theme;
   Scene? _scene;
 
-  TilesRenderer() {
+  TilesRenderer(this.theme) {
     if (!_initializer.isCompleted) {
       Scene.initializeStaticResources().then((_) {
         if (!_initializer.isCompleted) {
@@ -68,11 +71,21 @@ class TilesRenderer {
     return scene;
   }
 
-  static Future<Uint8List> preRender(
-          Theme theme, double zoom, Tileset tileset) =>
+  static Uint8List preRender(Theme theme, double zoom, Tileset tileset) =>
       TilePreRenderer().preRender(theme, zoom, tileset);
 
-  void update(Theme theme, double zoom, List<TileUiModel> models) {
+  Future preRenderUi(double zoom, Tileset tileset) async {
+    final visitorContext = VisitorContext(
+      logger: const Logger.noop(),
+      tileSource: TileSource(
+          tileset: tileset, rasterTileset: const RasterTileset(tiles: {})),
+      zoom: zoom,
+    );
+    await AtlasCreatingTextVisitor(sdfAtlasManager, theme)
+        .visitAllFeatures(visitorContext);
+  }
+
+  void update(double zoom, List<TileUiModel> models) {
     final scene = this.scene;
     final nodesByKey =
         Map.fromEntries(scene.root.children.map((n) => MapEntry(n.name, n)));
@@ -83,9 +96,12 @@ class TilesRenderer {
       var node = nodesByKey[key];
       if (node == null) {
         node = Node(name: key);
-
-        BucketUnpacker()
-            .unpackOnto(node, TileRenderData.unpack(model.renderData!));
+        final renderData = model.renderData;
+        if (renderData == null) {
+          throw Exception(
+              "no render data for tile ${model.tileId}, did you call preRender?");
+        }
+        BucketUnpacker().unpackOnto(node, TileRenderData.unpack(renderData));
 
         final visitorContext = VisitorContext(
           logger: const Logger.noop(),
@@ -94,8 +110,8 @@ class TilesRenderer {
           zoom: zoom,
         );
 
-        // FIXME: potential defect, we aren't awaiting this future
-        SceneBuildingVisitor(node, visitorContext).visitAllFeatures(theme);
+        SceneBuildingTextVisitor(sdfAtlasManager, node, visitorContext)
+            .visitAllFeatures(theme);
       }
       _positionByKey[key] = model.position;
       scene.add(node);

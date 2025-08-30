@@ -5,7 +5,7 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 
 import '../../themes/style.dart';
-import 'sdf/sdf_atlas_manager.dart';
+import 'sdf/sdf_atlas_provider.dart';
 import 'text_geometry.dart';
 import 'text_material.dart';
 
@@ -32,22 +32,26 @@ class BoundingBox {
 }
 
 class TextBuilder {
-  final SdfAtlasManager atlasManager;
+  final SdfAtlasProvider atlasProvider;
 
-  TextBuilder(this.atlasManager);
+  TextBuilder(this.atlasProvider);
 
-  Future<void> addText(
+  void addText(
       String text,
       Vector4 color,
       int fontSize,
+      String? fontFamily,
       double expand,
       double x,
       double y,
       int canvasSize,
       SceneGraph scene,
       double rotation,
-      RotationAlignment rotationAlignment) async {
-    final atlas = await atlasManager.getAtlasForString(text, "Roboto Regular");
+      RotationAlignment rotationAlignment) {
+    final atlas = atlasProvider.getAtlasForString(text, fontFamily);
+    if (atlas == null) {
+      return;
+    }
 
     final tempVertices = <double>[];
     final indices = <int>[];

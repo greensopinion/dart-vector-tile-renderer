@@ -5,36 +5,35 @@ import 'package:vector_math/vector_math.dart';
 import '../../vector_tile_renderer.dart';
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
-import '../themes/theme_layer_raster.dart';
 import 'bucket_unpacker.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
 import 'tile_render_data.dart';
 
 class TilePreRenderer {
-  Future<Uint8List> preRender(Theme theme, double zoom, Tileset tileset) async {
+  Uint8List preRender(Theme theme, double zoom, Tileset tileset) {
     final data = TileRenderData();
 
-    await DefaultLayerVisitor(data, tileset, zoom).visitAllFeatures(theme);
+    _PreRendererLayerVisitor(data, tileset, zoom).visitAllFeatures(theme);
 
     return data.pack();
   }
 }
 
-class DefaultLayerVisitor extends LayerVisitor {
+class _PreRendererLayerVisitor extends LayerVisitor {
   final TileRenderData tileRenderData;
   late final VisitorContext context;
 
-  DefaultLayerVisitor(this.tileRenderData, Tileset tileset, double zoom) {
+  _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom) {
     context = VisitorContext(
         logger: const Logger.noop(),
         tileSource: TileSource(tileset: tileset),
         zoom: zoom);
   }
 
-  Future<void> visitAllFeatures(Theme theme) async {
+  void visitAllFeatures(Theme theme) {
     for (var layer in theme.layers) {
-      await layer.accept(context, this);
+      layer.accept(context, this);
     }
   }
 
@@ -71,8 +70,4 @@ class DefaultLayerVisitor extends LayerVisitor {
             type: GeometryType.background),
         PackedMaterial(uniform: uniform, type: MaterialType.colored)));
   }
-
-  @override
-  void visitRasterLayer(
-      VisitorContext context, RasterTile image, RasterPaintModel paintModel) {}
 }

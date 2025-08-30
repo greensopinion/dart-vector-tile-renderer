@@ -61,10 +61,18 @@ class DefaultLayer extends ThemeLayer {
   }
 
   @override
-  Future<void> accept(VisitorContext context, LayerVisitor visitor) async {
+  void accept(VisitorContext context, LayerVisitor visitor) {
     final layerFeatures = context.tileSource.tileset.resolver
         .resolveFeatures(selector, context.zoom.truncate());
     return visitor.visitFeatures(context, type, style, layerFeatures);
+  }
+
+  @override
+  Future<void> acceptAsync(
+      VisitorContext context, LayerVisitorAsync visitor) async {
+    final layerFeatures = context.tileSource.tileset.resolver
+        .resolveFeatures(selector, context.zoom.truncate());
+    return await visitor.visitFeatures(context, type, style, layerFeatures);
   }
 
   @override
@@ -93,12 +101,23 @@ class BackgroundLayer extends ThemeLayer {
   }
 
   @override
-  Future<void> accept(VisitorContext context, LayerVisitor visitor) async {
+  void accept(VisitorContext context, LayerVisitor visitor) {
     final color = fillColor.evaluate(EvaluationContext(
         () => {}, TileFeatureType.background, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
     if (color != null) {
       visitor.visitBackground(context, color.vector4);
+    }
+  }
+
+  @override
+  Future<void> acceptAsync(
+      VisitorContext context, LayerVisitorAsync visitor) async {
+    final color = fillColor.evaluate(EvaluationContext(
+        () => {}, TileFeatureType.background, context.logger,
+        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
+    if (color != null) {
+      await visitor.visitBackground(context, color.vector4);
     }
   }
 

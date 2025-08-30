@@ -1,32 +1,31 @@
 import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
-import '../../features/symbol_rotation.dart';
-import '../color_extension.dart';
 
 import '../../../vector_tile_renderer.dart';
+import '../../features/symbol_rotation.dart';
 import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
-import 'sdf/sdf_atlas_manager.dart';
+import '../color_extension.dart';
+import 'sdf/sdf_atlas_provider.dart';
 import 'text_builder.dart';
 
 class TextLayerVisitor {
   final SceneGraph graph;
+  final SdfAtlasProvider atlasProvider;
   final VisitorContext context;
   final Set<String> alreadyAdded = <String>{};
 
-  TextLayerVisitor(this.graph, this.context);
+  TextLayerVisitor(this.atlasProvider, this.graph, this.context);
 
-  Future<void> addFeatures(Style style, Iterable<LayerFeature> features) async {
-    final List<Future<dynamic>> futures = [];
+  void addFeatures(Style style, Iterable<LayerFeature> features) {
+    final symbolLayout = style.symbolLayout;
+    if (symbolLayout == null) {
+      return;
+    }
+    final textBuilder = TextBuilder(atlasProvider);
     for (var feature in features) {
-      final symbolLayout = style.symbolLayout;
-      if (symbolLayout == null) {
-        print("null layout, skipping");
-        return;
-      }
-
       final evaluationContext = EvaluationContext(
           () => feature.feature.properties,
           TileFeatureType.none,
@@ -61,6 +60,7 @@ class TextLayerVisitor {
           paint == null) {
         continue;
       }
+      final fontFamily = style.symbolLayout?.text?.fontFamily;
       final line = feature.feature.modelLines.firstOrNull;
 
       final point = feature.feature.modelPoints.firstOrNull ??
@@ -91,15 +91,12 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
-      Future<void> haloFuture;
-
-      if (textHalo == null) {
-        haloFuture = Future.sync(() {});
-      } else {
-        haloFuture = TextBuilder(_atlasManager).addText(
+      if (textHalo != null) {
+        textBuilder.addText(
             text,
             textHalo.color.vector4,
             textSize.toInt() * 16,
+            fontFamily,
             1.5,
             point.x,
             point.y,
@@ -109,22 +106,18 @@ class TextLayerVisitor {
             rotationAlignment);
       }
 
-      futures.add(haloFuture.then((_) {
-        TextBuilder(_atlasManager).addText(
-            text,
-            paint.color.vector4,
-            textSize.toInt() * 16,
-            1.0,
-            point.x,
-            point.y,
-            4096,
-            graph,
-            rotation,
-            rotationAlignment);
-      }));
+      textBuilder.addText(
+          text,
+          paint.color.vector4,
+          textSize.toInt() * 16,
+          fontFamily,
+          1.0,
+          point.x,
+          point.y,
+          4096,
+          graph,
+          rotation,
+          rotationAlignment);
     }
-    await Future.wait(futures);
   }
-
-  static final _atlasManager = SdfAtlasManager();
 }

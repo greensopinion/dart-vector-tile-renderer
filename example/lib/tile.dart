@@ -68,7 +68,7 @@ class _MapTileState extends State<MapTile> {
   Tileset? _tileset;
   Uint8List? _renderData;
 
-  final TilesRenderer gpuRenderer = TilesRenderer();
+  late final TilesRenderer gpuRenderer = TilesRenderer(theme);
   late final Renderer canvasRenderer = Renderer(theme: theme);
 
   double get zoom => widget.options.zoom;
@@ -80,11 +80,11 @@ class _MapTileState extends State<MapTile> {
   }
 
   Future<void> _setup() async {
-    TilesRenderer();
+    TilesRenderer(theme);
     final tileset = await _loadTileset();
     _tileset = tileset;
     await TilesRenderer.initialize;
-    _renderData = await TilesRenderer.preRender(theme, zoom, tileset);
+    _renderData = TilesRenderer.preRender(theme, zoom, tileset);
     if (!_disposed) {
       setState(() {});
     }
@@ -123,7 +123,7 @@ class _MapTileState extends State<MapTile> {
       renderData: renderData,
     );
 
-    gpuRenderer.update(theme, zoom, [model]);
+    gpuRenderer.update(zoom, [model]);
 
     return Container(
         constraints: BoxConstraints(
