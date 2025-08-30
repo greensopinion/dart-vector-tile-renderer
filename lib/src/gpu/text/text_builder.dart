@@ -95,10 +95,26 @@ class TextBuilder {
 
       // Add vertices for this character with relative offsets
       tempVertices.addAll([
-        charMinX, charMinY, 0, left, bottom,
-        charMaxX, charMinY, 0, right, bottom,
-        charMaxX, charMaxY, 0, right, top,
-        charMinX, charMaxY, 0, left, top,
+        charMinX,
+        charMinY,
+        0,
+        left,
+        bottom,
+        charMaxX,
+        charMinY,
+        0,
+        right,
+        bottom,
+        charMaxX,
+        charMaxY,
+        0,
+        right,
+        top,
+        charMinX,
+        charMaxY,
+        0,
+        left,
+        top,
       ]);
 
       // Add indices for this character's quad (two triangles)
@@ -149,7 +165,7 @@ class TextBuilder {
 
     final mat = TextMaterial(atlas.texture, 0.08, 0.75 / expand, color);
 
-    final node = Node();
+    final node = Node(name: _nextId());
 
     node.addMesh(Mesh(geom, mat));
 
@@ -178,3 +194,6 @@ class TextBuilder {
     return angle;
   }
 }
+
+var _idSeed = 0;
+String _nextId() => 'text-${_idSeed++}';

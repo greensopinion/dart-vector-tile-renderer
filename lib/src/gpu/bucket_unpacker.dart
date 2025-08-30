@@ -1,26 +1,25 @@
 import 'package:flutter_scene/scene.dart';
+
 import 'background/background_geometry.dart';
 import 'colored_material.dart';
+import 'line/line_geometry.dart';
 import 'line/line_material.dart';
 import 'polygon/polygon_geometry.dart';
-
 import 'tile_render_data.dart';
 
-import 'line/line_geometry.dart';
-
 class BucketUnpacker {
-  void unpackOnto(SceneGraph graph, TileRenderData bucket) {
+  void unpackOnto(Node parent, TileRenderData bucket) {
     for (var packedMesh in bucket.data) {
-      graph.addMesh(Mesh(_unpackGeometry(packedMesh.geometry),
+      parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry),
           _unpackMaterial(packedMesh.material)));
     }
   }
 
   Material _unpackMaterial(PackedMaterial packed) =>
-      _materialConstructors[packed.type.index].call(packed);
+      _materialConstructors[packed.type.index]!.call(packed);
 
   Geometry _unpackGeometry(PackedGeometry packed) =>
-      _geometryConstructors[packed.type.index].call(packed);
+      _geometryConstructors[packed.type.index]!.call(packed);
 }
 
 enum GeometryType {
@@ -38,15 +37,19 @@ enum MaterialType {
   text;
 }
 
-final _geometryConstructors = [
-  (a) => LineGeometry(a),
-  (a) => PolygonGeometry(a),
-  (a) => BackgroundGeometry(),
-  // TODO
-];
+final _geometryTypeToContructor = {
+  GeometryType.line: (a) => LineGeometry(a),
+  GeometryType.polygon: (a) => PolygonGeometry(a),
+  GeometryType.background: (a) => BackgroundGeometry(),
+};
 
-final _materialConstructors = [
-  (a) => LineMaterial(a),
-  (a) => ColoredMaterial(a),
-  // TODO
-];
+final _geometryConstructors =
+    GeometryType.values.map((v) => _geometryTypeToContructor[v]).toList();
+
+final _materialTypeToContructor = {
+  MaterialType.line: (a) => LineMaterial(a),
+  MaterialType.colored: (a) => ColoredMaterial(a)
+};
+
+final _materialConstructors =
+    MaterialType.values.map((v) => _materialTypeToContructor[v]).toList();

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
@@ -65,6 +66,7 @@ class _MapTileState extends State<MapTile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   bool _disposed = false;
   Tileset? _tileset;
+  Uint8List? _renderData;
 
   final TilesRenderer gpuRenderer = TilesRenderer();
   late final Renderer canvasRenderer = Renderer(theme: theme);
@@ -79,8 +81,10 @@ class _MapTileState extends State<MapTile> {
 
   Future<void> _setup() async {
     TilesRenderer();
-    _tileset = await _loadTileset();
+    final tileset = await _loadTileset();
+    _tileset = tileset;
     await TilesRenderer.initialize;
+    _renderData = await TilesRenderer.preRender(theme, zoom, tileset);
     if (!_disposed) {
       setState(() {});
     }
@@ -107,7 +111,8 @@ class _MapTileState extends State<MapTile> {
     final position = Rect.fromLTWH(options.xOffset, options.yOffset,
         options.size.width, options.size.height);
     final tileset = _tileset;
-    if (tileset == null) {
+    final renderData = _renderData;
+    if (tileset == null || renderData == null) {
       return _progressIndicator();
     }
     final model = TileUiModel(
@@ -115,7 +120,7 @@ class _MapTileState extends State<MapTile> {
       position: position,
       tileset: tileset,
       rasterTileset: const RasterTileset(tiles: {}),
-      renderData: TilesRenderer.preRender((theme, zoom, tileset)),
+      renderData: renderData,
     );
 
     gpuRenderer.update(theme, zoom, [model]);

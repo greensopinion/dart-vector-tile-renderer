@@ -4,14 +4,14 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
+
+import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';
 import 'orthographic_camera.dart';
+import 'position_transform.dart';
 import 'scene_building_visitor.dart';
 import 'tile_prerenderer.dart';
 import 'tile_render_data.dart';
-
-import '../../vector_tile_renderer.dart';
-import 'position_transform.dart';
 
 class TileId {
   final int z;
@@ -68,8 +68,9 @@ class TilesRenderer {
     return scene;
   }
 
-  static Uint8List preRender((Theme, double, Tileset) args) =>
-      TilePreRenderer().preRender(args.$1, args.$2, args.$3);
+  static Future<Uint8List> preRender(
+          Theme theme, double zoom, Tileset tileset) =>
+      TilePreRenderer().preRender(theme, zoom, tileset);
 
   void update(Theme theme, double zoom, List<TileUiModel> models) {
     final scene = this.scene;
@@ -93,7 +94,8 @@ class TilesRenderer {
           zoom: zoom,
         );
 
-        SceneBuildingVisitor(node, visitorContext).visitAllFeatures(theme);
+        // FIXME: potential defect, we aren't awaiting this future
+        // SceneBuildingVisitor(node, visitorContext).visitAllFeatures(theme);
       }
       _positionByKey[key] = model.position;
       scene.add(node);

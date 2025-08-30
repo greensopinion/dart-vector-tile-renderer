@@ -12,10 +12,10 @@ import 'polygon/scene_polygon_builder.dart';
 import 'tile_render_data.dart';
 
 class TilePreRenderer {
-  Uint8List preRender(Theme theme, double zoom, Tileset tileset) {
+  Future<Uint8List> preRender(Theme theme, double zoom, Tileset tileset) async {
     final data = TileRenderData();
 
-    DefaultLayerVisitor(data, tileset, zoom).visitAllFeatures(theme);
+    await DefaultLayerVisitor(data, tileset, zoom).visitAllFeatures(theme);
 
     return data.pack();
   }
@@ -32,9 +32,9 @@ class DefaultLayerVisitor extends LayerVisitor {
         zoom: zoom);
   }
 
-  void visitAllFeatures(Theme theme) {
+  Future<void> visitAllFeatures(Theme theme) async {
     for (var layer in theme.layers) {
-      layer.accept(context, this);
+      await layer.accept(context, this);
     }
   }
 

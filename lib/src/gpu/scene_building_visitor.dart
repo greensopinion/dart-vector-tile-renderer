@@ -16,7 +16,7 @@ class SceneBuildingVisitor extends LayerVisitor {
 
   Future<void> visitAllFeatures(Theme theme) async {
     for (var layer in theme.layers) {
-      layer.accept(context, this);
+      await layer.accept(context, this);
     }
   }
 
