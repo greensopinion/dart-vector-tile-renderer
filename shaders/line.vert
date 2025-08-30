@@ -1,4 +1,5 @@
 #pragma shader stage(vertex)
+#include "shaders/utils.glsl"
 
 uniform FrameInfo {
   mat4 model_transform;
@@ -36,7 +37,7 @@ vec2 getSegmentPos(vec2 curr, vec2 next) {
 
   mat4 transform = frame_info.model_transform;
 
-  float scale = 0.5;
+  float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
 
   return curr + (clamp(offset.x, -5, 5) * offsetDist * perp / scale) + (clamp(offset.y, -5, 5) * offsetDist * unitDir / scale);
 }

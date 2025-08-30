@@ -95,7 +95,7 @@ class SceneLineBuilder {
     );
 
     final ByteData geomUniform = Float32List.fromList([
-      lineWidth / 512,
+      lineWidth / 128,
       extent / 2,
     ]).buffer.asByteData();
 
