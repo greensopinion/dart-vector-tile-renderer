@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
-// import again due to shadowed class name
-import 'package:vector_tile_renderer/src/model/tile_model.dart' as tile_model;
 
 enum RenderMode { shader, canvas }
 
@@ -52,18 +50,18 @@ class TileOptions {
   }
 }
 
-class Tile extends StatefulWidget {
+class MapTile extends StatefulWidget {
   final TileOptions options;
 
-  const Tile({Key? key, required this.options}) : super(key: key);
+  const MapTile({Key? key, required this.options}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _TileState();
+    return _MapTileState();
   }
 }
 
-class _TileState extends State<Tile> {
+class _MapTileState extends State<MapTile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   bool _disposed = false;
   Tileset? _tileset;
@@ -151,11 +149,11 @@ class _TileState extends State<Tile> {
   }
 
   Future<Tileset> _loadTileset() async {
-    tile_model.Tile tile = await loadVectorTile('assets/sample_tile.pbf');
+    Tile tile = await loadVectorTile('assets/sample_tile.pbf');
     return Tileset({'openmaptiles': tile});
   }
 
-  Future<tile_model.Tile> loadVectorTile(String path) async {
+  Future<Tile> loadVectorTile(String path) async {
     final tileBuffer = await DefaultAssetBundle.of(context).load(path);
     final tileBytes = tileBuffer.buffer
         .asUint8List(tileBuffer.offsetInBytes, tileBuffer.lengthInBytes);

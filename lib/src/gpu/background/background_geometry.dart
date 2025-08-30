@@ -1,10 +1,10 @@
-
 import 'dart:typed_data';
+
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/shaders.dart';
+
+import '../shaders.dart';
 
 class BackgroundGeometry extends UnskinnedGeometry {
-
   static final _vertices = ByteData.sublistView(Float32List.fromList([
     -1, -1,  0,
      1, -1,  0,

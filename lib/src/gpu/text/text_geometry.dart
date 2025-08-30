@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/shaders.dart';
+import '../shaders.dart';
 
 class TextGeometry extends UnskinnedGeometry {
   final ByteData _uniform;
@@ -16,9 +16,10 @@ class TextGeometry extends UnskinnedGeometry {
   }
 
   @override
-  void bind(RenderPass pass, HostBuffer transientsBuffer, Matrix4 modelTransform, Matrix4 cameraTransform,
-      Vector3 cameraPosition) {
-    super.bind(pass, transientsBuffer, modelTransform, cameraTransform, cameraPosition);
+  void bind(RenderPass pass, HostBuffer transientsBuffer,
+      Matrix4 modelTransform, Matrix4 cameraTransform, Vector3 cameraPosition) {
+    super.bind(pass, transientsBuffer, modelTransform, cameraTransform,
+        cameraPosition);
 
     final lineGeometrySlot = vertexShader.getUniformSlot('TextGeometry');
     final lineGeometryView = transientsBuffer.emplace(_uniform);

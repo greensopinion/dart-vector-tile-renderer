@@ -1,12 +1,11 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter_gpu/gpu.dart';
-import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/shaders.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+
+import '../shaders.dart';
+import '../tile_render_data.dart';
 
 class LineGeometry extends UnskinnedGeometry {
   late double lineWidth;

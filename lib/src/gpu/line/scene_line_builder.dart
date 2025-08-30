@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
-import 'package:vector_tile_renderer/src/gpu/line/line_geometry_builder.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+import '../color_extension.dart';
+import 'line_geometry_builder.dart';
+import '../tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../model/geometry_model.dart';
@@ -86,8 +86,8 @@ class SceneLineBuilder {
     return null;
   }
 
-  void _addMesh(List<List<TilePoint>> lines, double lineWidth,
-      int extent, PaintModel paint, List<double>? dashLengths) {
+  void _addMesh(List<List<TilePoint>> lines, double lineWidth, int extent,
+      PaintModel paint, List<double>? dashLengths) {
     final (vertices, indices) = LineGeometryBuilder().build(
       lines,
       paint.lineCap ?? LineCap.DEFAULT,
@@ -110,10 +110,12 @@ class SceneLineBuilder {
       dashLengths?[1] ?? 0.0,
     ]).buffer.asByteData();
 
-    renderData.addMesh(
-      PackedMesh(
-          PackedGeometry(vertices: vertices, indices: indices, uniform: geomUniform, type: GeometryType.line),
-          PackedMaterial(uniform: materialUniform, type: MaterialType.line))
-    );
+    renderData.addMesh(PackedMesh(
+        PackedGeometry(
+            vertices: vertices,
+            indices: indices,
+            uniform: geomUniform,
+            type: GeometryType.line),
+        PackedMaterial(uniform: materialUniform, type: MaterialType.line)));
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'bucket_unpacker.dart';
@@ -12,29 +11,30 @@ class TileRenderData {
 
   static TileRenderData unpack(Uint8List bytes) {
     final result = TileRenderData();
-    final view = ByteData.view(bytes.buffer, bytes.offsetInBytes, bytes.lengthInBytes);
-    
+    final view =
+        ByteData.view(bytes.buffer, bytes.offsetInBytes, bytes.lengthInBytes);
+
     final meshCount = _readHeader(view);
     int offset = 8;
-    
+
     for (int i = 0; i < meshCount; i++) {
       final mesh = _readMesh(view, bytes, offset);
       result.addMesh(mesh.mesh);
       offset = mesh.nextOffset;
     }
-    
+
     return result;
   }
 
   Uint8List pack() {
     final builder = BytesBuilder();
-    
+
     _writeHeader(builder, data.length);
-    
+
     for (final mesh in data) {
       _writeMesh(builder, mesh);
     }
-    
+
     return builder.takeBytes();
   }
 
@@ -45,9 +45,9 @@ class TileRenderData {
   static _MeshReadResult _readMesh(ByteData view, Uint8List bytes, int offset) {
     final header = _readMeshHeader(view, offset);
     offset += 18;
-    
+
     final meshData = _readMeshData(bytes, offset, header);
-    
+
     final mesh = PackedMesh(
       PackedGeometry(
         vertices: meshData.vertices,
@@ -60,7 +60,7 @@ class TileRenderData {
         type: header.materialType,
       ),
     );
-    
+
     return _MeshReadResult(mesh, meshData.nextOffset);
   }
 
@@ -75,26 +75,30 @@ class TileRenderData {
     );
   }
 
-  static _MeshData _readMeshData(Uint8List bytes, int offset, _MeshHeader header) {
+  static _MeshData _readMeshData(
+      Uint8List bytes, int offset, _MeshHeader header) {
     final vertices = _readByteDataView(bytes, offset, header.verticesLength);
     offset += header.verticesLength;
-    
+
     final indices = _readByteDataView(bytes, offset, header.indicesLength);
     offset += header.indicesLength;
-    
+
     ByteData? geometryUniform;
     if (header.geometryUniformLength > 0) {
-      geometryUniform = _readByteDataView(bytes, offset, header.geometryUniformLength);
+      geometryUniform =
+          _readByteDataView(bytes, offset, header.geometryUniformLength);
       offset += header.geometryUniformLength;
     }
-    
+
     ByteData? materialUniform;
     if (header.materialUniformLength > 0) {
-      materialUniform = _readByteDataView(bytes, offset, header.materialUniformLength);
+      materialUniform =
+          _readByteDataView(bytes, offset, header.materialUniformLength);
       offset += header.materialUniformLength;
     }
-    
-    return _MeshData(vertices, indices, geometryUniform, materialUniform, offset);
+
+    return _MeshData(
+        vertices, indices, geometryUniform, materialUniform, offset);
   }
 
   static ByteData _readByteDataView(Uint8List bytes, int offset, int length) {
@@ -124,32 +128,37 @@ class TileRenderData {
     //   - materialUniformLength: uint32 (4 bytes) at offset 14
     final meshHeaderBytes = Uint8List(18);
     final meshHeaderView = ByteData.view(meshHeaderBytes.buffer);
-    
+
     meshHeaderView.setUint8(0, mesh.geometry.type.index);
     meshHeaderView.setUint8(1, mesh.material.type.index);
-    meshHeaderView.setUint32(2, mesh.geometry.vertices.lengthInBytes, Endian.little);
-    meshHeaderView.setUint32(6, mesh.geometry.indices.lengthInBytes, Endian.little);
-    meshHeaderView.setUint32(10, mesh.geometry.uniform?.lengthInBytes ?? 0, Endian.little);
-    meshHeaderView.setUint32(14, mesh.material.uniform?.lengthInBytes ?? 0, Endian.little);
-    
+    meshHeaderView.setUint32(
+        2, mesh.geometry.vertices.lengthInBytes, Endian.little);
+    meshHeaderView.setUint32(
+        6, mesh.geometry.indices.lengthInBytes, Endian.little);
+    meshHeaderView.setUint32(
+        10, mesh.geometry.uniform?.lengthInBytes ?? 0, Endian.little);
+    meshHeaderView.setUint32(
+        14, mesh.material.uniform?.lengthInBytes ?? 0, Endian.little);
+
     builder.add(meshHeaderBytes);
   }
 
   static void _writeMeshData(BytesBuilder builder, PackedMesh mesh) {
     _writeByteData(builder, mesh.geometry.vertices);
     _writeByteData(builder, mesh.geometry.indices);
-    
+
     if (mesh.geometry.uniform != null) {
       _writeByteData(builder, mesh.geometry.uniform!);
     }
-    
+
     if (mesh.material.uniform != null) {
       _writeByteData(builder, mesh.material.uniform!);
     }
   }
 
   static void _writeByteData(BytesBuilder builder, ByteData data) {
-    builder.add(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    builder
+        .add(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
   }
 }
 
@@ -185,7 +194,8 @@ class _MeshData {
   final ByteData? materialUniform;
   final int nextOffset;
 
-  _MeshData(this.vertices, this.indices, this.geometryUniform, this.materialUniform, this.nextOffset);
+  _MeshData(this.vertices, this.indices, this.geometryUniform,
+      this.materialUniform, this.nextOffset);
 }
 
 class PackedMesh {
@@ -201,12 +211,11 @@ class PackedGeometry {
   final ByteData? uniform;
   final GeometryType type;
 
-  PackedGeometry({
-    required this.vertices,
-    required this.indices,
-    this.uniform,
-    required this.type
-  });
+  PackedGeometry(
+      {required this.vertices,
+      required this.indices,
+      this.uniform,
+      required this.type});
 }
 
 class PackedMaterial {

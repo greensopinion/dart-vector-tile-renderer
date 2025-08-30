@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry_builder.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+import 'polygon_geometry_builder.dart';
+import '../tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../model/geometry_model.dart';
@@ -69,12 +69,15 @@ class ScenePolygonBuilder {
 
     final color = paint.color.vector4;
 
-    final ByteData uniform = Float32List.fromList([color.x, color.y, color.z, color.w]).buffer.asByteData();
+    final ByteData uniform =
+        Float32List.fromList([color.x, color.y, color.z, color.w])
+            .buffer
+            .asByteData();
 
     renderData.addMesh(PackedMesh(
-        PackedGeometry(vertices: vertices, indices: indices, type: GeometryType.polygon),
-        PackedMaterial(uniform: uniform, type: MaterialType.colored)
-    ));
+        PackedGeometry(
+            vertices: vertices, indices: indices, type: GeometryType.polygon),
+        PackedMaterial(uniform: uniform, type: MaterialType.colored)));
   }
 
   int getPointCount(List<TilePolygon> polygons) => polygons.fold(

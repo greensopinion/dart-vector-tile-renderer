@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 import 'package:dart_earcut/dart_earcut.dart';
-import 'package:vector_tile_renderer/src/model/geometry_model.dart';
+import '../../model/geometry_model.dart';
 
 class PolygonGeometryBuilder {
-
   (ByteData, ByteData) build(List<TilePolygon> polygons) {
     final vertexBytesBuilder = BytesBuilder(copy: false);
     final indexBytesBuilder = BytesBuilder(copy: false);
@@ -19,7 +18,7 @@ class PolygonGeometryBuilder {
       indexBytesBuilder.add(idx.buffer.asUint8List());
     }
 
-    return(
+    return (
       ByteData.sublistView(vertexBytesBuilder.takeBytes()),
       ByteData.sublistView(indexBytesBuilder.takeBytes())
     );
@@ -60,7 +59,8 @@ class PolygonGeometryBuilder {
 
     return (
       vertices,
-      Uint16List.fromList(indices.map((it) => it + offset).toList(growable: false))
+      Uint16List.fromList(
+          indices.map((it) => it + offset).toList(growable: false))
     );
   }
 }

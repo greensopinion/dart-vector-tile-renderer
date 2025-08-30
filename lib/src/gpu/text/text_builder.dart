@@ -3,10 +3,11 @@ import 'dart:typed_data';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_atlas_manager.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
-import 'package:vector_tile_renderer/src/themes/style.dart';
+
+import '../../themes/style.dart';
+import 'sdf/sdf_atlas_manager.dart';
+import 'text_geometry.dart';
+import 'text_material.dart';
 
 class BoundingBox {
   double minX = double.infinity;
@@ -14,7 +15,8 @@ class BoundingBox {
   double minY = double.infinity;
   double maxY = double.negativeInfinity;
 
-  void updateBounds(double charMinX, double charMaxX, double charMinY, double charMaxY) {
+  void updateBounds(
+      double charMinX, double charMaxX, double charMinY, double charMaxY) {
     minX = minX < charMinX ? minX : charMinX;
     maxX = maxX > charMaxX ? maxX : charMaxX;
     minY = minY < charMinY ? minY : charMinY;
@@ -34,7 +36,17 @@ class TextBuilder {
 
   TextBuilder(this.atlasManager);
 
-  Future<void> addText(String text, Vector4 color, int fontSize, double expand, double x, double y, int canvasSize, SceneGraph scene, double rotation, RotationAlignment rotationAlignment) async {
+  Future<void> addText(
+      String text,
+      Vector4 color,
+      int fontSize,
+      double expand,
+      double x,
+      double y,
+      int canvasSize,
+      SceneGraph scene,
+      double rotation,
+      RotationAlignment rotationAlignment) async {
     final atlas = await atlasManager.getAtlasForString(text, "Roboto Regular");
 
     final tempVertices = <double>[];
@@ -111,10 +123,10 @@ class TextBuilder {
     final vertices = <double>[];
     for (int i = 0; i < tempVertices.length; i += 5) {
       vertices.addAll([
-        tempVertices[i] + centerOffsetX,     // offset_x (relative to anchor)
+        tempVertices[i] + centerOffsetX, // offset_x (relative to anchor)
         tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
-        tempVertices[i + 3],                 // u
-        tempVertices[i + 4],                 // v
+        tempVertices[i + 3], // u
+        tempVertices[i + 4], // v
         anchorX - (boundingBox.sizeX / 2),
         -anchorY - (boundingBox.sizeY / 2),
         anchorX + (boundingBox.sizeX / 2),
@@ -132,8 +144,8 @@ class TextBuilder {
     final geom = TextGeometry(
         ByteData.sublistView(Float32List.fromList(vertices)),
         ByteData.sublistView(Uint16List.fromList(indices)),
-        ByteData.sublistView(Float32List.fromList([dynamicRotationScale, -normalizeToPi(rotation)]))
-    );
+        ByteData.sublistView(Float32List.fromList(
+            [dynamicRotationScale, -normalizeToPi(rotation)])));
 
     final mat = TextMaterial(atlas.texture, 0.08, 0.75 / expand, color);
 
@@ -143,7 +155,8 @@ class TextBuilder {
 
     /// force symbols in front of other layers. We do it this way to ensure that text does not get drawn underneath
     /// layers from a neighboring tile. TODO: instead, group layers from all tiles together and draw the groups in order
-    node.localTransform = node.localTransform..translate(0.0, 0.0, 0.00001 * expand);
+    node.localTransform = node.localTransform
+      ..translate(0.0, 0.0, 0.00001 * expand);
 
     scene.add(node);
   }

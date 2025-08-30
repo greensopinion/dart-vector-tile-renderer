@@ -91,12 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     _zoom, 'Zoom', (value) => options.withValues(zoom: value)),
               ])),
           _radio('Rendering', RenderMode.values, () => options.renderMode,
-              (v) => options.withValues(renderMode: v as RenderMode)),
+              (v) => options.withValues(renderMode: v)),
           Expanded(
               child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Tile(options: options)]))
+                  children: [MapTile(options: options)]))
         ]));
   }
 

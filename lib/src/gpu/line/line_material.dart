@@ -2,9 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
-import 'package:vector_tile_renderer/src/gpu/utils.dart';
+import '../tile_render_data.dart';
+import '../utils.dart';
 
 import '../shaders.dart';
 

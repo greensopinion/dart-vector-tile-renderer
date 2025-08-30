@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/gpu/color_extension.dart';
+import '../gpu/color_extension.dart';
 
 import '../constants.dart';
 import '../context.dart';

@@ -1,4 +1,4 @@
-import 'package:vector_tile_renderer/src/themes/light_theme.dart';
+import 'light_theme.dart';
 
 import '../logger.dart';
 import 'theme.dart';

@@ -4,11 +4,11 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
-import 'package:vector_tile_renderer/src/gpu/orthographic_camera.dart';
-import 'package:vector_tile_renderer/src/gpu/scene_building_visitor.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_prerenderer.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+import 'bucket_unpacker.dart';
+import 'orthographic_camera.dart';
+import 'scene_building_visitor.dart';
+import 'tile_prerenderer.dart';
+import 'tile_render_data.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'position_transform.dart';
@@ -33,9 +33,7 @@ class TileUiModel {
       required this.position,
       required this.tileset,
       required this.rasterTileset,
-      required this.renderData
-      }
-  );
+      required this.renderData});
 }
 
 /// Experimental: renders tiles using flutter_gpu
@@ -50,7 +48,6 @@ class TilesRenderer {
   final _positionByKey = <String, Rect>{};
 
   Scene? _scene;
-
 
   TilesRenderer() {
     if (!_initializer.isCompleted) {
@@ -71,10 +68,8 @@ class TilesRenderer {
     return scene;
   }
 
-
   static Uint8List preRender((Theme, double, Tileset) args) =>
       TilePreRenderer().preRender(args.$1, args.$2, args.$3);
-
 
   void update(Theme theme, double zoom, List<TileUiModel> models) {
     final scene = this.scene;
@@ -88,9 +83,8 @@ class TilesRenderer {
       if (node == null) {
         node = Node(name: key);
 
-
-        BucketUnpacker().unpackOnto(node, TileRenderData.unpack(model.renderData!));
-
+        BucketUnpacker()
+            .unpackOnto(node, TileRenderData.unpack(model.renderData!));
 
         final visitorContext = VisitorContext(
           logger: const Logger.noop(),
@@ -99,8 +93,7 @@ class TilesRenderer {
           zoom: zoom,
         );
 
-        SceneBuildingVisitor(node, visitorContext)
-            .visitAllFeatures(theme);
+        SceneBuildingVisitor(node, visitorContext).visitAllFeatures(theme);
       }
       _positionByKey[key] = model.position;
       scene.add(node);
@@ -129,6 +122,5 @@ class TilesRenderer {
     return scene;
   }
 
-  void dispose() {
-  }
+  void dispose() {}
 }

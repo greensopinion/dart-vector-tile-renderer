@@ -29,13 +29,9 @@ extension InternalTileset on Tileset {
 /// usage.
 class TilesetPreprocessor {
   final Theme theme;
-  final bool _initializeGeometry;
 
   /// [theme] the theme to use for preprocessing
-  /// [initializeGeometry] whether to initialize geometry as part of preprocessing.
-  ///                      Defaults to false, only safe to use on the UI isolate.
-  TilesetPreprocessor(this.theme, {bool initializeGeometry = false})
-      : _initializeGeometry = initializeGeometry;
+  TilesetPreprocessor(this.theme);
 
   /// Pre-processes a tileset to eliminate some expensive processing from
   /// the rendering stage.

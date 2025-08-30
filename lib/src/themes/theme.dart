@@ -1,13 +1,12 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/themes/feature_resolver.dart';
-import 'package:vector_tile_renderer/src/themes/style.dart';
-import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
+import '../../vector_tile_renderer.dart';
 import '../context.dart';
+import 'feature_resolver.dart';
+import 'style.dart';
+import 'theme_layer_raster.dart';
 
 class Theme {
   /// the ID of the theme, which is used to identify the theme
@@ -70,7 +69,8 @@ abstract class LayerVisitor {
 
   void visitBackground(VisitorContext context, Vector4 color);
 
-  void visitRasterLayer(VisitorContext context, RasterTile image, RasterPaintModel paintModel);
+  void visitRasterLayer(
+      VisitorContext context, RasterTile image, RasterPaintModel paintModel);
 }
 
 /// Represents a layer in the theme. Can [render] to a [Context], and specifies
