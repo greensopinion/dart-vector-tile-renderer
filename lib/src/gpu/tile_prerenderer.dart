@@ -46,11 +46,11 @@ class DefaultLayerVisitor extends LayerVisitor {
         return SceneLineBuilder(tileRenderData, context)
             .addFeatures(style, features);
       case ThemeLayerType.fill:
+      case ThemeLayerType.fillExtrusion:
         return ScenePolygonBuilder(tileRenderData, context)
             .addPolygons(style, features);
       case ThemeLayerType.symbol:
         return;
-      case ThemeLayerType.fillExtrusion:
       case ThemeLayerType.background:
       case ThemeLayerType.raster:
       case ThemeLayerType.unsupported:

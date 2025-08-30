@@ -186,6 +186,11 @@ class _MapTileState extends State<MapTile> {
             maxHeight: widget.options.size.height),
         child: const SizedBox.expand(child: CircularProgressIndicator()),
       );
+  @override
+  void didUpdateWidget(covariant MapTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _setup();
+  }
 }
 
 class GpuTilePainter extends CustomPainter {

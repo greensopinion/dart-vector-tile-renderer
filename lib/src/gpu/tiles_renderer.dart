@@ -95,7 +95,7 @@ class TilesRenderer {
         );
 
         // FIXME: potential defect, we aren't awaiting this future
-        // SceneBuildingVisitor(node, visitorContext).visitAllFeatures(theme);
+        SceneBuildingVisitor(node, visitorContext).visitAllFeatures(theme);
       }
       _positionByKey[key] = model.position;
       scene.add(node);
