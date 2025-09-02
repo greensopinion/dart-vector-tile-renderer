@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
 
 import '../../themes/style.dart';
 import 'sdf/sdf_atlas_provider.dart';
@@ -47,7 +49,7 @@ class TextBuilder {
       int canvasSize,
       SceneGraph scene,
       double rotation,
-      RotationAlignment rotationAlignment) {
+      RotationAlignment rotationAlignment, GpuLabelSpace labelSpace) {
     final atlas = atlasProvider.getAtlasForString(text, fontFamily);
     if (atlas == null) {
       return;
@@ -140,6 +142,13 @@ class TextBuilder {
     final centerOffsetX = boundingBox.centerOffsetX;
     final centerOffsetY = boundingBox.centerOffsetY;
 
+    final aabb = Rect.fromLTRB(
+        anchorX - (boundingBox.sizeX / 2),
+        -anchorY - (boundingBox.sizeY / 2),
+        anchorX + (boundingBox.sizeX / 2),
+        -anchorY + (boundingBox.sizeY / 2)
+    );
+
     final vertices = <double>[];
     for (int i = 0; i < tempVertices.length; i += 5) {
       vertices.addAll([
@@ -147,10 +156,10 @@ class TextBuilder {
         tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
         tempVertices[i + 3], // u
         tempVertices[i + 4], // v
-        anchorX - (boundingBox.sizeX / 2),
-        -anchorY - (boundingBox.sizeY / 2),
-        anchorX + (boundingBox.sizeX / 2),
-        -anchorY + (boundingBox.sizeY / 2),
+        aabb.left,
+        aabb.top,
+        aabb.right,
+        aabb.bottom
       ]);
     }
 
@@ -177,6 +186,11 @@ class TextBuilder {
     /// layers from a neighboring tile. TODO: instead, group layers from all tiles together and draw the groups in order
     node.localTransform = node.localTransform
       ..translate(0.0, 0.0, 0.00001 * expand);
+
+    labelSpace.occupy(aabb, () {
+      node.removeAll();
+    });
+
 
     scene.add(node);
   }

@@ -1,4 +1,5 @@
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
 
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
@@ -10,6 +11,8 @@ class SceneBuildingTextVisitor extends LayerVisitor {
   final SdfAtlasProvider atlasProvider;
   final SceneGraph graph;
   final VisitorContext context;
+
+  final labelSpace = GpuLabelSpace();
 
   SceneBuildingTextVisitor(this.atlasProvider, this.graph, this.context);
 
@@ -24,7 +27,7 @@ class SceneBuildingTextVisitor extends LayerVisitor {
       Style style, Iterable<LayerFeature> features) {
     if (layerType == ThemeLayerType.symbol) {
       TextLayerVisitor(atlasProvider, graph, context)
-          .addFeatures(style, features);
+          .addFeatures(style, features, labelSpace);
     }
   }
 }
