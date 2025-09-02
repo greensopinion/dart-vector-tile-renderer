@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../features/symbol_rotation.dart';
@@ -19,7 +20,7 @@ class TextLayerVisitor {
 
   TextLayerVisitor(this.atlasProvider, this.graph, this.context);
 
-  void addFeatures(Style style, Iterable<LayerFeature> features) {
+  void addFeatures(Style style, Iterable<LayerFeature> features, GpuLabelSpace labelSpace) {
     final symbolLayout = style.symbolLayout;
     if (symbolLayout == null) {
       return;
@@ -92,18 +93,18 @@ class TextLayerVisitor {
       alreadyAdded.add(text);
 
       if (textHalo != null) {
-        textBuilder.addText(
-            text,
-            textHalo.color.vector4,
-            textSize.toInt() * 16,
-            fontFamily,
-            1.5,
-            point.x,
-            point.y,
-            4096,
-            graph,
-            rotation,
-            rotationAlignment);
+        // textBuilder.addText(
+        //     text,
+        //     textHalo.color.vector4,
+        //     textSize.toInt() * 16,
+        //     fontFamily,
+        //     1.5,
+        //     point.x,
+        //     point.y,
+        //     4096,
+        //     graph,
+        //     rotation,
+        //     rotationAlignment);
       }
 
       textBuilder.addText(
@@ -117,7 +118,9 @@ class TextLayerVisitor {
           4096,
           graph,
           rotation,
-          rotationAlignment);
+          rotationAlignment,
+          labelSpace
+      );
     }
   }
 }
