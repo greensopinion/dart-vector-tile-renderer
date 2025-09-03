@@ -2,14 +2,11 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
 
 import '../../themes/style.dart';
 import 'sdf/sdf_atlas_provider.dart';
 import 'text_geometry.dart';
-import 'text_material.dart';
 
 class BoundingBox {
   double minX = double.infinity;
@@ -38,21 +35,21 @@ class TextBuilder {
 
   TextBuilder(this.atlasProvider);
 
-  void addText(
-      String text,
-      Vector4 color,
-      int fontSize,
-      String? fontFamily,
-      double expand,
-      double x,
-      double y,
-      int canvasSize,
-      SceneGraph scene,
-      double rotation,
-      RotationAlignment rotationAlignment, GpuLabelSpace labelSpace) {
+  TextGeometry? addText({
+    required String text,
+    required int fontSize,
+    required String? fontFamily,
+    required double x,
+    required double y,
+    required int canvasSize,
+    required void Function() onRemoval,
+    required double rotation,
+    required RotationAlignment rotationAlignment,
+    required GpuLabelSpace labelSpace
+  }) {
     final atlas = atlasProvider.getAtlasForString(text, fontFamily);
     if (atlas == null) {
-      return;
+      return null;
     }
 
     final tempVertices = <double>[];
@@ -137,7 +134,7 @@ class TextBuilder {
       vertexIndex += 4;
     }
 
-    if (tempVertices.isEmpty) return;
+    if (tempVertices.isEmpty) return null;
 
     final centerOffsetX = boundingBox.centerOffsetX;
     final centerOffsetY = boundingBox.centerOffsetY;
@@ -176,23 +173,9 @@ class TextBuilder {
         ByteData.sublistView(Float32List.fromList(
             [dynamicRotationScale, -normalizeToPi(rotation)])));
 
-    final mat = TextMaterial(atlas.texture, 0.08, 0.75 / expand, color);
+    labelSpace.occupy(aabb, onRemoval);
 
-    final node = Node(name: _nextId());
-
-    node.addMesh(Mesh(geom, mat));
-
-    /// force symbols in front of other layers. We do it this way to ensure that text does not get drawn underneath
-    /// layers from a neighboring tile. TODO: instead, group layers from all tiles together and draw the groups in order
-    node.localTransform = node.localTransform
-      ..translate(0.0, 0.0, 0.00001 * expand);
-
-    labelSpace.occupy(aabb, () {
-      node.removeAll();
-    });
-
-
-    scene.add(node);
+    return geom;
   }
 
   static double normalizeToPi(double angle) {
@@ -212,6 +195,3 @@ class TextBuilder {
     return angle;
   }
 }
-
-var _idSeed = 0;
-String _nextId() => 'text-${_idSeed++}';
