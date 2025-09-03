@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
+import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../features/symbol_rotation.dart';
@@ -92,35 +94,41 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
+      final textNode = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000001));
+      final haloNode = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000002));
+
+      final geom = textBuilder.addText(
+          text: text,
+          fontSize: textSize.toInt() * 16,
+          fontFamily: fontFamily,
+          x: point.x,
+          y: point.y,
+          canvasSize: 4096,
+          onRemoval: () {
+            textNode.removeAll();
+            haloNode.removeAll();
+          },
+          rotation: rotation,
+          rotationAlignment: rotationAlignment,
+          labelSpace: labelSpace
+      );
+
+      final texture = atlasProvider.getAtlasForString(text, fontFamily)?.texture;
+
+      if (geom == null || texture == null) continue;
+
       if (textHalo != null) {
-        // textBuilder.addText(
-        //     text,
-        //     textHalo.color.vector4,
-        //     textSize.toInt() * 16,
-        //     fontFamily,
-        //     1.5,
-        //     point.x,
-        //     point.y,
-        //     4096,
-        //     graph,
-        //     rotation,
-        //     rotationAlignment);
+        final mesh = Mesh(geom, TextMaterial(texture, 0.08, 0.5, textHalo.color.vector4));
+
+        haloNode.addMesh(mesh);
       }
 
-      textBuilder.addText(
-          text,
-          paint.color.vector4,
-          textSize.toInt() * 16,
-          fontFamily,
-          1.0,
-          point.x,
-          point.y,
-          4096,
-          graph,
-          rotation,
-          rotationAlignment,
-          labelSpace
-      );
+      final mesh = Mesh(geom, TextMaterial(texture, 0.08, 0.75, paint.color.vector4));
+
+      textNode.addMesh(mesh);
+
+      graph.add(haloNode);
+      graph.add(textNode);
     }
   }
 }
