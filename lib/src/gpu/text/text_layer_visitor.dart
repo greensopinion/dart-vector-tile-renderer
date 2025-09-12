@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
@@ -14,6 +13,7 @@ import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
 import '../color_extension.dart';
+import 'ndc_label_space.dart';
 import 'text_builder.dart';
 
 class TextLayerVisitor {
@@ -25,7 +25,7 @@ class TextLayerVisitor {
 
   TextLayerVisitor(this.atlasProvider, this.graph, this.context, this.textureProvider);
 
-  void addFeatures(Style style, Iterable<LayerFeature> features, GpuLabelSpace labelSpace) {
+  void addFeatures(Style style, Iterable<LayerFeature> features, NdcLabelSpace labelSpace) {
     final symbolLayout = style.symbolLayout;
     if (symbolLayout == null) {
       return;

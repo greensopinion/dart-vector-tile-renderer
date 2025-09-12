@@ -1,11 +1,11 @@
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
 import '../../themes/theme.dart';
+import 'ndc_label_space.dart';
 import 'text_layer_visitor.dart';
 
 class SceneBuildingTextVisitor extends LayerVisitor {
@@ -14,7 +14,7 @@ class SceneBuildingTextVisitor extends LayerVisitor {
   final SceneGraph graph;
   final VisitorContext context;
 
-  final labelSpace = GpuLabelSpace();
+  final labelSpace = NdcLabelSpace();
 
   SceneBuildingTextVisitor(this.atlasProvider, this.graph, this.context, this.textureProvider);
 
