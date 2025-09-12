@@ -31,8 +31,6 @@ class SdfRenderer {
 
     final transientBuffer = gpu.gpuContext.createHostBuffer();
 
-    print("width: ${atlasWidth.toDouble()}, height: ${atlasHeight.toDouble()}, radius: ${atlasConfig.sdfRadius.toDouble()}");
-
     final uniformBufferView = transientBuffer.emplace(
         Float32List.fromList([atlasWidth.toDouble(), atlasHeight.toDouble(), atlasConfig.sdfRadius.toDouble()]).buffer.asByteData()
     );
@@ -48,36 +46,13 @@ class SdfRenderer {
     final inputTexture = gpu.gpuContext.createTexture(gpu.StorageMode.hostVisible, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
     inputTexture.overwrite(ByteData.sublistView(glyphs));
 
-    _saveTextureToFile(inputTexture, "input_sdf.png");
-
-
     final intermediateTexture = gpu.gpuContext.createTexture(gpu.StorageMode.devicePrivate, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
-    final outputTexture = gpu.gpuContext.createTexture(gpu.StorageMode.hostVisible, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
+    final outputTexture = gpu.gpuContext.createTexture(gpu.StorageMode.devicePrivate, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
 
     _draw(inputTexture, intermediateTexture, uniformBufferView, vertexBufferView, shaderLibrary["SdfBasicVertex"]!, shaderLibrary["SdfFragmentA"]!);
     _draw(intermediateTexture, outputTexture, uniformBufferView, vertexBufferView,  shaderLibrary["SdfBasicVertex"]!, shaderLibrary["SdfFragmentB"]!);
 
-    // Debug: Save output texture as image (async)
-    _saveTextureToFile(outputTexture, "output_sdf.png");
-
     return outputTexture;
-  }
-
-  void _saveTextureToFile(gpu.Texture texture, String filename) {
-    texture.asImage().toPng().then((byteData) {
-      final file = File("${Directory.current.path}/$filename");
-
-      file.writeAsBytes(byteData.buffer.asUint8List()).then((_) {
-        // ignore: avoid_print
-        print("SDF texture saved to ${file.path}");
-      }).catchError((e) {
-        // ignore: avoid_print
-        print("Failed to write SDF file: $e");
-      });
-    }).catchError((e) {
-      // ignore: avoid_print
-      print("Failed to convert SDF texture to image: $e");
-    });
   }
 
 
@@ -89,10 +64,6 @@ class SdfRenderer {
     );
 
     final renderPass = commandBuffer.createRenderPass(renderTarget);
-
-    renderPass.setCullMode(gpu.CullMode.none);
-    renderPass.setPrimitiveType(gpu.PrimitiveType.triangle);
-    renderPass.setWindingOrder(gpu.WindingOrder.counterClockwise);
 
     final pipeline = gpu.gpuContext.createRenderPipeline(vertexShader, fragmentShader);
     renderPass.bindPipeline(pipeline);
