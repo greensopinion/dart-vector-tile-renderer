@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_renderer.dart';
 import 'sdf_atlas_manager.dart';
 import 'sdf_generator.dart';
 import 'glyph_atlas_data.dart';
@@ -14,32 +15,33 @@ Future<GlyphAtlas> generateBitmapAtlas(
   // Initialize components
   final metricsExtractor = GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
   final glyphRenderer = GlyphRenderer(fontFamily: id.font, config: config);
-  final atlasBuilder = AtlasBuilder(config: config, fontSize: fontSize);
 
-  final glyphMetricsList = <GlyphMetrics>[];
+  final cellSize = ((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding;
 
-  // Process each character
-  for (int charCode = config.charCodeStart; charCode < config.charCodeEnd; charCode++) {
-    // Extract glyph metrics
-    final metrics = metricsExtractor.extractMetrics(
-      charCode,
-      atlasBuilder.targetCellWidth,
-      atlasBuilder.targetCellHeight,
-    );
-    glyphMetricsList.add(metrics);
+  final renderFontSize = fontSize * config.renderScale;
 
-    // Render glyph to SDF
-    final renderedGlyph = await glyphRenderer.renderGlyph(charCode, metrics, fontSize);
+  final metrics = List.generate(config.charCount, (i) => metricsExtractor.extractMetrics(
+    i + config.charCodeStart, cellSize, cellSize,
+  ));
 
-    // Add to atlas
-    atlasBuilder.addGlyph(renderedGlyph);
-  }
+  final sdfRenderer = SdfRenderer(config, renderFontSize + 120);
 
-  // Build final atlas
-  return atlasBuilder.buildAtlas(
+  final texture = sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(metrics, renderFontSize));
+
+  return GlyphAtlas(
+    texture: texture,
+    atlasWidth: (((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridCols,
+    atlasHeight: (((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridRows,
+    cellWidth: cellSize,
+    cellHeight:  cellSize,
+    glyphMetrics: metrics,
     fontFamily: id.font,
-    fontSize: fontSize.toDouble(),
-    glyphMetrics: glyphMetricsList,
+    fontSize: fontSize + 0.0,
+    colorFormat: 'grayscale',
+    sdfRadius: config.sdfRadius,
+    charCodeStart: config.charCodeStart,
+    charCodeEnd: config.charCodeEnd - 1,
+    gridCols: config.gridCols,
   );
 }
 
@@ -112,7 +114,7 @@ class GlyphMetricsExtractor {
       : _textStyle = ui.TextStyle(
           fontFamily: fontFamily,
           fontSize: fontSize.toDouble(),
-          color: const ui.Color(0xFFFFFFFF),
+          color: const ui.Color(0x000000FF),
           fontWeight: ui.FontWeight.normal,
         );
   
@@ -177,166 +179,61 @@ class GlyphRenderer {
   final AtlasConfig config;
   
   GlyphRenderer({required this.fontFamily, required this.config});
-  
-  Future<RenderedGlyph> renderGlyph(int charCode, GlyphMetrics metrics, int fontSize) async {
-    final renderFontSize = fontSize * config.renderScale;
-    final character = String.fromCharCode(charCode);
-    
-    // Calculate high-res buffer size
-    final maxCharWidth = renderFontSize + 40;
-    final maxCharHeight = renderFontSize + 40;
-    final highResSdfSize = math.max(maxCharWidth + 80, maxCharHeight + 80);
-    
-    // Create text painter for high-resolution rendering
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: character,
-        style: TextStyle(
-          fontFamily: fontFamily,
-          fontSize: renderFontSize.toDouble(),
-          color: Colors.white,
-          fontWeight: FontWeight.normal,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    
-    textPainter.layout();
-    
-    // Render to high-resolution canvas
-    final sdfData = await _renderToSDF(textPainter, highResSdfSize);
-    
-    return RenderedGlyph(
-      metrics: metrics,
-      sdfData: sdfData,
-      sdfSize: highResSdfSize,
-    );
-  }
-  
-  Future<Uint8List> _renderToSDF(TextPainter textPainter, int highResSdfSize) async {
+
+  Future<Uint8List> renderGlyphs(List<GlyphMetrics> metrics, int renderFontSize) async {
+
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    
-    // Fill background with black
+
+    final cellSize = renderFontSize + 120.0;
+
+    final canvasSize = Offset(cellSize * config.gridCols, cellSize * config.gridRows);
+
     canvas.drawRect(
-      Rect.fromLTWH(0, 0, highResSdfSize.toDouble(), highResSdfSize.toDouble()),
-      Paint()..color = Colors.black,
+      Rect.fromPoints(Offset.zero, canvasSize),
+      Paint()..color = Colors.white,
     );
-    
-    // Center the character
-    final centerX = (highResSdfSize - textPainter.width) / 2;
-    final centerY = (highResSdfSize - textPainter.height) / 2;
-    textPainter.paint(canvas, Offset(centerX, centerY));
-    
+
+    for (int charCode = config.charCodeStart; charCode < config.charCodeEnd; charCode++) {
+      final col = (charCode - config.charCodeStart) % config.gridCols;
+      final row = (charCode - config.charCodeStart) ~/ config.gridCols;
+
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: String.fromCharCode(charCode),
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: renderFontSize.toDouble(),
+            color: Colors.black,
+            fontWeight: FontWeight.w100,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+
+      textPainter.layout();
+
+      final paddingLeft = (cellSize - textPainter.width) / 2;
+      final paddingTop = (cellSize - textPainter.height) / 2;
+
+      textPainter.paint(canvas, Offset(paddingLeft + (col * cellSize), paddingTop + (row * cellSize)));
+    }
+
     // Convert to image
     final picture = recorder.endRecording();
-    final image = await picture.toImage(highResSdfSize, highResSdfSize);
-    
-    // Extract pixel data and convert to SDF
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    
-    Uint8List sdfData;
-    if (byteData != null) {
-      final rgbaPixels = byteData.buffer.asUint8List();
-      final highResBuffer = Uint8List(highResSdfSize * highResSdfSize);
-      
-      // Convert RGBA to grayscale
-      for (int i = 0; i < highResBuffer.length; i++) {
-        final rgbaIndex = i * 4;
-        highResBuffer[i] = rgbaPixels[rgbaIndex]; // Red channel
-      }
-      
-      // Generate SDF
-      sdfData = generateSDF(highResBuffer, highResSdfSize, highResSdfSize, config.sdfRadius, config.sdfCutoff);
-    } else {
-      sdfData = Uint8List(highResSdfSize * highResSdfSize);
-    }
-    
-    // Clean up
+    final image = await picture.toImage(canvasSize.dx.toInt(), canvasSize.dy.toInt());
+
+    final result = await getBytes(image);
+
     picture.dispose();
     image.dispose();
-    
-    return sdfData;
+    return result;
   }
-}
 
-/// Responsible for assembling rendered glyphs into the final atlas
-class AtlasBuilder {
-  final AtlasConfig config;
-  final int targetCellWidth;
-  final int targetCellHeight;
-  final int atlasWidth;
-  final int atlasHeight;
-  final Uint8List _atlasData;
-  
-  AtlasBuilder({required this.config, required int fontSize}) :
-    targetCellWidth = ((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding,
-    targetCellHeight = ((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding,
-    atlasWidth = (((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridCols,
-    atlasHeight = (((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridRows,
-    _atlasData = Uint8List((((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridCols * 
-                          (((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridRows);
-  
-  void addGlyph(RenderedGlyph renderedGlyph) {
-    final charCode = renderedGlyph.metrics.charCode;
-    final relativeIndex = charCode - config.charCodeStart;
-    final col = relativeIndex % config.gridCols;
-    final row = relativeIndex ~/ config.gridCols;
-    
-    final startX = col * targetCellWidth;
-    final startY = row * targetCellHeight;
-    
-    // Downsample the SDF to target resolution (4:1 ratio)
-    for (int y = 0; y < targetCellHeight; y++) {
-      for (int x = 0; x < targetCellWidth; x++) {
-        final highResX = x * config.renderScale;
-        final highResY = y * config.renderScale;
-        
-        int sum = 0;
-        int count = 0;
-        
-        // Sample using box filter
-        for (int dy = 0; dy < config.renderScale && (highResY + dy) < renderedGlyph.sdfSize; dy++) {
-          for (int dx = 0; dx < config.renderScale && (highResX + dx) < renderedGlyph.sdfSize; dx++) {
-            final sampleIndex = (highResY + dy) * renderedGlyph.sdfSize + (highResX + dx);
-            if (sampleIndex < renderedGlyph.sdfData.length) {
-              sum += renderedGlyph.sdfData[sampleIndex];
-              count++;
-            }
-          }
-        }
-        
-        final avgValue = count > 0 ? (sum / count).round() : 0;
-        final dstX = startX + x;
-        final dstY = startY + y;
-        final dstIndex = dstY * atlasWidth + dstX;
+  Future<Uint8List> getBytes(ui.Image image) async {
+    final byteData = Uint8List(image.width * image.height * 4);
+    final decoded = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))?.buffer.asUint8List();
 
-        if (dstIndex < _atlasData.length) {
-          _atlasData[dstIndex] = avgValue;
-        }
-      }
-    }
-  }
-  
-  GlyphAtlas buildAtlas({
-    required String fontFamily,
-    required double fontSize,
-    required List<GlyphMetrics> glyphMetrics,
-  }) {
-    return GlyphAtlas(
-      bitmapData: _atlasData,
-      atlasWidth: atlasWidth,
-      atlasHeight: atlasHeight,
-      cellWidth: targetCellWidth,
-      cellHeight: targetCellHeight,
-      glyphMetrics: glyphMetrics,
-      fontFamily: fontFamily,
-      fontSize: fontSize,
-      colorFormat: 'grayscale',
-      sdfRadius: config.sdfRadius,
-      charCodeStart: config.charCodeStart,
-      charCodeEnd: config.charCodeEnd - 1,
-      gridCols: config.gridCols,
-    );
+    return decoded ?? byteData;
   }
 }
