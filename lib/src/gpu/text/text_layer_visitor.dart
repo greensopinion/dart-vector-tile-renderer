@@ -3,7 +3,10 @@ import 'dart:math';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
+import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../features/symbol_rotation.dart';
@@ -11,16 +14,16 @@ import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
 import '../color_extension.dart';
-import 'sdf/sdf_atlas_provider.dart';
 import 'text_builder.dart';
 
 class TextLayerVisitor {
   final SceneGraph graph;
-  final SdfAtlasProvider atlasProvider;
+  final AtlasProvider atlasProvider;
+  final TextureProvider textureProvider;
   final VisitorContext context;
   final Set<String> alreadyAdded = <String>{};
 
-  TextLayerVisitor(this.atlasProvider, this.graph, this.context);
+  TextLayerVisitor(this.atlasProvider, this.graph, this.context, this.textureProvider);
 
   void addFeatures(Style style, Iterable<LayerFeature> features, GpuLabelSpace labelSpace) {
     final symbolLayout = style.symbolLayout;
@@ -113,7 +116,7 @@ class TextLayerVisitor {
           labelSpace: labelSpace
       );
 
-      final texture = atlasProvider.getAtlasForString(text, fontFamily)?.texture;
+      final texture = textureProvider.get(_createPlaceholderId(fontFamily).hashCode);
 
       if (geom == null || texture == null) continue;
 
@@ -132,3 +135,7 @@ class TextLayerVisitor {
     }
   }
 }
+
+//FIXME: need to provide atlasses for character ranges beyond 256
+AtlasID _createPlaceholderId(String? fontFamily) =>
+    AtlasID(font: fontFamily ?? 'Roboto Regular', charStart: 0, charCount: 256);

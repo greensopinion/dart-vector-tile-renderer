@@ -4,6 +4,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';
@@ -11,7 +14,6 @@ import 'orthographic_camera.dart';
 import 'position_transform.dart';
 import 'text/atlas_creating_text_visitor.dart';
 import 'text/scene_building_text_visitor.dart';
-import 'text/sdf/sdf_atlas_manager.dart';
 import 'tile_prerenderer.dart';
 import 'tile_render_data.dart';
 
@@ -48,7 +50,9 @@ class TilesRenderer {
   static Future<void> initialize = _initializer.future;
 
   final _positionByKey = <String, Rect>{};
-  SdfAtlasManager sdfAtlasManager = SdfAtlasManager();
+  final AtlasProvider _atlasProvider = AtlasProvider();
+  final TextureProvider _textureProvider = TextureProvider();
+  late final _atlasGenerator = AtlasGenerator(atlasProvider: _atlasProvider, textureProvider: _textureProvider);
   Theme theme;
   Scene? _scene;
 
@@ -81,7 +85,7 @@ class TilesRenderer {
           tileset: tileset, rasterTileset: const RasterTileset(tiles: {})),
       zoom: zoom,
     );
-    await AtlasCreatingTextVisitor(sdfAtlasManager, theme)
+    await AtlasCreatingTextVisitor(_atlasGenerator, theme)
         .visitAllFeatures(visitorContext);
   }
 
@@ -110,7 +114,7 @@ class TilesRenderer {
           zoom: zoom,
         );
 
-        SceneBuildingTextVisitor(sdfAtlasManager, node, visitorContext)
+        SceneBuildingTextVisitor(_atlasProvider, node, visitorContext, _textureProvider)
             .visitAllFeatures(theme);
       }
       _positionByKey[key] = model.position;

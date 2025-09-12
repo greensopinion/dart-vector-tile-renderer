@@ -1,10 +1,32 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:math' as math;
 
-import 'package:flutter_gpu/gpu.dart';
-
 const int formatVersion = 2;
+
+class AtlasID {
+  final String font;
+  final int charStart;
+  final int charCount;
+
+  const AtlasID(
+      {required this.font, required this.charStart, required this.charCount});
+
+  @override
+  String toString() {
+    return 'AtlasID{font: $font, charStart: $charStart, charCount: $charCount}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is AtlasID &&
+              runtimeType == other.runtimeType &&
+              font == other.font &&
+              charStart == other.charStart &&
+              charCount == other.charCount;
+
+  @override
+  int get hashCode => Object.hash(font, charStart, charCount);
+}
 
 class GlyphMetrics {
   final int charCode;
@@ -79,10 +101,7 @@ class GlyphAtlas {
   final int charCodeEnd;
   final int gridCols;
 
-  final Texture texture;
-  
   GlyphAtlas({
-    required this.texture,
     required this.atlasWidth,
     required this.atlasHeight,
     required this.cellWidth,
@@ -96,10 +115,14 @@ class GlyphAtlas {
     required this.charCodeEnd,
     required this.gridCols,
   });
-  
-  /// Calculate the number of grid rows based on character range and grid columns
-  int get gridRows => ((charCodeEnd - charCodeStart + 1) / gridCols).ceil();
-  
+
+  int get charCount => charCodeEnd - charCodeStart + 1;
+
+  int get gridRows => (charCount / gridCols).ceil();
+
+  AtlasID get id => AtlasID(font: fontFamily, charStart: charCodeStart, charCount: charCount);
+
+
   CharacterUV getCharacterUV(int charCode) {
     if (charCode < charCodeStart || charCode > charCodeEnd) {
       throw ArgumentError('Character code must be between $charCodeStart and $charCodeEnd');

@@ -1,14 +1,15 @@
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
+
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
-import 'sdf/sdf_atlas_manager.dart';
 
 class AtlasCreatingTextVisitor extends LayerVisitorAsync {
-  final SdfAtlasManager atlasManager;
+  final AtlasGenerator atlasGenerator;
   final Theme theme;
 
-  AtlasCreatingTextVisitor(this.atlasManager, this.theme);
+  AtlasCreatingTextVisitor(this.atlasGenerator, this.theme);
 
   Future visitAllFeatures(VisitorContext context) async {
     for (var layer in theme.layers) {
@@ -41,7 +42,7 @@ class AtlasCreatingTextVisitor extends LayerVisitorAsync {
           continue;
         }
         final fontFamily = symbolLayout.text?.fontFamily ?? 'Roboto Regular';
-        await atlasManager.loadAtlas(text, fontFamily);
+        await atlasGenerator.loadAtlas(text, fontFamily);
       }
     }
   }
