@@ -1,49 +1,105 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_renderer.dart';
-import 'sdf_atlas_manager.dart';
-import 'sdf_generator.dart';
+import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 import 'glyph_atlas_data.dart';
 
-Future<GlyphAtlas> generateBitmapAtlas(
-  AtlasID id, int fontSize
-) async {
-  final config = AtlasConfig(charCodeStart: id.charStart, charCount: id.charCount);
+class AtlasGenerator {
+  final _loading = <AtlasID, Completer<void>>{};
 
-  // Initialize components
-  final metricsExtractor = GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
-  final glyphRenderer = GlyphRenderer(fontFamily: id.font, config: config);
+  final AtlasProvider atlasProvider;
+  final TextureProvider textureProvider;
 
-  final cellSize = fontSize + config.sdfPadding;
+  AtlasGenerator({
+    required this.atlasProvider,
+    required this.textureProvider
+  });
 
-  final renderFontSize = fontSize * config.renderScale;
+  Future loadAtlas(String str, String fontFamily) async {
+    final chars = str.codeUnits;
+    final (min, max) = _getBounds(chars);
 
-  final metrics = List.generate(config.charCount, (i) => metricsExtractor.extractMetrics(
-    i + config.charCodeStart, cellSize, cellSize,
-  ));
+    await _loadAtlas(_createPlaceholderId(fontFamily));
+  }
 
-  final sdfRenderer = SdfRenderer(config, cellSize * config.renderScale);
+  FutureOr<void> _loadAtlas(AtlasID id) async {
+    var atlas = _loading[id];
+    if (atlas == null) {
+      final completer = Completer<void>();
+      _loading[id] = completer;
+      try {
+        await _generateBitmapAtlas(id, 24);
+        completer.complete(null);
+      } catch (e) {
+        completer.completeError(e);
+      }
+      atlas = completer;
+    }
+    return atlas.future;
+  }
 
-  final texture = sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(metrics, renderFontSize));
+  Future<void> _generateBitmapAtlas(
+      AtlasID id, int fontSize
+      ) async {
+    final config = AtlasConfig(charCodeStart: id.charStart, charCount: id.charCount);
 
-  return GlyphAtlas(
-    texture: texture,
-    atlasWidth: cellSize * config.gridCols,
-    atlasHeight: cellSize * config.gridRows,
-    cellWidth: cellSize,
-    cellHeight:  cellSize,
-    glyphMetrics: metrics,
-    fontFamily: id.font,
-    fontSize: fontSize + 0.0,
-    colorFormat: 'grayscale',
-    sdfRadius: config.sdfRadius,
-    charCodeStart: config.charCodeStart,
-    charCodeEnd: config.charCodeEnd - 1,
-    gridCols: config.gridCols,
-  );
+    // Initialize components
+    final metricsExtractor = GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
+    final glyphRenderer = GlyphRenderer(fontFamily: id.font, config: config);
+
+    final cellSize = fontSize + config.sdfPadding;
+
+    final renderFontSize = fontSize * config.renderScale;
+
+    final metrics = List.generate(config.charCount, (i) => metricsExtractor.extractMetrics(
+      i + config.charCodeStart, cellSize, cellSize,
+    ));
+
+    final sdfRenderer = SdfRenderer(config, cellSize * config.renderScale);
+
+    textureProvider.addLoaded(sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(metrics, renderFontSize)), id.hashCode);
+
+    atlasProvider.addLoaded(GlyphAtlas(
+      atlasWidth: cellSize * config.gridCols,
+      atlasHeight: cellSize * config.gridRows,
+      cellWidth: cellSize,
+      cellHeight: cellSize,
+      glyphMetrics: metrics,
+      fontFamily: id.font,
+      fontSize: fontSize + 0.0,
+      colorFormat: 'grayscale',
+      sdfRadius: config.sdfRadius,
+      charCodeStart: config.charCodeStart,
+      charCodeEnd: config.charCodeEnd - 1,
+      gridCols: config.gridCols,
+    ));
+  }
+
+  (int, int) _getBounds(List<int> chars) {
+    int minCode = 1000000000000;
+    int maxCode = -1;
+
+    for (int code in chars) {
+      if (code < minCode) {
+        minCode = code;
+      }
+      if (code > maxCode) {
+        maxCode = code;
+      }
+    }
+    maxCode++;
+    return ((minCode / 256).truncate() * 256, (maxCode / 256).ceil() * 256);
+  }
+
 }
+
+//FIXME: need to provide atlasses for character ranges beyond 256
+AtlasID _createPlaceholderId(String? fontFamily) =>
+    AtlasID(font: fontFamily ?? 'Roboto Regular', charStart: 0, charCount: 256);
 
 
 /// Configuration for atlas generation
