@@ -66,7 +66,6 @@ class CharacterUV {
 
 class GlyphAtlas {
   
-  final Uint8List bitmapData;
   final int atlasWidth;
   final int atlasHeight;
   final int cellWidth;
@@ -80,11 +79,10 @@ class GlyphAtlas {
   final int charCodeEnd;
   final int gridCols;
 
-  late final Texture texture = gpuContext.createTexture(StorageMode.hostVisible, atlasWidth, atlasHeight,
-      format: PixelFormat.r8UNormInt);
+  final Texture texture;
   
   GlyphAtlas({
-    required this.bitmapData,
+    required this.texture,
     required this.atlasWidth,
     required this.atlasHeight,
     required this.cellWidth,
@@ -97,9 +95,7 @@ class GlyphAtlas {
     required this.charCodeStart,
     required this.charCodeEnd,
     required this.gridCols,
-  }) {
-    texture.overwrite(bitmapData.buffer.asByteData());
-  }
+  });
   
   /// Calculate the number of grid rows based on character range and grid columns
   int get gridRows => ((charCodeEnd - charCodeStart + 1) / gridCols).ceil();
@@ -169,77 +165,5 @@ class GlyphAtlas {
     } catch (e) {
       return null;
     }
-  }
-  
-  List<Map<String, dynamic>?> getGlyphsJson() {
-    final glyphsArray = List<Map<String, dynamic>?>.filled(charCodeEnd - charCodeStart + 1, null);
-    
-    for (var metrics in glyphMetrics) {
-      glyphsArray[metrics.charCode - charCodeStart] = metrics.toJson();
-    }
-    
-    return glyphsArray;
-  }
-  
-  /// Get full atlas info including metadata
-  Map<String, dynamic> toJson() {
-    return {
-      'atlas': {
-        'format_version': formatVersion, // Updated version to indicate TinySDF-compatible format
-        'width': atlasWidth,
-        'height': atlasHeight,
-        'cellWidth': cellWidth,
-        'cellHeight': cellHeight,
-        'gridCols': gridCols,
-        'gridRows': gridRows,
-        'fontFamily': fontFamily,
-        'fontSize': fontSize,
-        'colorFormat': colorFormat,
-        'sdfRadius': sdfRadius,
-        'charCodeStart': charCodeStart,
-        'charCodeEnd': charCodeEnd,
-      },
-      'glyphs': getGlyphsJson(),
-    };
-  }
-  
-  /// Create a BitmapAtlas from JSON string
-  static GlyphAtlas fromJson(String jsonString, Uint8List bitmapData) {
-    final Map<String, dynamic> data = json.decode(jsonString);
-    final Map<String, dynamic> atlasInfo = data['atlas'];
-    final List<dynamic> glyphsData = data['glyphs'];
-    
-    // Validate format version
-    final int formatVersion = atlasInfo['format_version'] as int;
-    if (formatVersion != formatVersion) {
-      throw FormatException(
-        'Unsupported atlas format version: $formatVersion. Expected: $formatVersion'
-      );
-    }
-    
-    // Parse glyph metrics
-    final List<GlyphMetrics> glyphMetrics = [];
-    for (int i = 0; i < glyphsData.length; i++) {
-      final glyphJson = glyphsData[i];
-      if (glyphJson != null) {
-        glyphMetrics.add(GlyphMetrics.fromJson(i + atlasInfo['charCodeStart'] as int, glyphJson as Map<String, dynamic>));
-      }
-    }
-    
-    return GlyphAtlas(
-      bitmapData: bitmapData,
-      atlasWidth: atlasInfo['width'] as int,
-      atlasHeight: atlasInfo['height'] as int,
-      cellWidth: atlasInfo['cellWidth'] as int,
-      cellHeight: atlasInfo['cellHeight'] as int,
-      glyphMetrics: glyphMetrics,
-      fontFamily: atlasInfo['fontFamily'] as String,
-      fontSize: (atlasInfo['fontSize'] as num).toDouble(),
-      colorFormat: atlasInfo['colorFormat'] as String,
-      sdfRadius: atlasInfo['sdfRadius'] as int,
-      charCodeStart: atlasInfo['charCodeStart'] as int,
-      charCodeEnd: atlasInfo['charCodeEnd'] as int,
-      gridCols: atlasInfo['gridCols'] as int,
-    );
   }
 }
