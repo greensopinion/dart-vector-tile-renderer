@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-class GpuLabelSpace {
+class NdcLabelSpace {
   final Map<Rect, void Function()> existing = {};
   
   void occupy(Rect space, void Function() onRemoved) {

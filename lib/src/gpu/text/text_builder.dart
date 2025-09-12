@@ -2,10 +2,10 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/gpu/text/gpu_label_space.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 
 import '../../themes/style.dart';
+import 'ndc_label_space.dart';
 import 'text_geometry.dart';
 
 class BoundingBox {
@@ -45,7 +45,7 @@ class TextBuilder {
     required void Function() onRemoval,
     required double rotation,
     required RotationAlignment rotationAlignment,
-    required GpuLabelSpace labelSpace
+    required NdcLabelSpace labelSpace
   }) {
     final atlas = atlasProvider.getAtlasForString(text, fontFamily);
     if (atlas == null) {
