@@ -54,7 +54,7 @@ class SdfRenderer {
     final intermediateTexture = gpu.gpuContext.createTexture(gpu.StorageMode.hostVisible, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
     final outputTexture = gpu.gpuContext.createTexture(gpu.StorageMode.hostVisible, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
 
-    _draw(inputTexture, intermediateTexture, uniformBufferView, vertexBufferView, shaderLibrary["SdfBasicVertex"]!, shaderLibrary["SdfBasicFragment"]!);
+    _draw(inputTexture, intermediateTexture, uniformBufferView, vertexBufferView, shaderLibrary["SdfBasicVertex"]!, shaderLibrary["SdfFragmentA"]!);
     //_draw(intermediateTexture, outputTexture, uniformBufferView, vertexBufferView,  shaderLibrary["SdfBasicVertex"]!, shaderLibrary["SdfFragmentB"]!);
 
     // Debug: Save output texture as image (async)

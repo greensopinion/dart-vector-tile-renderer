@@ -35,16 +35,12 @@
         "type": "vertex",
         "file": "shaders/sdf_gen/basic.vert"
     },
-    "SdfBasicFragment": {
-        "type": "fragment",
-        "file": "shaders/sdf_gen/basic.frag"
-    },
     "SdfFragmentA": {
-        "type": "vertex",
+        "type": "fragment",
         "file": "shaders/sdf_gen/stage_a.frag"
     },
     "SdfFragmentB": {
-        "type": "vertex",
+        "type": "fragment",
         "file": "shaders/sdf_gen/stage_b.frag"
     }
 }
