@@ -16,7 +16,7 @@ Future<GlyphAtlas> generateBitmapAtlas(
   final metricsExtractor = GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
   final glyphRenderer = GlyphRenderer(fontFamily: id.font, config: config);
 
-  final cellSize = ((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding;
+  final cellSize = fontSize + config.sdfPadding;
 
   final renderFontSize = fontSize * config.renderScale;
 
@@ -24,14 +24,14 @@ Future<GlyphAtlas> generateBitmapAtlas(
     i + config.charCodeStart, cellSize, cellSize,
   ));
 
-  final sdfRenderer = SdfRenderer(config, renderFontSize + 120);
+  final sdfRenderer = SdfRenderer(config, cellSize * config.renderScale);
 
   final texture = sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(metrics, renderFontSize));
 
   return GlyphAtlas(
     texture: texture,
-    atlasWidth: (((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridCols,
-    atlasHeight: (((fontSize * config.renderScale + 40) ~/ config.renderScale) + config.sdfPadding) * config.gridRows,
+    atlasWidth: cellSize * config.gridCols,
+    atlasHeight: cellSize * config.gridRows,
     cellWidth: cellSize,
     cellHeight:  cellSize,
     glyphMetrics: metrics,
@@ -52,7 +52,7 @@ class AtlasConfig {
   final int charCount;
   late final int gridCols;
   late final int gridRows;
-  final int sdfRadius;
+  late final int sdfRadius;
   final int renderScale;
   final double sdfCutoff;
   final int sdfPadding;
@@ -60,11 +60,11 @@ class AtlasConfig {
   AtlasConfig({
     required this.charCodeStart,
     required this.charCount,
-    this.sdfRadius = 32,
-    this.renderScale = 4,
+    this.renderScale = 2,
     this.sdfCutoff = 0.25,
     this.sdfPadding = 20,
   }) {
+    sdfRadius = 8 * renderScale;
     gridCols = _getColumnCount(charCount);
     gridRows = _calculateRows(charCount, gridCols);
   }
@@ -186,7 +186,7 @@ class GlyphRenderer {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
 
-    final cellSize = renderFontSize + 120.0;
+    final cellSize = renderFontSize + (config.sdfPadding * config.renderScale.toDouble());
 
     final canvasSize = Offset(cellSize * config.gridCols, cellSize * config.gridRows);
 
@@ -206,7 +206,7 @@ class GlyphRenderer {
             fontFamily: fontFamily,
             fontSize: renderFontSize.toDouble(),
             color: Colors.black,
-            fontWeight: FontWeight.w100,
+            fontWeight: FontWeight.w200,
           ),
         ),
         textDirection: TextDirection.ltr,
