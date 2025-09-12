@@ -116,6 +116,7 @@ class GlyphMetricsExtractor {
           fontSize: fontSize.toDouble(),
           color: const ui.Color(0x000000FF),
           fontWeight: ui.FontWeight.normal,
+          letterSpacing: fontSize.toDouble() / 16
         );
   
   GlyphMetrics extractMetrics(int charCode, int targetCellWidth, int targetCellHeight) {

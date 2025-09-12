@@ -118,12 +118,12 @@ class TextLayerVisitor {
       if (geom == null || texture == null) continue;
 
       if (textHalo != null) {
-        final mesh = Mesh(geom, TextMaterial(texture, 0.08, 0.5, textHalo.color.vector4));
+        final mesh = Mesh(geom, TextMaterial(texture, 0.04, 0.8, textHalo.color.vector4));
 
         haloNode.addMesh(mesh);
       }
 
-      final mesh = Mesh(geom, TextMaterial(texture, 0.08, 0.75, paint.color.vector4));
+      final mesh = Mesh(geom, TextMaterial(texture, 0.04, 0.975, paint.color.vector4));
 
       textNode.addMesh(mesh);
 
