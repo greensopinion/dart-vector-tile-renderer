@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_gpu/gpu.dart';
 import 'package:vector_math/vector_math.dart';
 
@@ -36,4 +38,14 @@ String formatBytes(int size) {
   } else {
     return "${(size / 100000000).truncate() / 10} GB";
   }
+}
+
+ByteData intToByteData(int value) {
+  final byteData = ByteData(8);
+  byteData.setInt64(0, value, Endian.little);
+  return byteData;
+}
+
+int byteDataToInt(ByteData byteData) {
+  return byteData.getInt64(0, Endian.little);
 }

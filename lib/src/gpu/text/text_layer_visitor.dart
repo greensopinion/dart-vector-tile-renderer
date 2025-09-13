@@ -1,11 +1,15 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+import 'package:vector_tile_renderer/src/gpu/utils.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../features/symbol_rotation.dart';
@@ -116,23 +120,37 @@ class TextLayerVisitor {
           labelSpace: labelSpace
       );
 
-      final texture = textureProvider.get(_createPlaceholderId(fontFamily).hashCode);
+      final textureID = _createPlaceholderId(fontFamily).hashCode;
+      final textureIDBytes = intToByteData(textureID).buffer.asUint8List();
 
-      if (geom == null || texture == null) continue;
+      if (geom == null) continue;
 
       if (textHalo != null) {
-        final mesh = Mesh(geom, TextMaterial(texture, 0.06, 0.85, textHalo.color.vector4));
-
+        final mesh = _createTextMesh(geom, textureIDBytes, textHalo.color.vector4, true, textureProvider);
         haloNode.addMesh(mesh);
       }
-
-      final mesh = Mesh(geom, TextMaterial(texture, 0.02, 0.975, paint.color.vector4));
-
+      final mesh = _createTextMesh(geom, textureIDBytes, paint.color.vector4, false, textureProvider);
       textNode.addMesh(mesh);
 
       graph.add(haloNode);
       graph.add(textNode);
     }
+  }
+
+  Mesh _createTextMesh(Geometry geom, Uint8List textureIDBytes, Vector4 color, bool isHalo, TextureProvider textureProvider) {
+    final softnessAndThreshold = isHalo ? [0.06, 0.85] : [0.02, 0.975];
+    
+    final uniform = (
+        BytesBuilder(copy: true)
+          ..add(textureIDBytes)
+          ..add(Float32List.fromList([
+            color.r, color.g, color.b, color.a, 1.0, ...softnessAndThreshold,
+          ]).buffer.asUint8List())
+    ).toBytes().buffer.asByteData();
+
+    final packed = PackedMaterial(type: MaterialType.text, uniform: uniform);
+    
+    return Mesh(geom, TextMaterial(packed, textureProvider));
   }
 }
 
