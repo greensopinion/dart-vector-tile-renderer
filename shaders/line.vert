@@ -24,6 +24,7 @@ out vec2 v_texture_coords;
 
 out float v_length;
 out float cumulative_length;
+out vec3 v_position;
 
 vec2 scalePoint(vec2 p) {
   return vec2((p.x / line_geometry.extentScale) - 1, 1 - (p.y / line_geometry.extentScale));
@@ -47,6 +48,7 @@ void main() {
   vec2 next = scalePoint(point_b);
 
   vec2 segment_pos = getSegmentPos(curr, next);
+  v_position = vec3(segment_pos, 0.0);
 
   gl_Position = frame_info.model_transform * vec4(segment_pos, 0.0, 1.0);
 
