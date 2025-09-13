@@ -43,7 +43,6 @@ class TextBuilder {
     required double x,
     required double y,
     required int canvasSize,
-    required void Function() onRemoval,
     required double rotation,
     required RotationAlignment rotationAlignment,
     required NdcLabelSpace labelSpace
@@ -175,9 +174,11 @@ class TextBuilder {
         type: GeometryType.text
     );
 
-    labelSpace.occupy(aabb, onRemoval);
-
-    return geom;
+    if (labelSpace.tryOccupy(aabb)) {
+      return geom;
+    } else {
+      return null;
+    }
   }
 
   static double normalizeToPi(double angle) {

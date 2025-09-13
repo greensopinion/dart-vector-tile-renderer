@@ -1,16 +1,16 @@
 import 'dart:ui';
 
 class NdcLabelSpace {
-  final Map<Rect, void Function()> existing = {};
+  final Set<Rect> existing = {};
   
-  void occupy(Rect space, void Function() onRemoved) {
-    final currentExisting = existing.keys.toSet();
+  bool tryOccupy(Rect space) {
+    final currentExisting = existing.toSet();
     for(final rect in currentExisting) {
       if (rect.overlaps(space)) {
-        existing[rect]?.call();
-        existing.remove(rect);
+        return false;
       }
     }
-    existing[space] = onRemoved;
+    existing.add(space);
+    return true;
   }
 }
