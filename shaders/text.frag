@@ -1,27 +1,39 @@
 uniform FragInfo {
-  vec4 color;
-  float vertex_color_weight;
-  float smoothness;
-  float threshold;
+  vec4 textColor;
+  vec4 haloColor;
 }
 frag_info;
 
 uniform sampler2D sdf;
 
-in vec3 v_position;
-in vec3 v_normal;
-in vec3 v_viewvector;
 in vec2 v_texture_coords;
-in vec4 v_color;
 
 out vec4 frag_color;
 
-void main() {
+const float baseSoftness = 0.02;
+const float baseThreshold = 0.975;
 
+const float baseHaloSoftness = 0.06;
+const float baseHaloThreshold = 0.85;
+
+void main() {
   float sdfValue = 1 - texture(sdf, v_texture_coords).r;
 
-  float alpha = smoothstep(frag_info.threshold - frag_info.smoothness, frag_info.threshold + frag_info.smoothness, sdfValue);
+  float alphaText = smoothstep(baseThreshold - baseSoftness, baseThreshold + baseSoftness, sdfValue);
 
-  vec4 vertex_color = mix(vec4(1), v_color, frag_info.vertex_color_weight);
-  frag_color = vec4(frag_info.color.rgb, alpha) * vertex_color * frag_info.color;
+  float alphaHalo = smoothstep(baseHaloThreshold - baseHaloSoftness, baseHaloThreshold + baseHaloSoftness, sdfValue);
+
+  // Foreground (text)
+  vec3 Cf = frag_info.textColor.rgb;
+  float Af = alphaText * frag_info.textColor.a;
+
+  // Background (halo)
+  vec3 Cb = frag_info.haloColor.rgb;
+  float Ab = alphaHalo * frag_info.haloColor.a;
+
+  // Over operator: text over halo
+  float outA  = Af + Ab * (1.0 - Af);
+  vec3 outRgb = (Cf * Af + Cb * Ab * (1.0 - Af)) / outA;
+
+  frag_color = vec4(outRgb, outA);
 }
