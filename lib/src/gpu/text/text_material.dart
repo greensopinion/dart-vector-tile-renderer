@@ -1,20 +1,31 @@
 import 'dart:typed_data';
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 
 import '../shaders.dart';
+import '../tile_render_data.dart';
 import '../utils.dart';
 
 class TextMaterial extends UnlitMaterial {
   late SamplerOptions sampler;
-  final double smoothness;
-  final double threshold;
+  late final ByteData uniform;
 
-  TextMaterial(Texture sdf, this.smoothness, this.threshold, Vector4 color) {
+  TextMaterial(PackedMaterial packed, TextureProvider textureProvider) {
     setFragmentShader(shaderLibrary['TextFragment']!);
-    baseColorTexture = sdf;
-    baseColorFactor = color;
+
+
+    final uniform = packed.uniform;
+    if (uniform != null) {
+      this.uniform = ByteData.sublistView(uniform, 8);
+      final textureID = byteDataToInt(ByteData.sublistView(uniform, 0, 8));
+      final texture = textureProvider.get(textureID);
+
+      if (texture != null) {
+        baseColorTexture = texture;
+      }
+    }
+
 
     sampler = SamplerOptions(
       minFilter: MinMagFilter.linear,
@@ -36,16 +47,9 @@ class TextMaterial extends UnlitMaterial {
     pass.setWindingOrder(WindingOrder.clockwise);
     pass.setDepthCompareOperation(CompareFunction.always);
 
-    var fragInfo = Float32List.fromList([
-      baseColorFactor.r, baseColorFactor.g,
-      baseColorFactor.b, baseColorFactor.a,
-      vertexColorWeight,
-      smoothness,
-      threshold
-    ]);
     pass.bindUniform(
       fragmentShader.getUniformSlot("FragInfo"),
-      transientsBuffer.emplace(ByteData.sublistView(fragInfo)),
+      transientsBuffer.emplace(uniform),
     );
 
     pass.bindTexture(
