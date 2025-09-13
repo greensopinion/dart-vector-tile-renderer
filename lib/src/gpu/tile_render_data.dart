@@ -9,8 +9,8 @@ class TileRenderData {
     data.add(mesh);
   }
 
-  void removeMesh(PackedMesh mesh) {
-    data.remove(mesh);
+  void addMeshes(Iterable<PackedMesh> meshes) {
+    data.addAll(meshes);
   }
 
   static TileRenderData unpack(Uint8List bytes) {

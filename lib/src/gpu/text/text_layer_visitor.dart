@@ -1,12 +1,8 @@
 import 'dart:math';
-import 'dart:typed_data';
 
-import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
-import 'package:vector_tile_renderer/src/gpu/utils.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../features/symbol_rotation.dart';
@@ -98,7 +94,9 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
-      final geom = textBuilder.addText(
+      final textureID = _createPlaceholderId(fontFamily).hashCode;
+
+      textBuilder.addText(
           text: text,
           fontSize: textSize.toInt() * 16,
           fontFamily: fontFamily,
@@ -107,33 +105,15 @@ class TextLayerVisitor {
           canvasSize: 4096,
           rotation: rotation,
           rotationAlignment: rotationAlignment,
-          labelSpace: labelSpace
+          labelSpace: labelSpace,
+          textureID: textureID,
+          color: paint.color.vector4,
+          haloColor: textHalo?.color.vector4,
       );
-
-      if (geom != null) {
-        final textureID = _createPlaceholderId(fontFamily).hashCode;
-        final textureIDBytes = intToByteData(textureID).buffer.asUint8List();
-
-        final mesh = _createTextMesh(geom, textureIDBytes, paint.color.vector4, textHalo?.color.vector4);
-        renderData.addMesh(mesh);
-      }
     }
-  }
+    // print("mesh count: ${meshes.length}");
 
-  PackedMesh _createTextMesh(PackedGeometry geom, Uint8List textureIDBytes, Vector4 color, Vector4? haloColor) {
-    final hColor = haloColor ?? Vector4(0.0, 0.0, 0.0, 0.0);
-    
-    final uniform = (
-        BytesBuilder(copy: true)
-          ..add(textureIDBytes)
-          ..add(Float32List.fromList([
-            color.r, color.g, color.b, color.a, hColor.r, hColor.g, hColor.b, hColor.a,
-          ]).buffer.asUint8List())
-    ).toBytes().buffer.asByteData();
-
-    final material = PackedMaterial(type: MaterialType.text, uniform: uniform);
-    
-    return PackedMesh(geom, material);
+    renderData.addMeshes(textBuilder.getMeshes());
   }
 }
 
