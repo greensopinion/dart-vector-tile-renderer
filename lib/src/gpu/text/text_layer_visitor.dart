@@ -99,9 +99,7 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
-      PackedMesh? haloMesh;
-      PackedMesh? textMesh;
-      final sync = Completer();
+
 
       final geom = textBuilder.addText(
           text: text,
@@ -110,16 +108,6 @@ class TextLayerVisitor {
           x: point.x,
           y: point.y,
           canvasSize: 4096,
-          onRemoval: () {
-            sync.future.then((_) {
-              if (haloMesh != null) {
-                renderData.removeMesh(haloMesh);
-              }
-              if (textMesh != null) {
-                renderData.removeMesh(textMesh);
-              }
-            });
-          },
           rotation: rotation,
           rotationAlignment: rotationAlignment,
           labelSpace: labelSpace
@@ -135,13 +123,9 @@ class TextLayerVisitor {
       if (textHalo != null) {
         final mesh = _createTextMesh(geom, textureIDBytes, textHalo.color.vector4, true);
         renderData.addMesh(mesh);
-        haloMesh = mesh;
       }
       final mesh = _createTextMesh(geom, textureIDBytes, paint.color.vector4, false);
       renderData.addMesh(mesh);
-      textMesh = mesh;
-
-      sync.complete(null);
     }
   }
 
