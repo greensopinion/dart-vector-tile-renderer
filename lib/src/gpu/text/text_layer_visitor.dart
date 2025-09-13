@@ -1,13 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
-import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
 
@@ -21,13 +19,13 @@ import 'ndc_label_space.dart';
 import 'text_builder.dart';
 
 class TextLayerVisitor {
-  final SceneGraph graph;
-  final AtlasProvider atlasProvider;
-  final TextureProvider textureProvider;
+  final TileRenderData renderData;
   final VisitorContext context;
+  final AtlasProvider atlasProvider;
+
   final Set<String> alreadyAdded = <String>{};
 
-  TextLayerVisitor(this.atlasProvider, this.graph, this.context, this.textureProvider);
+  TextLayerVisitor(this.renderData, this.context, this.atlasProvider);
 
   void addFeatures(Style style, Iterable<LayerFeature> features, NdcLabelSpace labelSpace) {
     final symbolLayout = style.symbolLayout;
@@ -101,8 +99,9 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
-      final textNode = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000001));
-      final haloNode = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000002));
+      PackedMesh? haloMesh;
+      PackedMesh? textMesh;
+      final sync = Completer();
 
       final geom = textBuilder.addText(
           text: text,
@@ -112,8 +111,14 @@ class TextLayerVisitor {
           y: point.y,
           canvasSize: 4096,
           onRemoval: () {
-            textNode.removeAll();
-            haloNode.removeAll();
+            sync.future.then((_) {
+              if (haloMesh != null) {
+                renderData.removeMesh(haloMesh);
+              }
+              if (textMesh != null) {
+                renderData.removeMesh(textMesh);
+              }
+            });
           },
           rotation: rotation,
           rotationAlignment: rotationAlignment,
@@ -125,19 +130,22 @@ class TextLayerVisitor {
 
       if (geom == null) continue;
 
-      if (textHalo != null) {
-        final mesh = _createTextMesh(geom, textureIDBytes, textHalo.color.vector4, true, textureProvider);
-        haloNode.addMesh(mesh);
-      }
-      final mesh = _createTextMesh(geom, textureIDBytes, paint.color.vector4, false, textureProvider);
-      textNode.addMesh(mesh);
 
-      graph.add(haloNode);
-      graph.add(textNode);
+
+      if (textHalo != null) {
+        final mesh = _createTextMesh(geom, textureIDBytes, textHalo.color.vector4, true);
+        renderData.addMesh(mesh);
+        haloMesh = mesh;
+      }
+      final mesh = _createTextMesh(geom, textureIDBytes, paint.color.vector4, false);
+      renderData.addMesh(mesh);
+      textMesh = mesh;
+
+      sync.complete(null);
     }
   }
 
-  Mesh _createTextMesh(Geometry geom, Uint8List textureIDBytes, Vector4 color, bool isHalo, TextureProvider textureProvider) {
+  PackedMesh _createTextMesh(PackedGeometry geom, Uint8List textureIDBytes, Vector4 color, bool isHalo) {
     final softnessAndThreshold = isHalo ? [0.06, 0.85] : [0.02, 0.975];
     
     final uniform = (
@@ -148,9 +156,9 @@ class TextLayerVisitor {
           ]).buffer.asUint8List())
     ).toBytes().buffer.asByteData();
 
-    final packed = PackedMaterial(type: MaterialType.text, uniform: uniform);
+    final material = PackedMaterial(type: MaterialType.text, uniform: uniform);
     
-    return Mesh(geom, TextMaterial(packed, textureProvider));
+    return PackedMesh(geom, material);
   }
 }
 
