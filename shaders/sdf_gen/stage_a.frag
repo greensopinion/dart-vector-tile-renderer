@@ -24,7 +24,7 @@ void main() {
 
     for (float i = minBound; i < maxBound; i += stepSize) {
 
-        float existingValue = texture(glyph_texture, vec2(v_position.x, i)).x;
+        float existingValue = step(0.4, texture(glyph_texture, vec2(v_position.x, i)).x);
 
         float currentDist = abs(i - v_position.y) * frag_info.height / frag_info.radius;
         dist = min(dist, (currentDist * currentDist) + existingValue);
