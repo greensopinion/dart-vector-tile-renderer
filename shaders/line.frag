@@ -9,10 +9,16 @@ in vec2 v_texture_coords;
 
 in float v_length;
 in float cumulative_length;
+in vec3 v_position;
 
 out vec4 frag_color;
 
 void main() {
+  if (abs(v_position.x) > 1.001 || abs(v_position.y) > 1.001) {
+    frag_color = vec4(0, 0, 0, 0);
+    return;
+  }
+
   vec4 base_color = line_material.color;
   vec4 alt_color = vec4(0, 0, 0, 0);
 
