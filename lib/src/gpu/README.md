@@ -74,21 +74,22 @@ cd example && flutter run
    - rotation alignment
    - variable size
    - concurrent pre-render optimizations
- - todo
    - different fonts
+   - overlap prevention (text collision)
+
+- todo
+   - better overlap prevention
    - batching optimizations
    - dynamic char code range
    - non-text symbols
    - correct halo radius
-   - overlap prevention (text collision)
    - text optimizations (eg. street -> st)
    - Line text follows line closely instead of rotating entire text feature to average angle of line
    - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
    - Respect anchor from theme
 
 ## Fill Extrusion
+ - done
+   - draws
  - todo
-   - all
-
-## Other To Do's
- - Ordered layers (currently only background, line, and fill layers are ordered correctly)
+   - 3d
