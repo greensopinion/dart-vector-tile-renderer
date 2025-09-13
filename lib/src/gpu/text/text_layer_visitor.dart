@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -99,8 +98,6 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
-
-
       final geom = textBuilder.addText(
           text: text,
           fontSize: textSize.toInt() * 16,
@@ -113,35 +110,28 @@ class TextLayerVisitor {
           labelSpace: labelSpace
       );
 
-      final textureID = _createPlaceholderId(fontFamily).hashCode;
-      final textureIDBytes = intToByteData(textureID).buffer.asUint8List();
+      if (geom != null) {
+        final textureID = _createPlaceholderId(fontFamily).hashCode;
+        final textureIDBytes = intToByteData(textureID).buffer.asUint8List();
 
-      if (geom == null) continue;
-
-
-
-      if (textHalo != null) {
-        final mesh = _createTextMesh(geom, textureIDBytes, textHalo.color.vector4, true);
+        final mesh = _createTextMesh(geom, textureIDBytes, paint.color.vector4, textHalo?.color.vector4);
         renderData.addMesh(mesh);
       }
-      final mesh = _createTextMesh(geom, textureIDBytes, paint.color.vector4, false);
-      renderData.addMesh(mesh);
     }
   }
 
-  PackedMesh _createTextMesh(PackedGeometry geom, Uint8List textureIDBytes, Vector4 color, bool isHalo) {
-    final softnessAndThreshold = isHalo ? [0.06, 0.85] : [0.02, 0.975];
-    final type = isHalo ? MaterialType.textHalo : MaterialType.text;
+  PackedMesh _createTextMesh(PackedGeometry geom, Uint8List textureIDBytes, Vector4 color, Vector4? haloColor) {
+    final hColor = haloColor ?? Vector4(0.0, 0.0, 0.0, 0.0);
     
     final uniform = (
         BytesBuilder(copy: true)
           ..add(textureIDBytes)
           ..add(Float32List.fromList([
-            color.r, color.g, color.b, color.a, 1.0, ...softnessAndThreshold,
+            color.r, color.g, color.b, color.a, hColor.r, hColor.g, hColor.b, hColor.a,
           ]).buffer.asUint8List())
     ).toBytes().buffer.asByteData();
 
-    final material = PackedMaterial(type: type, uniform: uniform);
+    final material = PackedMaterial(type: MaterialType.text, uniform: uniform);
     
     return PackedMesh(geom, material);
   }

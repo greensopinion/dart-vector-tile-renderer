@@ -20,21 +20,7 @@ class BucketUnpacker {
 
   void unpackOnto(Node parent, TileRenderData bucket) {
     for (var packedMesh in bucket.data) {
-      Node? node;
-
-      switch (packedMesh.material.type) {
-        case MaterialType.line:
-        case MaterialType.colored:
-        case MaterialType.raster:
-          parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
-          continue;
-        case MaterialType.text:
-          node = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000001));
-        case MaterialType.textHalo:
-          node = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000002));
-      }
-      node.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
-      parent.add(node);
+      parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
     }
   }
 
@@ -58,7 +44,6 @@ enum MaterialType {
   colored,
   raster,
   text,
-  textHalo;
 }
 
 final _geometryTypeToConstructor = {
@@ -77,7 +62,6 @@ final _materialTypeToConstructor = {
   MaterialType.colored: (a, b) => ColoredMaterial(a),
   MaterialType.raster: (a, b) => throw UnimplementedError(),
   MaterialType.text: (a, b) => TextMaterial(a, b),
-  MaterialType.textHalo: (a, b) => TextMaterial(a, b)
 };
 
 final _materialConstructors =
