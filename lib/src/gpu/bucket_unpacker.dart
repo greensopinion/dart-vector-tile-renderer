@@ -1,4 +1,5 @@
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_material.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
@@ -19,8 +20,21 @@ class BucketUnpacker {
 
   void unpackOnto(Node parent, TileRenderData bucket) {
     for (var packedMesh in bucket.data) {
-      parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry),
-          _unpackMaterial(packedMesh.material)));
+      Node? node;
+
+      switch (packedMesh.material.type) {
+        case MaterialType.line:
+        case MaterialType.colored:
+        case MaterialType.raster:
+          parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
+          continue;
+        case MaterialType.text:
+          node = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000001));
+        case MaterialType.textHalo:
+          node = Node(localTransform: Matrix4.identity()..translate(0.0, 0.0, 0.00000002));
+      }
+      node.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
+      parent.add(node);
     }
   }
 
@@ -43,7 +57,8 @@ enum MaterialType {
   line,
   colored,
   raster,
-  text;
+  text,
+  textHalo;
 }
 
 final _geometryTypeToConstructor = {
@@ -61,7 +76,8 @@ final _materialTypeToConstructor = {
   MaterialType.line: (a, b) => LineMaterial(a),
   MaterialType.colored: (a, b) => ColoredMaterial(a),
   MaterialType.raster: (a, b) => throw UnimplementedError(),
-  MaterialType.text: (a, b) => TextMaterial(a, b)
+  MaterialType.text: (a, b) => TextMaterial(a, b),
+  MaterialType.textHalo: (a, b) => TextMaterial(a, b)
 };
 
 final _materialConstructors =

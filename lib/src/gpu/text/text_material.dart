@@ -45,6 +45,7 @@ class TextMaterial extends UnlitMaterial {
 
     configureRenderPass(pass);
     pass.setWindingOrder(WindingOrder.clockwise);
+    pass.setDepthCompareOperation(CompareFunction.always);
 
     pass.bindUniform(
       fragmentShader.getUniformSlot("FragInfo"),
@@ -57,4 +58,7 @@ class TextMaterial extends UnlitMaterial {
         sampler: sampler
     );
   }
+
+  @override
+  bool isOpaque() => false;
 }

@@ -131,6 +131,7 @@ class TextLayerVisitor {
 
   PackedMesh _createTextMesh(PackedGeometry geom, Uint8List textureIDBytes, Vector4 color, bool isHalo) {
     final softnessAndThreshold = isHalo ? [0.06, 0.85] : [0.02, 0.975];
+    final type = isHalo ? MaterialType.textHalo : MaterialType.text;
     
     final uniform = (
         BytesBuilder(copy: true)
@@ -140,7 +141,7 @@ class TextLayerVisitor {
           ]).buffer.asUint8List())
     ).toBytes().buffer.asByteData();
 
-    final material = PackedMaterial(type: MaterialType.text, uniform: uniform);
+    final material = PackedMaterial(type: type, uniform: uniform);
     
     return PackedMesh(geom, material);
   }
