@@ -13,7 +13,6 @@ import 'bucket_unpacker.dart';
 import 'orthographic_camera.dart';
 import 'position_transform.dart';
 import 'text/atlas_creating_text_visitor.dart';
-import 'text/scene_building_text_visitor.dart';
 import 'tile_prerenderer.dart';
 import 'tile_render_data.dart';
 
@@ -75,8 +74,10 @@ class TilesRenderer {
     return scene;
   }
 
-  static Uint8List preRender(Theme theme, double zoom, Tileset tileset) =>
-      TilePreRenderer().preRender(theme, zoom, tileset);
+  static Uint8List Function(Theme theme, double zoom, Tileset tileset) getPreRenderer() {
+    final atlasProvider = AtlasProvider.instance!;
+    return (Theme theme, double zoom, Tileset tileset) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider);
+  }
 
   Future preRenderUi(double zoom, Tileset tileset) async {
     final visitorContext = VisitorContext(
@@ -102,20 +103,9 @@ class TilesRenderer {
         node = Node(name: key);
         final renderData = model.renderData;
         if (renderData == null) {
-          throw Exception(
-              "no render data for tile ${model.tileId}, did you call preRender?");
+          throw Exception("no render data for tile ${model.tileId}, did you call preRender?");
         }
-        BucketUnpacker().unpackOnto(node, TileRenderData.unpack(renderData));
-
-        final visitorContext = VisitorContext(
-          logger: const Logger.noop(),
-          tileSource: TileSource(
-              tileset: model.tileset, rasterTileset: model.rasterTileset),
-          zoom: zoom,
-        );
-
-        SceneBuildingTextVisitor(_atlasProvider, node, visitorContext, _textureProvider)
-            .visitAllFeatures(theme);
+        BucketUnpacker(_textureProvider).unpackOnto(node, TileRenderData.unpack(renderData));
       }
       _positionByKey[key] = model.position;
       scene.add(node);
@@ -144,5 +134,7 @@ class TilesRenderer {
     return scene;
   }
 
-  void dispose() {}
+  void dispose() {
+    _atlasProvider.dispose();
+  }
 }

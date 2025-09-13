@@ -2,11 +2,12 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../themes/style.dart';
 import 'ndc_label_space.dart';
-import 'text_geometry.dart';
 
 class BoundingBox {
   double minX = double.infinity;
@@ -35,7 +36,7 @@ class TextBuilder {
 
   TextBuilder(this.atlasProvider);
 
-  TextGeometry? addText({
+  PackedGeometry? addText({
     required String text,
     required int fontSize,
     required String? fontFamily,
@@ -167,11 +168,12 @@ class TextBuilder {
       dynamicRotationScale = 0.0;
     }
 
-    final geom = TextGeometry(
-        ByteData.sublistView(Float32List.fromList(vertices)),
-        ByteData.sublistView(Uint16List.fromList(indices)),
-        ByteData.sublistView(Float32List.fromList(
-            [dynamicRotationScale, -normalizeToPi(rotation)])));
+    final geom = PackedGeometry(
+        vertices: ByteData.sublistView(Float32List.fromList(vertices)),
+        indices: ByteData.sublistView(Uint16List.fromList(indices)),
+        uniform: ByteData.sublistView(Float32List.fromList([dynamicRotationScale, -normalizeToPi(rotation)])),
+        type: GeometryType.text
+    );
 
     labelSpace.occupy(aabb, onRemoval);
 
