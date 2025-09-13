@@ -73,10 +73,10 @@ cd example && flutter run
    - point/line alignment
    - rotation alignment
    - variable size
-  - todo
+   - concurrent pre-render optimizations
+ - todo
    - different fonts
    - batching optimizations
-   - concurrent pre-render optimizations
    - dynamic char code range
    - non-text symbols
    - correct halo radius
