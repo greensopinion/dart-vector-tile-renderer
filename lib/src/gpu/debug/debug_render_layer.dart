@@ -1,13 +1,39 @@
 import 'dart:typed_data';
 
-import 'package:flutter_scene/scene.dart';
+import 'package:collection/collection.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
-import 'package:vector_tile_renderer/src/gpu/colored_material.dart';
-import 'package:vector_tile_renderer/src/gpu/polygon/polygon_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/text/ndc_label_space.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
-void addDebugRenderLayer(SceneGraph graph) {
-  graph.addMesh(Mesh(PolygonGeometry(_debugGeometry), ColoredMaterial(_debugMaterial)));
+void addDebugRenderLayer(TileRenderData renderData) {
+  renderData.addMesh(PackedMesh(_debugGeometry, _debugMaterial));
+}
+
+void renderLabelSpaceBoxes(TileRenderData renderData, NdcLabelSpace labelSpace) {
+  final boxes = labelSpace.getAll().toList();
+
+  if (boxes.isEmpty) {
+    return;
+  }
+
+  final vertices = boxes.map((it) => it.points.expand((it) => [it.x, it.y, 0.0])).flattenedToList;
+
+  final indices = boxes.mapIndexed((i, _) {
+    final base = i * 4;
+    return [
+      base, base + 2, base + 1,
+      base + 2, base, base + 3
+    ];
+  }).flattenedToList;
+
+
+  final geom = PackedGeometry(
+      vertices: ByteData.sublistView(Float32List.fromList(vertices)),
+      indices: ByteData.sublistView(Uint16List.fromList(indices)),
+      type: GeometryType.polygon
+  );
+
+  renderData.addMesh(PackedMesh(geom, _debugMaterial));
 }
 
 final _debugGeometry = PackedGeometry(vertices: _vertices, indices: _indices, type: GeometryType.polygon);

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/debug/debug_render_layer.dart';
 import 'package:vector_tile_renderer/src/gpu/text/ndc_label_space.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_layer_visitor.dart';
@@ -17,7 +18,12 @@ class TilePreRenderer {
   Uint8List preRender(Theme theme, double zoom, Tileset tileset, AtlasProvider atlasProvider) {
     final data = TileRenderData();
 
-    _PreRendererLayerVisitor(data, tileset, zoom, atlasProvider).visitAllFeatures(theme);
+    final visitor = _PreRendererLayerVisitor(data, tileset, zoom, atlasProvider);
+    visitor.visitAllFeatures(theme);
+
+    // addDebugRenderLayer(data);
+
+    // renderLabelSpaceBoxes(data, visitor.labelSpace);
 
     return data.pack();
   }
