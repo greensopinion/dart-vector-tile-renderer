@@ -174,7 +174,9 @@ class TextBuilder {
         -anchorY + (boundingBox.sizeY / 2)
     );
 
-    if (!labelSpace.tryOccupy(aabb)) {
+    final double baseRotation = -normalizeToPi(rotation);
+
+    if (!labelSpace.tryOccupy(LabelSpaceBox.create(aabb, baseRotation, Point(aabb.center.dx, aabb.center.dy)))) {
       return;
     }
 
@@ -199,11 +201,6 @@ class TextBuilder {
       dynamicRotationScale = 0.0;
     }
 
-    final double baseRotation = -normalizeToPi(rotation);
-
-    final uniform = ByteData.sublistView(Float32List.fromList([dynamicRotationScale, -normalizeToPi(rotation)]));
-
-    // Find or create a batch for this combination of textureID, colors, and uniform
     _GeometryBatch? batch;
     for (final b in _batches) {
       if (b.matches(textureID, color, haloColor, dynamicRotationScale, baseRotation)) {

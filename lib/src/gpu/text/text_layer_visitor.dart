@@ -82,14 +82,8 @@ class TextLayerVisitor {
 
       var rotation = 0.0;
 
-      if (rotationAlignment == RotationAlignment.map &&
-          line != null &&
-          line.points.length > 1) {
-        final newRot = atan2(line.points.last.y - line.points.first.y,
-            line.points.last.x - line.points.first.x);
-        if (newRot.isFinite) {
-          rotation = newRot;
-        }
+      if (rotationAlignment == RotationAlignment.map && line != null) {
+        rotation = _getLineAngle(line.points);
       }
 
       alreadyAdded.add(text);
@@ -111,9 +105,32 @@ class TextLayerVisitor {
           haloColor: textHalo?.color.vector4,
       );
     }
-    // print("mesh count: ${meshes.length}");
 
     renderData.addMeshes(textBuilder.getMeshes());
+  }
+
+  double _getLineAngle(List<Point<double>> points) {
+    double rotation = 0.0;
+    if (points.length >= 3) {
+      final middleIndex = points.length ~/ 2;
+
+      final beforePoint = points[middleIndex - 1];
+      final afterPoint = points[middleIndex + 1];
+
+      final newRot = atan2(afterPoint.y - beforePoint.y,
+          afterPoint.x - beforePoint.x);
+
+      if (newRot.isFinite) {
+        rotation = newRot;
+      }
+    } else if (points.length >= 2) {
+      final newRot = atan2(points.last.y - points.first.y,
+          points.last.x - points.first.x);
+      if (newRot.isFinite) {
+        rotation = newRot;
+      }
+    }
+    return rotation;
   }
 }
 

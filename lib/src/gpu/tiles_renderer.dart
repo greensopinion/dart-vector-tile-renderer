@@ -107,7 +107,6 @@ class TilesRenderer {
           throw Exception("no render data for tile ${model.tileId}, did you call preRender?");
         }
         BucketUnpacker(_textureProvider).unpackOnto(node, TileRenderData.unpack(renderData));
-        addDebugRenderLayer(node);
       }
       _positionByKey[key] = model.position;
       scene.add(node);
