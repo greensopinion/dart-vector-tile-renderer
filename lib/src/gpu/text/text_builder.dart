@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
 
@@ -41,17 +42,12 @@ class _GeometryBatch {
   final List<int> indices = [];
   int vertexOffset = 0;
 
-  final double dynamicRotationScale;
-  final double baseRotation;
-
-  _GeometryBatch(this.textureID, this.color, this.haloColor, this.dynamicRotationScale, this.baseRotation);
+  _GeometryBatch(this.textureID, this.color, this.haloColor);
 
   bool matches(int textureID, Vector4 color, Vector4? haloColor, double dynamicRotationScale, double baseRotation) => (
       this.textureID == textureID &&
       this.color == color &&
-      this.haloColor == haloColor &&
-      this.dynamicRotationScale == dynamicRotationScale &&
-      this.baseRotation == baseRotation
+      this.haloColor == haloColor
   );
 }
 
@@ -128,22 +124,18 @@ class TextBuilder {
       tempVertices.addAll([
         charMinX,
         charMinY,
-        0,
         left,
         bottom,
         charMaxX,
         charMinY,
-        0,
         right,
         bottom,
         charMaxX,
         charMaxY,
-        0,
         right,
         top,
         charMinX,
         charMaxY,
-        0,
         left,
         top,
       ]);
@@ -175,23 +167,10 @@ class TextBuilder {
     );
 
     final double baseRotation = -normalizeToPi(rotation);
+    final center = aabb.center;
 
-    if (!labelSpace.tryOccupy(LabelSpaceBox.create(aabb, baseRotation, Point(aabb.center.dx, aabb.center.dy)))) {
+    if (!labelSpace.tryOccupy(LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)))) {
       return;
-    }
-
-    final vertices = <double>[];
-    for (int i = 0; i < tempVertices.length; i += 5) {
-      vertices.addAll([
-        tempVertices[i] + centerOffsetX, // offset_x (relative to anchor)
-        tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
-        tempVertices[i + 3], // u
-        tempVertices[i + 4], // v
-        aabb.left,
-        aabb.top,
-        aabb.right,
-        aabb.bottom
-      ]);
     }
 
     final double dynamicRotationScale;
@@ -199,6 +178,20 @@ class TextBuilder {
       dynamicRotationScale = 1.0;
     } else {
       dynamicRotationScale = 0.0;
+    }
+
+    final vertices = <double>[];
+    for (int i = 0; i < tempVertices.length; i += 4) {
+      vertices.addAll([
+        tempVertices[i] + centerOffsetX, // offset_x (relative to anchor)
+        tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
+        tempVertices[i + 2], // u
+        tempVertices[i + 3], // v
+        center.dx,
+        center.dy,
+        baseRotation,
+        dynamicRotationScale
+      ]);
     }
 
     _GeometryBatch? batch;
@@ -210,7 +203,7 @@ class TextBuilder {
     }
 
     if (batch == null) {
-      batch = _GeometryBatch(textureID, color, haloColor, dynamicRotationScale, baseRotation);
+      batch = _GeometryBatch(textureID, color, haloColor);
       _batches.add(batch);
     }
 
@@ -220,7 +213,7 @@ class TextBuilder {
     // Add vertices and indices to the batch
     batch.vertices.addAll(vertices);
     batch.indices.addAll(adjustedIndices);
-    batch.vertexOffset += vertices.length ~/ 8; // 8 values per vertex
+    batch.vertexOffset += vertices.length ~/ TextGeometry.VERTEX_SIZE;
   }
 
   List<PackedMesh> getMeshes() {
@@ -242,14 +235,10 @@ class TextBuilder {
             ]).buffer.asUint8List())
       ).toBytes().buffer.asByteData();
 
-      // Since we only batch geometries with identical uniforms, use the stored uniform
-      final geometryUniform = ByteData.sublistView(Float32List.fromList([batch.dynamicRotationScale, batch.baseRotation]));
-
       // Create the packed geometry
       final geometry = PackedGeometry(
         vertices: ByteData.sublistView(Float32List.fromList(batch.vertices)),
         indices: ByteData.sublistView(Uint16List.fromList(batch.indices)),
-        uniform: geometryUniform,
         type: GeometryType.text
       );
 
