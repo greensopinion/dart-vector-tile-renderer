@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_tile_renderer/src/gpu/debug/debug_render_layer.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
@@ -106,6 +107,7 @@ class TilesRenderer {
           throw Exception("no render data for tile ${model.tileId}, did you call preRender?");
         }
         BucketUnpacker(_textureProvider).unpackOnto(node, TileRenderData.unpack(renderData));
+        addDebugRenderLayer(node);
       }
       _positionByKey[key] = model.position;
       scene.add(node);
