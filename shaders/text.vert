@@ -7,29 +7,23 @@ uniform FrameInfo {
 }
 frame_info;
 
-uniform TextGeometry {
-    float rotation_scale;
-    float rotation;
-}
-text_geometry;
-
 in vec2 offset;
 in vec2 uv;
-in vec2 aabbMin;
-in vec2 aabbMax;
+in vec2 anchor;
+in float rotation;
+in float rotation_scale;
 
 out vec2 v_texture_coords;
 
 void main() {
     mat4 transform = frame_info.camera_transform;
-    vec2 anchor = (aabbMin + aabbMax) / 2;
 
     float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
 
     vec4 finalOffset = vec4(offset, 0.0, 0.0);
-    float rot = text_geometry.rotation;
+    float rot = rotation;
 
-    if (text_geometry.rotation_scale > 0) {
+    if (rotation_scale > 0) {
         rot -= atan(transform[1][0], transform[0][0]);
     }
 

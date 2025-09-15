@@ -6,29 +6,14 @@ import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import '../shaders.dart';
 
 class TextGeometry extends UnskinnedGeometry {
-  late final ByteData _uniform;
+
+  static const VERTEX_SIZE = 8;
 
   TextGeometry(PackedGeometry packed) {
     setVertexShader(shaderLibrary["TextVertex"]!);
 
-    final uniform = packed.uniform;
-    if (uniform != null) {
-      _uniform = uniform;
-    }
-
-    final vertexCount = packed.vertices.lengthInBytes ~/ 32;
+    final vertexCount = packed.vertices.lengthInBytes ~/ (VERTEX_SIZE * 4);
 
     uploadVertexData(packed.vertices, vertexCount, packed.indices);
-  }
-
-  @override
-  void bind(RenderPass pass, HostBuffer transientsBuffer,
-      Matrix4 modelTransform, Matrix4 cameraTransform, Vector3 cameraPosition) {
-    super.bind(pass, transientsBuffer, modelTransform, cameraTransform,
-        cameraPosition);
-
-    final lineGeometrySlot = vertexShader.getUniformSlot('TextGeometry');
-    final lineGeometryView = transientsBuffer.emplace(_uniform);
-    pass.bindUniform(lineGeometrySlot, lineGeometryView);
   }
 }
