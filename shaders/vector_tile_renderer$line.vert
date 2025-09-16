@@ -1,5 +1,8 @@
+#version 150
+
 #pragma shader stage(vertex)
-#include "shaders/utils.glsl"
+
+#include "shaders/vector_tile_renderer$utils.glsl"
 
 uniform FrameInfo {
   mat4 model_transform;
@@ -21,10 +24,9 @@ in float roundness;
 in float vertex_cumulative_length;
 
 out vec2 v_texture_coords;
-
+out vec2 v_position;
 out float v_length;
 out float cumulative_length;
-out vec3 v_position;
 
 vec2 scalePoint(vec2 p) {
   return vec2((p.x / line_geometry.extentScale) - 1, 1 - (p.y / line_geometry.extentScale));
@@ -48,7 +50,7 @@ void main() {
   vec2 next = scalePoint(point_b);
 
   vec2 segment_pos = getSegmentPos(curr, next);
-  v_position = vec3(segment_pos, 0.0);
+  v_position = vec2(segment_pos);
 
   gl_Position = frame_info.model_transform * vec4(segment_pos, 0.0, 1.0);
 

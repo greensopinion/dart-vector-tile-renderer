@@ -1,4 +1,4 @@
-#include "shaders/utils.glsl"
+#include "shaders/vector_tile_renderer$utils.glsl"
 
 uniform FrameInfo {
     mat4 model_transform;

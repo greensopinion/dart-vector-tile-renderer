@@ -1,46 +1,46 @@
 {
     "SimpleVertex": {
         "type": "vertex",
-        "file": "shaders/simple.vert"
+        "file": "shaders/vector_tile_renderer$simple.vert"
     },
     "SimpleFragment": {
         "type": "fragment",
-        "file": "shaders/simple.frag"
+        "file": "shaders/vector_tile_renderer$simple.frag"
     },
     "LineVertex": {
         "type": "vertex",
-        "file": "shaders/line.vert"
+        "file": "shaders/vector_tile_renderer$line.vert"
     },
     "LineFragment": {
         "type": "fragment",
-        "file": "shaders/line.frag"
+        "file": "shaders/vector_tile_renderer$line.frag"
     },
     "RasterVertex": {
         "type": "vertex",
-        "file": "shaders/raster.vert"
+        "file": "shaders/vector_tile_renderer$raster.vert"
     },
     "RasterFragment": {
         "type": "fragment",
-        "file": "shaders/raster.frag"
+        "file": "shaders/vector_tile_renderer$raster.frag"
     },
     "TextVertex": {
         "type": "vertex",
-        "file": "shaders/text.vert"
+        "file": "shaders/vector_tile_renderer$text.vert"
     },
     "TextFragment": {
         "type": "fragment",
-        "file": "shaders/text.frag"
+        "file": "shaders/vector_tile_renderer$text.frag"
     },
     "SdfBasicVertex": {
         "type": "vertex",
-        "file": "shaders/sdf_gen/basic.vert"
+        "file": "shaders/sdf_gen/vector_tile_renderer$basic.vert"
     },
     "SdfFragmentA": {
         "type": "fragment",
-        "file": "shaders/sdf_gen/stage_a.frag"
+        "file": "shaders/sdf_gen/vector_tile_renderer$stage_a.frag"
     },
     "SdfFragmentB": {
         "type": "fragment",
-        "file": "shaders/sdf_gen/stage_b.frag"
+        "file": "shaders/sdf_gen/vector_tile_renderer$stage_b.frag"
     }
 }
