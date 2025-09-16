@@ -1,3 +1,5 @@
+#version 150
+
 uniform LineMaterial {
   vec4 color;
   float drawLength;
@@ -6,10 +8,9 @@ uniform LineMaterial {
 line_material;
 
 in vec2 v_texture_coords;
-
+in vec2 v_position;
 in float v_length;
 in float cumulative_length;
-in vec3 v_position;
 
 out vec4 frag_color;
 
