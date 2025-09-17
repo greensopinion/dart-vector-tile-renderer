@@ -31,7 +31,7 @@ class LineGeometryBuilder {
       offset1,
       offset2,
       roundness,
-      cumulativeLength
+      cumulativeLength / 32
     ]);
     _vertexBytesBuilder.add(vertexData.buffer.asUint8List());
   }
