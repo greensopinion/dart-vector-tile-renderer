@@ -3,19 +3,7 @@
 
 ## Flutter Version
 
-Generally we try to follow the flutter main channel, however occasionally Flutter can have changes that break the renderer in unexpected ways.
-
-
-The last known working version of Flutter:
-
-```sh
-cd ~/development/flutter
-git checkout  29a2f674ca2312e34a3ef796701c297dc3be1ae6
-flutter doctor
-flutter precache
-```
-
-Once Flutter has stabilized, we should be able to do this:
+This project requires flutter_gpu, which is currently only available on the main channel. To setup, run:
 
 ```sh
 flutter channel main && flutter upgrade
