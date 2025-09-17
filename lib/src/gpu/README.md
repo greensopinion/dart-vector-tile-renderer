@@ -48,8 +48,7 @@ cd example && flutter run
    - caps + joins
    - thickness
    - variable thickness
- - todo
-   - verify that dashed lines look correct
+   - dashed lines
 
 ## Raster
  - todo
@@ -63,11 +62,11 @@ cd example && flutter run
    - variable size
    - concurrent pre-render optimizations
    - different fonts
+   - batching optimizations
    - overlap prevention (text collision)
 
 - todo
    - better overlap prevention
-   - batching optimizations
    - dynamic char code range
    - non-text symbols
    - correct halo radius
