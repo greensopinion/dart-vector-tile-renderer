@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:vector_tile_renderer/src/features/text_abbreviator.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
@@ -91,7 +92,7 @@ class TextLayerVisitor {
       final textureID = _createPlaceholderId(fontFamily).hashCode;
 
       textBuilder.addText(
-          text: text,
+          text: TextAbbreviator().abbreviate(text),
           fontSize: textSize.toInt() * 16,
           fontFamily: fontFamily,
           x: point.x,
