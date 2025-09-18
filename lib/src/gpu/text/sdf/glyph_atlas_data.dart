@@ -1,14 +1,35 @@
 import 'dart:math' as math;
 
-const int formatVersion = 2;
+class AtlasSet {
+  final Map<int, GlyphAtlas> _atlasesByCharStart;
+
+  AtlasSet(this._atlasesByCharStart);
+
+  double get fontSize => _atlasesByCharStart.values.first.fontSize;
+
+  GlyphAtlas getAtlasForChar(int charCode) => _atlasesByCharStart[_normalizeCharCode(charCode)]!;
+}
 
 class AtlasID {
   final String font;
   final int charStart;
   final int charCount;
 
+  static const String _defaultFont = 'Roboto Regular';
+
   const AtlasID(
       {required this.font, required this.charStart, required this.charCount});
+
+  static Iterable<AtlasID> iterableFromString({required String text, String? fontFamily}) {
+    final charStarts = text.codeUnits.map((code) => _normalizeCharCode(code)).toSet();
+
+    return charStarts.map((start) => AtlasID(font: fontFamily ?? _defaultFont, charStart: start, charCount: 256));
+  }
+
+  static AtlasID forChar({required int charCode, String? fontFamily}) {
+    return AtlasID(font: fontFamily ?? _defaultFont, charStart: _normalizeCharCode(charCode), charCount: 256);
+  }
+
 
   @override
   String toString() {
@@ -27,6 +48,9 @@ class AtlasID {
   @override
   int get hashCode => Object.hash(font, charStart, charCount);
 }
+
+int _normalizeCharCode(int code) => (code ~/ 256) * 256;
+
 
 class GlyphMetrics {
   final int charCode;
@@ -141,43 +165,6 @@ class GlyphAtlas {
     final v1 = y1 / atlasHeight;
     final u2 = x2 / atlasWidth;
     final v2 = y2 / atlasHeight;
-    
-    return CharacterUV(u1: u1, v1: v1, u2: u2, v2: v2);
-  }
-  
-  /// Calculate UV coordinates for a character based on its glyph metrics (TinySDF format)
-  /// This provides more precise UV coordinates that account for the actual glyph bounds
-  CharacterUV getCharacterUVFromMetrics(int charCode) {
-    final metrics = getGlyphMetrics(charCode);
-    if (metrics == null) {
-      // Fallback to grid-based UV calculation
-      return getCharacterUV(charCode);
-    }
-    
-    final col = (charCode - charCodeStart) % gridCols;
-    final row = (charCode - charCodeStart) ~/ gridCols;
-    
-    // Base cell position in the atlas
-    final baseCellX = col * cellWidth;
-    final baseCellY = row * cellHeight;
-    
-    // Calculate the actual glyph bounds within the cell using TinySDF format
-    final glyphLeft = baseCellX + metrics.glyphLeft;
-    final glyphTop = baseCellY + (metrics.height - metrics.glyphTop);
-    final glyphRight = glyphLeft + metrics.glyphWidth;
-    final glyphBottom = glyphTop + metrics.glyphHeight;
-    
-    // Ensure bounds stay within the cell (should already be correct with proper metrics)
-    final clampedLeft = math.max(glyphLeft.toDouble(), baseCellX.toDouble());
-    final clampedTop = math.max(glyphTop.toDouble(), baseCellY.toDouble());
-    final clampedRight = math.min(glyphRight.toDouble(), (baseCellX + cellWidth).toDouble());
-    final clampedBottom = math.min(glyphBottom.toDouble(), (baseCellY + cellHeight).toDouble());
-    
-    // Convert to UV coordinates (0.0 to 1.0)
-    final u1 = clampedLeft / atlasWidth;
-    final v1 = clampedTop / atlasHeight;
-    final u2 = clampedRight / atlasWidth;
-    final v2 = clampedBottom / atlasHeight;
     
     return CharacterUV(u1: u1, v1: v1, u2: u2, v2: v2);
   }

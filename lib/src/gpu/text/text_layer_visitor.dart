@@ -89,7 +89,6 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
-      final textureID = _createPlaceholderId(fontFamily).hashCode;
 
       textBuilder.addText(
           text: TextAbbreviator().abbreviate(text),
@@ -101,7 +100,6 @@ class TextLayerVisitor {
           rotation: rotation,
           rotationAlignment: rotationAlignment,
           labelSpace: labelSpace,
-          textureID: textureID,
           color: paint.color.vector4,
           haloColor: textHalo?.color.vector4,
       );
@@ -134,7 +132,3 @@ class TextLayerVisitor {
     return rotation;
   }
 }
-
-//FIXME: need to provide atlasses for character ranges beyond 256
-AtlasID _createPlaceholderId(String? fontFamily) =>
-    AtlasID(font: fontFamily ?? 'Roboto Regular', charStart: 0, charCount: 256);
