@@ -11,8 +11,13 @@ class AtlasProvider {
     _instance = null;
   }
 
-  GlyphAtlas? getAtlasForString(String text, String? fontFamily) =>
-      _loaded[_createPlaceholderId(fontFamily)];
+  AtlasSet? getAtlasSetForString(String text, String? fontFamily) {
+    final neededIDs = AtlasID.iterableFromString(text: text, fontFamily: fontFamily);
+    final atlases = neededIDs.map((id) => _loaded[id]);
+
+    if (atlases.contains(null)) { return null; }
+    return AtlasSet(<int, GlyphAtlas>{for (var v in atlases) v!.charCodeStart: v});
+  }
 
   void addLoaded(GlyphAtlas atlas) {
     _loaded[atlas.id] = atlas;
@@ -22,7 +27,3 @@ class AtlasProvider {
   static AtlasProvider? get instance => _instance;
   static AtlasProvider? _instance;
 }
-
-//FIXME: need to provide atlasses for character ranges beyond 256
-AtlasID _createPlaceholderId(String? fontFamily) =>
-    AtlasID(font: fontFamily ?? 'Roboto Regular', charStart: 0, charCount: 256);

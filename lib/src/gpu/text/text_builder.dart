@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
@@ -44,10 +45,10 @@ class _GeometryBatch {
 
   _GeometryBatch(this.textureID, this.color, this.haloColor);
 
-  bool matches(int textureID, Vector4 color, Vector4? haloColor, double dynamicRotationScale, double baseRotation) => (
-      this.textureID == textureID &&
-      this.color == color &&
-      this.haloColor == haloColor
+  bool matches(_GeometryBatch other) => (
+      textureID == other.textureID &&
+      color == other.color &&
+      haloColor == other.haloColor
   );
 }
 
@@ -67,25 +68,23 @@ class TextBuilder {
     required double rotation,
     required RotationAlignment rotationAlignment,
     required NdcLabelSpace labelSpace,
-    required int textureID,
     required Vector4 color,
     Vector4? haloColor,
   }) {
-    final atlas = atlasProvider.getAtlasForString(text, fontFamily);
-    if (atlas == null) {
+    final atlasSet = atlasProvider.getAtlasSetForString(text, fontFamily);
+    if (atlasSet == null) {
       return;
     }
 
-    final tempVertices = <double>[];
-    final indices = <int>[];
+    final tempBatches = <int, _GeometryBatch>{};
+
     final boundingBox = BoundingBox();
 
-    final fontScale = fontSize / atlas.fontSize;
+    final fontScale = fontSize / atlasSet.fontSize;
     final canvasScale = 2 / canvasSize;
     final scaling = fontScale * canvasScale;
 
     double offsetX = 0.0; // Horizontal offset for character positioning
-    int vertexIndex = 0; // Track current vertex index for indices
 
     // Convert world position to anchor position
     final anchorX = (x - canvasSize / 2) * canvasScale;
@@ -93,9 +92,11 @@ class TextBuilder {
 
     // Process each character in the text
     for (final charCode in text.codeUnits) {
-      if (charCode > 255) {
-        continue;
-      }
+      final atlas = atlasSet.getAtlasForChar(charCode);
+      final atlasID = AtlasID.forChar(charCode: charCode, fontFamily: atlas.fontFamily);
+      final textureID = atlasID.hashCode;
+
+      final tempBatch = tempBatches.putIfAbsent(textureID, () => _GeometryBatch(textureID, color, haloColor));
 
       final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
 
@@ -121,7 +122,7 @@ class TextBuilder {
       boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
 
       // Add vertices for this character with relative offsets
-      tempVertices.addAll([
+      tempBatch.vertices.addAll([
         charMinX,
         charMinY,
         left,
@@ -141,9 +142,9 @@ class TextBuilder {
       ]);
 
       // Add indices for this character's quad (two triangles)
-      indices.addAll([
-        vertexIndex + 0, vertexIndex + 2, vertexIndex + 1, // first triangle
-        vertexIndex + 2, vertexIndex + 0, vertexIndex + 3, // second triangle
+      tempBatch.indices.addAll([
+        tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 1, // first triangle
+        tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 3, // second triangle
       ]);
       final advance = scaling * glyphMetrics.glyphAdvance;
 
@@ -151,10 +152,10 @@ class TextBuilder {
       offsetX += glyphMetrics.glyphLeft * scaling;
 
       // Update vertex index for next character
-      vertexIndex += 4;
+      tempBatch.vertexOffset += 4;
     }
 
-    if (tempVertices.isEmpty) return;
+    if (tempBatches.isEmpty) return;
 
     final centerOffsetX = boundingBox.centerOffsetX;
     final centerOffsetY = boundingBox.centerOffsetY;
@@ -180,40 +181,44 @@ class TextBuilder {
       dynamicRotationScale = 0.0;
     }
 
-    final vertices = <double>[];
-    for (int i = 0; i < tempVertices.length; i += 4) {
-      vertices.addAll([
-        tempVertices[i] + centerOffsetX, // offset_x (relative to anchor)
-        tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
-        tempVertices[i + 2], // u
-        tempVertices[i + 3], // v
-        center.dx,
-        center.dy,
-        baseRotation,
-        dynamicRotationScale
-      ]);
-    }
+    for (final tempBatch in tempBatches.values) {
 
-    _GeometryBatch? batch;
-    for (final b in _batches) {
-      if (b.matches(textureID, color, haloColor, dynamicRotationScale, baseRotation)) {
-        batch = b;
-        break;
+      final tempVertices = tempBatch.vertices;
+
+      final vertices = <double>[];
+      for (int i = 0; i < tempVertices.length; i += 4) {
+        vertices.addAll([
+          tempVertices[i] + centerOffsetX, // offset_x (relative to anchor)
+          tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
+          tempVertices[i + 2], // u
+          tempVertices[i + 3], // v
+          center.dx,
+          center.dy,
+          baseRotation,
+          dynamicRotationScale
+        ]);
       }
+
+      _GeometryBatch? batch;
+      for (final b in _batches) {
+        if (b.matches(tempBatch)) {
+          batch = b;
+          break;
+        }
+      }
+
+      if (batch == null) {
+        batch = _GeometryBatch(tempBatch.textureID, tempBatch.color, tempBatch.haloColor);
+        _batches.add(batch);
+      }
+      // Adjust indices to account for existing vertices in the batch
+      final adjustedIndices = tempBatch.indices.map((i) => i + batch!.vertexOffset).toList();
+
+      // Add vertices and indices to the batch
+      batch.vertices.addAll(vertices);
+      batch.indices.addAll(adjustedIndices);
+      batch.vertexOffset += vertices.length ~/ TextGeometry.VERTEX_SIZE;
     }
-
-    if (batch == null) {
-      batch = _GeometryBatch(textureID, color, haloColor);
-      _batches.add(batch);
-    }
-
-    // Adjust indices to account for existing vertices in the batch
-    final adjustedIndices = indices.map((i) => i + batch!.vertexOffset).toList();
-
-    // Add vertices and indices to the batch
-    batch.vertices.addAll(vertices);
-    batch.indices.addAll(adjustedIndices);
-    batch.vertexOffset += vertices.length ~/ TextGeometry.VERTEX_SIZE;
   }
 
   List<PackedMesh> getMeshes() {

@@ -20,13 +20,12 @@ class AtlasGenerator {
   });
 
   Future loadAtlas(String str, String fontFamily) async {
-    final chars = str.codeUnits;
-    final (min, max) = _getBounds(chars);
+    final toLoad = AtlasID.iterableFromString(text: str, fontFamily: fontFamily);
 
-    await _loadAtlas(_createPlaceholderId(fontFamily));
+    await Future.wait(toLoad.map((id) => _loadAtlas(id)));
   }
 
-  FutureOr<void> _loadAtlas(AtlasID id) async {
+  Future<void> _loadAtlas(AtlasID id) async {
     var atlas = _loading[id];
     if (atlas == null) {
       final completer = Completer<void>();
@@ -78,29 +77,7 @@ class AtlasGenerator {
       gridCols: config.gridCols,
     ));
   }
-
-  (int, int) _getBounds(List<int> chars) {
-    int minCode = 1000000000000;
-    int maxCode = -1;
-
-    for (int code in chars) {
-      if (code < minCode) {
-        minCode = code;
-      }
-      if (code > maxCode) {
-        maxCode = code;
-      }
-    }
-    maxCode++;
-    return ((minCode / 256).truncate() * 256, (maxCode / 256).ceil() * 256);
-  }
-
 }
-
-//FIXME: need to provide atlasses for character ranges beyond 256
-AtlasID _createPlaceholderId(String? fontFamily) =>
-    AtlasID(font: fontFamily ?? 'Roboto Regular', charStart: 0, charCount: 256);
-
 
 /// Configuration for atlas generation
 class AtlasConfig {

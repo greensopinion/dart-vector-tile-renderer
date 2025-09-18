@@ -1,4 +1,5 @@
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
