@@ -113,7 +113,7 @@ class GlyphAtlas {
   final int atlasHeight;
   final int cellWidth;
   final int cellHeight;
-  final List<GlyphMetrics> glyphMetrics;
+  final Map<int, GlyphMetrics> glyphMetrics;
   final String fontFamily;
   final double fontSize;
   final String colorFormat;
@@ -134,7 +134,7 @@ class GlyphAtlas {
     required this.gridCols,
   });
 
-  int get charCount => atlasID.chars.length;
+  int get charCount => glyphMetrics.length;
 
   int get gridRows => (charCount / gridCols).ceil();
 
@@ -164,11 +164,5 @@ class GlyphAtlas {
     return CharacterUV(u1: u1, v1: v1, u2: u2, v2: v2);
   }
   
-  GlyphMetrics? getGlyphMetrics(int charCode) {
-    try {
-      return glyphMetrics.firstWhere((metrics) => metrics.charCode == charCode);
-    } catch (e) {
-      return null;
-    }
-  }
+  GlyphMetrics? getGlyphMetrics(int charCode) => glyphMetrics[charCode];
 }

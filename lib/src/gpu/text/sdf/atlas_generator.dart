@@ -51,13 +51,11 @@ class AtlasGenerator {
     final renderFontSize = fontSize * config.renderScale;
 
     final charCodes = id.chars.codeUnits;
-    final metrics = charCodes.map((charCode) => metricsExtractor.extractMetrics(
-      charCode, cellSize, cellSize,
-    )).toList();
+    final metrics = <int, GlyphMetrics>{for (var code in charCodes) code: metricsExtractor.extractMetrics(code, cellSize, cellSize)};
 
     final sdfRenderer = SdfRenderer(config, cellSize * config.renderScale);
 
-    textureProvider.addLoaded(sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(metrics, renderFontSize)), id.hashCode);
+    textureProvider.addLoaded(sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(renderFontSize)), id.hashCode);
 
     atlasProvider.addLoaded(GlyphAtlas(
       atlasID: id,
@@ -209,7 +207,7 @@ class GlyphRenderer {
   
   GlyphRenderer({required this.fontFamily, required this.config});
 
-  Future<Uint8List> renderGlyphs(List<GlyphMetrics> metrics, int renderFontSize) async {
+  Future<Uint8List> renderGlyphs(int renderFontSize) async {
 
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
