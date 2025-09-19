@@ -19,11 +19,7 @@ class AtlasGenerator {
     required this.textureProvider
   });
 
-  Future loadAtlas(String str, String fontFamily) async {
-    final toLoad = AtlasID.iterableFromString(text: str, fontFamily: fontFamily);
-
-    await Future.wait(toLoad.map((id) => _loadAtlas(id)));
-  }
+  Future loadAtlas({required String str, String? fontFamily}) => _loadAtlas(AtlasID(chars: str, font: fontFamily));
 
   Future<void> _loadAtlas(AtlasID id) async {
     var atlas = _loading[id];
@@ -44,7 +40,7 @@ class AtlasGenerator {
   Future<void> _generateBitmapAtlas(
       AtlasID id, int fontSize
       ) async {
-    final config = AtlasConfig(charCodeStart: id.charStart, charCount: id.charCount);
+    final config = AtlasConfig(atlasID: id);
 
     // Initialize components
     final metricsExtractor = GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
@@ -54,15 +50,17 @@ class AtlasGenerator {
 
     final renderFontSize = fontSize * config.renderScale;
 
-    final metrics = List.generate(config.charCount, (i) => metricsExtractor.extractMetrics(
-      i + config.charCodeStart, cellSize, cellSize,
-    ));
+    final charCodes = id.chars.codeUnits;
+    final metrics = charCodes.map((charCode) => metricsExtractor.extractMetrics(
+      charCode, cellSize, cellSize,
+    )).toList();
 
     final sdfRenderer = SdfRenderer(config, cellSize * config.renderScale);
 
     textureProvider.addLoaded(sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(metrics, renderFontSize)), id.hashCode);
 
     atlasProvider.addLoaded(GlyphAtlas(
+      atlasID: id,
       atlasWidth: cellSize * config.gridCols,
       atlasHeight: cellSize * config.gridRows,
       cellWidth: cellSize,
@@ -72,17 +70,17 @@ class AtlasGenerator {
       fontSize: fontSize + 0.0,
       colorFormat: 'grayscale',
       sdfRadius: config.sdfRadius,
-      charCodeStart: config.charCodeStart,
-      charCodeEnd: config.charCodeEnd - 1,
       gridCols: config.gridCols,
     ));
   }
+
+  bool isCharLoaded(String font, int charCode) => atlasProvider.isCharLoaded(font, charCode);
 }
 
 /// Configuration for atlas generation
 class AtlasConfig {
-  final int charCodeStart;
-  final int charCount;
+  final AtlasID atlasID;
+  late final int charCount;
   late final int gridCols;
   late final int gridRows;
   late final int sdfRadius;
@@ -91,12 +89,12 @@ class AtlasConfig {
   final int sdfPadding;
   
   AtlasConfig({
-    required this.charCodeStart,
-    required this.charCount,
+    required this.atlasID,
     this.renderScale = 2,
     this.sdfCutoff = 0.25,
     this.sdfPadding = 20,
   }) {
+    charCount = atlasID.chars.length;
     sdfRadius = 8 * renderScale;
     gridCols = _getColumnCount(charCount);
     gridRows = _calculateRows(charCount, gridCols);
@@ -119,9 +117,6 @@ class AtlasConfig {
   static int _calculateRows(int charCount, int cols) {
     return (charCount / cols).ceil();
   }
-  
-  /// Get the end character code (exclusive)
-  int get charCodeEnd => charCodeStart + charCount;
 }
 
 /// Result of rendering a single glyph
@@ -228,9 +223,11 @@ class GlyphRenderer {
       Paint()..color = Colors.white,
     );
 
-    for (int charCode = config.charCodeStart; charCode < config.charCodeEnd; charCode++) {
-      final col = (charCode - config.charCodeStart) % config.gridCols;
-      final row = (charCode - config.charCodeStart) ~/ config.gridCols;
+    final charCodes = config.atlasID.chars.codeUnits;
+    for (int i = 0; i < charCodes.length; i++) {
+      final charCode = charCodes[i];
+      final col = i % config.gridCols;
+      final row = i ~/ config.gridCols;
 
       final textPainter = TextPainter(
         text: TextSpan(

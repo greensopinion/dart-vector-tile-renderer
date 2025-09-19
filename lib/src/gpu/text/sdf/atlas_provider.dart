@@ -12,11 +12,27 @@ class AtlasProvider {
   }
 
   AtlasSet? getAtlasSetForString(String text, String? fontFamily) {
-    final neededIDs = AtlasID.iterableFromString(text: text, fontFamily: fontFamily);
-    final atlases = neededIDs.map((id) => _loaded[id]);
+    final font = fontFamily ?? 'Roboto Regular';
+    final charCodes = text.codeUnits.toSet();
 
-    if (atlases.contains(null)) { return null; }
-    return AtlasSet(<int, GlyphAtlas>{for (var v in atlases) v!.charCodeStart: v});
+    final requiredAtlases = <GlyphAtlas>{};
+
+    // Find all atlases that contain characters from the text
+    for (final charCode in charCodes) {
+      bool found = false;
+      for (final atlas in _loaded.values) {
+        if (atlas.fontFamily == font && atlas.atlasID.hasChar(charCode)) {
+          requiredAtlases.add(atlas);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        return null; // Missing character, can't render this text
+      }
+    }
+
+    return AtlasSet(requiredAtlases);
   }
 
   void addLoaded(GlyphAtlas atlas) {
@@ -26,4 +42,6 @@ class AtlasProvider {
   //FIXME: this is no bueno
   static AtlasProvider? get instance => _instance;
   static AtlasProvider? _instance;
+
+  bool isCharLoaded(String font, int charCode) => _loaded.keys.any((id) => id.font == font && id.hasChar(charCode));
 }

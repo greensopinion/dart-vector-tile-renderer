@@ -92,9 +92,8 @@ class TextBuilder {
 
     // Process each character in the text
     for (final charCode in text.codeUnits) {
-      final atlas = atlasSet.getAtlasForChar(charCode);
-      final atlasID = AtlasID.forChar(charCode: charCode, fontFamily: atlas.fontFamily);
-      final textureID = atlasID.hashCode;
+      final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
+      final textureID = atlas.atlasID.hashCode;
 
       final tempBatch = tempBatches.putIfAbsent(textureID, () => _GeometryBatch(textureID, color, haloColor));
 

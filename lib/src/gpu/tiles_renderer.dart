@@ -80,15 +80,12 @@ class TilesRenderer {
     return (Theme theme, double zoom, Tileset tileset) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider);
   }
 
-  Future preRenderUi(double zoom, Tileset tileset) async {
-    final visitorContext = VisitorContext(
-      logger: const Logger.noop(),
-      tileSource: TileSource(
-          tileset: tileset, rasterTileset: const RasterTileset(tiles: {})),
-      zoom: zoom,
-    );
-    await AtlasCreatingTextVisitor(_atlasGenerator, theme)
-        .visitAllFeatures(visitorContext);
+  Future preRenderUi(double zoom, Iterable<Tileset> tilesets) async {
+    final visitor = AtlasCreatingTextVisitor(_atlasGenerator, theme);
+    for (final tileset in tilesets) {
+      visitor.visitAllFeatures(tileset, zoom);
+    }
+    await visitor.finish();
   }
 
   void update(double zoom, List<TileUiModel> models) {
