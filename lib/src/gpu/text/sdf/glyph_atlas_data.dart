@@ -1,39 +1,36 @@
-import 'dart:math' as math;
-
 class AtlasSet {
-  final Map<int, GlyphAtlas> _atlasesByCharStart;
+  final Set<GlyphAtlas> _atlases;
 
-  AtlasSet(this._atlasesByCharStart);
+  AtlasSet(this._atlases);
 
-  double get fontSize => _atlasesByCharStart.values.first.fontSize;
+  double get fontSize => _atlases.first.fontSize;
 
-  GlyphAtlas getAtlasForChar(int charCode) => _atlasesByCharStart[_normalizeCharCode(charCode)]!;
+  GlyphAtlas getAtlasForChar(int charCode, String? font) {
+    for (final atlas in _atlases) {
+      if (atlas.fontFamily == (font ?? AtlasID._defaultFont) && atlas.atlasID.hasChar(charCode)) {
+        return atlas;
+      }
+    }
+    throw Exception();
+  }
 }
 
 class AtlasID {
-  final String font;
-  final int charStart;
-  final int charCount;
+  late final String font;
+
+  final String chars;
 
   static const String _defaultFont = 'Roboto Regular';
 
-  const AtlasID(
-      {required this.font, required this.charStart, required this.charCount});
-
-  static Iterable<AtlasID> iterableFromString({required String text, String? fontFamily}) {
-    final charStarts = text.codeUnits.map((code) => _normalizeCharCode(code)).toSet();
-
-    return charStarts.map((start) => AtlasID(font: fontFamily ?? _defaultFont, charStart: start, charCount: 256));
+  AtlasID({String? font, required this.chars}) {
+    this.font = font ?? _defaultFont;
   }
 
-  static AtlasID forChar({required int charCode, String? fontFamily}) {
-    return AtlasID(font: fontFamily ?? _defaultFont, charStart: _normalizeCharCode(charCode), charCount: 256);
-  }
 
 
   @override
   String toString() {
-    return 'AtlasID{font: $font, charStart: $charStart, charCount: $charCount}';
+    return 'AtlasID{font: $font, chars: $chars}';
   }
 
   @override
@@ -42,14 +39,13 @@ class AtlasID {
           other is AtlasID &&
               runtimeType == other.runtimeType &&
               font == other.font &&
-              charStart == other.charStart &&
-              charCount == other.charCount;
+              chars == other.chars;
 
   @override
-  int get hashCode => Object.hash(font, charStart, charCount);
-}
+  int get hashCode => Object.hash(font, chars);
 
-int _normalizeCharCode(int code) => (code ~/ 256) * 256;
+  bool hasChar(int charCode) => chars.contains(String.fromCharCode(charCode));
+}
 
 
 class GlyphMetrics {
@@ -111,7 +107,8 @@ class CharacterUV {
 }
 
 class GlyphAtlas {
-  
+
+  final AtlasID atlasID;
   final int atlasWidth;
   final int atlasHeight;
   final int cellWidth;
@@ -121,11 +118,10 @@ class GlyphAtlas {
   final double fontSize;
   final String colorFormat;
   final int sdfRadius;
-  final int charCodeStart;
-  final int charCodeEnd;
   final int gridCols;
 
   GlyphAtlas({
+    required this.atlasID,
     required this.atlasWidth,
     required this.atlasHeight,
     required this.cellWidth,
@@ -135,25 +131,24 @@ class GlyphAtlas {
     required this.fontSize,
     required this.colorFormat,
     required this.sdfRadius,
-    required this.charCodeStart,
-    required this.charCodeEnd,
     required this.gridCols,
   });
 
-  int get charCount => charCodeEnd - charCodeStart + 1;
+  int get charCount => atlasID.chars.length;
 
   int get gridRows => (charCount / gridCols).ceil();
 
-  AtlasID get id => AtlasID(font: fontFamily, charStart: charCodeStart, charCount: charCount);
+  AtlasID get id => atlasID;
 
 
   CharacterUV getCharacterUV(int charCode) {
-    if (charCode < charCodeStart || charCode > charCodeEnd) {
-      throw ArgumentError('Character code must be between $charCodeStart and $charCodeEnd');
+    final charIndex = atlasID.chars.codeUnits.indexOf(charCode);
+    if (charIndex == -1) {
+      throw ArgumentError('Character code $charCode not found in atlas');
     }
-    
-    final col = (charCode - charCodeStart) % gridCols;
-    final row = (charCode - charCodeStart) ~/ gridCols;
+
+    final col = charIndex % gridCols;
+    final row = charIndex ~/ gridCols;
     
     final x1 = col * cellWidth;
     final y1 = row * cellHeight;

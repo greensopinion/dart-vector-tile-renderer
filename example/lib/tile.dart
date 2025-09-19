@@ -84,7 +84,7 @@ class _MapTileState extends State<MapTile> {
     final tileset = await _loadTileset();
     _tileset = tileset;
     await TilesRenderer.initialize;
-    await gpuRenderer.preRenderUi(zoom, tileset);
+    await gpuRenderer.preRenderUi(zoom, [tileset]);
     _renderData = TilesRenderer.getPreRenderer().call(theme, zoom, tileset);
     if (!_disposed) {
       setState(() {});
