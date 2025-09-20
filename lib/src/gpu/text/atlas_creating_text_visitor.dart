@@ -28,27 +28,42 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
     }
   }
 
-  Future<void> finish() async {
+  Future<void> finish(String tileID) async {
     for (final entry in fontToCharCodes.entries) {
       final font = entry.key;
       final charCodes = entry.value;
 
-      final filtered = charCodes
-          .where((code) => !atlasGenerator.isCharLoaded(font, code))
-          .toList();
+      if (charCodes.isEmpty) {
+        continue;
+      }
+
+      final filtered = charCodes.toList()..sort();
+
+      if (filtered.first < 256) {
+        await atlasGenerator.loadAtlas(str: _defaultChars, fontFamily: font, tileID: "");
+        if (filtered.last >= 256) {
+          final chop = filtered.indexWhere((it) => it >= 256);
+          filtered.removeRange(0, chop);
+        } else {
+          continue;
+        }
+      }
 
       for (var i = 0; i < filtered.length; i += 256) {
         final end = (i + 256 < filtered.length) ? i + 256 : filtered.length;
         final charChunk = filtered.sublist(i, end);
         await atlasGenerator.loadAtlas(
-          str: String.fromCharCodes(charChunk..sort()),
+          str: String.fromCharCodes(charChunk),
           fontFamily: font,
+          tileID: tileID
         );
       }
     }
 
     fontToCharCodes.clear();
   }
+
+  static final String _defaultChars = String.fromCharCodes(List.generate(256, (i) => i));
 
 
   @override

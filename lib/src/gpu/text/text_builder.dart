@@ -53,10 +53,10 @@ class _GeometryBatch {
 }
 
 class TextBuilder {
-  final AtlasProvider atlasProvider;
+  final AtlasSet atlasSet;
   final List<_GeometryBatch> _batches = [];
 
-  TextBuilder(this.atlasProvider);
+  TextBuilder(this.atlasSet);
 
   void addText({
     required String text,
@@ -71,10 +71,6 @@ class TextBuilder {
     required Vector4 color,
     Vector4? haloColor,
   }) {
-    final atlasSet = atlasProvider.getAtlasSetForString(text, fontFamily);
-    if (atlasSet == null) {
-      return;
-    }
 
     final tempBatches = <int, _GeometryBatch>{};
 
@@ -93,6 +89,9 @@ class TextBuilder {
     // Process each character in the text
     for (final charCode in text.codeUnits) {
       final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
+      if (atlas == null) {
+        return;
+      }
       final textureID = atlas.atlasID.hashCode;
 
       final tempBatch = tempBatches.putIfAbsent(textureID, () => _GeometryBatch(textureID, color, haloColor));

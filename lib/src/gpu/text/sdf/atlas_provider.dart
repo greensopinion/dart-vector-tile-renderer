@@ -1,7 +1,11 @@
+import 'dart:isolate';
+
+import 'package:collection/collection.dart';
+
 import 'glyph_atlas_data.dart';
 
 class AtlasProvider {
-  final _loaded = <AtlasID, GlyphAtlas>{};
+  final _loaded = <String, Set<GlyphAtlas>>{};
 
   AtlasProvider() {
     _instance = this;
@@ -11,37 +15,37 @@ class AtlasProvider {
     _instance = null;
   }
 
-  AtlasSet? getAtlasSetForString(String text, String? fontFamily) {
-    final font = fontFamily ?? 'Roboto Regular';
-    final charCodes = text.codeUnits.toSet();
-
-    final requiredAtlases = <GlyphAtlas>{};
-
-    // Find all atlases that contain characters from the text
-    for (final charCode in charCodes) {
-      bool found = false;
-      for (final atlas in _loaded.values) {
-        if (atlas.fontFamily == font && atlas.atlasID.hasChar(charCode)) {
-          requiredAtlases.add(atlas);
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        return null; // Missing character, can't render this text
-      }
+  void addLoaded(Set<GlyphAtlas> atlases, String tileID) {
+    final existing = _loaded[tileID];
+    if (existing != null) {
+      existing.addAll(atlases);
+    } else {
+      _loaded[tileID] = atlases;
     }
-
-    return AtlasSet(requiredAtlases);
   }
 
-  void addLoaded(GlyphAtlas atlas) {
-    _loaded[atlas.id] = atlas;
+  AtlasSet forTileID(String tileID) {
+    return AtlasSet({}..addAll(_loaded[tileID] ?? {})..addAll(_loaded[""] ?? {}));
   }
+
+  Set<GlyphAtlas> unload(String tileID) {
+    final out = _loaded[tileID];
+    _loaded.remove(tileID);
+    return out ?? {};
+  }
+
+  Set<GlyphAtlas> unloadWhereNotFound(Set<String> tileIDs) {
+    final keysToUnload = _loaded.keys.toSet().whereNot((it) => it.isEmpty || tileIDs.contains(it));
+    final atlasesToUnload = keysToUnload.map((it) => _loaded[it]).nonNulls.flattenedToSet;
+    for (final key in keysToUnload) {
+      _loaded.remove(key);
+    }
+    return atlasesToUnload;
+  }
+
+
 
   //FIXME: this is no bueno
   static AtlasProvider? get instance => _instance;
   static AtlasProvider? _instance;
-
-  bool isCharLoaded(String font, int charCode) => _loaded.keys.any((id) => id.font == font && id.hasChar(charCode));
 }

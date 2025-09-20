@@ -5,13 +5,15 @@ class AtlasSet {
 
   double get fontSize => _atlases.first.fontSize;
 
-  GlyphAtlas getAtlasForChar(int charCode, String? font) {
+  bool get isEmpty => _atlases.isEmpty;
+
+  GlyphAtlas? getAtlasForChar(int charCode, String? font) {
     for (final atlas in _atlases) {
       if (atlas.fontFamily == (font ?? AtlasID._defaultFont) && atlas.atlasID.hasChar(charCode)) {
         return atlas;
       }
     }
-    throw Exception();
+    return null;
   }
 }
 

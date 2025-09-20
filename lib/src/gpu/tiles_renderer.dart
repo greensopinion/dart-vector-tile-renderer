@@ -23,6 +23,12 @@ class TileId {
   final int y;
 
   TileId({required this.z, required this.x, required this.y});
+
+
+  @override
+  String toString() => key();
+
+  String key() => 'z=$z,x=$x,y=$y';
 }
 
 class TileUiModel {
@@ -75,17 +81,16 @@ class TilesRenderer {
     return scene;
   }
 
-  static Uint8List Function(Theme theme, double zoom, Tileset tileset) getPreRenderer() {
+  static Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID) getPreRenderer() {
     final atlasProvider = AtlasProvider.instance!;
-    return (Theme theme, double zoom, Tileset tileset) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider);
+    return (Theme theme, double zoom, Tileset tileset, String tileID) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider.forTileID(tileID));
   }
 
-  Future preRenderUi(double zoom, Iterable<Tileset> tilesets) async {
+  Future preRenderUi(double zoom, Tileset tileset, String tileID) async {
     final visitor = AtlasCreatingTextVisitor(_atlasGenerator, theme);
-    for (final tileset in tilesets) {
-      visitor.visitAllFeatures(tileset, zoom);
-    }
-    await visitor.finish();
+    visitor.visitAllFeatures(tileset, zoom);
+
+    await visitor.finish(tileID);
   }
 
   void update(double zoom, List<TileUiModel> models) {
@@ -95,7 +100,7 @@ class TilesRenderer {
     scene.root.removeAll();
     _positionByKey.clear();
     for (final model in models) {
-      final key = 'tile-${model.tileId.z}-${model.tileId.x}-${model.tileId.y}';
+      final key = 'z=${model.tileId.z},x=${model.tileId.x},y=${model.tileId.y}';
       var node = nodesByKey[key];
       if (node == null) {
         node = Node(name: key);
@@ -108,6 +113,12 @@ class TilesRenderer {
       _positionByKey[key] = model.position;
       scene.add(node);
     }
+
+    nodesByKey.forEach((key, node) {
+      if (node.parent == null) {
+        _atlasGenerator.unloadAtlases(key);
+      }
+    });
   }
 
   void render(ui.Canvas canvas, ui.Size size, double rotation) {
