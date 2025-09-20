@@ -9,7 +9,7 @@ import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 import 'glyph_atlas_data.dart';
 
 class AtlasGenerator {
-  final _loading = <AtlasID, Completer<void>>{};
+  final _loading = <AtlasID, Completer<GlyphAtlas>>{};
 
   final AtlasProvider atlasProvider;
   final TextureProvider textureProvider;
@@ -19,16 +19,34 @@ class AtlasGenerator {
     required this.textureProvider
   });
 
-  Future loadAtlas({required String str, String? fontFamily}) => _loadAtlas(AtlasID(chars: str, font: fontFamily));
+  Future loadAtlas({required String str, String? fontFamily, required String tileID}) async {
+    final atlas = await _loadAtlas(AtlasID(chars: str, font: fontFamily));
+    atlasProvider.addLoaded({atlas}, tileID);
+  }
 
-  Future<void> _loadAtlas(AtlasID id) async {
+  void unloadWhereNotFound(Set<String> tileIDs) {
+    final unloading = atlasProvider.unloadWhereNotFound(tileIDs);
+    for (var it in unloading) {
+      _loading.remove(it.id);
+      textureProvider.unload(it.id.hashCode);
+    }
+  }
+
+  void unloadAtlases(String tileID) {
+    final unloading = atlasProvider.unload(tileID);
+    for (final atlas in unloading) {
+      _loading.remove(atlas.id);
+      textureProvider.unload(atlas.id.hashCode);
+    }
+  }
+
+  Future<GlyphAtlas> _loadAtlas(AtlasID id) async {
     var atlas = _loading[id];
     if (atlas == null) {
-      final completer = Completer<void>();
+      final completer = Completer<GlyphAtlas>();
       _loading[id] = completer;
       try {
-        await _generateBitmapAtlas(id, 24);
-        completer.complete(null);
+        completer.complete(await _generateBitmapAtlas(id, 24));
       } catch (e) {
         completer.completeError(e);
       }
@@ -37,12 +55,11 @@ class AtlasGenerator {
     return atlas.future;
   }
 
-  Future<void> _generateBitmapAtlas(
+  Future<GlyphAtlas> _generateBitmapAtlas(
       AtlasID id, int fontSize
       ) async {
     final config = AtlasConfig(atlasID: id);
 
-    // Initialize components
     final metricsExtractor = GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
     final glyphRenderer = GlyphRenderer(fontFamily: id.font, config: config);
 
@@ -57,7 +74,7 @@ class AtlasGenerator {
 
     textureProvider.addLoaded(sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(renderFontSize)), id.hashCode);
 
-    atlasProvider.addLoaded(GlyphAtlas(
+    return GlyphAtlas(
       atlasID: id,
       atlasWidth: cellSize * config.gridCols,
       atlasHeight: cellSize * config.gridRows,
@@ -69,10 +86,8 @@ class AtlasGenerator {
       colorFormat: 'grayscale',
       sdfRadius: config.sdfRadius,
       gridCols: config.gridCols,
-    ));
+    );
   }
-
-  bool isCharLoaded(String font, int charCode) => atlasProvider.isCharLoaded(font, charCode);
 }
 
 /// Configuration for atlas generation

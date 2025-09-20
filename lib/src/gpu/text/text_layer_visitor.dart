@@ -17,18 +17,18 @@ import 'text_builder.dart';
 class TextLayerVisitor {
   final TileRenderData renderData;
   final VisitorContext context;
-  final AtlasProvider atlasProvider;
+  final AtlasSet atlasSet;
 
   final Set<String> alreadyAdded = <String>{};
 
-  TextLayerVisitor(this.renderData, this.context, this.atlasProvider);
+  TextLayerVisitor(this.renderData, this.context, this.atlasSet);
 
   void addFeatures(Style style, Iterable<LayerFeature> features, NdcLabelSpace labelSpace) {
     final symbolLayout = style.symbolLayout;
-    if (symbolLayout == null) {
+    if (symbolLayout == null || atlasSet.isEmpty) {
       return;
     }
-    final textBuilder = TextBuilder(atlasProvider);
+    final textBuilder = TextBuilder(atlasSet);
     for (var feature in features) {
       final evaluationContext = EvaluationContext(
           () => feature.feature.properties,

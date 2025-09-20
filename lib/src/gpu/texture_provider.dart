@@ -9,4 +9,8 @@ class TextureProvider {
   void addLoaded(Texture texture, int key) {
     _loaded[key] = texture;
   }
+
+  void unload(int key) {
+    _loaded.remove(key);
+  }
 }
