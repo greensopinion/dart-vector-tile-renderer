@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:collection/collection.dart';
 
 import 'glyph_atlas_data.dart';

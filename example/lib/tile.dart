@@ -84,8 +84,8 @@ class _MapTileState extends State<MapTile> {
     final tileset = await _loadTileset();
     _tileset = tileset;
     await TilesRenderer.initialize;
-    await gpuRenderer.preRenderUi(zoom, [tileset]);
-    _renderData = TilesRenderer.getPreRenderer().call(theme, zoom, tileset);
+    await gpuRenderer.preRenderUi(zoom, tileset, TileId(z: 0, x: 0, y: 0).key());
+    _renderData = TilesRenderer.getPreRenderer().call(theme, zoom, tileset, TileId(z: 0, x: 0, y: 0).key());
     if (!_disposed) {
       setState(() {});
     }
@@ -124,7 +124,7 @@ class _MapTileState extends State<MapTile> {
       renderData: renderData,
     );
 
-    gpuRenderer.update(zoom, [model]);
+    gpuRenderer.update(zoom, [model], [TileId(z: 0, x: 0, y: 0).key()]);
 
     return Container(
         constraints: BoxConstraints(
