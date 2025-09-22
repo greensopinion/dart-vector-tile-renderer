@@ -5,14 +5,6 @@ import 'glyph_atlas_data.dart';
 class AtlasProvider {
   final _loaded = <String, Set<GlyphAtlas>>{};
 
-  AtlasProvider() {
-    _instance = this;
-  }
-
-  void dispose() {
-    _instance = null;
-  }
-
   void addLoaded(Set<GlyphAtlas> atlases, String tileID) {
     final existing = _loaded[tileID];
     if (existing != null) {
@@ -40,10 +32,4 @@ class AtlasProvider {
     }
     return atlasesToUnload;
   }
-
-
-
-  //FIXME: this is no bueno
-  static AtlasProvider? get instance => _instance;
-  static AtlasProvider? _instance;
 }
