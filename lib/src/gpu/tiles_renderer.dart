@@ -93,7 +93,7 @@ class TilesRenderer {
     await visitor.finish(tileID);
   }
 
-  void update(double zoom, List<TileUiModel> models) {
+  void update(double zoom, List<TileUiModel> models, Iterable<String> tileIDs) {
     final scene = this.scene;
     final nodesByKey =
         Map.fromEntries(scene.root.children.map((n) => MapEntry(n.name, n)));
@@ -114,11 +114,7 @@ class TilesRenderer {
       scene.add(node);
     }
 
-    nodesByKey.forEach((key, node) {
-      if (node.parent == null) {
-        _atlasGenerator.unloadAtlases(key);
-      }
-    });
+    _atlasGenerator.unloadWhereNotFound(tileIDs.toSet());
   }
 
   void render(ui.Canvas canvas, ui.Size size, double rotation) {
