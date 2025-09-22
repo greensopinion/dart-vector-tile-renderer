@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/debug/debug_render_layer.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
@@ -81,8 +80,8 @@ class TilesRenderer {
     return scene;
   }
 
-  static Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID) getPreRenderer() {
-    final atlasProvider = AtlasProvider.instance!;
+  Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID) getPreRenderer() {
+    final atlasProvider = _atlasProvider;
     return (Theme theme, double zoom, Tileset tileset, String tileID) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider.forTileID(tileID));
   }
 
@@ -140,6 +139,5 @@ class TilesRenderer {
   }
 
   void dispose() {
-    _atlasProvider.dispose();
   }
 }
