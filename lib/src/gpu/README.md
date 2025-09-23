@@ -33,7 +33,14 @@ cd example && flutter run
 
 # Features
 
----
+## Visual Quality
+
+ - Rendering on a second monitor on a Mac laptop causes pixelation
+
+## Overzooming
+
+ - Tile clip causes artifacts at tile boundaries (consider clipping with a margin outside of the clip area)
+
 ## Background
  - done
    - color
