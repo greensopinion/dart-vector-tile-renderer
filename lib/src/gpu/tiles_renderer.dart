@@ -117,6 +117,8 @@ class TilesRenderer {
   }
 
   void render(ui.Canvas canvas, ui.Size size, double rotation) {
+    canvas.clipRect(Offset.zero & size);
+
     // Apply device pixel ratio scaling
     final view = ui.PlatformDispatcher.instance.views.first;
     final pixelRatio = view.display.devicePixelRatio;
