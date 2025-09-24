@@ -1,12 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/debug/debug_render_layer.dart';
 import 'package:vector_tile_renderer/src/gpu/text/ndc_label_space.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_layer_visitor.dart';
-import 'package:vector_tile_renderer/src/themes/paint_model.dart';
 import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
 
 import '../../vector_tile_renderer.dart';
@@ -27,7 +24,7 @@ class TilePreRenderer {
 
     // addDebugRenderLayer(data);
 
-    // renderLabelSpaceBoxes(data, visitor.labelSpace);
+    // renderLabelSpaceBoxes(data, visitor.labelSpaces[1.0]!);
 
     return data.pack();
   }
@@ -36,7 +33,12 @@ class TilePreRenderer {
 class _PreRendererLayerVisitor extends LayerVisitor {
   final TileRenderData tileRenderData;
   late final VisitorContext context;
-  final labelSpace = NdcLabelSpace();
+  final labelSpaces = <double, NdcLabelSpace>{
+    0.95: NdcLabelSpace(),
+    0.75: NdcLabelSpace(),
+    0.5: NdcLabelSpace(),
+    0.25: NdcLabelSpace()
+  };
   final AtlasSet atlasSet;
 
   _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom, this.atlasSet) {
@@ -64,7 +66,7 @@ class _PreRendererLayerVisitor extends LayerVisitor {
         return ScenePolygonBuilder(tileRenderData, context)
             .addPolygons(style, features);
       case ThemeLayerType.symbol:
-        return TextLayerVisitor(tileRenderData, context, atlasSet).addFeatures(style, features, labelSpace);
+        return TextLayerVisitor(tileRenderData, context, atlasSet).addFeatures(style, features, labelSpaces);
       case ThemeLayerType.background:
       case ThemeLayerType.raster:
       case ThemeLayerType.unsupported:

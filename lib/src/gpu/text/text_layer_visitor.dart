@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:vector_tile_renderer/src/features/text_abbreviator.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
@@ -23,7 +22,7 @@ class TextLayerVisitor {
 
   TextLayerVisitor(this.renderData, this.context, this.atlasSet);
 
-  void addFeatures(Style style, Iterable<LayerFeature> features, NdcLabelSpace labelSpace) {
+  void addFeatures(Style style, Iterable<LayerFeature> features, Map<double, NdcLabelSpace> labelSpaces) {
     final symbolLayout = style.symbolLayout;
     if (symbolLayout == null || atlasSet.isEmpty) {
       return;
@@ -99,7 +98,7 @@ class TextLayerVisitor {
           canvasSize: 4096,
           rotation: rotation,
           rotationAlignment: rotationAlignment,
-          labelSpace: labelSpace,
+          labelSpaces: labelSpaces,
           color: paint.color.vector4,
           haloColor: textHalo?.color.vector4,
       );

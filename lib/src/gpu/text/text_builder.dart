@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
@@ -67,7 +66,7 @@ class TextBuilder {
     required int canvasSize,
     required double rotation,
     required RotationAlignment rotationAlignment,
-    required NdcLabelSpace labelSpace,
+    required Map<double, NdcLabelSpace> labelSpaces,
     required Vector4 color,
     Vector4? haloColor,
   }) {
@@ -158,17 +157,35 @@ class TextBuilder {
     final centerOffsetX = boundingBox.centerOffsetX;
     final centerOffsetY = boundingBox.centerOffsetY;
 
-    final aabb = Rect.fromLTRB(
-        anchorX - (boundingBox.sizeX / 2),
-        -anchorY - (boundingBox.sizeY / 2),
-        anchorX + (boundingBox.sizeX / 2),
-        -anchorY + (boundingBox.sizeY / 2)
-    );
 
     final double baseRotation = -normalizeToPi(rotation);
-    final center = aabb.center;
 
-    if (!labelSpace.tryOccupy(LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)))) {
+    Offset center = const Offset(0, 0);
+    double minScaleFactor = 99.0;
+
+    for (var entry in labelSpaces.entries) {
+      final zoomScaleFactor = entry.key;
+      final labelSpace = entry.value;
+
+      final halfSizeX = (boundingBox.sizeX / (2 * zoomScaleFactor));
+      final halfSizeY = (boundingBox.sizeY / (2 * zoomScaleFactor));
+
+      final aabb = Rect.fromLTRB(anchorX - halfSizeX,
+          -anchorY - halfSizeY,
+          anchorX + halfSizeX,
+          -anchorY + halfSizeY
+      );
+
+      center = aabb.center;
+
+      if (!labelSpace.tryOccupy(LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)))) {
+        break;
+      } else {
+        minScaleFactor = zoomScaleFactor;
+      }
+    }
+
+    if (minScaleFactor > 10.0) {
       return;
     }
 
@@ -193,7 +210,8 @@ class TextBuilder {
           center.dx,
           center.dy,
           baseRotation,
-          dynamicRotationScale
+          dynamicRotationScale,
+          minScaleFactor
         ]);
       }
 
