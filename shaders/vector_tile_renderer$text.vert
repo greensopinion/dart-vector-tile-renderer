@@ -12,6 +12,7 @@ in vec2 uv;
 in vec2 anchor;
 in float rotation;
 in float rotation_scale;
+in float min_scale;
 
 out vec2 v_texture_coords;
 
@@ -19,6 +20,12 @@ void main() {
     mat4 transform = frame_info.camera_transform;
 
     float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
+
+    if (scale < min_scale) {
+        gl_Position = vec4(0.0, 0.0, -10.0, 1.0);
+        v_texture_coords = vec2(0.0, 0.0);
+        return;
+    }
 
     vec4 finalOffset = vec4(offset, 0.0, 0.0);
     float rot = rotation;
