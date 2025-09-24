@@ -58,8 +58,7 @@ cd example && flutter run
    - dashed lines
 
 ## Raster
- - todo
-   - needs fixing, currently doesn't draw at all
+ - done
  
 ## Symbol
  - done
@@ -71,13 +70,14 @@ cd example && flutter run
    - different fonts
    - batching optimizations
    - overlap prevention (text collision)
+   - text optimizations (eg. street -> st.)
+   - dynamic char code range
 
 - todo
    - better overlap prevention
-   - dynamic char code range
    - non-text symbols
    - correct halo radius
-   - text optimizations (eg. street -> st)
+   - multi-line text (line breaks)
    - Line text follows line closely instead of rotating entire text feature to average angle of line
    - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
    - Respect anchor from theme
