@@ -1,34 +1,44 @@
+import 'dart:typed_data';
+
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'raster_material.dart';
 import 'raster_geometry.dart';
-import '../../themes/theme_layer_raster.dart';
 
 import '../../../vector_tile_renderer.dart';
-import '../../themes/expression/expression.dart';
 
 class RasterLayerBuilder {
-  final SceneGraph graph;
-  final VisitorContext context;
 
-  RasterLayerBuilder(this.graph, this.context);
 
-  void build(RasterTile tile, RasterPaintModel paintModel) {
-    final evaluationContext = EvaluationContext(
-        () => {}, TileFeatureType.none, context.logger,
-        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (a) => true);
-    final opacity = paintModel.opacity.evaluate(evaluationContext) ?? 1.0;
-    if (opacity > 0.0) {
-      final texture = tile.texture;
+  void build(Node parent, ByteData packedTileKey, ByteData packedPaintModel, RasterTileset rasterTileset) {
+
+    final bytes = Uint8List.fromList(packedTileKey.buffer.asUint8List(
+      packedTileKey.offsetInBytes,
+      packedTileKey.lengthInBytes,
+    ));
+
+    final uint16View = bytes.buffer.asUint16List();
+    final tileKey = String.fromCharCodes(uint16View);
+
+    final rasterTile = rasterTileset.tiles[tileKey];
+
+    final opacity = packedPaintModel.getFloat64(0, Endian.little);
+
+    final resampling = packedPaintModel.getFloat64(8, Endian.little);
+
+
+
+    if (rasterTile == null) {
+      return;
+    } else {
+      final texture = rasterTile.texture;
       if (texture != null) {
-        final resampling =
-            paintModel.rasterResampling.evaluate(evaluationContext);
 
         RasterMaterial material =
-            RasterMaterial(colorTexture: texture, resampling: resampling);
+        RasterMaterial(colorTexture: texture, resampling: resampling);
         material.baseColorFactor = Vector4(1.0, 1.0, 1.0, opacity);
 
-        graph.addMesh(Mesh(RasterGeometry(tile), material));
+        parent.addMesh(Mesh(RasterGeometry(rasterTile), material));
       }
     }
   }

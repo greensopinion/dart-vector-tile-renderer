@@ -68,14 +68,6 @@ class DefaultLayer extends ThemeLayer {
   }
 
   @override
-  Future<void> acceptAsync(
-      VisitorContext context, LayerVisitorAsync visitor) async {
-    final layerFeatures = context.tileSource.tileset.resolver
-        .resolveFeatures(selector, context.zoom.truncate());
-    return await visitor.visitFeatures(context, type, style, layerFeatures);
-  }
-
-  @override
   String? get tileSource => selector.tileSelector.source;
 }
 
@@ -107,17 +99,6 @@ class BackgroundLayer extends ThemeLayer {
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
     if (color != null) {
       visitor.visitBackground(context, color.vector4);
-    }
-  }
-
-  @override
-  Future<void> acceptAsync(
-      VisitorContext context, LayerVisitorAsync visitor) async {
-    final color = fillColor.evaluate(EvaluationContext(
-        () => {}, TileFeatureType.background, context.logger,
-        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false));
-    if (color != null) {
-      await visitor.visitBackground(context, color.vector4);
     }
   }
 

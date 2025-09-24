@@ -7,11 +7,11 @@ import '../utils.dart';
 class RasterMaterial extends UnlitMaterial {
   late gpu.SamplerOptions sampler;
 
-  RasterMaterial({required gpu.Texture colorTexture, String? resampling}) {
+  RasterMaterial({required gpu.Texture colorTexture, required double resampling}) {
     setFragmentShader(shaderLibrary['RasterFragment']!);
     baseColorTexture = Material.whitePlaceholder(colorTexture);
 
-    if (resampling == "nearest") {
+    if (resampling == 0.0) {
       sampler = gpu.SamplerOptions();
     } else {
       sampler = gpu.SamplerOptions(
