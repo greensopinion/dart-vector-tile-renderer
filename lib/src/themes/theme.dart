@@ -69,18 +69,7 @@ abstract class LayerVisitor {
 
   void visitBackground(VisitorContext context, Vector4 color) {}
 
-  void visitRasterLayer(
-      VisitorContext context, RasterTile image, RasterPaintModel paintModel) {}
-}
-
-abstract class LayerVisitorAsync {
-  Future visitFeatures(VisitorContext context, ThemeLayerType layerType,
-      Style style, Iterable<LayerFeature> features) async {}
-
-  Future visitBackground(VisitorContext context, Vector4 color) async {}
-
-  Future visitRasterLayer(VisitorContext context, RasterTile image,
-      RasterPaintModel paintModel) async {}
+  void visitRasterLayer(String key, RasterPaintModel paintModel) {}
 }
 
 /// Represents a layer in the theme. Can [render] to a [Context], and specifies
@@ -99,5 +88,4 @@ abstract class ThemeLayer {
   void render(Context context);
 
   void accept(VisitorContext context, LayerVisitor visitor);
-  Future<void> acceptAsync(VisitorContext context, LayerVisitorAsync visitor);
 }

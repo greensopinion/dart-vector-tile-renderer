@@ -6,8 +6,11 @@ import 'package:vector_tile_renderer/src/gpu/text/ndc_label_space.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_layer_visitor.dart';
+import 'package:vector_tile_renderer/src/themes/paint_model.dart';
+import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
 
 import '../../vector_tile_renderer.dart';
+import '../themes/expression/expression.dart';
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
 import 'bucket_unpacker.dart';
@@ -81,5 +84,28 @@ class _PreRendererLayerVisitor extends LayerVisitor {
             indices: ByteData(0),
             type: GeometryType.background),
         PackedMaterial(uniform: uniform, type: MaterialType.colored)));
+  }
+
+  @override
+  void visitRasterLayer(String key, RasterPaintModel paintModel) {
+    final tileKey = Uint16List.fromList(key.codeUnits).buffer.asByteData();
+
+    final evaluationContext = EvaluationContext(
+            () => {}, TileFeatureType.none, context.logger,
+        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (a) => true);
+
+    final opacity = paintModel.opacity.evaluate(evaluationContext) ?? 1.0;
+
+    if (opacity > 0) {
+
+      final resampling = paintModel.rasterResampling.evaluate(evaluationContext);
+      final resamplingDouble = resampling == "nearest" ? 0.0 : 1.0;
+      final uniform = Float64List.fromList([opacity, resamplingDouble]).buffer.asByteData();
+
+      tileRenderData.addMesh(PackedMesh(
+          PackedGeometry(vertices: ByteData(0), indices: ByteData(0), uniform: tileKey, type: GeometryType.raster),
+          PackedMaterial(uniform: uniform, type: MaterialType.raster))
+      );
+    }
   }
 }

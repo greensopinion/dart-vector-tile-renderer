@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_material.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
+import 'package:vector_tile_renderer/src/tileset_raster.dart';
 
 import 'background/background_geometry.dart';
 import 'colored_material.dart';
@@ -15,12 +19,17 @@ import 'tile_render_data.dart';
 class BucketUnpacker {
 
   final TextureProvider textureProvider;
+  final RasterTileset rasterTileset;
 
-  BucketUnpacker(this.textureProvider);
+  BucketUnpacker(this.textureProvider, this.rasterTileset);
 
   void unpackOnto(Node parent, TileRenderData bucket) {
     for (var packedMesh in bucket.data) {
-      parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
+      if (packedMesh.geometry.type == GeometryType.raster) {
+        RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!, packedMesh.material.uniform!, rasterTileset);
+      } else {
+        parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
+      }
     }
   }
 
