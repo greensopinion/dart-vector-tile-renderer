@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
@@ -90,8 +92,10 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
         if (text == null || text.isEmpty) {
           continue;
         }
-        final fontFamily = symbolLayout.text?.fontFamily ?? 'Roboto Regular';
-        fontToCharCodes.putIfAbsent(fontFamily, () => <int>{}).addAll(text.codeUnits);
+        final fontFamily = symbolLayout.text?.fontFamily ?? AtlasID.defaultFont;
+        final fontStyle = symbolLayout.text?.fontStyle ?? FontStyle.normal;
+
+        fontToCharCodes.putIfAbsent("$fontFamily%${fontStyle.name}", () => <int>{}).addAll(text.codeUnits);
       }
     }
   }

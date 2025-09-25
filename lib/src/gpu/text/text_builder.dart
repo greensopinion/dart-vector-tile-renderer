@@ -61,7 +61,7 @@ class TextBuilder {
   void addText({
     required String text,
     required int fontSize,
-    required String? fontFamily,
+    required String fontFamily,
     required double x,
     required double y,
     required int canvasSize,
