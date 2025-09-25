@@ -92,18 +92,34 @@ class TextBuilder {
 
     final lineHeight = scaling * atlasSet.fontSize * 1.2; // 20% line spacing
 
-    // Store line bounding boxes for centering each line individually
-    final lineBounds = <BoundingBox>[];
+    // Calculate line widths first for proper centering
+    final lineWidths = <double>[];
 
-    // Process each line like single-line text, then we'll center each line
+    for (final lineText in lines) {
+      double lineWidth = 0.0;
+      for (final charCode in lineText.codeUnits) {
+        final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
+        if (atlas == null) {
+          return;
+        }
+        final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
+        lineWidth += scaling * glyphMetrics.glyphAdvance;
+      }
+      lineWidths.add(lineWidth);
+    }
+
+    // Process each line with proper centering offset calculated upfront
     for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       final lineText = lines[lineIndex];
-      final lineBoundingBox = BoundingBox();
+      final lineWidth = lineWidths[lineIndex];
 
-      double offsetX = 0.0; // Start from 0 like single-line text
-      final baseY = ((lines.length - 1) / 2 - lineIndex) * lineHeight; // Center lines vertically, first line at top
+      // Calculate line centering offset (for multi-line text, center each line individually)
+      final lineCenterOffsetX = lines.length > 1 ? -lineWidth / 2 : 0.0;
 
-      // Process each character in the line (same as single-line logic)
+      double offsetX = lineCenterOffsetX; // Start with centering offset applied
+      final baseY = ((lines.length - 1) / 2 - lineIndex) * lineHeight; // Center lines vertically
+
+      // Process each character in the line
       for (final charCode in lineText.codeUnits) {
         final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
         if (atlas == null) {
@@ -133,11 +149,10 @@ class TextBuilder {
         final charMinY = baseY - halfHeight;
         final charMaxY = baseY + halfHeight;
 
-        // Update both overall and line bounding boxes
+        // Update bounding box
         boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
-        lineBoundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
 
-        // Add vertices for this character with relative offsets
+        // Add vertices for this character with correct positioning
         tempBatch.vertices.addAll([
           charMinX,
           charMinY,
@@ -162,41 +177,13 @@ class TextBuilder {
           tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 1, // first triangle
           tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 3, // second triangle
         ]);
-        final advance = scaling * glyphMetrics.glyphAdvance;
 
+        final advance = scaling * glyphMetrics.glyphAdvance;
         offsetX += advance;
         offsetX += glyphMetrics.glyphLeft * scaling;
 
         // Update vertex index for next character
         tempBatch.vertexOffset += 4;
-      }
-
-      lineBounds.add(lineBoundingBox);
-    }
-
-    // Now center each line horizontally by adjusting vertices
-    if (lines.length > 1) {
-      int globalVertexIndex = 0;
-      for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-        final lineText = lines[lineIndex];
-        final lineCenterOffsetX = lineBounds[lineIndex].centerOffsetX;
-
-        // Apply horizontal centering offset to all vertices in this line
-        for (int charIndex = 0; charIndex < lineText.length; charIndex++) {
-          // Each character has 4 vertices, and each vertex has x,y,u,v (4 values)
-          final baseIndex = globalVertexIndex * 16; // 4 vertices * 4 values per vertex
-
-          for (final tempBatch in tempBatches.values) {
-            if (baseIndex < tempBatch.vertices.length) {
-              // Adjust x coordinates for all 4 vertices of this character
-              tempBatch.vertices[baseIndex + 0] += lineCenterOffsetX; // vertex 0 x
-              tempBatch.vertices[baseIndex + 4] += lineCenterOffsetX; // vertex 1 x
-              tempBatch.vertices[baseIndex + 8] += lineCenterOffsetX; // vertex 2 x
-              tempBatch.vertices[baseIndex + 12] += lineCenterOffsetX; // vertex 3 x
-            }
-          }
-          globalVertexIndex++;
-        }
       }
     }
 
