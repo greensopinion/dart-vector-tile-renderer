@@ -88,10 +88,13 @@ class TextLayerVisitor {
 
       alreadyAdded.add(text);
 
+      final isLineString = line != null;
+
+      final maxWidth = (symbolLayout.text?.maxWidth?.evaluate(evaluationContext) ?? 10.0).ceil();
 
       textBuilder.addText(
           text: TextAbbreviator().abbreviate(text),
-          fontSize: textSize.toInt() * 15,
+          fontSize: textSize.toInt(),
           fontFamily: fontFamily,
           x: point.x,
           y: point.y,
@@ -101,6 +104,8 @@ class TextLayerVisitor {
           labelSpaces: labelSpaces,
           color: paint.color.vector4,
           haloColor: textHalo?.color.vector4,
+          maxWidth: maxWidth,
+          isLineString: isLineString
       );
     }
 
