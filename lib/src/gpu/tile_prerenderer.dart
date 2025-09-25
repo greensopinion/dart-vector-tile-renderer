@@ -25,7 +25,7 @@ class TilePreRenderer {
 
     // addDebugRenderLayer(data);
 
-    // renderLabelSpaceBoxes(data, visitor.labelSpaces[1.0]!);
+    // renderLabelSpaceBoxes(data, visitor.labelSpaces[0.95]!);
 
     return data.pack();
   }

@@ -178,7 +178,11 @@ class TextBuilder {
 
       center = aabb.center;
 
-      if (!labelSpace.tryOccupy(LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)))) {
+      if (!labelSpace.tryOccupy(
+        LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)),
+        canExceedTileBounds: rotationAlignment == RotationAlignment.viewport
+      )
+      ) {
         break;
       } else {
         minScaleFactor = zoomScaleFactor;
