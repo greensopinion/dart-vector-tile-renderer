@@ -81,6 +81,7 @@ cd example && flutter run
    - Line text follows line closely instead of rotating entire text feature to average angle of line
    - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
    - Respect anchor from theme
+   - Text styling (Italic/bold)
 
 ## Fill Extrusion
  - done
