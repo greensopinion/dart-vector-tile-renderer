@@ -13,8 +13,10 @@ in vec2 anchor;
 in float rotation;
 in float rotation_scale;
 in float min_scale;
+in float font_size;
 
 out vec2 v_texture_coords;
+out float v_font_size;
 
 void main() {
     mat4 transform = frame_info.camera_transform;
@@ -24,6 +26,7 @@ void main() {
     if (scale < min_scale) {
         gl_Position = vec4(0.0, 0.0, -10.0, 1.0);
         v_texture_coords = vec2(0.0, 0.0);
+        v_font_size = font_size;
         return;
     }
 
@@ -46,4 +49,5 @@ void main() {
     gl_Position = frame_info.model_transform * vec4(world_position, 1.0);
 
     v_texture_coords = uv;
+    v_font_size = font_size;
 }

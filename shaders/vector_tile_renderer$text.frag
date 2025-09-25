@@ -7,10 +7,11 @@ frag_info;
 uniform sampler2D sdf;
 
 in vec2 v_texture_coords;
+in float v_font_size;
 
 out vec4 frag_color;
 
-const float baseSoftness = 0.02;
+const float baseSoftness = 0.05;
 const float baseThreshold = 0.975;
 
 const float baseHaloSoftness = 0.06;
@@ -18,8 +19,9 @@ const float baseHaloThreshold = 0.85;
 
 void main() {
   float sdfValue = 1 - texture(sdf, v_texture_coords).r;
+  float softness = baseSoftness * (16 / v_font_size);
 
-  float alphaText = smoothstep(baseThreshold - baseSoftness, baseThreshold + baseSoftness, sdfValue);
+  float alphaText = smoothstep(baseThreshold - softness, baseThreshold + softness, sdfValue);
 
   float alphaHalo = smoothstep(baseHaloThreshold - baseHaloSoftness, baseHaloThreshold + baseHaloSoftness, sdfValue);
 

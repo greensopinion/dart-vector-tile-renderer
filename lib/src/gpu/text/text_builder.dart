@@ -265,7 +265,8 @@ class TextBuilder {
           center.dy,
           baseRotation,
           dynamicRotationScale,
-          minScaleFactor
+          minScaleFactor,
+          fontSize.toDouble()
         ]);
       }
 
