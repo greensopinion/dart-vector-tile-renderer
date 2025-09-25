@@ -91,7 +91,7 @@ class TextLayerVisitor {
 
       textBuilder.addText(
           text: TextAbbreviator().abbreviate(text),
-          fontSize: textSize.toInt() * 16,
+          fontSize: textSize.toInt() * 15,
           fontFamily: fontFamily,
           x: point.x,
           y: point.y,

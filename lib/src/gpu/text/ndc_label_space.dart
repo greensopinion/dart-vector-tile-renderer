@@ -7,8 +7,11 @@ class NdcLabelSpace {
 
   NdcLabelSpace({double gridSize = 0.1}) : _gridSize = gridSize;
 
-  bool tryOccupy(LabelSpaceBox box) {
-    // First check AABB overlap for quick rejection
+  bool tryOccupy(LabelSpaceBox box, {bool simulate = false, bool canExceedTileBounds = true}) {
+    if (!canExceedTileBounds && doesExceedTileBounds(box)) {
+      return false;
+    }
+
     final candidateBoxes = _getCandidateBoxes(box);
 
     for (final existing in candidateBoxes) {
@@ -17,8 +20,9 @@ class NdcLabelSpace {
       }
     }
 
-    // No overlap found, add to spatial grid
-    _addToGrid(box);
+    if (!simulate) {
+      _addToGrid(box);
+    }
     return true;
   }
 
@@ -162,6 +166,8 @@ class NdcLabelSpace {
       'gridSize': _gridSize,
     };
   }
+
+  bool doesExceedTileBounds(LabelSpaceBox box) => box.points.any((p) => p.x < -1.0 || p.x > 1.0 || p.y < -1.0 || p.y > 1.0);
 }
 
 class _Projection {
