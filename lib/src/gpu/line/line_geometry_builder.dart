@@ -10,30 +10,21 @@ class LineGeometryBuilder {
   int indexOffset = 0;
   final BytesBuilder _vertexBytesBuilder = BytesBuilder(copy: false);
   final BytesBuilder _indexBytesBuilder = BytesBuilder(copy: false);
-  late Float32List _cumulativeLengths;
+  Float32List _cumulativeLengths = Float32List(0);
 
   int startIndex = 0;
 
-  void _addVertex(
-      double point_a1,
-      double point_a2,
-      double point_b1,
-      double point_b2,
-      double offset1,
-      double offset2,
-      double roundness,
-      double cumulativeLength) {
-    final vertexData = Float32List.fromList([
-      point_a1,
-      point_a2,
-      point_b1,
-      point_b2,
-      offset1,
-      offset2,
-      roundness,
-      cumulativeLength / 32
-    ]);
-    _vertexBytesBuilder.add(vertexData.buffer.asUint8List());
+  // Reusable list for building indices to avoid .map().toList() allocations
+  final List<int> _tempIndices = <int>[];
+
+  // Reusable Vector2 objects for setupJoinsMiter to avoid allocations
+  final Vector2 _v2Temp1 = Vector2.zero();
+  final Vector2 _v2Temp2 = Vector2.zero();
+  final Vector2 _v2Temp3 = Vector2.zero();
+  final Vector2 _v2Temp4 = Vector2.zero();
+
+  _addVertices(Float32List vertices) {
+    _vertexBytesBuilder.add(vertices.buffer.asUint8List());
   }
 
   void _addIndices(List<int> indexList) {
@@ -82,18 +73,49 @@ class LineGeometryBuilder {
       TilePoint p0 = points[i];
       TilePoint p1 = points[i + 1];
 
-      double cumulativeLength0 =
-          i < _cumulativeLengths.length ? _cumulativeLengths[i] : 0.0;
-      double cumulativeLength1 =
-          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
+      double cumulativeLength0 = (i < _cumulativeLengths.length ? _cumulativeLengths[i] : 0.0) / 32.0;
+      double cumulativeLength1 = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
 
-      _addVertex(p1.x, p1.y, p0.x, p0.y, 1, 0, 0, cumulativeLength1);
-      _addVertex(p0.x, p0.y, p1.x, p1.y, -1, 0, 0, cumulativeLength0);
-      _addVertex(p0.x, p0.y, p1.x, p1.y, 1, 0, 0, cumulativeLength0);
-      _addVertex(p1.x, p1.y, p0.x, p0.y, -1, 0, 0, cumulativeLength1);
+      final vertices = Float32List(32);
+      vertices[0] = p1.x;
+      vertices[1] = p1.y;
+      vertices[2] = p0.x;
+      vertices[3] = p0.y;
+      vertices[4] = 1;
+      vertices[5] = 0;
+      vertices[6] = 0;
+      vertices[7] = cumulativeLength1;
+      vertices[8] = p0.x;
+      vertices[9] = p0.y;
+      vertices[10] = p1.x;
+      vertices[11] = p1.y;
+      vertices[12] = -1;
+      vertices[13] = 0;
+      vertices[14] = 0;
+      vertices[15] = cumulativeLength0;
+      vertices[16] = p0.x;
+      vertices[17] = p0.y;
+      vertices[18] = p1.x;
+      vertices[19] = p1.y;
+      vertices[20] = 1;
+      vertices[21] = 0;
+      vertices[22] = 0;
+      vertices[23] = cumulativeLength0;
+      vertices[24] = p1.x;
+      vertices[25] = p1.y;
+      vertices[26] = p0.x;
+      vertices[27] = p0.y;
+      vertices[28] = -1;
+      vertices[29] = 0;
+      vertices[30] = 0;
+      vertices[31] = cumulativeLength1;
+      _addVertices(vertices);
 
-      _addIndices(
-          [0, 1, 2, 2, 3, 0].map((it) => it + (4 * i) + indexOffset).toList());
+      // Use reusable list to avoid .map().toList() allocation
+      _tempIndices.clear();
+      final base = (4 * i) + indexOffset;
+      _tempIndices.addAll([base, base + 1, base + 2, base + 2, base + 3, base]);
+      _addIndices(_tempIndices);
     }
     startIndex += max(segmentCount * 4, 0);
   }
@@ -107,30 +129,60 @@ class LineGeometryBuilder {
     TilePoint c = points[segmentCount - 1];
     TilePoint d = points[segmentCount];
 
-    double startCumulativeLength =
-        _cumulativeLengths.isNotEmpty ? _cumulativeLengths.first : 0.0;
-    double endCumulativeLength =
-        _cumulativeLengths.isNotEmpty ? _cumulativeLengths.last : 0.0;
+    double startCumulativeLength = (_cumulativeLengths.isNotEmpty ? _cumulativeLengths.first : 0.0) / 32.0;
+    double endCumulativeLength = (_cumulativeLengths.isNotEmpty ? _cumulativeLengths.last : 0.0) / 32.0;
 
-    _addVertex(a.x, a.y, b.x, b.y, -1, -1, round, startCumulativeLength);
-    _addVertex(a.x, a.y, b.x, b.y, 1, -1, round, startCumulativeLength);
-    _addVertex(d.x, d.y, c.x, c.y, -1, -1, round, endCumulativeLength);
-    _addVertex(d.x, d.y, c.x, c.y, 1, -1, round, endCumulativeLength);
+    final vertices = Float32List(32);
+    vertices[0] = a.x;
+    vertices[1] = a.y;
+    vertices[2] = b.x;
+    vertices[3] = b.y;
+    vertices[4] = -1;
+    vertices[5] = -1;
+    vertices[6] = round;
+    vertices[7] = startCumulativeLength;
+    vertices[8] = a.x;
+    vertices[9] = a.y;
+    vertices[10] = b.x;
+    vertices[11] = b.y;
+    vertices[12] = 1;
+    vertices[13] = -1;
+    vertices[14] = round;
+    vertices[15] = startCumulativeLength;
+    vertices[16] = d.x;
+    vertices[17] = d.y;
+    vertices[18] = c.x;
+    vertices[19] = c.y;
+    vertices[20] = -1;
+    vertices[21] = -1;
+    vertices[22] = round;
+    vertices[23] = endCumulativeLength;
+    vertices[24] = d.x;
+    vertices[25] = d.y;
+    vertices[26] = c.x;
+    vertices[27] = c.y;
+    vertices[28] = 1;
+    vertices[29] = -1;
+    vertices[30] = round;
+    vertices[31] = endCumulativeLength;
+    _addVertices(vertices);
 
-    _addIndices([
-      startIndex,
-      startIndex + 1,
-      1,
-      startIndex + 1,
-      2,
-      1,
-      startIndex + 3,
-      startIndex - 4,
-      startIndex - 1,
-      startIndex + 2,
-      startIndex + 3,
-      startIndex - 1,
-    ].map((it) => it + indexOffset).toList());
+    _tempIndices.clear();
+    _tempIndices.addAll([
+      startIndex + indexOffset,
+      startIndex + 1 + indexOffset,
+      1 + indexOffset,
+      startIndex + 1 + indexOffset,
+      2 + indexOffset,
+      1 + indexOffset,
+      startIndex + 3 + indexOffset,
+      startIndex - 4 + indexOffset,
+      startIndex - 1 + indexOffset,
+      startIndex + 2 + indexOffset,
+      startIndex + 3 + indexOffset,
+      startIndex - 1 + indexOffset,
+    ]);
+    _addIndices(_tempIndices);
     startIndex += 4;
   }
 
@@ -152,11 +204,26 @@ class LineGeometryBuilder {
       TilePoint p0 = points[i];
       TilePoint p1 = points[i + 1];
 
-      double joinCumulativeLength =
-          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
+      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
 
-      _addVertex(p1.x, p1.y, p0.x, p0.y, -1, -1, 1, joinCumulativeLength);
-      _addVertex(p1.x, p1.y, p0.x, p0.y, 1, -1, 1, joinCumulativeLength);
+      final vertices = Float32List(16);
+      vertices[0] = p1.x;
+      vertices[1] = p1.y;
+      vertices[2] = p0.x;
+      vertices[3] = p0.y;
+      vertices[4] = -1;
+      vertices[5] = -1;
+      vertices[6] = 1;
+      vertices[7] = joinCumulativeLength;
+      vertices[8] = p1.x;
+      vertices[9] = p1.y;
+      vertices[10] = p0.x;
+      vertices[11] = p0.y;
+      vertices[12] = 1;
+      vertices[13] = -1;
+      vertices[14] = 1;
+      vertices[15] = joinCumulativeLength;
+      _addVertices(vertices);
 
       int offset = i * 4;
 
@@ -165,7 +232,11 @@ class LineGeometryBuilder {
       int c = offset + 0;
       int d = offset + 3;
 
-      _addIndices([c, d, b, b, d, a].map((it) => it + indexOffset).toList());
+      // Use reusable list to avoid .map().toList() allocation
+      _tempIndices.clear();
+      _tempIndices.addAll([c + indexOffset, d + indexOffset, b + indexOffset,
+                          b + indexOffset, d + indexOffset, a + indexOffset]);
+      _addIndices(_tempIndices);
     }
     startIndex += max(2 * joinCount, 0);
   }
@@ -176,21 +247,32 @@ class LineGeometryBuilder {
     for (int i = 0; i < joinCount; i++) {
       TilePoint p = points[i + 1];
 
-      double joinCumulativeLength =
-          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
+      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
 
-      _addVertex(p.x, p.y, 0, 0, 0, 0, 0, joinCumulativeLength);
+      final vertices = Float32List(8);
+      vertices[0] = p.x;
+      vertices[1] = p.y;
+      vertices[2] = 0;
+      vertices[3] = 0;
+      vertices[4] = 0;
+      vertices[5] = 0;
+      vertices[6] = 0;
+      vertices[7] = joinCumulativeLength;
+      _addVertices(vertices);
 
       int offset = i * 4;
 
-      _addIndices([
-        offset + 5,
-        offset,
-        startIndex + i,
-        offset + 3,
-        offset + 6,
-        startIndex + i,
-      ].map((it) => it + indexOffset).toList());
+      // Use reusable list to avoid .map().toList() allocation
+      _tempIndices.clear();
+      _tempIndices.addAll([
+        offset + 5 + indexOffset,
+        offset + indexOffset,
+        startIndex + i + indexOffset,
+        offset + 3 + indexOffset,
+        offset + 6 + indexOffset,
+        startIndex + i + indexOffset,
+      ]);
+      _addIndices(_tempIndices);
     }
     startIndex += max(joinCount, 0);
   }
@@ -198,57 +280,104 @@ class LineGeometryBuilder {
   void setupJoinsMiter(List<TilePoint> points) {
     final joinCount = points.length - 2;
 
-    Vector2 perp(Vector2 v, int flip) => Vector2(v.y * flip, -v.x * flip);
-
     for (int i = 0; i < joinCount; i++) {
-      final p0 = Vector2(points[i].x, points[i].y);
-      final p1 = Vector2(points[i + 2].x, points[i + 2].y);
+      // Reuse Vector2 objects instead of creating new ones
+      _v2Temp1.setValues(points[i].x, points[i].y); // p0
+      _v2Temp2.setValues(points[i + 2].x, points[i + 2].y); // p1
+      _v2Temp3.setValues(points[i + 1].x, points[i + 1].y); // origin
 
-      final origin = Vector2(points[i + 1].x, points[i + 1].y);
-      final a = perp((p0 - origin).normalized(), -1);
-      final b = perp((p1 - origin).normalized(), 1);
+      // Calculate a = perp((p0 - origin).normalized(), -1)
+      _v2Temp4.setFrom(_v2Temp1); // p0
+      _v2Temp4.sub(_v2Temp3); // p0 - origin
+      _v2Temp4.normalize();
+      // perp with flip = -1: (v.y * -1, -v.x * -1) = (-v.y, v.x)
+      final aX = -_v2Temp4.y;
+      final aY = _v2Temp4.x;
 
-      final j = a.dot(b);
+      // Reuse _v2Temp4 for b = perp((p1 - origin).normalized(), 1)
+      _v2Temp4.setFrom(_v2Temp2); // p1
+      _v2Temp4.sub(_v2Temp3); // p1 - origin
+      _v2Temp4.normalize();
+      // perp with flip = 1: (v.y * 1, -v.x * 1) = (v.y, -v.x)
+      final bX = _v2Temp4.y;
+      final bY = -_v2Temp4.x;
+
+      // Check dot product j = a.dot(b)
+      final j = aX * bX + aY * bY;
       if (j > 0.9999 || j < -0.9999) {
         startIndex -= 2;
         continue;
       }
 
-      a.add(origin);
-      b.add(origin);
+      // a = a + origin, b = b + origin
+      final finalAX = aX + _v2Temp3.x;
+      final finalAY = aY + _v2Temp3.y;
+      final finalBX = bX + _v2Temp3.x;
+      final finalBY = bY + _v2Temp3.y;
 
-      final c = (a + b).scaled(0.5);
+      // c = (a + b) * 0.5
+      final cX = (finalAX + finalBX) * 0.5;
+      final cY = (finalAY + finalBY) * 0.5;
 
-      final vec = (c - origin);
-      final resultLength = (c - a).length2 / vec.length2;
+      // vec = c - origin
+      final vecX = cX - _v2Temp3.x;
+      final vecY = cY - _v2Temp3.y;
 
-      final out = vec.scaled(1 + resultLength);
+      // resultLength = (c - a).length2 / vec.length2
+      final diffX = cX - finalAX;
+      final diffY = cY - finalAY;
+      final vecLength2 = vecX * vecX + vecY * vecY;
+      final resultLength = (diffX * diffX + diffY * diffY) / vecLength2;
 
-      double joinCumulativeLength =
-          (i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0;
+      // out = vec * (1 + resultLength)
+      final scale = 1 + resultLength;
+      final outX = vecX * scale;
+      final outY = vecY * scale;
 
-      _addVertex(
-          c.x, c.y, c.x, c.y + 1, out.x, -out.y, 0, joinCumulativeLength);
-      _addVertex(origin.x, origin.y, origin.x, origin.y + 1, -out.x, out.y, 0,
-          joinCumulativeLength);
+      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
+
+      final vertices = Float32List(16);
+      vertices[0] = cX;
+      vertices[1] = cY;
+      vertices[2] = cX;
+      vertices[3] = cY + 1;
+      vertices[4] = outX;
+      vertices[5] = -outY;
+      vertices[6] = 0;
+      vertices[7] = joinCumulativeLength;
+      vertices[8] = _v2Temp3.x;
+      vertices[9] = _v2Temp3.y;
+      vertices[10] = _v2Temp3.x;
+      vertices[11] = _v2Temp3.y + 1;
+      vertices[12] = -outX;
+      vertices[13] = outY;
+      vertices[14] = 0;
+      vertices[15] = joinCumulativeLength;
+      _addVertices(vertices);
 
       int offset = i * 4;
 
-      _addIndices([
-        offset + 6,
-        offset + 3,
-        startIndex + (2 * i),
-        offset,
-        offset + 5,
-        startIndex + (2 * i) + 1,
-      ].map((it) => it + indexOffset).toList());
+      // Use reusable list to avoid .map().toList() allocation
+      _tempIndices.clear();
+      _tempIndices.addAll([
+        offset + 6 + indexOffset,
+        offset + 3 + indexOffset,
+        startIndex + (2 * i) + indexOffset,
+        offset + indexOffset,
+        offset + 5 + indexOffset,
+        startIndex + (2 * i) + 1 + indexOffset,
+      ]);
+      _addIndices(_tempIndices);
     }
     startIndex += max(2 * joinCount, 0);
   }
 
   void computeCumulativeDistances(List<TilePoint> points, int segmentCount,
       double startingCumulativeLength) {
-    _cumulativeLengths = Float32List(points.length);
+    // Reuse existing buffer if possible to avoid allocation
+    if (_cumulativeLengths.length != points.length) {
+      _cumulativeLengths = Float32List(points.length);
+    }
     _cumulativeLengths[0] = startingCumulativeLength;
 
     double sum = startingCumulativeLength;
