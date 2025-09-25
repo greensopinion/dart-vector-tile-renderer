@@ -162,24 +162,26 @@ class GlyphMetricsExtractor {
         );
   
   GlyphMetrics extractMetrics(int charCode, int targetCellWidth, int targetCellHeight) {
-    final character = String.fromCharCode(charCode);
-    
-    final paragraphBuilder = ui.ParagraphBuilder(ui.ParagraphStyle(
-      textDirection: ui.TextDirection.ltr,
-      fontSize: fontSize.toDouble(),
-    ));
-    
-    paragraphBuilder.pushStyle(_textStyle);
-    paragraphBuilder.addText(character);
-    final paragraph = paragraphBuilder.build();
-    paragraph.layout(const ui.ParagraphConstraints(width: double.infinity));
-    
     GlyphMetrics metrics;
+    ui.Paragraph? paragraph;
+
     try {
+      final character = String.fromCharCode(charCode);
+
+      final paragraphBuilder = ui.ParagraphBuilder(ui.ParagraphStyle(
+        textDirection: ui.TextDirection.ltr,
+        fontSize: fontSize.toDouble(),
+      ));
+
+      paragraphBuilder.pushStyle(_textStyle);
+      paragraphBuilder.addText(character);
+      paragraph = paragraphBuilder.build();
+      paragraph.layout(const ui.ParagraphConstraints(width: double.infinity));
+
       if (paragraph.getGlyphInfoAt(0) case final glyphInfo?) {
         final glyphBounds = glyphInfo.graphemeClusterLayoutBounds;
         final baseline = paragraph.alphabeticBaseline;
-        
+
         metrics = GlyphMetrics(
           charCode: charCode,
           width: targetCellWidth,
@@ -196,8 +198,8 @@ class GlyphMetricsExtractor {
     } catch (e) {
       metrics = _createFallbackMetrics(charCode, targetCellWidth, targetCellHeight);
     }
-    
-    paragraph.dispose();
+
+    paragraph?.dispose();
     return metrics;
   }
   
