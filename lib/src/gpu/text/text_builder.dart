@@ -10,6 +10,7 @@ import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
 
 import '../../themes/style.dart';
+import '../../features/text_wrapper.dart';
 import 'ndc_label_space.dart';
 
 class BoundingBox {
@@ -69,93 +70,142 @@ class TextBuilder {
     required Map<double, NdcLabelSpace> labelSpaces,
     required Vector4 color,
     Vector4? haloColor,
+    int? maxWidth,
+    required bool isLineString,
   }) {
 
-    final tempBatches = <int, _GeometryBatch>{};
+    // Split text into lines using text wrapper if maxWidth is provided
+    final lines = maxWidth != null && maxWidth > 0 && fontSize > 0 ?
+        wrapText(text, fontSize.toDouble(), maxWidth).map((line) => line.trim()).toList(growable: false) :
+        [text];
 
+    final tempBatches = <int, _GeometryBatch>{};
     final boundingBox = BoundingBox();
 
-    final fontScale = fontSize / atlasSet.fontSize;
+    final fontScale = 15 * fontSize / atlasSet.fontSize;
     final canvasScale = 2 / canvasSize;
     final scaling = fontScale * canvasScale;
-
-    double offsetX = 0.0; // Horizontal offset for character positioning
 
     // Convert world position to anchor position
     final anchorX = (x - canvasSize / 2) * canvasScale;
     final anchorY = (y - canvasSize / 2) * canvasScale;
 
-    // Process each character in the text
-    for (final charCode in text.codeUnits) {
-      final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
-      if (atlas == null) {
-        return;
+    final lineHeight = scaling * atlasSet.fontSize * 1.2; // 20% line spacing
+
+    // Store line bounding boxes for centering each line individually
+    final lineBounds = <BoundingBox>[];
+
+    // Process each line like single-line text, then we'll center each line
+    for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      final lineText = lines[lineIndex];
+      final lineBoundingBox = BoundingBox();
+
+      double offsetX = 0.0; // Start from 0 like single-line text
+      final baseY = ((lines.length - 1) / 2 - lineIndex) * lineHeight; // Center lines vertically, first line at top
+
+      // Process each character in the line (same as single-line logic)
+      for (final charCode in lineText.codeUnits) {
+        final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
+        if (atlas == null) {
+          return;
+        }
+        final textureID = atlas.atlasID.hashCode;
+
+        final tempBatch = tempBatches.putIfAbsent(textureID, () => _GeometryBatch(textureID, color, haloColor));
+
+        final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
+
+        offsetX -= glyphMetrics.glyphLeft * scaling;
+
+        final uv = atlas.getCharacterUV(charCode);
+
+        final double top = uv.v1;
+        final double bottom = uv.v2;
+        final double left = uv.u1;
+        final double right = uv.u2;
+
+        final halfHeight = scaling * atlas.cellHeight / 2;
+        final halfWidth = scaling * atlas.cellWidth / 2;
+
+        // Calculate character bounds (relative to text origin)
+        final charMinX = offsetX - halfWidth;
+        final charMaxX = offsetX + halfWidth;
+        final charMinY = baseY - halfHeight;
+        final charMaxY = baseY + halfHeight;
+
+        // Update both overall and line bounding boxes
+        boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
+        lineBoundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
+
+        // Add vertices for this character with relative offsets
+        tempBatch.vertices.addAll([
+          charMinX,
+          charMinY,
+          left,
+          bottom,
+          charMaxX,
+          charMinY,
+          right,
+          bottom,
+          charMaxX,
+          charMaxY,
+          right,
+          top,
+          charMinX,
+          charMaxY,
+          left,
+          top,
+        ]);
+
+        // Add indices for this character's quad (two triangles)
+        tempBatch.indices.addAll([
+          tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 1, // first triangle
+          tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 3, // second triangle
+        ]);
+        final advance = scaling * glyphMetrics.glyphAdvance;
+
+        offsetX += advance;
+        offsetX += glyphMetrics.glyphLeft * scaling;
+
+        // Update vertex index for next character
+        tempBatch.vertexOffset += 4;
       }
-      final textureID = atlas.atlasID.hashCode;
 
-      final tempBatch = tempBatches.putIfAbsent(textureID, () => _GeometryBatch(textureID, color, haloColor));
+      lineBounds.add(lineBoundingBox);
+    }
 
-      final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
+    // Now center each line horizontally by adjusting vertices
+    if (lines.length > 1) {
+      int globalVertexIndex = 0;
+      for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+        final lineText = lines[lineIndex];
+        final lineCenterOffsetX = lineBounds[lineIndex].centerOffsetX;
 
-      offsetX -= glyphMetrics.glyphLeft * scaling;
+        // Apply horizontal centering offset to all vertices in this line
+        for (int charIndex = 0; charIndex < lineText.length; charIndex++) {
+          // Each character has 4 vertices, and each vertex has x,y,u,v (4 values)
+          final baseIndex = globalVertexIndex * 16; // 4 vertices * 4 values per vertex
 
-      final uv = atlas.getCharacterUV(charCode);
-
-      final double top = uv.v1;
-      final double bottom = uv.v2;
-      final double left = uv.u1;
-      final double right = uv.u2;
-
-      final halfHeight = scaling * atlas.cellHeight / 2;
-      final halfWidth = scaling * atlas.cellWidth / 2;
-
-      // Calculate character bounds (relative to text origin)
-      final charMinX = offsetX - halfWidth;
-      final charMaxX = offsetX + halfWidth;
-      final charMinY = -halfHeight;
-      final charMaxY = halfHeight;
-
-      // Update bounding box
-      boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
-
-      // Add vertices for this character with relative offsets
-      tempBatch.vertices.addAll([
-        charMinX,
-        charMinY,
-        left,
-        bottom,
-        charMaxX,
-        charMinY,
-        right,
-        bottom,
-        charMaxX,
-        charMaxY,
-        right,
-        top,
-        charMinX,
-        charMaxY,
-        left,
-        top,
-      ]);
-
-      // Add indices for this character's quad (two triangles)
-      tempBatch.indices.addAll([
-        tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 1, // first triangle
-        tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 3, // second triangle
-      ]);
-      final advance = scaling * glyphMetrics.glyphAdvance;
-
-      offsetX += advance;
-      offsetX += glyphMetrics.glyphLeft * scaling;
-
-      // Update vertex index for next character
-      tempBatch.vertexOffset += 4;
+          for (final tempBatch in tempBatches.values) {
+            if (baseIndex < tempBatch.vertices.length) {
+              // Adjust x coordinates for all 4 vertices of this character
+              tempBatch.vertices[baseIndex + 0] += lineCenterOffsetX; // vertex 0 x
+              tempBatch.vertices[baseIndex + 4] += lineCenterOffsetX; // vertex 1 x
+              tempBatch.vertices[baseIndex + 8] += lineCenterOffsetX; // vertex 2 x
+              tempBatch.vertices[baseIndex + 12] += lineCenterOffsetX; // vertex 3 x
+            }
+          }
+          globalVertexIndex++;
+        }
+      }
     }
 
     if (tempBatches.isEmpty) return;
 
-    final centerOffsetX = boundingBox.centerOffsetX;
-    final centerOffsetY = boundingBox.centerOffsetY;
+    // For multi-line text, we already positioned lines correctly, so don't apply center offsets
+    final isMultiLine = lines.length > 1;
+    final centerOffsetX = isMultiLine ? 0.0 : boundingBox.centerOffsetX;
+    final centerOffsetY = isMultiLine ? 0.0 : boundingBox.centerOffsetY;
 
 
     final double baseRotation = -normalizeToPi(rotation);
@@ -180,7 +230,7 @@ class TextBuilder {
 
       if (!labelSpace.tryOccupy(
         LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)),
-        canExceedTileBounds: rotationAlignment == RotationAlignment.viewport
+        canExceedTileBounds: !isLineString
       )
       ) {
         break;
