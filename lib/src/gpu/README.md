@@ -71,13 +71,14 @@ cd example && flutter run
    - multi-line text (line breaks)
    - better overlap prevention
    - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
+   - Italic text
 
 - todo
    - non-text symbols
    - correct halo radius
    - Line text follows line closely instead of rotating entire text feature to average angle of line
    - Respect anchor from theme
-   - Text styling (Italic/bold)
+   - Different font weights
    - Shift text along line to fit better in label space
 
 ## Fill Extrusion
