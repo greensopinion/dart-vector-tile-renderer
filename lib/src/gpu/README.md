@@ -33,10 +33,6 @@ cd example && flutter run
 
 # Features
 
-## Visual Quality
-
- - Rendering on a second monitor on a Mac laptop causes pixelation
-
 ## Overzooming
 
  - Tile clip causes artifacts at tile boundaries (consider clipping with a margin outside of the clip area)
@@ -72,16 +68,17 @@ cd example && flutter run
    - overlap prevention (text collision)
    - text optimizations (eg. street -> st.)
    - dynamic char code range
+   - multi-line text (line breaks)
+   - better overlap prevention
+   - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
 
 - todo
-   - better overlap prevention
    - non-text symbols
    - correct halo radius
-   - multi-line text (line breaks)
    - Line text follows line closely instead of rotating entire text feature to average angle of line
-   - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
    - Respect anchor from theme
    - Text styling (Italic/bold)
+   - Shift text along line to fit better in label space
 
 ## Fill Extrusion
  - done
