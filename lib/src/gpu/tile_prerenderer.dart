@@ -11,6 +11,7 @@ import '../themes/expression/expression.dart';
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
 import 'bucket_unpacker.dart';
+import 'debug/debug_render_layer.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
 import 'tile_render_data.dart';
