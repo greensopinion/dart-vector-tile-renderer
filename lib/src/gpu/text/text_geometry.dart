@@ -4,7 +4,7 @@ import '../shaders.dart';
 
 class TextGeometry extends UnskinnedGeometry {
 
-  static const VERTEX_SIZE = 9;
+  static const VERTEX_SIZE = 10;
 
   TextGeometry(PackedGeometry packed) {
     setVertexShader(shaderLibrary["TextVertex"]!);
