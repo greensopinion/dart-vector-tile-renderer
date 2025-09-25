@@ -19,7 +19,7 @@ class AtlasGenerator {
     required this.textureProvider
   });
 
-  Future loadAtlas({required String str, String? fontFamily, required String tileID}) async {
+  Future loadAtlas({required String str, required String fontFamily, required String tileID}) async {
     final atlas = await _loadAtlas(AtlasID(chars: str, font: fontFamily));
     atlasProvider.addLoaded({atlas}, tileID);
   }
@@ -153,7 +153,8 @@ class GlyphMetricsExtractor {
   
   GlyphMetricsExtractor({required this.fontFamily, required this.fontSize})
       : _textStyle = ui.TextStyle(
-          fontFamily: fontFamily,
+          fontFamily: fontFamily.split("%").first,
+          fontStyle: ui.FontStyle.values.firstWhere((it) => it.name == fontFamily.split("%").last),
           fontSize: fontSize.toDouble(),
           color: const ui.Color(0x000000FF),
           fontWeight: ui.FontWeight.normal,
@@ -246,7 +247,8 @@ class GlyphRenderer {
         text: TextSpan(
           text: String.fromCharCode(charCode),
           style: TextStyle(
-            fontFamily: fontFamily,
+            fontFamily: fontFamily.split("%").first,
+            fontStyle: ui.FontStyle.values.firstWhere((it) => it.name == fontFamily.split("%").last),
             fontSize: renderFontSize.toDouble(),
             color: Colors.black,
             fontWeight: FontWeight.w200,

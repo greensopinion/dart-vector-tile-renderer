@@ -7,9 +7,9 @@ class AtlasSet {
 
   bool get isEmpty => _atlases.isEmpty;
 
-  GlyphAtlas? getAtlasForChar(int charCode, String? font) {
+  GlyphAtlas? getAtlasForChar(int charCode, String font) {
     for (final atlas in _atlases) {
-      if (atlas.fontFamily == (font ?? AtlasID._defaultFont) && atlas.atlasID.hasChar(charCode)) {
+      if (atlas.fontFamily == font && atlas.atlasID.hasChar(charCode)) {
         return atlas;
       }
     }
@@ -18,17 +18,12 @@ class AtlasSet {
 }
 
 class AtlasID {
-  late final String font;
-
+  final String font;
   final String chars;
 
-  static const String _defaultFont = 'Roboto Regular';
+  static const String defaultFont = 'Roboto Regular';
 
-  AtlasID({String? font, required this.chars}) {
-    this.font = font ?? _defaultFont;
-  }
-
-
+  AtlasID({required this.font, required this.chars});
 
   @override
   String toString() {

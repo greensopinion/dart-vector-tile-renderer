@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:vector_tile_renderer/src/features/text_abbreviator.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
@@ -63,7 +64,7 @@ class TextLayerVisitor {
           paint == null) {
         continue;
       }
-      final fontFamily = style.symbolLayout?.text?.fontFamily;
+      final fontFamily = style.symbolLayout?.text?.fontFamily ?? AtlasID.defaultFont;
       final line = feature.feature.modelLines.firstOrNull;
 
       final point = feature.feature.modelPoints.firstOrNull ??
@@ -92,10 +93,12 @@ class TextLayerVisitor {
 
       final maxWidth = (symbolLayout.text?.maxWidth?.evaluate(evaluationContext) ?? 10.0).ceil();
 
+      final fontStyle = symbolLayout.text?.fontStyle ?? FontStyle.normal;
+
       textBuilder.addText(
           text: TextAbbreviator().abbreviate(text),
           fontSize: textSize.toInt(),
-          fontFamily: fontFamily,
+          fontFamily: "$fontFamily%${fontStyle.name}",
           x: point.x,
           y: point.y,
           canvasSize: 4096,
