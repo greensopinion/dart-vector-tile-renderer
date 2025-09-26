@@ -33,10 +33,6 @@ cd example && flutter run
 
 # Features
 
-## Overzooming
-
- - Tile clip causes artifacts at tile boundaries (consider clipping with a margin outside of the clip area)
-
 ## Background
  - done
    - color
