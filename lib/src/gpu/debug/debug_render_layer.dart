@@ -29,7 +29,7 @@ void renderLabelSpaceBoxes(TileRenderData renderData, NdcLabelSpace labelSpace) 
 
   final geom = PackedGeometry(
       vertices: ByteData.sublistView(Float32List.fromList(vertices)),
-      indices: ByteData.sublistView(Uint16List.fromList(indices)),
+      indices: ByteData.sublistView(Uint32List.fromList(indices)),
       type: GeometryType.polygon
   );
 
@@ -39,7 +39,7 @@ void renderLabelSpaceBoxes(TileRenderData renderData, NdcLabelSpace labelSpace) 
 final _debugGeometry = PackedGeometry(vertices: _vertices, indices: _indices, type: GeometryType.polygon);
 final _debugMaterial = PackedMaterial(uniform: _uniform, type: MaterialType.colored);
 
-final _uniform = Float32List.fromList([0.0, 0.5, 0.5, 1.0]).buffer.asByteData();
+final _uniform = Float32List.fromList([0.0, 0.5, 0.5, 0.3]).buffer.asByteData();
 
 final _vertices = ByteData.sublistView(Float32List.fromList([
   -1.0, -1.0,  0,
@@ -52,7 +52,7 @@ final _vertices = ByteData.sublistView(Float32List.fromList([
   -1.0,  1.0,  0,
 ]));
 
-final _indices = ByteData.sublistView(Uint16List.fromList([
+final _indices = ByteData.sublistView(Uint32List.fromList([
   0, 2, 1,
   2, 0, 3,
 
