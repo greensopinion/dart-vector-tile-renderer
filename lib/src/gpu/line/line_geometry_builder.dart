@@ -28,7 +28,7 @@ class LineGeometryBuilder {
   }
 
   void _addIndices(List<int> indexList) {
-    final indexData = Uint16List.fromList(indexList);
+    final indexData = Uint32List.fromList(indexList);
     _indexBytesBuilder.add(indexData.buffer.asUint8List());
   }
 

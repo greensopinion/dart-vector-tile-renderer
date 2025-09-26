@@ -24,7 +24,7 @@ class PolygonGeometryBuilder {
     );
   }
 
-  (Float32List, Uint16List) _triangulate(TilePolygon polygon, int offset) {
+  (Float32List, Uint32List) _triangulate(TilePolygon polygon, int offset) {
     final flat = <double>[];
     final holeIndices = <int>[];
 
@@ -59,7 +59,7 @@ class PolygonGeometryBuilder {
 
     return (
       vertices,
-      Uint16List.fromList(
+      Uint32List.fromList(
           indices.map((it) => it + offset).toList(growable: false))
     );
   }

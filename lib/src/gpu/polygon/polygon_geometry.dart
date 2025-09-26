@@ -1,3 +1,4 @@
+import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 
 import '../shaders.dart';
@@ -9,6 +10,6 @@ class PolygonGeometry extends UnskinnedGeometry {
 
     final vertexCount = packed.vertices.lengthInBytes ~/ 12;
 
-    uploadVertexData(packed.vertices, vertexCount, packed.indices);
+    uploadVertexData(packed.vertices, vertexCount, packed.indices, indexType: IndexType.int32);
   }
 }
