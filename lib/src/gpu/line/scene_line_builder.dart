@@ -25,21 +25,17 @@ class SceneLineBuilder {
   SceneLineBuilder(this.renderData, this.context);
 
   void addFeatures(Style style, Iterable<LayerFeature> features) {
-    Map<PaintModel, List<FeatureGroup>> featureGroups = {};
+    Map<PaintModel, FeatureGroup> featureGroups = {};
     for (final feature in features) {
       final result = _getLines(style, feature);
       if (result != null) {
         final (paint, lines) = result;
 
         if (!featureGroups.containsKey(paint)) {
-          featureGroups[paint] = [FeatureGroup()];
+          featureGroups[paint] = FeatureGroup();
         }
 
-        if (featureGroups[paint]!.last.size > 4096) {
-          featureGroups[paint]!.add(FeatureGroup());
-        }
-
-        var group = featureGroups[paint]!.last;
+        var group = featureGroups[paint]!;
 
         group.size += lines.fold(0, (sum, line) => sum + line.length);
 
@@ -47,16 +43,14 @@ class SceneLineBuilder {
       }
     }
 
-    featureGroups.forEach((paint, lineGroups) {
-      for (var lines in lineGroups) {
-        _addMesh(
-          lines.lines,
-          paint.strokeWidth!,
-          features.first.layer.extent,
-          paint,
-          paint.strokeDashPattern,
-        );
-      }
+    featureGroups.forEach((paint, group) {
+      _addMesh(
+        group.lines,
+        paint.strokeWidth!,
+        features.first.layer.extent,
+        paint,
+        paint.strokeDashPattern,
+      );
     });
   }
 
