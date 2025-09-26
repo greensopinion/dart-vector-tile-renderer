@@ -24,7 +24,7 @@ class ScenePolygonBuilder {
   ScenePolygonBuilder(this.renderData, this.context);
 
   void addPolygons(Style style, Iterable<LayerFeature> features) {
-    Map<PaintModel, List<FeatureGroup>> featureGroups = {};
+    Map<PaintModel, FeatureGroup> featureGroups = {};
 
     for (final feature in features) {
       EvaluationContext evaluationContext = EvaluationContext(
@@ -43,24 +43,18 @@ class ScenePolygonBuilder {
       }
 
       if (!featureGroups.containsKey(paint)) {
-        featureGroups[paint] = [FeatureGroup()];
+        featureGroups[paint] = FeatureGroup();
       }
 
-      if (featureGroups[paint]!.last.size > 4096) {
-        featureGroups[paint]!.add(FeatureGroup());
-      }
-
-      final group = featureGroups[paint]!.last;
+      final group = featureGroups[paint]!;
 
       group.size += getPointCount(polygons);
 
       group.polygons.addAll(polygons);
     }
 
-    featureGroups.forEach((paint, polygonGroup) {
-      for (var polygons in polygonGroup) {
-        addMesh(polygons.polygons, paint);
-      }
+    featureGroups.forEach((paint, group) {
+      addMesh(group.polygons, paint);
     });
   }
 
