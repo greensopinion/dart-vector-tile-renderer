@@ -26,10 +26,9 @@ class AtlasProvider {
 
   Set<GlyphAtlas> unloadWhereNotFound(Set<String> tileIDs) {
     final keysToUnload = _loaded.keys.toSet().whereNot((it) => it.isEmpty || tileIDs.contains(it));
-    final atlasesToUnload = keysToUnload.map((it) => _loaded[it]).nonNulls.flattenedToSet;
     for (final key in keysToUnload) {
       _loaded.remove(key);
     }
-    return atlasesToUnload;
+    return _loaded.values.flattenedToSet;
   }
 }

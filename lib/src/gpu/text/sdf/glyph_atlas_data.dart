@@ -42,6 +42,13 @@ class AtlasID {
   int get hashCode => Object.hash(font, chars);
 
   bool hasChar(int charCode) => chars.contains(String.fromCharCode(charCode));
+
+  bool canBeUsedFor(String neededChars, String neededFont) {
+    if (font != neededFont) return false;
+    final neededCharCodes = neededChars.codeUnits.toSet();
+    final existingCharCodes = chars.codeUnits.toSet();
+    return neededCharCodes.every((char) => existingCharCodes.contains(char));
+  }
 }
 
 
