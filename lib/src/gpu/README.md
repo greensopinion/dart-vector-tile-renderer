@@ -68,6 +68,7 @@ cd example && flutter run
    - better overlap prevention
    - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
    - Italic text
+   - Shift text along line to fit better in label space
 
 - todo
    - non-text symbols
@@ -75,7 +76,6 @@ cd example && flutter run
    - Line text follows line closely instead of rotating entire text feature to average angle of line
    - Respect anchor from theme
    - Different font weights
-   - Shift text along line to fit better in label space
 
 ## Fill Extrusion
  - done
