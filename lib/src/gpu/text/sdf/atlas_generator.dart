@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_renderer.dart';
@@ -20,24 +21,28 @@ class AtlasGenerator {
   });
 
   Future loadAtlas({required String str, required String fontFamily, required String tileID}) async {
-    final atlas = await _loadAtlas(AtlasID(chars: str, font: fontFamily));
+    final existingEntry = _loading.entries.firstWhereOrNull((entry) =>
+      entry.key.canBeUsedFor(str, fontFamily)
+    );
+
+    final atlas = existingEntry != null
+        ? await existingEntry.value.future
+        : await _loadAtlas(AtlasID(chars: str, font: fontFamily));
+
     atlasProvider.addLoaded({atlas}, tileID);
   }
 
   void unloadWhereNotFound(Set<String> tileIDs) {
-    final unloading = atlasProvider.unloadWhereNotFound(tileIDs);
-    for (var it in unloading) {
-      _loading.remove(it.id);
-      textureProvider.unload(it.id.hashCode);
-    }
-  }
+    final stillLoaded = atlasProvider.unloadWhereNotFound(tileIDs);
+    final stillLoadedIDs = stillLoaded.map((it) => it.id).toSet();
+    final toRemove = _loading.keys.where((id) => !stillLoadedIDs.contains(id)).toList();
 
-  void unloadAtlases(String tileID) {
-    final unloading = atlasProvider.unload(tileID);
-    for (final atlas in unloading) {
-      _loading.remove(atlas.id);
-      textureProvider.unload(atlas.id.hashCode);
+    for (var id in toRemove) {
+      _loading.remove(id);
     }
+
+    final neededTextureKeys = stillLoadedIDs.map((id) => id.hashCode).toSet();
+    textureProvider.unloadWhereNotFound(neededTextureKeys);
   }
 
   Future<GlyphAtlas> _loadAtlas(AtlasID id) async {
