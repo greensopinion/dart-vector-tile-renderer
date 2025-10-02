@@ -10,7 +10,10 @@ class TextureProvider {
     _loaded[key] = texture;
   }
 
-  void unload(int key) {
-    _loaded.remove(key);
+  void unloadWhereNotFound(Set<int> neededKeys) {
+    final keysToRemove = _loaded.keys.where((key) => !neededKeys.contains(key)).toList();
+    for (final key in keysToRemove) {
+      _loaded.remove(key);
+    }
   }
 }
