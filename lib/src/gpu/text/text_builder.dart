@@ -8,6 +8,7 @@ import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/gpu/utils.dart';
+import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
 import '../../themes/style.dart';
 import '../../features/text_wrapper.dart';
@@ -62,10 +63,9 @@ class TextBuilder {
     required String text,
     required int fontSize,
     required String fontFamily,
-    required double x,
-    required double y,
+    TileLine? line,
+    TilePoint? point,
     required int canvasSize,
-    required double rotation,
     required RotationAlignment rotationAlignment,
     required Map<double, NdcLabelSpace> labelSpaces,
     required Vector4 color,
@@ -73,8 +73,7 @@ class TextBuilder {
     int? maxWidth,
     required bool isLineString,
   }) {
-
-    // Split text into lines using text wrapper if maxWidth is provided
+    
     final lines = maxWidth != null && maxWidth > 0 && fontSize > 0 ?
         wrapText(text, fontSize.toDouble(), maxWidth).map((line) => line.trim()).toList(growable: false) :
         [text];
@@ -86,13 +85,9 @@ class TextBuilder {
     final canvasScale = 2 / canvasSize;
     final scaling = fontScale * canvasScale;
 
-    // Convert world position to anchor position
-    final anchorX = (x - canvasSize / 2) * canvasScale;
-    final anchorY = (y - canvasSize / 2) * canvasScale;
+    final lineHeight = scaling * atlasSet.fontSize * 1.2; 
 
-    final lineHeight = scaling * atlasSet.fontSize * 1.2; // 20% line spacing
-
-    // Calculate line widths first for proper centering
+    
     final lineWidths = <double>[];
 
     for (final lineText in lines) {
@@ -108,18 +103,18 @@ class TextBuilder {
       lineWidths.add(lineWidth);
     }
 
-    // Process each line with proper centering offset calculated upfront
+    
     for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       final lineText = lines[lineIndex];
       final lineWidth = lineWidths[lineIndex];
 
-      // Calculate line centering offset (for multi-line text, center each line individually)
+      
       final lineCenterOffsetX = lines.length > 1 ? -lineWidth / 2 : 0.0;
 
-      double offsetX = lineCenterOffsetX; // Start with centering offset applied
-      final baseY = ((lines.length - 1) / 2 - lineIndex) * lineHeight; // Center lines vertically
+      double offsetX = lineCenterOffsetX; 
+      final baseY = ((lines.length - 1) / 2 - lineIndex) * lineHeight; 
 
-      // Process each character in the line
+      
       for (final charCode in lineText.codeUnits) {
         final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
         if (atlas == null) {
@@ -143,16 +138,16 @@ class TextBuilder {
         final halfHeight = scaling * atlas.cellHeight / 2;
         final halfWidth = scaling * atlas.cellWidth / 2;
 
-        // Calculate character bounds (relative to text origin)
+        
         final charMinX = offsetX - halfWidth;
         final charMaxX = offsetX + halfWidth;
         final charMinY = baseY - halfHeight;
         final charMaxY = baseY + halfHeight;
 
-        // Update bounding box
+        
         boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
 
-        // Add vertices for this character with correct positioning
+        
         tempBatch.vertices.addAll([
           charMinX,
           charMinY,
@@ -172,28 +167,66 @@ class TextBuilder {
           top,
         ]);
 
-        // Add indices for this character's quad (two triangles)
+        
         tempBatch.indices.addAll([
-          tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 1, // first triangle
-          tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 3, // second triangle
+          tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 1, 
+          tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 3, 
         ]);
 
         final advance = scaling * glyphMetrics.glyphAdvance;
         offsetX += advance;
         offsetX += glyphMetrics.glyphLeft * scaling;
 
-        // Update vertex index for next character
+        
         tempBatch.vertexOffset += 4;
       }
     }
 
     if (tempBatches.isEmpty) return;
 
-    // For multi-line text, we already positioned lines correctly, so don't apply center offsets
+    
     final isMultiLine = lines.length > 1;
     final centerOffsetX = isMultiLine ? 0.0 : boundingBox.centerOffsetX;
     final centerOffsetY = isMultiLine ? 0.0 : boundingBox.centerOffsetY;
 
+    
+    final double x;
+    final double y;
+    final double rotation;
+
+    if (line != null && line.points.isNotEmpty) {
+      
+      final bestPosition = _findBestLinePosition(
+        line,
+        boundingBox,
+        labelSpaces,
+        canvasSize,
+        rotationAlignment,
+      );
+
+      if (bestPosition == null) {
+        return; 
+      }
+
+      x = bestPosition.point.x;
+      y = bestPosition.point.y;
+      rotation = bestPosition.rotation;
+    } else if (point != null) {
+      
+      if (point.x < 0 || point.x > 4096 || point.y < 0 || point.y > 4096) {
+        return;
+      }
+      x = point.x;
+      y = point.y;
+      rotation = 0.0;
+    } else {
+      
+      return;
+    }
+
+    
+    final anchorX = (x - canvasSize / 2) * canvasScale;
+    final anchorY = (y - canvasSize / 2) * canvasScale;
 
     final double baseRotation = -normalizeToPi(rotation);
 
@@ -244,8 +277,8 @@ class TextBuilder {
       final vertices = <double>[];
       for (int i = 0; i < tempVertices.length; i += 4) {
         vertices.addAll([
-          tempVertices[i] + centerOffsetX, // offset_x (relative to anchor)
-          tempVertices[i + 1] + centerOffsetY, // offset_y (relative to anchor)
+          tempVertices[i] + centerOffsetX, 
+          tempVertices[i + 1] + centerOffsetY, 
           tempVertices[i + 2], // u
           tempVertices[i + 3], // v
           center.dx,
@@ -269,10 +302,10 @@ class TextBuilder {
         batch = _GeometryBatch(tempBatch.textureID, tempBatch.color, tempBatch.haloColor);
         _batches.add(batch);
       }
-      // Adjust indices to account for existing vertices in the batch
+      
       final adjustedIndices = tempBatch.indices.map((i) => i + batch!.vertexOffset).toList();
 
-      // Add vertices and indices to the batch
+      
       batch.vertices.addAll(vertices);
       batch.indices.addAll(adjustedIndices);
       batch.vertexOffset += vertices.length ~/ TextGeometry.VERTEX_SIZE;
@@ -285,7 +318,7 @@ class TextBuilder {
     for (final batch in _batches) {
       if (batch.vertices.isEmpty) continue;
 
-      // Create combined uniform data for this batch
+      
       final textureIDBytes = intToByteData(batch.textureID).buffer.asUint8List();
       final hColor = batch.haloColor ?? Vector4(0.0, 0.0, 0.0, 0.0);
 
@@ -298,37 +331,37 @@ class TextBuilder {
             ]).buffer.asUint8List())
       ).toBytes().buffer.asByteData();
 
-      // Create the packed geometry
+      
       final geometry = PackedGeometry(
         vertices: ByteData.sublistView(Float32List.fromList(batch.vertices)),
         indices: ByteData.sublistView(Uint16List.fromList(batch.indices)),
         type: GeometryType.text
       );
 
-      // Create the packed material
+      
       final material = PackedMaterial(
         type: MaterialType.text,
         uniform: materialUniform
       );
 
-      // Create and add the mesh
+      
       meshes.add(PackedMesh(geometry, material));
     }
 
-    // Clear batches after creating meshes
+    
     _batches.clear();
 
     return meshes;
   }
 
   static double normalizeToPi(double angle) {
-    // bring into [-π, π)
+    
     angle = angle % (2 * pi);
     if (angle >= pi) {
       angle -= 2 * pi;
     }
 
-    // now fold into [-π/2, π/2)
+    
     if (angle < -pi / 2) {
       angle += pi;
     } else if (angle >= pi / 2) {
@@ -336,5 +369,151 @@ class TextBuilder {
     }
 
     return angle;
+  }
+
+  ({TilePoint point, double rotation})? _findBestLinePosition(
+    TileLine line,
+    BoundingBox boundingBox,
+    Map<double, NdcLabelSpace> labelSpaces,
+    int canvasSize,
+    RotationAlignment rotationAlignment,
+  ) {
+    final points = line.points;
+    if (points.length < 2) return null;
+
+    final textWidth = boundingBox.sizeX;
+    final textHeight = boundingBox.sizeY;
+
+    
+    
+    final midpoint = points.length ~/ 2;
+    ({TilePoint point, double rotation})? bestPosition;
+    int maxPassingChecks = 0;
+
+    for (int offset = 0; offset <= midpoint + 1; offset++) {
+      
+      final lowerIndex = midpoint - offset;
+      if (lowerIndex >= 0 && lowerIndex < points.length - 1) {
+        final result = _tryLinePosition(
+          points,
+          lowerIndex,
+          textWidth,
+          textHeight,
+          labelSpaces,
+          canvasSize,
+          rotationAlignment,
+        );
+        if (result != null && result.passingChecks > maxPassingChecks) {
+          maxPassingChecks = result.passingChecks;
+          bestPosition = (point: result.point, rotation: result.rotation);
+        }
+      }
+
+      
+      final upperIndex = midpoint + offset;
+      if (upperIndex != lowerIndex && upperIndex >= 0 && upperIndex < points.length - 1) {
+        final result = _tryLinePosition(
+          points,
+          upperIndex,
+          textWidth,
+          textHeight,
+          labelSpaces,
+          canvasSize,
+          rotationAlignment,
+        );
+        if (result != null && result.passingChecks > maxPassingChecks) {
+          maxPassingChecks = result.passingChecks;
+          bestPosition = (point: result.point, rotation: result.rotation);
+        }
+      }
+    }
+
+    
+    if (bestPosition != null) {
+      return bestPosition;
+    }
+
+    
+    if (midpoint < points.length) {
+      final midPoint = points[midpoint];
+      final rotation = (rotationAlignment == RotationAlignment.map && midpoint < points.length - 1)
+          ? _getLineAngle(points, midpoint)
+          : 0.0;
+      return (point: midPoint, rotation: rotation);
+    }
+
+    return null;
+  }
+
+  ({TilePoint point, double rotation, int passingChecks})? _tryLinePosition(
+    List<TilePoint> points,
+    int index,
+    double textWidth,
+    double textHeight,
+    Map<double, NdcLabelSpace> labelSpaces,
+    int canvasSize,
+    RotationAlignment rotationAlignment,
+  ) {
+    if (index >= points.length - 1) return null;
+
+    final point = points[index];
+    final rotation = rotationAlignment == RotationAlignment.map
+        ? _getLineAngle(points, index)
+        : 0.0;
+
+    
+    final canvasScale = 2 / canvasSize;
+    final anchorX = (point.x - canvasSize / 2) * canvasScale;
+    final anchorY = (point.y - canvasSize / 2) * canvasScale;
+
+    int passingChecks = 0;
+
+    
+    for (var entry in labelSpaces.entries) {
+      final zoomScaleFactor = entry.key;
+      final labelSpace = entry.value;
+
+      final halfSizeX = (textWidth / (2 * zoomScaleFactor));
+      final halfSizeY = (textHeight / (2 * zoomScaleFactor));
+
+      final aabb = Rect.fromLTRB(
+        anchorX - halfSizeX,
+        -anchorY - halfSizeY,
+        anchorX + halfSizeX,
+        -anchorY + halfSizeY
+      );
+
+      final center = aabb.center;
+      final baseRotation = -normalizeToPi(rotation);
+
+      
+      if (!labelSpace.tryOccupy(
+        LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)),
+        simulate: true,
+        canExceedTileBounds: false,
+      )) {
+        
+        if (passingChecks == 0) {
+          return null;
+        }
+        
+        break;
+      }
+      passingChecks++;
+    }
+
+    return (point: point, rotation: rotation, passingChecks: passingChecks);
+  }
+
+  double _getLineAngle(List<TilePoint> points, int index) {
+    if (index >= points.length - 1) return 0.0;
+
+    final p1 = points[index];
+    final p2 = points[index + 1];
+
+    final dx = p2.x - p1.x;
+    final dy = p2.y - p1.y;
+
+    return atan2(dy, dx);
   }
 }
