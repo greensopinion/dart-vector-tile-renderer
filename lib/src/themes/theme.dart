@@ -58,9 +58,10 @@ class VisitorContext {
   final Logger logger;
   final TileSource tileSource;
   final double zoom;
+  final double pixelRatio;
 
   VisitorContext(
-      {required this.logger, required this.tileSource, required this.zoom});
+      {required this.logger, required this.tileSource, required this.zoom, required this.pixelRatio});
 }
 
 abstract class LayerVisitor {

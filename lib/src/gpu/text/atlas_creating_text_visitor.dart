@@ -23,6 +23,7 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
       tileSource: TileSource(
           tileset: tileset, rasterTileset: const RasterTileset(tiles: {})),
       zoom: zoom,
+      pixelRatio: 1.0
     );
 
     for (var layer in theme.layers) {
