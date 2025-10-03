@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:vector_tile_renderer/src/themes/style.dart';
+
 import 'ndc_label_space.dart';
 import 'text_layout_calculator.dart';
 
@@ -14,8 +16,8 @@ class LabelSpaceValidator {
     required Offset anchor,
     required double baseRotation,
     required bool canExceedTileBounds,
+    required LayoutAnchor anchorType,
   }) {
-    Offset center = const Offset(0, 0);
     double minScaleFactor = 99.0;
 
     for (var entry in labelSpaces.entries) {
@@ -24,14 +26,13 @@ class LabelSpaceValidator {
 
       final aabb = layoutCalculator.createBoundingRect(
         anchor,
+        anchorType,
         boundingBox,
         zoomScaleFactor,
       );
 
-      center = aabb.center;
-
       if (!labelSpace.tryOccupy(
-        LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)),
+        LabelSpaceBox.create(aabb, baseRotation, Point(anchor.dx, -anchor.dy)),
         canExceedTileBounds: canExceedTileBounds,
       )) {
         break;
@@ -44,7 +45,7 @@ class LabelSpaceValidator {
       return null;
     }
 
-    return (minScaleFactor: minScaleFactor, center: center);
+    return (minScaleFactor: minScaleFactor, center: anchor.scale(1, -1));
   }
 
   static double normalizeToPi(double angle) {

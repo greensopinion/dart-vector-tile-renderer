@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
+import 'package:vector_tile_renderer/src/themes/style.dart';
 import '../../features/text_wrapper.dart';
 
 class BoundingBox {
@@ -83,17 +84,27 @@ class TextLayoutCalculator {
 
   Rect createBoundingRect(
     Offset anchor,
+    LayoutAnchor anchorType,
     BoundingBox boundingBox,
     double zoomScaleFactor,
   ) {
     final halfSizeX = (boundingBox.sizeX / (2 * zoomScaleFactor));
     final halfSizeY = (boundingBox.sizeY / (2 * zoomScaleFactor));
 
-    return Rect.fromLTRB(
-      anchor.dx - halfSizeX,
-      -anchor.dy - halfSizeY,
-      anchor.dx + halfSizeX,
-      -anchor.dy + halfSizeY
-    );
+    if (anchorType == LayoutAnchor.top) {
+      return Rect.fromLTRB(
+          anchor.dx - halfSizeX,
+          -anchor.dy,
+          anchor.dx + halfSizeX,
+          -anchor.dy + boundingBox.sizeY
+      );
+    } else {
+      return Rect.fromLTRB(
+          anchor.dx - halfSizeX,
+          -anchor.dy - halfSizeY,
+          anchor.dx + halfSizeX,
+          -anchor.dy + halfSizeY
+      );
+    }
   }
 }

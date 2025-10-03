@@ -55,7 +55,7 @@ class TextBuilder {
     int? maxWidth,
     required bool isLineString,
     required double displayScaleFactor,
-    required LayoutAnchor anchor,
+    required LayoutAnchor anchorType,
   }) {
     final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
     if (layoutResult == null) return;
@@ -66,6 +66,7 @@ class TextBuilder {
     final position = _determineTextPosition(
       line,
       point,
+      anchorType,
       geometryResult.boundingBox,
       labelSpaces,
       canvasSize,
@@ -79,6 +80,7 @@ class TextBuilder {
       labelSpaces,
       canvasSize,
       isLineString,
+        anchorType
     );
     if (validation == null) return;
 
@@ -89,7 +91,7 @@ class TextBuilder {
       validation,
       rotationAlignment,
       fontSize * displayScaleFactor,
-      anchor,
+      anchorType,
     );
 
     _batchManager.addBatches(transformedBatches);
@@ -139,6 +141,7 @@ class TextBuilder {
   ({double x, double y, double rotation})? _determineTextPosition(
     TileLine? line,
     TilePoint? point,
+    LayoutAnchor anchorType,
     BoundingBox boundingBox,
     Map<double, NdcLabelSpace> labelSpaces,
     int canvasSize,
@@ -147,6 +150,7 @@ class TextBuilder {
     if (line != null && line.points.isNotEmpty) {
       final bestPosition = _positionFinder.findBestPosition(
         line,
+        anchorType,
         boundingBox,
         labelSpaces,
         canvasSize,
@@ -177,6 +181,7 @@ class TextBuilder {
     Map<double, NdcLabelSpace> labelSpaces,
     int canvasSize,
     bool isLineString,
+    LayoutAnchor anchorType,
   ) {
     final anchor = _layoutCalculator.calculateAnchor(
       position.x,
@@ -189,6 +194,7 @@ class TextBuilder {
       labelSpaces: labelSpaces,
       boundingBox: boundingBox,
       anchor: anchor,
+      anchorType: anchorType,
       baseRotation: baseRotation,
       canExceedTileBounds: !isLineString,
     );
