@@ -205,8 +205,6 @@ class TextBuilder {
   ) {
     final isMultiLine = layout.lines.length > 1;
 
-    final centerOffsetX = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetX;
-
     double centerOffsetY;
     if (anchor == LayoutAnchor.top) {
       centerOffsetY = -geometry.boundingBox.minY;
@@ -219,7 +217,7 @@ class TextBuilder {
 
     return _geometryGenerator.transformGeometry(
       sourceBatches: geometry.batches,
-      centerOffsetX: centerOffsetX,
+      centerOffsetX: geometry.boundingBox.centerOffsetX,
       centerOffsetY: centerOffsetY,
       centerX: validation.center.dx,
       centerY: validation.center.dy,
