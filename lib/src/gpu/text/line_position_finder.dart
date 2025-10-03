@@ -11,6 +11,7 @@ class LinePositionFinder {
 
   ({TilePoint point, double rotation})? findBestPosition(
     TileLine line,
+    LayoutAnchor anchorType,
     BoundingBox boundingBox,
     Map<double, NdcLabelSpace> labelSpaces,
     int canvasSize,
@@ -31,6 +32,7 @@ class LinePositionFinder {
       if (lowerIndex >= 0 && lowerIndex < points.length - 1) {
         final result = _tryLinePosition(
           points,
+          anchorType,
           lowerIndex,
           textWidth,
           textHeight,
@@ -48,6 +50,7 @@ class LinePositionFinder {
       if (upperIndex != lowerIndex && upperIndex >= 0 && upperIndex < points.length - 1) {
         final result = _tryLinePosition(
           points,
+          anchorType,
           upperIndex,
           textWidth,
           textHeight,
@@ -80,6 +83,7 @@ class LinePositionFinder {
 
   ({TilePoint point, double rotation, int passingChecks})? _tryLinePosition(
     List<TilePoint> points,
+    LayoutAnchor anchorType,
     int index,
     double textWidth,
     double textHeight,
@@ -106,6 +110,7 @@ class LinePositionFinder {
 
       final aabb = layoutCalculator.createBoundingRect(
         anchor,
+        anchorType,
         BoundingBox()
           ..minX = -halfSizeX
           ..maxX = halfSizeX
@@ -114,11 +119,10 @@ class LinePositionFinder {
         1.0, // Use 1.0 as zoom factor since we already scaled halfSize
       );
 
-      final center = aabb.center;
       final baseRotation = -_normalizeToPi(rotation);
 
       if (!labelSpace.tryOccupy(
-        LabelSpaceBox.create(aabb, baseRotation, Point(center.dx, center.dy)),
+        LabelSpaceBox.create(aabb, baseRotation, Point(anchor.dx, -anchor.dy)),
         simulate: true,
         canExceedTileBounds: false,
       )) {

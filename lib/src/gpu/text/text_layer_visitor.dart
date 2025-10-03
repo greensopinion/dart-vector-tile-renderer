@@ -93,7 +93,7 @@ class TextLayerVisitor {
           maxWidth: maxWidth,
           isLineString: isLineString,
           displayScaleFactor: context.pixelRatio,
-          anchor: anchor
+          anchorType: anchor
       );
     }
 
