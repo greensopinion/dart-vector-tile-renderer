@@ -69,12 +69,12 @@ cd example && flutter run
    - Sdf "softness" adjusted for text size (fix fuzzy text with large text size)
    - Italic text
    - Shift text along line to fit better in label space
+   - Respect anchor from theme
 
 - todo
    - non-text symbols
    - correct halo radius
    - Line text follows line closely instead of rotating entire text feature to average angle of line
-   - Respect anchor from theme
    - Different font weights
 
 ## Fill Extrusion
