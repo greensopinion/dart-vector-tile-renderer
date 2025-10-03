@@ -17,10 +17,10 @@ import 'polygon/scene_polygon_builder.dart';
 import 'tile_render_data.dart';
 
 class TilePreRenderer {
-  Uint8List preRender(Theme theme, double zoom, Tileset tileset, AtlasSet atlasSet) {
+  Uint8List preRender(Theme theme, double zoom, Tileset tileset, AtlasSet atlasSet, double pixelRatio) {
     final data = TileRenderData();
 
-    final visitor = _PreRendererLayerVisitor(data, tileset, zoom, atlasSet);
+    final visitor = _PreRendererLayerVisitor(data, tileset, zoom, atlasSet, pixelRatio);
     visitor.visitAllFeatures(theme);
 
     // addDebugRenderLayer(data);
@@ -42,11 +42,13 @@ class _PreRendererLayerVisitor extends LayerVisitor {
   };
   final AtlasSet atlasSet;
 
-  _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom, this.atlasSet) {
+  _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom, this.atlasSet, double pixelRatio) {
     context = VisitorContext(
         logger: const Logger.noop(),
         tileSource: TileSource(tileset: tileset),
-        zoom: zoom);
+        zoom: zoom,
+        pixelRatio: pixelRatio
+    );
   }
 
   void visitAllFeatures(Theme theme) {

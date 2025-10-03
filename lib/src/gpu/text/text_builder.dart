@@ -53,6 +53,7 @@ class TextBuilder {
     Vector4? haloColor,
     int? maxWidth,
     required bool isLineString,
+    required double displayScaleFactor,
   }) {
     final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
     if (layoutResult == null) return;
@@ -85,7 +86,7 @@ class TextBuilder {
       position,
       validation,
       rotationAlignment,
-      fontSize,
+      fontSize * displayScaleFactor,
     );
 
     _batchManager.addBatches(transformedBatches);
@@ -196,7 +197,7 @@ class TextBuilder {
     ({double x, double y, double rotation}) position,
     ({double minScaleFactor, Offset center}) validation,
     RotationAlignment rotationAlignment,
-    int fontSize,
+    double fontSize,
   ) {
     final isMultiLine = layout.lines.length > 1;
     final centerOffsetX = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetX;
@@ -213,7 +214,7 @@ class TextBuilder {
       baseRotation: baseRotation,
       dynamicRotationScale: dynamicRotationScale,
       minScaleFactor: validation.minScaleFactor,
-      fontSize: fontSize.toDouble(),
+      fontSize: fontSize,
     );
   }
 

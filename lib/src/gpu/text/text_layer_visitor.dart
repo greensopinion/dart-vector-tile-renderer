@@ -88,7 +88,8 @@ class TextLayerVisitor {
           color: paint.color.vector4,
           haloColor: textHalo?.color.vector4,
           maxWidth: maxWidth,
-          isLineString: isLineString
+          isLineString: isLineString,
+          displayScaleFactor: context.pixelRatio
       );
     }
 
