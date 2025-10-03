@@ -82,7 +82,9 @@ class TilesRenderer {
 
   Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID) getPreRenderer() {
     final atlasProvider = _atlasProvider;
-    return (Theme theme, double zoom, Tileset tileset, String tileID) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider.forTileID(tileID));
+    final view = ui.PlatformDispatcher.instance.views.first;
+    final pixelRatio = view.display.devicePixelRatio;
+    return (Theme theme, double zoom, Tileset tileset, String tileID) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider.forTileID(tileID), pixelRatio);
   }
 
   Future preRenderUi(double zoom, Tileset tileset, String tileID) async {
