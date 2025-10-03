@@ -72,13 +72,16 @@ cd example && flutter run
    - Respect anchor from theme
 
 - todo
-   - non-text symbols
-   - correct halo radius
    - Line text follows line closely instead of rotating entire text feature to average angle of line
+   - non-text symbols
    - Different font weights
+     - Not implementing yet, because the currently used SDF approximation forces us to draw all text with a heavy font weight.
+   - correct halo radius
+     - Not implementing yet, because increasing the halo radius much beyond its current fixed value results in characters overlapping with each other within a single label. Fixing this would require doubling the number of draw calls for text, which would result in a significant performance hit. Maybe there's a better solution, but I can't think of one right now.
 
 ## Fill Extrusion
  - done
    - draws
  - todo
    - 3d
+     - Not implementing yet, because it's out of scope
