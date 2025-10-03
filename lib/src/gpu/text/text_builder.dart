@@ -5,6 +5,7 @@ import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
+import '../../features/extensions.dart';
 import '../../themes/style.dart';
 import 'ndc_label_space.dart';
 import 'text_layout_calculator.dart';
@@ -54,6 +55,7 @@ class TextBuilder {
     int? maxWidth,
     required bool isLineString,
     required double displayScaleFactor,
+    required LayoutAnchor anchor,
   }) {
     final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
     if (layoutResult == null) return;
@@ -87,6 +89,7 @@ class TextBuilder {
       validation,
       rotationAlignment,
       fontSize * displayScaleFactor,
+      anchor,
     );
 
     _batchManager.addBatches(transformedBatches);
@@ -198,10 +201,19 @@ class TextBuilder {
     ({double minScaleFactor, Offset center}) validation,
     RotationAlignment rotationAlignment,
     double fontSize,
+    LayoutAnchor anchor,
   ) {
     final isMultiLine = layout.lines.length > 1;
+
     final centerOffsetX = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetX;
-    final centerOffsetY = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetY;
+
+    double centerOffsetY;
+    if (anchor == LayoutAnchor.top) {
+      centerOffsetY = -geometry.boundingBox.minY;
+    } else {
+      centerOffsetY = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetY;
+    }
+
     final dynamicRotationScale = rotationAlignment == RotationAlignment.viewport ? 1.0 : 0.0;
     final baseRotation = -LabelSpaceValidator.normalizeToPi(position.rotation);
 

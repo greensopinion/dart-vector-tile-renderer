@@ -52,6 +52,9 @@ class TextLayerVisitor {
           style.symbolLayout?.placement.evaluate(evaluationContext) ??
               LayoutPlacement.DEFAULT;
 
+
+      final anchor = style.symbolLayout?.text?.anchor.evaluate(evaluationContext) ?? LayoutAnchor.DEFAULT;
+
       final rotationAlignment = style.symbolLayout?.textRotationAlignment(
               evaluationContext,
               layoutPlacement: layoutPlacement) ??
@@ -89,7 +92,8 @@ class TextLayerVisitor {
           haloColor: textHalo?.color.vector4,
           maxWidth: maxWidth,
           isLineString: isLineString,
-          displayScaleFactor: context.pixelRatio
+          displayScaleFactor: context.pixelRatio,
+          anchor: anchor
       );
     }
 
