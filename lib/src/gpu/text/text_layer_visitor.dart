@@ -1,16 +1,20 @@
-import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/features/text_abbreviator.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../features/symbol_rotation.dart';
+import '../../model/geometry_model.dart';
 import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
+import '../bucket_unpacker.dart';
 import '../color_extension.dart';
+import '../line/line_geometry_builder.dart';
 import 'ndc_label_space.dart';
 import 'text_builder.dart';
 
@@ -95,9 +99,36 @@ class TextLayerVisitor {
           displayScaleFactor: context.pixelRatio,
           anchorType: anchor
       );
+
+      // _renderDebugTextLines(line, renderData);
     }
 
     renderData.addMeshes(textBuilder.getMeshes());
+  }
+
+  void _renderDebugTextLines(TileLine? line, TileRenderData renderData) {
+    if (line != null) {
+      final builder = LineGeometryBuilder();
+      final (vertices, indices) = builder.build([line.points], LineCap.butt, LineJoin.bevel);
+
+      final ByteData geomUniform = Float32List.fromList([
+        1/32,
+        2048,
+      ]).buffer.asByteData();
+
+      final color = Vector4(1.0, 0.0, 1.0, 1.0);
+
+      final ByteData materialUniform = Float32List.fromList([
+        color.x,
+        color.y,
+        color.z,
+        color.w,
+        64.0,
+        0.0,
+      ]).buffer.asByteData();
+
+      renderData.addMesh(PackedMesh(PackedGeometry(vertices: vertices, indices: indices, type: GeometryType.line, uniform: geomUniform), PackedMaterial(type: MaterialType.line, uniform: materialUniform)));
+    }
   }
 
 }
