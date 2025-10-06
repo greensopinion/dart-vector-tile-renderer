@@ -18,6 +18,10 @@ const float baseHaloSoftness = 0.06;
 const float baseHaloThreshold = 0.85;
 
 void main() {
+  if (v_font_size < 0) {
+    discard;
+  }
+
   float sdfValue = 1 - texture(sdf, v_texture_coords).r;
   float softness = baseSoftness * (16 / v_font_size);
 
