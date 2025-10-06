@@ -26,7 +26,7 @@ void main() {
     if (scale < min_scale) {
         gl_Position = vec4(0.0, 0.0, -10.0, 1.0);
         v_texture_coords = vec2(0.0, 0.0);
-        v_font_size = font_size;
+        v_font_size = -1;
         return;
     }
 
