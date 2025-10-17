@@ -10,6 +10,7 @@ import '../utils.dart';
 class TextMaterial extends UnlitMaterial {
   late SamplerOptions sampler;
   late final ByteData uniform;
+  late final int creationTimestamp;
 
   TextMaterial(PackedMaterial packed, TextureProvider textureProvider) {
     setFragmentShader(shaderLibrary['TextFragment']!);
@@ -26,6 +27,7 @@ class TextMaterial extends UnlitMaterial {
       }
     }
 
+    creationTimestamp = DateTime.now().millisecondsSinceEpoch;
 
     sampler = SamplerOptions(
       minFilter: MinMagFilter.linear,
@@ -50,6 +52,13 @@ class TextMaterial extends UnlitMaterial {
     pass.bindUniform(
       fragmentShader.getUniformSlot("FragInfo"),
       transientsBuffer.emplace(uniform),
+    );
+
+    pass.bindUniform(
+      fragmentShader.getUniformSlot("Age"),
+      transientsBuffer.emplace(Int64List.fromList([
+        DateTime.now().millisecondsSinceEpoch - creationTimestamp
+      ]).buffer.asByteData()),
     );
 
     pass.bindTexture(
