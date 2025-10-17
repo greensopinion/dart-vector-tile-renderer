@@ -4,6 +4,11 @@ uniform FragInfo {
 }
 frag_info;
 
+uniform Age {
+  int milliseconds;
+}
+age;
+
 uniform sampler2D sdf;
 
 in vec2 v_texture_coords;
@@ -41,5 +46,5 @@ void main() {
   float outA  = Af + Ab * (1.0 - Af);
   vec3 outRgb = (Cf * Af + Cb * Ab * (1.0 - Af)) / outA;
 
-  frag_color = vec4(outRgb, outA);
+  frag_color = vec4(outRgb, outA * min(1.0, age.milliseconds / 250.0));
 }
