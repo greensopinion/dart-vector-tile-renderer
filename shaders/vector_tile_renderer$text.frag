@@ -46,5 +46,5 @@ void main() {
   float outA  = Af + Ab * (1.0 - Af);
   vec3 outRgb = (Cf * Af + Cb * Ab * (1.0 - Af)) / outA;
 
-  frag_color = vec4(outRgb, outA * min(1.0, age.milliseconds / 250.0));
+  frag_color = vec4(outRgb, min(1.0, outA) * min(1.0, age.milliseconds / 500.0));
 }
