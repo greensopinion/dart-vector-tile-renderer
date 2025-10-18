@@ -17,10 +17,12 @@ import 'polygon/scene_polygon_builder.dart';
 import 'tile_render_data.dart';
 
 class TilePreRenderer {
-  Uint8List preRender(Theme theme, double zoom, Tileset tileset, AtlasSet atlasSet, double pixelRatio) {
+  Uint8List preRender(Theme theme, double zoom, Tileset tileset,
+      AtlasSet atlasSet, double pixelRatio) {
     final data = TileRenderData();
 
-    final visitor = _PreRendererLayerVisitor(data, tileset, zoom, atlasSet, pixelRatio);
+    final visitor =
+        _PreRendererLayerVisitor(data, tileset, zoom, atlasSet, pixelRatio);
     visitor.visitAllFeatures(theme);
 
     // addDebugRenderLayer(data);
@@ -42,13 +44,13 @@ class _PreRendererLayerVisitor extends LayerVisitor {
   };
   final AtlasSet atlasSet;
 
-  _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom, this.atlasSet, double pixelRatio) {
+  _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom,
+      this.atlasSet, double pixelRatio) {
     context = VisitorContext(
         logger: const Logger.noop(),
         tileSource: TileSource(tileset: tileset),
         zoom: zoom,
-        pixelRatio: pixelRatio
-    );
+        pixelRatio: pixelRatio);
   }
 
   void visitAllFeatures(Theme theme) {
@@ -69,7 +71,8 @@ class _PreRendererLayerVisitor extends LayerVisitor {
         return ScenePolygonBuilder(tileRenderData, context)
             .addPolygons(style, features);
       case ThemeLayerType.symbol:
-        return TextLayerVisitor(tileRenderData, context, atlasSet).addFeatures(style, features, labelSpaces);
+        return TextLayerVisitor(tileRenderData, context, atlasSet)
+            .addFeatures(style, features, labelSpaces);
       case ThemeLayerType.background:
       case ThemeLayerType.raster:
       case ThemeLayerType.unsupported:
@@ -96,21 +99,25 @@ class _PreRendererLayerVisitor extends LayerVisitor {
     final tileKey = Uint16List.fromList(key.codeUnits).buffer.asByteData();
 
     final evaluationContext = EvaluationContext(
-            () => {}, TileFeatureType.none, context.logger,
+        () => {}, TileFeatureType.none, context.logger,
         zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (a) => true);
 
     final opacity = paintModel.opacity.evaluate(evaluationContext) ?? 1.0;
 
     if (opacity > 0) {
-
-      final resampling = paintModel.rasterResampling.evaluate(evaluationContext);
+      final resampling =
+          paintModel.rasterResampling.evaluate(evaluationContext);
       final resamplingDouble = resampling == "nearest" ? 0.0 : 1.0;
-      final uniform = Float64List.fromList([opacity, resamplingDouble]).buffer.asByteData();
+      final uniform =
+          Float64List.fromList([opacity, resamplingDouble]).buffer.asByteData();
 
       tileRenderData.addMesh(PackedMesh(
-          PackedGeometry(vertices: ByteData(0), indices: ByteData(0), uniform: tileKey, type: GeometryType.raster),
-          PackedMaterial(uniform: uniform, type: MaterialType.raster))
-      );
+          PackedGeometry(
+              vertices: ByteData(0),
+              indices: ByteData(0),
+              uniform: tileKey,
+              type: GeometryType.raster),
+          PackedMaterial(uniform: uniform, type: MaterialType.raster)));
     }
   }
 }

@@ -23,7 +23,6 @@ class TileId {
 
   TileId({required this.z, required this.x, required this.y});
 
-
   @override
   String toString() => key();
 
@@ -57,7 +56,8 @@ class TilesRenderer {
   final _positionByKey = <String, Rect>{};
   final AtlasProvider _atlasProvider = AtlasProvider();
   final TextureProvider _textureProvider = TextureProvider();
-  late final _atlasGenerator = AtlasGenerator(atlasProvider: _atlasProvider, textureProvider: _textureProvider);
+  late final _atlasGenerator = AtlasGenerator(
+      atlasProvider: _atlasProvider, textureProvider: _textureProvider);
   Theme theme;
   Scene? _scene;
 
@@ -80,11 +80,14 @@ class TilesRenderer {
     return scene;
   }
 
-  Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID) getPreRenderer() {
+  Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID)
+      getPreRenderer() {
     final atlasProvider = _atlasProvider;
     final view = ui.PlatformDispatcher.instance.views.first;
     final pixelRatio = view.display.devicePixelRatio;
-    return (Theme theme, double zoom, Tileset tileset, String tileID) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider.forTileID(tileID), pixelRatio);
+    return (Theme theme, double zoom, Tileset tileset, String tileID) =>
+        TilePreRenderer().preRender(
+            theme, zoom, tileset, atlasProvider.forTileID(tileID), pixelRatio);
   }
 
   Future preRenderUi(double zoom, Tileset tileset, String tileID) async {
@@ -107,9 +110,11 @@ class TilesRenderer {
         node = Node(name: key);
         final renderData = model.renderData;
         if (renderData == null) {
-          throw Exception("no render data for tile ${model.tileId}, did you call preRender?");
+          throw Exception(
+              "no render data for tile ${model.tileId}, did you call preRender?");
         }
-        BucketUnpacker(_textureProvider, model.rasterTileset).unpackOnto(node, TileRenderData.unpack(renderData));
+        BucketUnpacker(_textureProvider, model.rasterTileset)
+            .unpackOnto(node, TileRenderData.unpack(renderData));
       }
       _positionByKey[key] = model.position;
       scene.add(node);
@@ -142,6 +147,5 @@ class TilesRenderer {
     return scene;
   }
 
-  void dispose() {
-  }
+  void dispose() {}
 }

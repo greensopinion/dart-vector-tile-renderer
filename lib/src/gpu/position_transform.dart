@@ -3,7 +3,8 @@ import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart' as vm;
 
-vm.Matrix4 tileTransformMatrix(Rect position, Size canvasSize, double rotation) {
+vm.Matrix4 tileTransformMatrix(
+    Rect position, Size canvasSize, double rotation) {
   final center = position.center;
 
   // Convert pixel center to NDC

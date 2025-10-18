@@ -73,8 +73,12 @@ class LineGeometryBuilder {
       TilePoint p0 = points[i];
       TilePoint p1 = points[i + 1];
 
-      double cumulativeLength0 = (i < _cumulativeLengths.length ? _cumulativeLengths[i] : 0.0) / 32.0;
-      double cumulativeLength1 = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
+      double cumulativeLength0 =
+          (i < _cumulativeLengths.length ? _cumulativeLengths[i] : 0.0) / 32.0;
+      double cumulativeLength1 = ((i + 1) < _cumulativeLengths.length
+              ? _cumulativeLengths[i + 1]
+              : 0.0) /
+          32.0;
 
       final vertices = Float32List(32);
       vertices[0] = p1.x;
@@ -129,8 +133,10 @@ class LineGeometryBuilder {
     TilePoint c = points[segmentCount - 1];
     TilePoint d = points[segmentCount];
 
-    double startCumulativeLength = (_cumulativeLengths.isNotEmpty ? _cumulativeLengths.first : 0.0) / 32.0;
-    double endCumulativeLength = (_cumulativeLengths.isNotEmpty ? _cumulativeLengths.last : 0.0) / 32.0;
+    double startCumulativeLength =
+        (_cumulativeLengths.isNotEmpty ? _cumulativeLengths.first : 0.0) / 32.0;
+    double endCumulativeLength =
+        (_cumulativeLengths.isNotEmpty ? _cumulativeLengths.last : 0.0) / 32.0;
 
     final vertices = Float32List(32);
     vertices[0] = a.x;
@@ -204,7 +210,10 @@ class LineGeometryBuilder {
       TilePoint p0 = points[i];
       TilePoint p1 = points[i + 1];
 
-      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
+      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length
+              ? _cumulativeLengths[i + 1]
+              : 0.0) /
+          32.0;
 
       final vertices = Float32List(16);
       vertices[0] = p1.x;
@@ -234,8 +243,14 @@ class LineGeometryBuilder {
 
       // Use reusable list to avoid .map().toList() allocation
       _tempIndices.clear();
-      _tempIndices.addAll([c + indexOffset, d + indexOffset, b + indexOffset,
-                          b + indexOffset, d + indexOffset, a + indexOffset]);
+      _tempIndices.addAll([
+        c + indexOffset,
+        d + indexOffset,
+        b + indexOffset,
+        b + indexOffset,
+        d + indexOffset,
+        a + indexOffset
+      ]);
       _addIndices(_tempIndices);
     }
     startIndex += max(2 * joinCount, 0);
@@ -247,7 +262,10 @@ class LineGeometryBuilder {
     for (int i = 0; i < joinCount; i++) {
       TilePoint p = points[i + 1];
 
-      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
+      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length
+              ? _cumulativeLengths[i + 1]
+              : 0.0) /
+          32.0;
 
       final vertices = Float32List(8);
       vertices[0] = p.x;
@@ -334,7 +352,10 @@ class LineGeometryBuilder {
       final outX = vecX * scale;
       final outY = vecY * scale;
 
-      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length ? _cumulativeLengths[i + 1] : 0.0) / 32.0;
+      double joinCumulativeLength = ((i + 1) < _cumulativeLengths.length
+              ? _cumulativeLengths[i + 1]
+              : 0.0) /
+          32.0;
 
       final vertices = Float32List(16);
       vertices[0] = cX;

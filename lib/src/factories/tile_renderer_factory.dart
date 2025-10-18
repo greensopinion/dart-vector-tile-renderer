@@ -17,7 +17,6 @@ abstract class TileRendererFactory {
 
 /// Default implementation of TileRendererFactory
 class DefaultTileRendererFactory implements TileRendererFactory {
-  
   const DefaultTileRendererFactory();
   @override
   TileRendererComposite createRenderer({

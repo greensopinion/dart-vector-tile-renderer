@@ -19,7 +19,8 @@ class LineGeometry extends UnskinnedGeometry {
     _uniform = packed.uniform!;
 
     final vertexCount = packed.vertices.lengthInBytes ~/ 32;
-    uploadVertexData(packed.vertices, vertexCount, packed.indices, indexType: IndexType.int32);
+    uploadVertexData(packed.vertices, vertexCount, packed.indices,
+        indexType: IndexType.int32);
   }
 
   @override

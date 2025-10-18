@@ -44,7 +44,8 @@ class LinePositionFinder {
         if (result != null) {
           // Prefer positions with more passing checks, then less curvature
           if (result.passingChecks > maxPassingChecks ||
-              (result.passingChecks == maxPassingChecks && result.curvature < minCurvature)) {
+              (result.passingChecks == maxPassingChecks &&
+                  result.curvature < minCurvature)) {
             maxPassingChecks = result.passingChecks;
             minCurvature = result.curvature;
             bestPosition = (point: result.point, rotation: result.rotation);
@@ -53,7 +54,9 @@ class LinePositionFinder {
       }
 
       final upperIndex = midpoint + offset;
-      if (upperIndex != lowerIndex && upperIndex >= 0 && upperIndex < points.length - 1) {
+      if (upperIndex != lowerIndex &&
+          upperIndex >= 0 &&
+          upperIndex < points.length - 1) {
         final result = _tryLinePosition(
           points,
           anchorType,
@@ -67,7 +70,8 @@ class LinePositionFinder {
         if (result != null) {
           // Prefer positions with more passing checks, then less curvature
           if (result.passingChecks > maxPassingChecks ||
-              (result.passingChecks == maxPassingChecks && result.curvature < minCurvature)) {
+              (result.passingChecks == maxPassingChecks &&
+                  result.curvature < minCurvature)) {
             maxPassingChecks = result.passingChecks;
             minCurvature = result.curvature;
             bestPosition = (point: result.point, rotation: result.rotation);
@@ -83,7 +87,8 @@ class LinePositionFinder {
     // Fallback to midpoint
     if (midpoint < points.length) {
       final midPoint = points[midpoint];
-      final rotation = (rotationAlignment == RotationAlignment.map && midpoint < points.length - 1)
+      final rotation = (rotationAlignment == RotationAlignment.map &&
+              midpoint < points.length - 1)
           ? _getLineAngle(points, midpoint)
           : 0.0;
       return (point: midPoint, rotation: rotation);
@@ -92,7 +97,8 @@ class LinePositionFinder {
     return null;
   }
 
-  ({TilePoint point, double rotation, int passingChecks, double curvature})? _tryLinePosition(
+  ({TilePoint point, double rotation, int passingChecks, double curvature})?
+      _tryLinePosition(
     List<TilePoint> points,
     LayoutAnchor anchorType,
     int index,
@@ -109,7 +115,8 @@ class LinePositionFinder {
         ? _getLineAngle(points, index)
         : 0.0;
 
-    final anchor = layoutCalculator.calculateAnchor(point.x, point.y, canvasSize);
+    final anchor =
+        layoutCalculator.calculateAnchor(point.x, point.y, canvasSize);
     int passingChecks = 0;
 
     for (var entry in labelSpaces.entries) {
@@ -147,7 +154,12 @@ class LinePositionFinder {
 
     final curvature = _calculateCurvature(points, index);
 
-    return (point: point, rotation: rotation, passingChecks: passingChecks, curvature: curvature);
+    return (
+      point: point,
+      rotation: rotation,
+      passingChecks: passingChecks,
+      curvature: curvature
+    );
   }
 
   double _getLineAngle(List<TilePoint> points, int index) {

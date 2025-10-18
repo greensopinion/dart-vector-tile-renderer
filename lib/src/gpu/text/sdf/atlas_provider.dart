@@ -15,7 +15,9 @@ class AtlasProvider {
   }
 
   AtlasSet forTileID(String tileID) {
-    return AtlasSet({}..addAll(_loaded[tileID] ?? {})..addAll(_loaded[""] ?? {}));
+    return AtlasSet({}
+      ..addAll(_loaded[tileID] ?? {})
+      ..addAll(_loaded[""] ?? {}));
   }
 
   Set<GlyphAtlas> unload(String tileID) {
@@ -25,7 +27,9 @@ class AtlasProvider {
   }
 
   Set<GlyphAtlas> unloadWhereNotFound(Set<String> tileIDs) {
-    final keysToUnload = _loaded.keys.toSet().whereNot((it) => it.isEmpty || tileIDs.contains(it));
+    final keysToUnload = _loaded.keys
+        .toSet()
+        .whereNot((it) => it.isEmpty || tileIDs.contains(it));
     for (final key in keysToUnload) {
       _loaded.remove(key);
     }

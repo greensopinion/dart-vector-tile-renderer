@@ -10,6 +10,7 @@ class PolygonGeometry extends UnskinnedGeometry {
 
     final vertexCount = packed.vertices.lengthInBytes ~/ 12;
 
-    uploadVertexData(packed.vertices, vertexCount, packed.indices, indexType: IndexType.int32);
+    uploadVertexData(packed.vertices, vertexCount, packed.indices,
+        indexType: IndexType.int32);
   }
 }

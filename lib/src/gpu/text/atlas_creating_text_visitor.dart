@@ -19,12 +19,11 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
 
   void visitAllFeatures(Tileset tileset, double zoom) {
     final context = VisitorContext(
-      logger: const Logger.noop(),
-      tileSource: TileSource(
-          tileset: tileset, rasterTileset: const RasterTileset(tiles: {})),
-      zoom: zoom,
-      pixelRatio: 1.0
-    );
+        logger: const Logger.noop(),
+        tileSource: TileSource(
+            tileset: tileset, rasterTileset: const RasterTileset(tiles: {})),
+        zoom: zoom,
+        pixelRatio: 1.0);
 
     for (var layer in theme.layers) {
       layer.accept(context, this);
@@ -43,7 +42,8 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
       final filtered = charCodes.toList()..sort();
 
       if (filtered.first < 256) {
-        await atlasGenerator.loadAtlas(str: _defaultChars, fontFamily: font, tileID: "");
+        await atlasGenerator.loadAtlas(
+            str: _defaultChars, fontFamily: font, tileID: "");
         if (filtered.last >= 256) {
           final chop = filtered.indexWhere((it) => it >= 256);
           filtered.removeRange(0, chop);
@@ -56,25 +56,21 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
         final end = (i + 256 < filtered.length) ? i + 256 : filtered.length;
         final charChunk = filtered.sublist(i, end);
         await atlasGenerator.loadAtlas(
-          str: String.fromCharCodes(charChunk),
-          fontFamily: font,
-          tileID: tileID
-        );
+            str: String.fromCharCodes(charChunk),
+            fontFamily: font,
+            tileID: tileID);
       }
     }
 
     fontToCharCodes.clear();
   }
 
-  static final String _defaultChars = String.fromCharCodes(List.generate(256, (i) => i));
-
+  static final String _defaultChars =
+      String.fromCharCodes(List.generate(256, (i) => i));
 
   @override
-  void visitFeatures(
-      VisitorContext context,
-      ThemeLayerType layerType,
-      Style style,
-      Iterable<LayerFeature> features) {
+  void visitFeatures(VisitorContext context, ThemeLayerType layerType,
+      Style style, Iterable<LayerFeature> features) {
     final symbolLayout = style.symbolLayout;
     if (symbolLayout == null) {
       return;
@@ -96,7 +92,9 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
         final fontFamily = symbolLayout.text?.fontFamily ?? AtlasID.defaultFont;
         final fontStyle = symbolLayout.text?.fontStyle ?? FontStyle.normal;
 
-        fontToCharCodes.putIfAbsent("$fontFamily%${fontStyle.name}", () => <int>{}).addAll(text.codeUnits);
+        fontToCharCodes
+            .putIfAbsent("$fontFamily%${fontStyle.name}", () => <int>{})
+            .addAll(text.codeUnits);
       }
     }
   }

@@ -5,7 +5,6 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 
 class OrthographicCamera extends Camera {
-
   final double scaleFactor;
   final double rotation;
 
@@ -13,7 +12,8 @@ class OrthographicCamera extends Camera {
 
   @override
   Matrix4 getViewTransform(Size dimensions) => Matrix4.identity()
-    ..scale(dimensions.width / scaleFactor, dimensions.height / scaleFactor, 1.0)
+    ..scale(
+        dimensions.width / scaleFactor, dimensions.height / scaleFactor, 1.0)
     ..rotateZ(rotation * pi / 180);
 
   @override

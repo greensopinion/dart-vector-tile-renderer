@@ -21,7 +21,9 @@ void configureRenderPass(RenderPass pass) {
 }
 
 double getScaleFactor(Matrix4 cameraTransform, Matrix4 modelTransform) {
-  final matrix = Matrix4.identity()..transposeMultiply(modelTransform)..transposeMultiply(cameraTransform);
+  final matrix = Matrix4.identity()
+    ..transposeMultiply(modelTransform)
+    ..transposeMultiply(cameraTransform);
 
   return Vector2(matrix.row0.x, matrix.row1.x).length / _tileSize;
 }

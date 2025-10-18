@@ -4,26 +4,25 @@ import 'theme.dart';
 abstract class ThemeManager {
   /// Creates a filtered theme containing only the specified layer types
   Theme filterTheme(Theme theme, Set<ThemeLayerType> types);
-  
+
   /// Creates a theme variant for symbols only
   Theme createSymbolTheme(Theme theme);
-  
+
   /// Creates a theme variant excluding symbols
   Theme createNonSymbolTheme(Theme theme);
-  
+
   /// Validates theme compatibility with tile sources
   bool validateThemeCompatibility(Theme theme, List<String> availableSources);
 }
 
 /// Default implementation of ThemeManager
 class DefaultThemeManager implements ThemeManager {
-  
   const DefaultThemeManager();
   @override
   Theme filterTheme(Theme theme, Set<ThemeLayerType> types) {
     return theme.copyWith(types: types);
   }
-  
+
   @override
   Theme createSymbolTheme(Theme theme) {
     return theme.copyWith(
@@ -31,7 +30,7 @@ class DefaultThemeManager implements ThemeManager {
       types: {ThemeLayerType.symbol},
     );
   }
-  
+
   @override
   Theme createNonSymbolTheme(Theme theme) {
     return theme.copyWith(
@@ -40,11 +39,12 @@ class DefaultThemeManager implements ThemeManager {
           .toSet(),
     );
   }
-  
+
   @override
   bool validateThemeCompatibility(Theme theme, List<String> availableSources) {
     final requiredSources = theme.tileSources.toSet();
     final availableSourcesSet = availableSources.toSet();
-    return requiredSources.every((source) => availableSourcesSet.contains(source));
+    return requiredSources
+        .every((source) => availableSourcesSet.contains(source));
   }
 }

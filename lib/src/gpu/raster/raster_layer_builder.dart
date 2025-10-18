@@ -8,10 +8,8 @@ import 'raster_geometry.dart';
 import '../../../vector_tile_renderer.dart';
 
 class RasterLayerBuilder {
-
-
-  void build(Node parent, ByteData packedTileKey, ByteData packedPaintModel, RasterTileset rasterTileset) {
-
+  void build(Node parent, ByteData packedTileKey, ByteData packedPaintModel,
+      RasterTileset rasterTileset) {
     final bytes = Uint8List.fromList(packedTileKey.buffer.asUint8List(
       packedTileKey.offsetInBytes,
       packedTileKey.lengthInBytes,
@@ -26,16 +24,13 @@ class RasterLayerBuilder {
 
     final resampling = packedPaintModel.getFloat64(8, Endian.little);
 
-
-
     if (rasterTile == null) {
       return;
     } else {
       final texture = rasterTile.texture;
       if (texture != null) {
-
         RasterMaterial material =
-        RasterMaterial(colorTexture: texture, resampling: resampling);
+            RasterMaterial(colorTexture: texture, resampling: resampling);
         material.baseColorFactor = Vector4(1.0, 1.0, 1.0, opacity);
 
         parent.addMesh(Mesh(RasterGeometry(rasterTile), material));

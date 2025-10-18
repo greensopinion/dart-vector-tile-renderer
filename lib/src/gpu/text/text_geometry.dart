@@ -3,7 +3,6 @@ import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import '../shaders.dart';
 
 class TextGeometry extends UnskinnedGeometry {
-
   static const VERTEX_SIZE = 10;
 
   TextGeometry(PackedGeometry packed) {

@@ -17,7 +17,12 @@ import 'batch_manager.dart';
 class _LayoutResult {
   final List<String> lines;
   final List<double> lineWidths;
-  final ({double fontScale, double canvasScale, double scaling, double lineHeight}) scalingData;
+  final ({
+    double fontScale,
+    double canvasScale,
+    double scaling,
+    double lineHeight
+  }) scalingData;
 
   _LayoutResult({
     required this.lines,
@@ -57,10 +62,12 @@ class TextBuilder {
     required double displayScaleFactor,
     required LayoutAnchor anchorType,
   }) {
-    final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
+    final layoutResult =
+        _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
     if (layoutResult == null) return;
 
-    final geometryResult = _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
+    final geometryResult =
+        _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
     if (geometryResult == null) return;
 
     final position = _determineTextPosition(
@@ -74,14 +81,8 @@ class TextBuilder {
     );
     if (position == null) return;
 
-    final validation = _validateLabelSpace(
-      position,
-      geometryResult.boundingBox,
-      labelSpaces,
-      canvasSize,
-      isLineString,
-        anchorType
-    );
+    final validation = _validateLabelSpace(position, geometryResult.boundingBox,
+        labelSpaces, canvasSize, isLineString, anchorType);
     if (validation == null) return;
 
     final transformedBatches = _transformAndFinalize(
@@ -105,7 +106,8 @@ class TextBuilder {
     int canvasSize,
   ) {
     final lines = _layoutCalculator.wrapTextLines(text, fontSize, maxWidth);
-    final scalingData = _layoutCalculator.calculateScaling(fontSize, canvasSize);
+    final scalingData =
+        _layoutCalculator.calculateScaling(fontSize, canvasSize);
     final lineWidths = _layoutCalculator.calculateLineWidths(
       lines,
       fontFamily,
@@ -121,7 +123,8 @@ class TextBuilder {
     );
   }
 
-  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})? _generateTextGeometry(
+  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})?
+      _generateTextGeometry(
     _LayoutResult layout,
     String fontFamily,
     Vector4 color,
@@ -218,7 +221,8 @@ class TextBuilder {
       centerOffsetY = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetY;
     }
 
-    final dynamicRotationScale = rotationAlignment == RotationAlignment.viewport ? 1.0 : 0.0;
+    final dynamicRotationScale =
+        rotationAlignment == RotationAlignment.viewport ? 1.0 : 0.0;
     final baseRotation = -LabelSpaceValidator.normalizeToPi(position.rotation);
 
     return _geometryGenerator.transformGeometry(

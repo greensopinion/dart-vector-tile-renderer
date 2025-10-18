@@ -18,7 +18,7 @@ class RasterGeometry extends UnskinnedGeometry {
       final right = tile.scope.right / texture.width;
 
       List<double> vertices = [
-        -1, -1, 0, left, bottom,
+        -1, -1, 0, left, bottom, // maintain formatting
         1, -1, 0, right, bottom,
         1, 1, 0, right, top,
         -1, 1, 0, left, top,

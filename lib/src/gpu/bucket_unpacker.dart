@@ -17,7 +17,6 @@ import 'polygon/polygon_geometry.dart';
 import 'tile_render_data.dart';
 
 class BucketUnpacker {
-
   final TextureProvider textureProvider;
   final RasterTileset rasterTileset;
 
@@ -26,9 +25,11 @@ class BucketUnpacker {
   void unpackOnto(Node parent, TileRenderData bucket) {
     for (var packedMesh in bucket.data) {
       if (packedMesh.geometry.type == GeometryType.raster) {
-        RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!, packedMesh.material.uniform!, rasterTileset);
+        RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!,
+            packedMesh.material.uniform!, rasterTileset);
       } else {
-        parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
+        parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry),
+            _unpackMaterial(packedMesh.material)));
       }
     }
   }

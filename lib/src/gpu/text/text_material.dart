@@ -15,7 +15,6 @@ class TextMaterial extends UnlitMaterial {
   TextMaterial(PackedMaterial packed, TextureProvider textureProvider) {
     setFragmentShader(shaderLibrary['TextFragment']!);
 
-
     final uniform = packed.uniform;
     if (uniform != null) {
       this.uniform = ByteData.sublistView(uniform, 8);
@@ -40,11 +39,10 @@ class TextMaterial extends UnlitMaterial {
 
   @override
   void bind(
-      RenderPass pass,
-      HostBuffer transientsBuffer,
-      Environment environment,
-      ) {
-
+    RenderPass pass,
+    HostBuffer transientsBuffer,
+    Environment environment,
+  ) {
     configureRenderPass(pass);
     pass.setWindingOrder(WindingOrder.clockwise);
     pass.setDepthCompareOperation(CompareFunction.always);
@@ -58,16 +56,14 @@ class TextMaterial extends UnlitMaterial {
 
     pass.bindUniform(
       fragmentShader.getUniformSlot("Age"),
-      transientsBuffer.emplace(Int64List.fromList([
-        DateTime.now().millisecondsSinceEpoch - creationTimestamp!
-      ]).buffer.asByteData()),
+      transientsBuffer.emplace(Int64List.fromList(
+              [DateTime.now().millisecondsSinceEpoch - creationTimestamp!])
+          .buffer
+          .asByteData()),
     );
 
-    pass.bindTexture(
-        fragmentShader.getUniformSlot('sdf'),
-        baseColorTexture,
-        sampler: sampler
-    );
+    pass.bindTexture(fragmentShader.getUniformSlot('sdf'), baseColorTexture,
+        sampler: sampler);
   }
 
   @override

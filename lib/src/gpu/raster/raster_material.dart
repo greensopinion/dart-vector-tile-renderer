@@ -7,7 +7,8 @@ import '../utils.dart';
 class RasterMaterial extends UnlitMaterial {
   late gpu.SamplerOptions sampler;
 
-  RasterMaterial({required gpu.Texture colorTexture, required double resampling}) {
+  RasterMaterial(
+      {required gpu.Texture colorTexture, required double resampling}) {
     setFragmentShader(shaderLibrary['RasterFragment']!);
     baseColorTexture = Material.whitePlaceholder(colorTexture);
 

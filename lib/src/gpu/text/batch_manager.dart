@@ -28,13 +28,13 @@ class BatchManager {
         _batches.add(existingBatch);
       }
 
-      final adjustedIndices = newBatch.indices
-          .map((i) => i + existingBatch!.vertexOffset)
-          .toList();
+      final adjustedIndices =
+          newBatch.indices.map((i) => i + existingBatch!.vertexOffset).toList();
 
       existingBatch.vertices.addAll(newBatch.vertices);
       existingBatch.indices.addAll(adjustedIndices);
-      existingBatch.vertexOffset += newBatch.vertices.length ~/ TextGeometry.VERTEX_SIZE;
+      existingBatch.vertexOffset +=
+          newBatch.vertices.length ~/ TextGeometry.VERTEX_SIZE;
     }
   }
 
@@ -44,28 +44,33 @@ class BatchManager {
     for (final batch in _batches) {
       if (batch.vertices.isEmpty) continue;
 
-      final textureIDBytes = intToByteData(batch.textureID).buffer.asUint8List();
+      final textureIDBytes =
+          intToByteData(batch.textureID).buffer.asUint8List();
       final hColor = batch.haloColor ?? Vector4(0.0, 0.0, 0.0, 0.0);
 
-      final materialUniform = (
-          BytesBuilder(copy: true)
+      final materialUniform = (BytesBuilder(copy: true)
             ..add(textureIDBytes)
             ..add(Float32List.fromList([
-              batch.color.r, batch.color.g, batch.color.b, batch.color.a,
-              hColor.r, hColor.g, hColor.b, hColor.a,
-            ]).buffer.asUint8List())
-      ).toBytes().buffer.asByteData();
+              batch.color.r,
+              batch.color.g,
+              batch.color.b,
+              batch.color.a,
+              hColor.r,
+              hColor.g,
+              hColor.b,
+              hColor.a,
+            ]).buffer.asUint8List()))
+          .toBytes()
+          .buffer
+          .asByteData();
 
       final geometry = PackedGeometry(
-        vertices: ByteData.sublistView(Float32List.fromList(batch.vertices)),
-        indices: ByteData.sublistView(Uint16List.fromList(batch.indices)),
-        type: GeometryType.text
-      );
+          vertices: ByteData.sublistView(Float32List.fromList(batch.vertices)),
+          indices: ByteData.sublistView(Uint16List.fromList(batch.indices)),
+          type: GeometryType.text);
 
-      final material = PackedMaterial(
-        type: MaterialType.text,
-        uniform: materialUniform
-      );
+      final material =
+          PackedMaterial(type: MaterialType.text, uniform: materialUniform);
 
       meshes.add(PackedMesh(geometry, material));
     }

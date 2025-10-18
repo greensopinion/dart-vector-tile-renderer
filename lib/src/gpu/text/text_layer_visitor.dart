@@ -27,7 +27,8 @@ class TextLayerVisitor {
 
   TextLayerVisitor(this.renderData, this.context, this.atlasSet);
 
-  void addFeatures(Style style, Iterable<LayerFeature> features, Map<double, NdcLabelSpace> labelSpaces) {
+  void addFeatures(Style style, Iterable<LayerFeature> features,
+      Map<double, NdcLabelSpace> labelSpaces) {
     final symbolLayout = style.symbolLayout;
     if (symbolLayout == null || atlasSet.isEmpty) {
       return;
@@ -56,8 +57,9 @@ class TextLayerVisitor {
           style.symbolLayout?.placement.evaluate(evaluationContext) ??
               LayoutPlacement.DEFAULT;
 
-
-      final anchor = style.symbolLayout?.text?.anchor.evaluate(evaluationContext) ?? LayoutAnchor.DEFAULT;
+      final anchor =
+          style.symbolLayout?.text?.anchor.evaluate(evaluationContext) ??
+              LayoutAnchor.DEFAULT;
 
       final rotationAlignment = style.symbolLayout?.textRotationAlignment(
               evaluationContext,
@@ -71,7 +73,8 @@ class TextLayerVisitor {
           paint == null) {
         continue;
       }
-      final fontFamily = style.symbolLayout?.text?.fontFamily ?? AtlasID.defaultFont;
+      final fontFamily =
+          style.symbolLayout?.text?.fontFamily ?? AtlasID.defaultFont;
       final line = feature.feature.modelLines.firstOrNull;
       final point = feature.feature.modelPoints.firstOrNull;
 
@@ -79,7 +82,9 @@ class TextLayerVisitor {
 
       final isLineString = line != null;
 
-      final maxWidth = (symbolLayout.text?.maxWidth?.evaluate(evaluationContext) ?? 10.0).ceil();
+      final maxWidth =
+          (symbolLayout.text?.maxWidth?.evaluate(evaluationContext) ?? 10.0)
+              .ceil();
 
       final fontStyle = symbolLayout.text?.fontStyle ?? FontStyle.normal;
 
@@ -97,8 +102,7 @@ class TextLayerVisitor {
           maxWidth: maxWidth,
           isLineString: isLineString,
           displayScaleFactor: context.pixelRatio,
-          anchorType: anchor
-      );
+          anchorType: anchor);
 
       // _renderDebugTextLines(line, renderData);
     }
@@ -109,10 +113,11 @@ class TextLayerVisitor {
   void _renderDebugTextLines(TileLine? line, TileRenderData renderData) {
     if (line != null) {
       final builder = LineGeometryBuilder();
-      final (vertices, indices) = builder.build([line.points], LineCap.butt, LineJoin.bevel);
+      final (vertices, indices) =
+          builder.build([line.points], LineCap.butt, LineJoin.bevel);
 
       final ByteData geomUniform = Float32List.fromList([
-        1/32,
+        1 / 32,
         2048,
       ]).buffer.asByteData();
 
@@ -127,8 +132,13 @@ class TextLayerVisitor {
         0.0,
       ]).buffer.asByteData();
 
-      renderData.addMesh(PackedMesh(PackedGeometry(vertices: vertices, indices: indices, type: GeometryType.line, uniform: geomUniform), PackedMaterial(type: MaterialType.line, uniform: materialUniform)));
+      renderData.addMesh(PackedMesh(
+          PackedGeometry(
+              vertices: vertices,
+              indices: indices,
+              type: GeometryType.line,
+              uniform: geomUniform),
+          PackedMaterial(type: MaterialType.line, uniform: materialUniform)));
     }
   }
-
 }

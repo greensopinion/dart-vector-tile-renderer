@@ -15,15 +15,14 @@ class AtlasGenerator {
   final AtlasProvider atlasProvider;
   final TextureProvider textureProvider;
 
-  AtlasGenerator({
-    required this.atlasProvider,
-    required this.textureProvider
-  });
+  AtlasGenerator({required this.atlasProvider, required this.textureProvider});
 
-  Future loadAtlas({required String str, required String fontFamily, required String tileID}) async {
-    final existingEntry = _loading.entries.firstWhereOrNull((entry) =>
-      entry.key.canBeUsedFor(str, fontFamily)
-    );
+  Future loadAtlas(
+      {required String str,
+      required String fontFamily,
+      required String tileID}) async {
+    final existingEntry = _loading.entries
+        .firstWhereOrNull((entry) => entry.key.canBeUsedFor(str, fontFamily));
 
     final atlas = existingEntry != null
         ? await existingEntry.value.future
@@ -35,7 +34,8 @@ class AtlasGenerator {
   void unloadWhereNotFound(Set<String> tileIDs) {
     final stillLoaded = atlasProvider.unloadWhereNotFound(tileIDs);
     final stillLoadedIDs = stillLoaded.map((it) => it.id).toSet();
-    final toRemove = _loading.keys.where((id) => !stillLoadedIDs.contains(id)).toList();
+    final toRemove =
+        _loading.keys.where((id) => !stillLoadedIDs.contains(id)).toList();
 
     for (var id in toRemove) {
       _loading.remove(id);
@@ -60,12 +60,11 @@ class AtlasGenerator {
     return atlas.future;
   }
 
-  Future<GlyphAtlas> _generateBitmapAtlas(
-      AtlasID id, int fontSize
-      ) async {
+  Future<GlyphAtlas> _generateBitmapAtlas(AtlasID id, int fontSize) async {
     final config = AtlasConfig(atlasID: id);
 
-    final metricsExtractor = GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
+    final metricsExtractor =
+        GlyphMetricsExtractor(fontFamily: id.font, fontSize: fontSize);
     final glyphRenderer = GlyphRenderer(fontFamily: id.font, config: config);
 
     final cellSize = fontSize + config.sdfPadding;
@@ -73,11 +72,17 @@ class AtlasGenerator {
     final renderFontSize = fontSize * config.renderScale;
 
     final charCodes = id.chars.codeUnits;
-    final metrics = <int, GlyphMetrics>{for (var code in charCodes) code: metricsExtractor.extractMetrics(code, cellSize, cellSize)};
+    final metrics = <int, GlyphMetrics>{
+      for (var code in charCodes)
+        code: metricsExtractor.extractMetrics(code, cellSize, cellSize)
+    };
 
     final sdfRenderer = SdfRenderer(config, cellSize * config.renderScale);
 
-    textureProvider.addLoaded(sdfRenderer.renderToSDF(await glyphRenderer.renderGlyphs(renderFontSize)), id.hashCode);
+    textureProvider.addLoaded(
+        sdfRenderer
+            .renderToSDF(await glyphRenderer.renderGlyphs(renderFontSize)),
+        id.hashCode);
 
     return GlyphAtlas(
       atlasID: id,
@@ -105,7 +110,7 @@ class AtlasConfig {
   final int renderScale;
   final double sdfCutoff;
   final int sdfPadding;
-  
+
   AtlasConfig({
     required this.atlasID,
     this.renderScale = 2,
@@ -120,7 +125,6 @@ class AtlasConfig {
 
   /// Calculate side length of smallest square with area >= [charCount] and power of 2 side lengths
   static int _getColumnCount(int charCount) {
-
     int exp = ((_log2(charCount) / 2) - 0.000001).ceil();
     return math.pow(2, exp) as int;
   }
@@ -142,7 +146,7 @@ class RenderedGlyph {
   final GlyphMetrics metrics;
   final Uint8List sdfData;
   final int sdfSize;
-  
+
   const RenderedGlyph({
     required this.metrics,
     required this.sdfData,
@@ -155,18 +159,19 @@ class GlyphMetricsExtractor {
   final String fontFamily;
   final int fontSize;
   final ui.TextStyle _textStyle;
-  
+
   GlyphMetricsExtractor({required this.fontFamily, required this.fontSize})
       : _textStyle = ui.TextStyle(
-          fontFamily: fontFamily.split("%").first,
-          fontStyle: ui.FontStyle.values.firstWhere((it) => it.name == fontFamily.split("%").last),
-          fontSize: fontSize.toDouble(),
-          color: const ui.Color(0x000000FF),
-          fontWeight: ui.FontWeight.normal,
-          letterSpacing: fontSize.toDouble() / 16
-        );
-  
-  GlyphMetrics extractMetrics(int charCode, int targetCellWidth, int targetCellHeight) {
+            fontFamily: fontFamily.split("%").first,
+            fontStyle: ui.FontStyle.values
+                .firstWhere((it) => it.name == fontFamily.split("%").last),
+            fontSize: fontSize.toDouble(),
+            color: const ui.Color(0x000000FF),
+            fontWeight: ui.FontWeight.normal,
+            letterSpacing: fontSize.toDouble() / 16);
+
+  GlyphMetrics extractMetrics(
+      int charCode, int targetCellWidth, int targetCellHeight) {
     GlyphMetrics metrics;
     ui.Paragraph? paragraph;
 
@@ -194,21 +199,25 @@ class GlyphMetricsExtractor {
           glyphWidth: glyphBounds.width.round(),
           glyphHeight: glyphBounds.height.round(),
           glyphTop: (baseline - glyphBounds.top).round(),
-          glyphLeft: math.max(0, ((targetCellWidth - glyphBounds.width) / 2).round()),
+          glyphLeft:
+              math.max(0, ((targetCellWidth - glyphBounds.width) / 2).round()),
           glyphAdvance: glyphBounds.width,
         );
       } else {
-        metrics = _createFallbackMetrics(charCode, targetCellWidth, targetCellHeight);
+        metrics =
+            _createFallbackMetrics(charCode, targetCellWidth, targetCellHeight);
       }
     } catch (e) {
-      metrics = _createFallbackMetrics(charCode, targetCellWidth, targetCellHeight);
+      metrics =
+          _createFallbackMetrics(charCode, targetCellWidth, targetCellHeight);
     }
 
     paragraph?.dispose();
     return metrics;
   }
-  
-  GlyphMetrics _createFallbackMetrics(int charCode, int targetCellWidth, int targetCellHeight) {
+
+  GlyphMetrics _createFallbackMetrics(
+      int charCode, int targetCellWidth, int targetCellHeight) {
     final estimatedWidth = fontSize * 0.6;
     return GlyphMetrics(
       charCode: charCode,
@@ -227,17 +236,18 @@ class GlyphMetricsExtractor {
 class GlyphRenderer {
   final String fontFamily;
   final AtlasConfig config;
-  
+
   GlyphRenderer({required this.fontFamily, required this.config});
 
   Future<Uint8List> renderGlyphs(int renderFontSize) async {
-
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
 
-    final cellSize = renderFontSize + (config.sdfPadding * config.renderScale.toDouble());
+    final cellSize =
+        renderFontSize + (config.sdfPadding * config.renderScale.toDouble());
 
-    final canvasSize = Offset(cellSize * config.gridCols, cellSize * config.gridRows);
+    final canvasSize =
+        Offset(cellSize * config.gridCols, cellSize * config.gridRows);
 
     canvas.drawRect(
       Rect.fromPoints(Offset.zero, canvasSize),
@@ -255,7 +265,8 @@ class GlyphRenderer {
           text: String.fromCharCode(charCode),
           style: TextStyle(
             fontFamily: fontFamily.split("%").first,
-            fontStyle: ui.FontStyle.values.firstWhere((it) => it.name == fontFamily.split("%").last),
+            fontStyle: ui.FontStyle.values
+                .firstWhere((it) => it.name == fontFamily.split("%").last),
             fontSize: renderFontSize.toDouble(),
             color: Colors.black,
             fontWeight: FontWeight.w200,
@@ -269,12 +280,16 @@ class GlyphRenderer {
       final paddingLeft = (cellSize - textPainter.width) / 2;
       final paddingTop = (cellSize - textPainter.height) / 2;
 
-      textPainter.paint(canvas, Offset(paddingLeft + (col * cellSize), paddingTop + (row * cellSize)));
+      textPainter.paint(
+          canvas,
+          Offset(
+              paddingLeft + (col * cellSize), paddingTop + (row * cellSize)));
     }
 
     // Convert to image
     final picture = recorder.endRecording();
-    final image = await picture.toImage(canvasSize.dx.toInt(), canvasSize.dy.toInt());
+    final image =
+        await picture.toImage(canvasSize.dx.toInt(), canvasSize.dy.toInt());
 
     final result = await getBytes(image);
 
@@ -285,7 +300,9 @@ class GlyphRenderer {
 
   Future<Uint8List> getBytes(ui.Image image) async {
     final byteData = Uint8List(image.width * image.height * 4);
-    final decoded = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))?.buffer.asUint8List();
+    final decoded = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))
+        ?.buffer
+        .asUint8List();
 
     return decoded ?? byteData;
   }

@@ -7,7 +7,8 @@ class NdcLabelSpace {
 
   NdcLabelSpace({double gridSize = 0.1}) : _gridSize = gridSize;
 
-  bool tryOccupy(LabelSpaceBox box, {bool simulate = false, bool canExceedTileBounds = true}) {
+  bool tryOccupy(LabelSpaceBox box,
+      {bool simulate = false, bool canExceedTileBounds = true}) {
     if (!canExceedTileBounds && doesExceedTileBounds(box)) {
       return false;
     }
@@ -114,7 +115,8 @@ class NdcLabelSpace {
     final points = [box.p1, box.p2, box.p3, box.p4, box.p1]; // Close the loop
 
     for (int i = 0; i < 4; i++) {
-      final edge = Point(points[i + 1].x - points[i].x, points[i + 1].y - points[i].y);
+      final edge =
+          Point(points[i + 1].x - points[i].x, points[i + 1].y - points[i].y);
       final length = sqrt(edge.x * edge.x + edge.y * edge.y);
 
       if (length > 0) {
@@ -167,7 +169,8 @@ class NdcLabelSpace {
     };
   }
 
-  bool doesExceedTileBounds(LabelSpaceBox box) => box.points.any((p) => p.x < -1.0 || p.x > 1.0 || p.y < -1.0 || p.y > 1.0);
+  bool doesExceedTileBounds(LabelSpaceBox box) =>
+      box.points.any((p) => p.x < -1.0 || p.x > 1.0 || p.y < -1.0 || p.y > 1.0);
 }
 
 class _Projection {
@@ -185,7 +188,7 @@ class LabelSpaceBox {
 
   late final Rect aabb;
 
-  List<Point<double>> get points  => [p1, p2, p3, p4];
+  List<Point<double>> get points => [p1, p2, p3, p4];
 
   LabelSpaceBox(this.p1, this.p2, this.p3, this.p4) {
     final points = [p1, p2, p3, p4];
@@ -193,16 +196,17 @@ class LabelSpaceBox {
     final xs = points.map((p) => p.x);
     final ys = points.map((p) => p.y);
 
-    aabb = Rect.fromLTRB(xs.reduce(min), ys.reduce(min), xs.reduce(max), ys.reduce(max));
+    aabb = Rect.fromLTRB(
+        xs.reduce(min), ys.reduce(min), xs.reduce(max), ys.reduce(max));
   }
 
-  static LabelSpaceBox create(Rect size, double rotation, Point<double> fulcrum) {
-
+  static LabelSpaceBox create(
+      Rect size, double rotation, Point<double> fulcrum) {
     final corners = [
-      Point(size.left, size.top),     // Top-left
-      Point(size.right, size.top),    // Top-right
+      Point(size.left, size.top), // Top-left
+      Point(size.right, size.top), // Top-right
       Point(size.right, size.bottom), // Bottom-right
-      Point(size.left, size.bottom),  // Bottom-left
+      Point(size.left, size.bottom), // Bottom-left
     ];
 
     final rotatedCorners = corners.map((corner) {
@@ -219,7 +223,6 @@ class LabelSpaceBox {
 
   static Point<double> _rotatePointAroundFulcrum(
       Point<double> point, Point<double> fulcrum, double rotation) {
-
     final cosine = cos(rotation);
     final sine = sin(rotation);
 
@@ -234,5 +237,4 @@ class LabelSpaceBox {
       rotatedY + fulcrum.y,
     );
   }
-
 }

@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -17,12 +15,12 @@ class SdfRenderer {
   SdfRenderer(this.atlasConfig, this.cellSize);
 
   static final _vertices = Float32List.fromList([
-    -1, -1,
+    -1, -1, // maintain formatting
     1, -1,
-    -1,  1,
+    -1, 1,
     1, -1,
     1, 1,
-    -1,  1,
+    -1, 1,
   ]);
 
   gpu.Texture renderToSDF(Uint8List glyphs) {
@@ -31,11 +29,14 @@ class SdfRenderer {
 
     final transientBuffer = gpu.gpuContext.createHostBuffer();
 
-    final uniformBufferView = transientBuffer.emplace(
-        Float32List.fromList([atlasWidth.toDouble(), atlasHeight.toDouble(), atlasConfig.sdfRadius.toDouble()]).buffer.asByteData()
-    );
+    final uniformBufferView = transientBuffer.emplace(Float32List.fromList([
+      atlasWidth.toDouble(),
+      atlasHeight.toDouble(),
+      atlasConfig.sdfRadius.toDouble()
+    ]).buffer.asByteData());
 
-    final vertexBuffer = gpu.gpuContext.createDeviceBufferWithCopy(ByteData.sublistView(_vertices));
+    final vertexBuffer = gpu.gpuContext
+        .createDeviceBufferWithCopy(ByteData.sublistView(_vertices));
 
     final vertexBufferView = gpu.BufferView(
       vertexBuffer,
@@ -43,29 +44,56 @@ class SdfRenderer {
       lengthInBytes: _vertices.buffer.lengthInBytes,
     );
 
-    final inputTexture = gpu.gpuContext.createTexture(gpu.StorageMode.hostVisible, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
+    final inputTexture = gpu.gpuContext.createTexture(
+        gpu.StorageMode.hostVisible, atlasWidth, atlasHeight,
+        format: gpu.PixelFormat.r8g8b8a8UNormInt);
     inputTexture.overwrite(ByteData.sublistView(glyphs));
 
-    final intermediateTexture = gpu.gpuContext.createTexture(gpu.StorageMode.devicePrivate, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
-    final outputTexture = gpu.gpuContext.createTexture(gpu.StorageMode.devicePrivate, atlasWidth, atlasHeight, format: gpu.PixelFormat.r8g8b8a8UNormInt);
+    final intermediateTexture = gpu.gpuContext.createTexture(
+        gpu.StorageMode.devicePrivate, atlasWidth, atlasHeight,
+        format: gpu.PixelFormat.r8g8b8a8UNormInt);
+    final outputTexture = gpu.gpuContext.createTexture(
+        gpu.StorageMode.devicePrivate, atlasWidth, atlasHeight,
+        format: gpu.PixelFormat.r8g8b8a8UNormInt);
 
-    _draw(inputTexture, intermediateTexture, uniformBufferView, vertexBufferView, shaderLibrary["SdfBasicVertex"]!, shaderLibrary["SdfFragmentA"]!);
-    _draw(intermediateTexture, outputTexture, uniformBufferView, vertexBufferView,  shaderLibrary["SdfBasicVertex"]!, shaderLibrary["SdfFragmentB"]!);
+    _draw(
+        inputTexture,
+        intermediateTexture,
+        uniformBufferView,
+        vertexBufferView,
+        shaderLibrary["SdfBasicVertex"]!,
+        shaderLibrary["SdfFragmentA"]!);
+    _draw(
+        intermediateTexture,
+        outputTexture,
+        uniformBufferView,
+        vertexBufferView,
+        shaderLibrary["SdfBasicVertex"]!,
+        shaderLibrary["SdfFragmentB"]!);
 
     return outputTexture;
   }
 
-
-  void _draw(gpu.Texture input, gpu.Texture output, gpu.BufferView uniform, gpu.BufferView vertices, gpu.Shader vertexShader, gpu.Shader fragmentShader) {
+  void _draw(
+      gpu.Texture input,
+      gpu.Texture output,
+      gpu.BufferView uniform,
+      gpu.BufferView vertices,
+      gpu.Shader vertexShader,
+      gpu.Shader fragmentShader) {
     final commandBuffer = gpu.gpuContext.createCommandBuffer();
-    
+
     final renderTarget = gpu.RenderTarget.singleColor(
-      gpu.ColorAttachment(texture: output, clearValue: Vector4(0, 0, 0, 0), loadAction: gpu.LoadAction.clear),
+      gpu.ColorAttachment(
+          texture: output,
+          clearValue: Vector4(0, 0, 0, 0),
+          loadAction: gpu.LoadAction.clear),
     );
 
     final renderPass = commandBuffer.createRenderPass(renderTarget);
 
-    final pipeline = gpu.gpuContext.createRenderPipeline(vertexShader, fragmentShader);
+    final pipeline =
+        gpu.gpuContext.createRenderPipeline(vertexShader, fragmentShader);
     renderPass.bindPipeline(pipeline);
 
     renderPass.bindVertexBuffer(vertices, _vertices.length ~/ 2);
@@ -77,8 +105,7 @@ class SdfRenderer {
     renderPass.bindUniform(uniformSlot, uniform);
 
     renderPass.draw();
-    
+
     commandBuffer.submit();
   }
 }
-

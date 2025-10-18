@@ -61,7 +61,7 @@ class TextLayoutCalculator {
   }
 
   ({double fontScale, double canvasScale, double scaling, double lineHeight})
-  calculateScaling(int fontSize, int canvasSize) {
+      calculateScaling(int fontSize, int canvasSize) {
     final fontScale = 15 * fontSize / atlasSet.fontSize;
     final canvasScale = 2 / canvasSize;
     final scaling = fontScale * canvasScale;
@@ -92,19 +92,11 @@ class TextLayoutCalculator {
     final halfSizeY = (boundingBox.sizeY / (2 * zoomScaleFactor));
 
     if (anchorType == LayoutAnchor.top) {
-      return Rect.fromLTRB(
-          anchor.dx - halfSizeX,
-          -anchor.dy,
-          anchor.dx + halfSizeX,
-          -anchor.dy + boundingBox.sizeY
-      );
+      return Rect.fromLTRB(anchor.dx - halfSizeX, -anchor.dy,
+          anchor.dx + halfSizeX, -anchor.dy + boundingBox.sizeY);
     } else {
-      return Rect.fromLTRB(
-          anchor.dx - halfSizeX,
-          -anchor.dy - halfSizeY,
-          anchor.dx + halfSizeX,
-          -anchor.dy + halfSizeY
-      );
+      return Rect.fromLTRB(anchor.dx - halfSizeX, -anchor.dy - halfSizeY,
+          anchor.dx + halfSizeX, -anchor.dy + halfSizeY);
     }
   }
 }

@@ -33,10 +33,10 @@ class AtlasID {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is AtlasID &&
-              runtimeType == other.runtimeType &&
-              font == other.font &&
-              chars == other.chars;
+      other is AtlasID &&
+          runtimeType == other.runtimeType &&
+          font == other.font &&
+          chars == other.chars;
 
   @override
   int get hashCode => Object.hash(font, chars);
@@ -51,17 +51,16 @@ class AtlasID {
   }
 }
 
-
 class GlyphMetrics {
   final int charCode;
-  final int width;          // Cell width (atlas cell dimensions)
-  final int height;         // Cell height (atlas cell dimensions)
-  final int glyphWidth;     // Actual glyph width
-  final int glyphHeight;    // Actual glyph height
-  final int glyphTop;       // Distance from baseline to top of glyph
-  final int glyphLeft;      // Left offset within the cell
+  final int width; // Cell width (atlas cell dimensions)
+  final int height; // Cell height (atlas cell dimensions)
+  final int glyphWidth; // Actual glyph width
+  final int glyphHeight; // Actual glyph height
+  final int glyphTop; // Distance from baseline to top of glyph
+  final int glyphLeft; // Left offset within the cell
   final double glyphAdvance; // Horizontal advance (can be fractional)
-  
+
   GlyphMetrics({
     required this.charCode,
     required this.width,
@@ -72,7 +71,7 @@ class GlyphMetrics {
     required this.glyphLeft,
     required this.glyphAdvance,
   });
-  
+
   Map<String, dynamic> toJson() {
     return {
       'width': width,
@@ -84,7 +83,7 @@ class GlyphMetrics {
       'glyphAdvance': glyphAdvance,
     };
   }
-  
+
   factory GlyphMetrics.fromJson(int charCode, Map<String, dynamic> json) {
     return GlyphMetrics(
       charCode: charCode,
@@ -111,7 +110,6 @@ class CharacterUV {
 }
 
 class GlyphAtlas {
-
   final AtlasID atlasID;
   final int atlasWidth;
   final int atlasHeight;
@@ -144,7 +142,6 @@ class GlyphAtlas {
 
   AtlasID get id => atlasID;
 
-
   CharacterUV getCharacterUV(int charCode) {
     final charIndex = atlasID.chars.codeUnits.indexOf(charCode);
     if (charIndex == -1) {
@@ -153,20 +150,20 @@ class GlyphAtlas {
 
     final col = charIndex % gridCols;
     final row = charIndex ~/ gridCols;
-    
+
     final x1 = col * cellWidth;
     final y1 = row * cellHeight;
     final x2 = x1 + cellWidth;
     final y2 = y1 + cellHeight;
-    
+
     // Convert to UV coordinates (0.0 to 1.0)
     final u1 = x1 / atlasWidth;
     final v1 = y1 / atlasHeight;
     final u2 = x2 / atlasWidth;
     final v2 = y2 / atlasHeight;
-    
+
     return CharacterUV(u1: u1, v1: v1, u2: u2, v2: v2);
   }
-  
+
   GlyphMetrics? getGlyphMetrics(int charCode) => glyphMetrics[charCode];
 }

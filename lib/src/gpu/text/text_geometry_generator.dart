@@ -12,11 +12,9 @@ class GeometryBatch {
 
   GeometryBatch(this.textureID, this.color, this.haloColor);
 
-  bool matches(GeometryBatch other) => (
-      textureID == other.textureID &&
+  bool matches(GeometryBatch other) => (textureID == other.textureID &&
       color == other.color &&
-      haloColor == other.haloColor
-  );
+      haloColor == other.haloColor);
 }
 
 class TextGeometryGenerator {
@@ -24,7 +22,8 @@ class TextGeometryGenerator {
 
   TextGeometryGenerator(this.atlasSet);
 
-  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})? generateGeometry({
+  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})?
+      generateGeometry({
     required List<String> lines,
     required List<double> lineWidths,
     required String fontFamily,
@@ -52,9 +51,7 @@ class TextGeometryGenerator {
         final textureID = atlas.atlasID.hashCode;
 
         final tempBatch = tempBatches.putIfAbsent(
-          textureID,
-          () => GeometryBatch(textureID, color, haloColor)
-        );
+            textureID, () => GeometryBatch(textureID, color, haloColor));
 
         final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
         offsetX -= glyphMetrics.glyphLeft * scaling;
@@ -96,8 +93,12 @@ class TextGeometryGenerator {
         ]);
 
         tempBatch.indices.addAll([
-          tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 1,
-          tempBatch.vertexOffset + 2, tempBatch.vertexOffset + 0, tempBatch.vertexOffset + 3,
+          tempBatch.vertexOffset + 0,
+          tempBatch.vertexOffset + 2,
+          tempBatch.vertexOffset + 1,
+          tempBatch.vertexOffset + 2,
+          tempBatch.vertexOffset + 0,
+          tempBatch.vertexOffset + 3,
         ]);
 
         final advance = scaling * glyphMetrics.glyphAdvance;
