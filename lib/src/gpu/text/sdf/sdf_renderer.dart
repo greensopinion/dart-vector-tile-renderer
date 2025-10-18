@@ -1,11 +1,10 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:vector_math/vector_math.dart';
-import 'atlas_generator.dart';
 
 import '../../shaders.dart';
+import 'atlas_generator.dart';
 
 class SdfRenderer {
   final AtlasConfig atlasConfig;

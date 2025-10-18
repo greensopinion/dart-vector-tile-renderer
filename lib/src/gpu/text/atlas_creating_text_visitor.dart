@@ -1,12 +1,11 @@
 import 'dart:ui';
 
-import 'sdf/atlas_generator.dart';
-import 'sdf/glyph_atlas_data.dart';
-
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/style.dart';
+import 'sdf/atlas_generator.dart';
+import 'sdf/glyph_atlas_data.dart';
 
 class AtlasCreatingTextVisitor extends LayerVisitor {
   final AtlasGenerator atlasGenerator;
