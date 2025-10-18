@@ -31,6 +31,18 @@ CI with GitHub Actions:
 
 Many thanks to [the contributors](https://github.com/greensopinion/dart-vector-tile-renderer/graphs/contributors) who helped to improve this library.
 
+## Sponsorship
+
+<a href="https://github.com/EpicRideWeather" target="_blank">
+  <img
+    src="https://www.epicrideweather.com/images/epic-logo-r.svg"
+    alt="Epic Ride Weather logo"
+    width="64px"
+  />
+</a>
+
+Development of this library is supported by [Epic Ride Weather](https://epicrideweather.com), the app that helps cyclists beat the rain and cheat the wind.
+
 ## License
 
 Copyright 2021 David Green
