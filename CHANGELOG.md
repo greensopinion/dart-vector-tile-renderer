@@ -1,3 +1,7 @@
+## 7.0.0+beta.1
+
+Render tiles using the GPU via `flutter_gpu` APIs.
+
 ## 6.0.0
 
 * add `raster-resampling` to raster layer
