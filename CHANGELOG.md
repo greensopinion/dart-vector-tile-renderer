@@ -1,4 +1,4 @@
-## 7.0.0+beta.1
+## 7.0.0-beta.1
 
 Render tiles using the GPU via `flutter_gpu` APIs.
 

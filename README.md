@@ -4,6 +4,13 @@ A vector tile renderer for use in creating map tile images or writing to a canva
 Written in Dart to enable use of vector tiles with Flutter.
 
 Looking for a flutter map widget that uses vector tiles? Take a look at [vector_map_tiles](https://github.com/greensopinion/flutter-vector-map-tiles)
+
+## Version 7.0.0-beta
+
+Version 7.0.0 depends on `flutter_gpu` and the Flutter development channel, which are pre-release software and can change at any time. See details on the [official Flutter GPU page](https://github.com/flutter/engine/blob/main/docs/impeller/Flutter-GPU.md).
+
+For production apps, use version 6.0 of this library.
+
 ## Example
 
 An example of output:
