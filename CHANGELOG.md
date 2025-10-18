@@ -2,6 +2,8 @@
 
 Render tiles using the GPU via `flutter_gpu` APIs.
 
+See details at [vector_map_tiles](https://github.com/greensopinion/flutter-vector-map-tiles)
+
 ## 6.0.0
 
 * add `raster-resampling` to raster layer

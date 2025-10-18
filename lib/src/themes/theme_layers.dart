@@ -1,10 +1,9 @@
 import 'dart:ui';
 
-import '../gpu/color_extension.dart';
-
 import '../constants.dart';
 import '../context.dart';
 import '../features/tile_space_mapper.dart';
+import '../gpu/color_extension.dart';
 import '../model/tile_model.dart';
 import '../tileset.dart';
 import 'expression/expression.dart';

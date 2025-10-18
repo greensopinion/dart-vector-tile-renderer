@@ -4,9 +4,9 @@ import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/sdf_renderer.dart';
-import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
+import 'atlas_provider.dart';
+import 'sdf_renderer.dart';
+import '../../texture_provider.dart';
 import 'glyph_atlas_data.dart';
 
 class AtlasGenerator {

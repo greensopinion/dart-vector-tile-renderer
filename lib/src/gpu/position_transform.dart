@@ -15,7 +15,7 @@ vm.Matrix4 tileTransformMatrix(
   final yScale = position.height / canvasSize.height;
 
   return vm.Matrix4.identity()
-    ..scale(xScale, yScale, 1.0)
+    ..scaleByDouble(xScale, yScale, 1.0, 1.0)
     ..rotateZ(pi * -rotation / 180)
-    ..translate(ndcX / xScale, ndcY / yScale, 0.0);
+    ..translateByDouble(ndcX / xScale, ndcY / yScale, 0.0, 1.0);
 }

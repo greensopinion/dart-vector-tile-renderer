@@ -112,6 +112,7 @@ abstract class _LayerGroup {
   void render(Context context, Canvas canvas, Size size);
 }
 
+// ignore: unused_element
 class _GpuLayerGroup extends _LayerGroup {
   TilesRenderer? renderer;
 

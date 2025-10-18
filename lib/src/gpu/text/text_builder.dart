@@ -1,18 +1,17 @@
 import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
-import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
-import '../../features/extensions.dart';
+import '../../model/geometry_model.dart';
 import '../../themes/style.dart';
-import 'ndc_label_space.dart';
-import 'text_layout_calculator.dart';
-import 'text_geometry_generator.dart';
-import 'line_position_finder.dart';
-import 'label_space_validator.dart';
+import '../tile_render_data.dart';
 import 'batch_manager.dart';
+import 'label_space_validator.dart';
+import 'line_position_finder.dart';
+import 'ndc_label_space.dart';
+import 'sdf/glyph_atlas_data.dart';
+import 'text_geometry_generator.dart';
+import 'text_layout_calculator.dart';
 
 class _LayoutResult {
   final List<String> lines;

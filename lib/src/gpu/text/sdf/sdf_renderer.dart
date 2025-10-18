@@ -3,8 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
-import 'package:vector_tile_renderer/src/image_to_png.dart';
+import 'atlas_generator.dart';
 
 import '../../shaders.dart';
 

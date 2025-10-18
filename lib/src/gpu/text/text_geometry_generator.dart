@@ -1,5 +1,5 @@
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
+import 'sdf/glyph_atlas_data.dart';
 import 'text_layout_calculator.dart';
 
 class GeometryBatch {

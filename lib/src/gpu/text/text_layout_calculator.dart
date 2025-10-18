@@ -1,6 +1,6 @@
 import 'dart:ui';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
-import 'package:vector_tile_renderer/src/themes/style.dart';
+import 'sdf/glyph_atlas_data.dart';
+import '../../themes/style.dart';
 import '../../features/text_wrapper.dart';
 
 class BoundingBox {

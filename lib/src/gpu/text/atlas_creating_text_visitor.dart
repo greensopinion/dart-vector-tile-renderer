@@ -1,8 +1,7 @@
-import 'dart:math';
 import 'dart:ui';
 
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
+import 'sdf/atlas_generator.dart';
+import 'sdf/glyph_atlas_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../themes/expression/expression.dart';

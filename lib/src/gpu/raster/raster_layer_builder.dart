@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
-import 'raster_material.dart';
-import 'raster_geometry.dart';
 
 import '../../../vector_tile_renderer.dart';
+import 'raster_geometry.dart';
+import 'raster_material.dart';
 
 class RasterLayerBuilder {
   void build(Node parent, ByteData packedTileKey, ByteData packedPaintModel,

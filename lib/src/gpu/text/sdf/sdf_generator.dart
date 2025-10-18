@@ -1,5 +1,5 @@
-import 'dart:typed_data';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 /// Generates a Signed Distance Field (SDF) from a bitmap using the Felzenszwalb/Huttenlocher
 /// distance transform algorithm. This creates smooth gradients for text rendering.

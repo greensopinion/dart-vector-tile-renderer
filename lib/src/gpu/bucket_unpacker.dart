@@ -1,19 +1,15 @@
-import 'dart:typed_data';
-
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
-import 'package:vector_tile_renderer/src/gpu/raster/raster_material.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
-import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
-import 'package:vector_tile_renderer/src/tileset_raster.dart';
 
+import '../tileset_raster.dart';
 import 'background/background_geometry.dart';
 import 'colored_material.dart';
 import 'line/line_geometry.dart';
 import 'line/line_material.dart';
 import 'polygon/polygon_geometry.dart';
+import 'raster/raster_layer_builder.dart';
+import 'text/text_geometry.dart';
+import 'text/text_material.dart';
+import 'texture_provider.dart';
 import 'tile_render_data.dart';
 
 class BucketUnpacker {

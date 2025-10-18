@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
+import '../texture_provider.dart';
 
 import '../shaders.dart';
 import '../tile_render_data.dart';

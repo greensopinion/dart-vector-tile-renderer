@@ -1,9 +1,11 @@
 import 'dart:typed_data';
+
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
-import 'package:vector_tile_renderer/src/gpu/utils.dart';
+
+import '../bucket_unpacker.dart';
+import '../tile_render_data.dart';
+import '../utils.dart';
+import 'text_geometry.dart';
 import 'text_geometry_generator.dart';
 
 class BatchManager {
@@ -34,7 +36,7 @@ class BatchManager {
       existingBatch.vertices.addAll(newBatch.vertices);
       existingBatch.indices.addAll(adjustedIndices);
       existingBatch.vertexOffset +=
-          newBatch.vertices.length ~/ TextGeometry.VERTEX_SIZE;
+          newBatch.vertices.length ~/ TextGeometry.vertexSize;
     }
   }
 

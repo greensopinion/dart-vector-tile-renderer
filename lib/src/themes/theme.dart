@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:vector_math/vector_math.dart';
 
 import '../../vector_tile_renderer.dart';

@@ -2,12 +2,10 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/features/text_abbreviator.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../../features/symbol_rotation.dart';
+import '../../features/text_abbreviator.dart';
 import '../../model/geometry_model.dart';
 import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
@@ -15,7 +13,9 @@ import '../../themes/style.dart';
 import '../bucket_unpacker.dart';
 import '../color_extension.dart';
 import '../line/line_geometry_builder.dart';
+import '../tile_render_data.dart';
 import 'ndc_label_space.dart';
+import 'sdf/glyph_atlas_data.dart';
 import 'text_builder.dart';
 
 class TextLayerVisitor {
@@ -110,6 +110,7 @@ class TextLayerVisitor {
     renderData.addMeshes(textBuilder.getMeshes());
   }
 
+  // ignore: unused_element
   void _renderDebugTextLines(TileLine? line, TileRenderData renderData) {
     if (line != null) {
       final builder = LineGeometryBuilder();

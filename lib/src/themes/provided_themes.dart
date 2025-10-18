@@ -1,6 +1,5 @@
-import 'light_theme.dart';
-
 import '../logger.dart';
+import 'light_theme.dart';
 import 'theme.dart';
 import 'theme_reader.dart';
 

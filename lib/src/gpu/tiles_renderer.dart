@@ -4,9 +4,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
-import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
+import 'text/sdf/atlas_generator.dart';
+import 'text/sdf/atlas_provider.dart';
+import 'texture_provider.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';

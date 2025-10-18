@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'symbol_rotation.dart';
 
 import '../../vector_tile_renderer.dart';
 import '../context.dart';
@@ -10,6 +9,7 @@ import '../themes/style.dart';
 import 'extensions.dart';
 import 'feature_renderer.dart';
 import 'symbol_layout_extension.dart';
+import 'symbol_rotation.dart';
 import 'text_abbreviator.dart';
 import 'text_renderer.dart';
 import 'text_wrapper.dart';

@@ -1,19 +1,18 @@
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/text/ndc_label_space.dart';
-import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_layer_visitor.dart';
-import 'package:vector_tile_renderer/src/themes/theme_layer_raster.dart';
 
 import '../../vector_tile_renderer.dart';
 import '../themes/expression/expression.dart';
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
+import '../themes/theme_layer_raster.dart';
 import 'bucket_unpacker.dart';
-import 'debug/debug_render_layer.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
+import 'text/ndc_label_space.dart';
+import 'text/sdf/glyph_atlas_data.dart';
+import 'text/text_layer_visitor.dart';
 import 'tile_render_data.dart';
 
 class TilePreRenderer {

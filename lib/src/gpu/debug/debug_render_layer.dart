@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
-import 'package:vector_tile_renderer/src/gpu/text/ndc_label_space.dart';
-import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+import '../bucket_unpacker.dart';
+import '../text/ndc_label_space.dart';
+import '../tile_render_data.dart';
 
 void addDebugRenderLayer(TileRenderData renderData) {
   renderData.addMesh(PackedMesh(_debugGeometry, _debugMaterial));

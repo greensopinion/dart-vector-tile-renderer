@@ -12,8 +12,8 @@ class OrthographicCamera extends Camera {
 
   @override
   Matrix4 getViewTransform(Size dimensions) => Matrix4.identity()
-    ..scale(
-        dimensions.width / scaleFactor, dimensions.height / scaleFactor, 1.0)
+    ..scaleByDouble(dimensions.width / scaleFactor,
+        dimensions.height / scaleFactor, 1.0, 1.0)
     ..rotateZ(rotation * pi / 180);
 
   @override
