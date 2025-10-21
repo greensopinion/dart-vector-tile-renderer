@@ -33,6 +33,16 @@ class Theme {
             .toList(growable: false));
   }
 
+  Tile optimizeTile(Tile original, double zoom) {
+    Set<TileLayer> usedTileLayers = {};
+    for (var layer in layers) {
+      final layerNames = layer.filterTileLayers(original, zoom.toInt());
+      usedTileLayers.addAll(layerNames);
+    }
+
+    return Tile(layers: usedTileLayers.toList());
+  }
+
   bool _matchesZoom(double zoom, ThemeLayer layer) =>
       (zoom >= (layer.minzoom ?? -1)) && (zoom <= (layer.maxzoom ?? 100));
 
@@ -90,4 +100,6 @@ abstract class ThemeLayer {
   void render(Context context);
 
   void accept(VisitorContext context, LayerVisitor visitor);
+
+  Iterable<TileLayer> filterTileLayers(Tile tile, int zoom);
 }
