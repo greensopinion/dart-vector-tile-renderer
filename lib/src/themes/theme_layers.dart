@@ -68,6 +68,11 @@ class DefaultLayer extends ThemeLayer {
 
   @override
   String? get tileSource => selector.tileSelector.source;
+
+  @override
+  Iterable<TileLayer> filterTileLayers(Tile tile, int zoom) {
+    return selector.layerSelector.select(tile.layers, zoom);
+  }
 }
 
 class BackgroundLayer extends ThemeLayer {
@@ -103,4 +108,9 @@ class BackgroundLayer extends ThemeLayer {
 
   @override
   String? get tileSource => null;
+
+  @override
+  Iterable<TileLayer> filterTileLayers(Tile tile, int zoom) {
+    return List.empty();
+  }
 }
