@@ -1,5 +1,11 @@
 
+import 'dart:math';
+
+import 'package:vector_tile_renderer/src/gpu/text/math/polynomial.dart';
+import 'package:vector_tile_renderer/src/gpu/text/math/uniform_spline.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
+
+import 'integral_approximation.dart';
 
 class ParametricUniformSpline {
   final UniformSplineInterpolation splineX;
@@ -10,120 +16,132 @@ class ParametricUniformSpline {
         splineX = UniformSplineInterpolation(points.map((p) => p.x).toList()),
         splineY = UniformSplineInterpolation(points.map((p) => p.y).toList());
 
-  TilePoint interpolate(double t) =>
+  TilePoint valueAt(double t) =>
       TilePoint(splineX.interpolate(t), splineY.interpolate(t));
 
-  TilePoint derivative(double t) =>
+  TilePoint derivativeAt(double t) =>
       TilePoint(splineX.derivative(t), splineY.derivative(t));
+
+  double rotationAt(double t) =>
+      atan2(splineY.derivative(t), splineX.derivative(t));
+
+
+
+  double indexFromSignedDistance(double t0, double distance) {
+    double sign = distance.sign;
+    if (sign != 1 && sign != -1) return t0;
+
+    final int numSegments = splineX.segments.length;
+    double targetDistance = distance.abs();
+
+    int startIndex = t0.floor();
+    int endIndex = sign > 0 ? numSegments - 1 : 0;
+
+    double accumulatedDistance = 0.0;
+    double t = t0;
+    int currentIndex = startIndex;
+
+    while (_shouldContinueIteration(sign, currentIndex, endIndex)) {
+      double nextT = _computeNextBoundary(t, currentIndex, sign, t0, targetDistance);
+      double segmentDistance = signedDistance(t, nextT).abs();
+
+      if (accumulatedDistance + segmentDistance >= targetDistance) {
+        return _findExactParameterByDistance(t0, t, nextT, targetDistance);
+      }
+
+      accumulatedDistance += segmentDistance;
+      t = nextT;
+      currentIndex += sign.toInt();
+    }
+
+    return _getEndpoint(sign, numSegments);
+  }
+
+  bool _shouldContinueIteration(double sign, int currentIndex, int endIndex) {
+    return (sign > 0 && currentIndex <= endIndex) ||
+           (sign < 0 && currentIndex >= endIndex);
+  }
+
+  double _computeNextBoundary(double t, int currentIndex, double sign,
+                               double t0, double targetDistance) {
+    double nextT = sign > 0 ? currentIndex + 1.0 : currentIndex.toDouble();
+
+    bool exceedsTarget = (sign > 0 && nextT > t0 + targetDistance) ||
+                         (sign < 0 && nextT < t0 - targetDistance);
+
+    if (exceedsTarget) {
+      nextT = t + (sign > 0 ? 1 : -1);
+    }
+
+    return nextT;
+  }
+
+  double _findExactParameterByDistance(double t0, double low, double high,
+                                       double targetDistance) {
+    for (int i = 0; i < 20; i++) {
+      double mid = (low + high) / 2;
+      double midDistance = signedDistance(t0, mid).abs();
+
+      if (midDistance < targetDistance) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+
+    return (low + high) / 2;
+  }
+
+  double _getEndpoint(double sign, int numSegments) {
+    return sign > 0 ? numSegments.toDouble() : 0.0;
+  }
+
+
+  double signedDistance(double t0, double t1) {
+    if (t0 == t1) return 0.0;
+
+    final sign = (t1 - t0).sign;
+    final start = min(t0, t1);
+    final stop = max(t0, t1);
+
+    double totalDistance = 0.0;
+    double currentStart = start;
+
+    // Walk through each integer segment between start and stop
+    while (currentStart < stop) {
+      double nextBoundary = currentStart.ceilToDouble();
+      if (nextBoundary == currentStart && nextBoundary < stop) {
+        nextBoundary = currentStart + 1.0;
+      }
+      final currentEnd = min(nextBoundary, stop);
+      totalDistance += _signedDistanceClamped(currentStart, currentEnd);
+      currentStart = currentEnd;
+    }
+
+    return totalDistance * sign;
+  }
+
+  double _signedDistanceClamped(double t0, double t1) {
+    double start = min(t0, t1);
+    double stop = max(t0, t1);
+
+    final sign = (t1 - t0).sign;
+    if (sign != 1 && sign != -1) return 0.0;
+
+    final index = start.toInt();
+    final indexDouble = index.toDouble();
+
+    if (index >= splineX.segments.length || index < 0) return 0.0;
+
+    start = start.clamp(indexDouble, indexDouble + 1);
+    stop = stop.clamp(indexDouble, indexDouble + 1);
+
+    final dxDt = splineX.segments[index].derivative();
+    final dyDt = splineY.segments[index].derivative();
+
+    final speedSquared = Polynomial.sum(dxDt.squared(), dyDt.squared());
+
+    return IntegralApproximation.trapezoidalSqrtFunc(speedSquared, start, stop) * sign;
+  }
 }
 
-
-class UniformSplineInterpolation {
-  final List<double> ys;
-  final List<SplineSegment> segments;
-
-  UniformSplineInterpolation(this.ys)
-      : assert(ys.length >= 2),
-        segments = _computeSegments(ys);
-
-  /// Compute natural cubic spline coefficients with h = 1
-  static List<SplineSegment> _computeSegments(List<double> ys) {
-    final n = ys.length;
-    final alpha = List<double>.filled(n, 0.0);
-
-    for (int i = 1; i < n - 1; i++) {
-      // Simplified because h[i] = 1 for all i
-      alpha[i] = 3 * (ys[i + 1] - 2 * ys[i] + ys[i - 1]);
-    }
-
-    final l = List<double>.filled(n, 0.0);
-    final mu = List<double>.filled(n, 0.0);
-    final z = List<double>.filled(n, 0.0);
-
-    l[0] = 1.0;
-    z[0] = 0.0;
-
-    for (int i = 1; i < n - 1; i++) {
-      l[i] = 4.0 - mu[i - 1];
-      mu[i] = 1.0 / l[i];
-      z[i] = (alpha[i] - z[i - 1]) / l[i];
-    }
-
-    l[n - 1] = 1.0;
-    z[n - 1] = 0.0;
-
-    final c = List<double>.filled(n, 0.0);
-    final b = List<double>.filled(n - 1, 0.0);
-    final d = List<double>.filled(n - 1, 0.0);
-    final a = List<double>.filled(n - 1, 0.0);
-
-    // Backward substitution
-    for (int j = n - 2; j >= 0; j--) {
-      c[j] = z[j] - mu[j] * c[j + 1];
-      b[j] = (ys[j + 1] - ys[j]) - (2 * c[j] + c[j + 1]) / 3.0;
-      d[j] = (c[j + 1] - c[j]) / 3.0;
-      a[j] = ys[j];
-    }
-
-    // Build spline segments
-    final segments = <SplineSegment>[];
-    for (int i = 0; i < n - 1; i++) {
-      segments.add(SplineSegment(
-        cubicCoefficient: d[i],
-        quadraticCoefficient: c[i],
-        linearCoefficient: b[i],
-        constantTerm: a[i],
-      ));
-    }
-    return segments;
-  }
-
-  /// Interpolates a value at parameter t (0 <= t <= n - 1)
-  double interpolate(double t) {
-    if (t <= 0) return ys.first;
-    if (t >= ys.length - 1) return ys.last;
-
-    final i = t.floor();
-    final localT = t - i;
-    return segments[i].evaluate(localT);
-  }
-
-  /// Derivative (slope) at parameter t
-  double derivative(double t) {
-    if (t <= 0) return segments.first.derivative().evaluate(0);
-    if (t >= ys.length - 1) return segments.last.derivative().evaluate(1);
-
-    final i = t.floor();
-    final localT = t - i;
-    return segments[i].derivative().evaluate(localT);
-  }
-}
-
-
-class SplineSegment {
-  final double cubicCoefficient;     // a
-  final double quadraticCoefficient; // b
-  final double linearCoefficient;    // c
-  final double constantTerm;         // d
-
-  const SplineSegment({
-    required this.cubicCoefficient,
-    required this.quadraticCoefficient,
-    required this.linearCoefficient,
-    required this.constantTerm,
-  });
-
-  SplineSegment derivative() {
-    // f'(x) = 3a x² + 2b x + c
-    return SplineSegment(
-      cubicCoefficient: 0.0,
-      quadraticCoefficient: 3 * cubicCoefficient,
-      linearCoefficient: 2 * quadraticCoefficient,
-      constantTerm: linearCoefficient,
-    );
-  }
-
-  double evaluate(double x) =>
-      ((cubicCoefficient * x + quadraticCoefficient) * x + linearCoefficient) * x +
-          constantTerm;
-}
