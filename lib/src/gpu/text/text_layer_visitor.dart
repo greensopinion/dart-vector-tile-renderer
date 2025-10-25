@@ -88,6 +88,15 @@ class TextLayerVisitor {
 
       final fontStyle = symbolLayout.text?.fontStyle ?? FontStyle.normal;
 
+
+      final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);
+
+      if (icon != null && icon.isNotEmpty) {
+        final iconBytes = Uint16List.fromList(icon.codeUnits).buffer.asByteData();
+
+        renderData.addMesh(PackedMesh(PackedGeometry(vertices: ByteData(0), indices: ByteData(0), uniform: iconBytes, type: GeometryType.icon), PackedMaterial(type: MaterialType.icon)));
+      }
+
       textBuilder.addText(
           text: TextAbbreviator().abbreviate(text),
           fontSize: textSize.toInt(),

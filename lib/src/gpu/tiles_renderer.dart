@@ -4,9 +4,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_scene/scene.dart';
-import 'text/sdf/atlas_generator.dart';
-import 'text/sdf/atlas_provider.dart';
-import 'texture_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
+import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';
@@ -23,6 +23,7 @@ class TileId {
 
   TileId({required this.z, required this.x, required this.y});
 
+
   @override
   String toString() => key();
 
@@ -32,15 +33,13 @@ class TileId {
 class TileUiModel {
   final TileId tileId;
   final Rect position;
-  final Tileset tileset;
-  final RasterTileset rasterTileset;
+  final TileSource tileSource;
   final Uint8List? renderData;
 
   TileUiModel(
       {required this.tileId,
       required this.position,
-      required this.tileset,
-      required this.rasterTileset,
+      required this.tileSource,
       required this.renderData});
 }
 
@@ -56,8 +55,7 @@ class TilesRenderer {
   final _positionByKey = <String, Rect>{};
   final AtlasProvider _atlasProvider = AtlasProvider();
   final TextureProvider _textureProvider = TextureProvider();
-  late final _atlasGenerator = AtlasGenerator(
-      atlasProvider: _atlasProvider, textureProvider: _textureProvider);
+  late final _atlasGenerator = AtlasGenerator(atlasProvider: _atlasProvider, textureProvider: _textureProvider);
   Theme theme;
   Scene? _scene;
 
@@ -80,14 +78,11 @@ class TilesRenderer {
     return scene;
   }
 
-  Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID)
-      getPreRenderer() {
+  Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID) getPreRenderer() {
     final atlasProvider = _atlasProvider;
     final view = ui.PlatformDispatcher.instance.views.first;
     final pixelRatio = view.display.devicePixelRatio;
-    return (Theme theme, double zoom, Tileset tileset, String tileID) =>
-        TilePreRenderer().preRender(
-            theme, zoom, tileset, atlasProvider.forTileID(tileID), pixelRatio);
+    return (Theme theme, double zoom, Tileset tileset, String tileID) => TilePreRenderer().preRender(theme, zoom, tileset, atlasProvider.forTileID(tileID), pixelRatio);
   }
 
   Future preRenderUi(double zoom, Tileset tileset, String tileID) async {
@@ -110,11 +105,9 @@ class TilesRenderer {
         node = Node(name: key);
         final renderData = model.renderData;
         if (renderData == null) {
-          throw Exception(
-              "no render data for tile ${model.tileId}, did you call preRender?");
+          throw Exception("no render data for tile ${model.tileId}, did you call preRender?");
         }
-        BucketUnpacker(_textureProvider, model.rasterTileset)
-            .unpackOnto(node, TileRenderData.unpack(renderData));
+        BucketUnpacker(_textureProvider, model.tileSource).unpackOnto(node, TileRenderData.unpack(renderData));
       }
       _positionByKey[key] = model.position;
       scene.add(node);
@@ -147,5 +140,6 @@ class TilesRenderer {
     return scene;
   }
 
-  void dispose() {}
+  void dispose() {
+  }
 }
