@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/icon/icon_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_material.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
@@ -40,10 +41,40 @@ class BucketUnpacker {
         final spriteName = String.fromCharCodes(uint16View);
 
         final sprite = tileSource.spriteIndex?.spriteByName[spriteName];
-        final atlas = tileSource.spriteAtlas;
+        final atlas = tileSource.spriteTexture;
 
         if (sprite != null && atlas != null) {
-          print(spriteName);
+
+          const tileSize = 256;
+
+          final u0 = sprite.x / atlas.width;
+          final v0 = (sprite.y + sprite.height) / atlas.height;
+          final u1 = (sprite.x + sprite.width) / atlas.width;
+          final v1 = sprite.y / atlas.height;
+
+          double scale = (sprite.pixelRatio == 1 ? 1 : 1 / sprite.pixelRatio) / tileSize;
+
+          final width = sprite.width * scale;
+          final height = sprite.height * scale;
+
+          final x0 = 0.0;
+          final y0 = 0.0;
+
+          final x1 = x0 + width;
+          final y1 = y0 + height;
+
+          final vertices = Float32List.fromList([
+            x0, y0, 0.0, u0, v0,
+            x1, y0, 0.0, u1, v0,
+            x1, y1, 0.0, u1, v1,
+            x0, y1, 0.0, u0, v1
+          ]);
+
+          final geom = IconGeometry(vertices);
+          final mat = RasterMaterial(colorTexture: atlas, resampling: 1.0);
+
+          parent.addMesh(Mesh(geom, mat));
+
         }
       } else {
         parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));

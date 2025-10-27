@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter_gpu/gpu.dart';
+
 import 'themes/sprite.dart';
 import 'tileset.dart';
 import 'tileset_raster.dart';
@@ -20,9 +22,21 @@ class TileSource {
   /// If absent, sprites are ignored when rendering.
   final Image? spriteAtlas;
 
+  late final Texture? spriteTexture;
+
   TileSource(
       {required this.tileset,
       this.spriteIndex,
       this.spriteAtlas,
-      this.rasterTileset = const RasterTileset(tiles: {})});
+      this.rasterTileset = const RasterTileset(tiles: {})}) {
+    if (spriteAtlas == null) {
+      spriteTexture = null;
+    } else {
+      spriteTexture = gpuContext.createTexture(StorageMode.hostVisible, spriteAtlas!.width, spriteAtlas!.height);
+
+      spriteAtlas!.toByteData().then((it) {
+        if (it != null) { spriteTexture?.overwrite(it); }
+      });
+    }
+  }
 }
