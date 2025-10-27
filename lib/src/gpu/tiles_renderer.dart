@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
+import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_generator.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
@@ -59,6 +60,8 @@ class TilesRenderer {
   Theme theme;
   Scene? _scene;
 
+  final Map<ui.Image, Texture> symbolAtlases = {};
+
   TilesRenderer(this.theme) {
     if (!_initializer.isCompleted) {
       Scene.initializeStaticResources().then((_) {
@@ -107,7 +110,10 @@ class TilesRenderer {
         if (renderData == null) {
           throw Exception("no render data for tile ${model.tileId}, did you call preRender?");
         }
-        BucketUnpacker(_textureProvider, model.tileSource).unpackOnto(node, TileRenderData.unpack(renderData));
+
+        final sprites = _getSpritesTexture(model.tileSource.spriteAtlas);
+
+        BucketUnpacker(_textureProvider, model.tileSource, sprites).unpackOnto(node, TileRenderData.unpack(renderData));
       }
       _positionByKey[key] = model.position;
       scene.add(node);
@@ -132,6 +138,22 @@ class TilesRenderer {
     }
     scene.render(OrthographicCamera(pixelRatio, rotation), canvas,
         viewport: ui.Offset.zero & canvas.getLocalClipBounds().size);
+  }
+
+  _getSpritesTexture(ui.Image? image) {
+    if (image == null) {
+      return null;
+    } else {
+      return symbolAtlases.putIfAbsent(image, () {
+        final spriteTexture = gpuContext.createTexture(StorageMode.hostVisible, image.width, image.height);
+
+        image.toByteData().then((it) {
+          if (it != null) { spriteTexture.overwrite(it); }
+        });
+
+        return spriteTexture;
+      });
+    }
   }
 
   Scene _createScene() {

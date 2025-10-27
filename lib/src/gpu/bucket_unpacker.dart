@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/icon/icon_geometry.dart';
@@ -23,7 +24,9 @@ class BucketUnpacker {
   final TextureProvider textureProvider;
   final TileSource tileSource;
 
-  BucketUnpacker(this.textureProvider, this.tileSource);
+  final Texture? spritesTexture;
+
+  BucketUnpacker(this.textureProvider, this.tileSource, this.spritesTexture);
 
   void unpackOnto(Node parent, TileRenderData bucket) {
     for (var packedMesh in bucket.data) {
@@ -41,16 +44,16 @@ class BucketUnpacker {
         final spriteName = String.fromCharCodes(uint16View);
 
         final sprite = tileSource.spriteIndex?.spriteByName[spriteName];
-        final atlas = tileSource.spriteTexture;
 
-        if (sprite != null && atlas != null) {
+        if (tileSource.spriteAtlas != null && spritesTexture != null && sprite != null) {
+          final texture = spritesTexture!;
 
           const tileSize = 256;
 
-          final u0 = sprite.x / atlas.width;
-          final v0 = (sprite.y + sprite.height) / atlas.height;
-          final u1 = (sprite.x + sprite.width) / atlas.width;
-          final v1 = sprite.y / atlas.height;
+          final u0 = sprite.x / texture.width;
+          final v0 = (sprite.y + sprite.height) / texture.height;
+          final u1 = (sprite.x + sprite.width) / texture.width;
+          final v1 = sprite.y / texture.height;
 
           double scale = (sprite.pixelRatio == 1 ? 1 : 1 / sprite.pixelRatio) / tileSize;
 
@@ -71,7 +74,7 @@ class BucketUnpacker {
           ]);
 
           final geom = IconGeometry(vertices);
-          final mat = RasterMaterial(colorTexture: atlas, resampling: 1.0);
+          final mat = RasterMaterial(colorTexture: texture, resampling: 1.0);
 
           parent.addMesh(Mesh(geom, mat));
 
