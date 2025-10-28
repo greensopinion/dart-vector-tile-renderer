@@ -9,7 +9,7 @@ class IconGeometry extends UnskinnedGeometry {
   Float32List vertices;
 
   IconGeometry(this.vertices) {
-    setVertexShader(shaderLibrary["RasterVertex"]!);
+    setVertexShader(shaderLibrary["IconVertex"]!);
 
     uploadVertexData(
       ByteData.sublistView(vertices),

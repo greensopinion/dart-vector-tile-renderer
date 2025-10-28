@@ -14,6 +14,7 @@ import 'package:vector_tile_renderer/src/tileset_raster.dart';
 import '../../vector_tile_renderer.dart';
 import 'background/background_geometry.dart';
 import 'colored_material.dart';
+import 'icon/icon_material.dart';
 import 'line/line_geometry.dart';
 import 'line/line_material.dart';
 import 'polygon/polygon_geometry.dart';
@@ -34,6 +35,7 @@ class BucketUnpacker {
         RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!, packedMesh.material.uniform!, tileSource.rasterTileset);
       } else if (packedMesh.geometry.type == GeometryType.icon) {
         final uniform = packedMesh.geometry.uniform!;
+        final vtx = packedMesh.geometry.vertices;
 
         final bytes = Uint8List.fromList(uniform.buffer.asUint8List(
           uniform.offsetInBytes,
@@ -60,21 +62,31 @@ class BucketUnpacker {
           final width = sprite.width * scale;
           final height = sprite.height * scale;
 
-          final x0 = 0.0;
-          final y0 = 0.0;
+          final pointBytes = Uint8List.fromList(vtx.buffer.asUint8List(
+            vtx.offsetInBytes,
+            vtx.lengthInBytes,
+          ));
 
-          final x1 = x0 + width;
-          final y1 = y0 + height;
+          final point = pointBytes.buffer.asFloat32List();
+
+          final xA = point[0];
+          final yA = point[1];
+
+          final x0 = - width;
+          final y0 = - height;
+
+          final x1 = width;
+          final y1 = height;
 
           final vertices = Float32List.fromList([
-            x0, y0, 0.0, u0, v0,
-            x1, y0, 0.0, u1, v0,
-            x1, y1, 0.0, u1, v1,
-            x0, y1, 0.0, u0, v1
+            xA, yA, x0, y0, u0, v0,
+            xA, yA, x1, y0, u1, v0,
+            xA, yA, x1, y1, u1, v1,
+            xA, yA, x0, y1, u0, v1
           ]);
 
           final geom = IconGeometry(vertices);
-          final mat = RasterMaterial(colorTexture: texture, resampling: 1.0);
+          final mat = IconMaterial(colorTexture: texture, resampling: 1.0);
 
           parent.addMesh(Mesh(geom, mat));
 

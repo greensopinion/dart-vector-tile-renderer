@@ -133,7 +133,7 @@ class TilesRenderer {
     for (final node in scene.root.children) {
       final position = _positionByKey[node.name];
       if (position != null) {
-        node.localTransform = tileTransformMatrix(position, size, rotation);
+        node.globalTransform = tileTransformMatrix(position, size, rotation);
       }
     }
     scene.render(OrthographicCamera(pixelRatio, rotation), canvas,

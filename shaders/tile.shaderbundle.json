@@ -23,6 +23,14 @@
         "type": "fragment",
         "file": "shaders/vector_tile_renderer$raster.frag"
     },
+    "IconVertex": {
+        "type": "vertex",
+        "file": "shaders/vector_tile_renderer$icon.vert"
+    },
+    "IconFragment": {
+        "type": "fragment",
+        "file": "shaders/vector_tile_renderer$icon.frag"
+    },
     "TextVertex": {
         "type": "vertex",
         "file": "shaders/vector_tile_renderer$text.vert"
