@@ -88,16 +88,7 @@ class TextLayerVisitor {
 
       final fontStyle = symbolLayout.text?.fontStyle ?? FontStyle.normal;
 
-
-      final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);
-
-      if (icon != null && icon.isNotEmpty) {
-        final iconBytes = Uint16List.fromList(icon.codeUnits).buffer.asByteData();
-
-        renderData.addMesh(PackedMesh(PackedGeometry(vertices: ByteData(0), indices: ByteData(0), uniform: iconBytes, type: GeometryType.icon), PackedMaterial(type: MaterialType.icon)));
-      }
-
-      textBuilder.addText(
+      bool success = textBuilder.addText(
           text: TextAbbreviator().abbreviate(text),
           fontSize: textSize.toInt(),
           fontFamily: "$fontFamily%${fontStyle.name}",
@@ -112,6 +103,14 @@ class TextLayerVisitor {
           isLineString: isLineString,
           displayScaleFactor: context.pixelRatio,
           anchorType: anchor);
+
+      final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);
+
+      if (success && icon != null && icon.isNotEmpty && point != null) {
+        final iconBytes = Uint16List.fromList(icon.codeUnits).buffer.asByteData();
+
+        renderData.addMesh(PackedMesh(PackedGeometry(vertices: Float32List.fromList([(point.x / 2048) - 1, 1 - (point.y / 2048)]).buffer.asByteData(), indices: ByteData(0), uniform: iconBytes, type: GeometryType.icon), PackedMaterial(type: MaterialType.icon)));
+      }
 
       // _renderDebugTextLines(line, renderData);
     }

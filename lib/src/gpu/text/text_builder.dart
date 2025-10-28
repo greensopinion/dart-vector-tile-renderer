@@ -1,27 +1,23 @@
 import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
-import '../../model/geometry_model.dart';
+import '../../features/extensions.dart';
 import '../../themes/style.dart';
-import '../tile_render_data.dart';
-import 'batch_manager.dart';
-import 'label_space_validator.dart';
-import 'line_position_finder.dart';
 import 'ndc_label_space.dart';
-import 'sdf/glyph_atlas_data.dart';
-import 'text_geometry_generator.dart';
 import 'text_layout_calculator.dart';
+import 'text_geometry_generator.dart';
+import 'line_position_finder.dart';
+import 'label_space_validator.dart';
+import 'batch_manager.dart';
 
 class _LayoutResult {
   final List<String> lines;
   final List<double> lineWidths;
-  final ({
-    double fontScale,
-    double canvasScale,
-    double scaling,
-    double lineHeight
-  }) scalingData;
+  final ({double fontScale, double canvasScale, double scaling, double lineHeight}) scalingData;
 
   _LayoutResult({
     required this.lines,
@@ -45,7 +41,7 @@ class TextBuilder {
         _spaceValidator = LabelSpaceValidator(TextLayoutCalculator(atlasSet)),
         _batchManager = BatchManager();
 
-  void addText({
+  bool addText({
     required String text,
     required int fontSize,
     required String fontFamily,
@@ -61,13 +57,11 @@ class TextBuilder {
     required double displayScaleFactor,
     required LayoutAnchor anchorType,
   }) {
-    final layoutResult =
-        _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
-    if (layoutResult == null) return;
+    final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
+    if (layoutResult == null) return false;
 
-    final geometryResult =
-        _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
-    if (geometryResult == null) return;
+    final geometryResult = _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
+    if (geometryResult == null) return false;
 
     final position = _determineTextPosition(
       line,
@@ -78,11 +72,17 @@ class TextBuilder {
       canvasSize,
       rotationAlignment,
     );
-    if (position == null) return;
+    if (position == null) return false;
 
-    final validation = _validateLabelSpace(position, geometryResult.boundingBox,
-        labelSpaces, canvasSize, isLineString, anchorType);
-    if (validation == null) return;
+    final validation = _validateLabelSpace(
+      position,
+      geometryResult.boundingBox,
+      labelSpaces,
+      canvasSize,
+      isLineString,
+        anchorType
+    );
+    if (validation == null) return false;
 
     final transformedBatches = _transformAndFinalize(
       geometryResult,
@@ -95,6 +95,7 @@ class TextBuilder {
     );
 
     _batchManager.addBatches(transformedBatches);
+    return true;
   }
 
   _LayoutResult? _calculateLayout(
@@ -105,8 +106,7 @@ class TextBuilder {
     int canvasSize,
   ) {
     final lines = _layoutCalculator.wrapTextLines(text, fontSize, maxWidth);
-    final scalingData =
-        _layoutCalculator.calculateScaling(fontSize, canvasSize);
+    final scalingData = _layoutCalculator.calculateScaling(fontSize, canvasSize);
     final lineWidths = _layoutCalculator.calculateLineWidths(
       lines,
       fontFamily,
@@ -122,8 +122,7 @@ class TextBuilder {
     );
   }
 
-  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})?
-      _generateTextGeometry(
+  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})? _generateTextGeometry(
     _LayoutResult layout,
     String fontFamily,
     Vector4 color,
@@ -220,8 +219,7 @@ class TextBuilder {
       centerOffsetY = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetY;
     }
 
-    final dynamicRotationScale =
-        rotationAlignment == RotationAlignment.viewport ? 1.0 : 0.0;
+    final dynamicRotationScale = rotationAlignment == RotationAlignment.viewport ? 1.0 : 0.0;
     final baseRotation = -LabelSpaceValidator.normalizeToPi(position.rotation);
 
     return _geometryGenerator.transformGeometry(
