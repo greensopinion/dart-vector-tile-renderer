@@ -11,10 +11,18 @@ class IconGeometry extends UnskinnedGeometry {
   IconGeometry(this.vertices) {
     setVertexShader(shaderLibrary["IconVertex"]!);
 
+    final vertexCount = vertices.length ~/ 6;
+
+    final List<int> indices = [];
+
+    for (int i = 0; i < vertexCount; i += 4) {
+      indices.addAll([i, i+ 1, i+ 2, i+ 2, i+ 3, i]);
+    }
+
     uploadVertexData(
       ByteData.sublistView(vertices),
-      4,
-      ByteData.sublistView(Uint16List.fromList([0, 1, 2, 2, 3, 0])),
+      vertexCount,
+      ByteData.sublistView(Uint16List.fromList(indices)),
       indexType: gpu.IndexType.int16,
     );
   }

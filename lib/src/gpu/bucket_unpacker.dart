@@ -14,6 +14,7 @@ import 'package:vector_tile_renderer/src/tileset_raster.dart';
 import '../../vector_tile_renderer.dart';
 import 'background/background_geometry.dart';
 import 'colored_material.dart';
+import 'icon/icon_layer_builder.dart';
 import 'icon/icon_material.dart';
 import 'line/line_geometry.dart';
 import 'line/line_material.dart';
@@ -30,72 +31,23 @@ class BucketUnpacker {
   BucketUnpacker(this.textureProvider, this.tileSource, this.spritesTexture);
 
   void unpackOnto(Node parent, TileRenderData bucket) {
+    final iconBuilder = IconLayerBuilder(tileSource, spritesTexture);
+
     for (var packedMesh in bucket.data) {
       if (packedMesh.geometry.type == GeometryType.raster) {
         RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!, packedMesh.material.uniform!, tileSource.rasterTileset);
       } else if (packedMesh.geometry.type == GeometryType.icon) {
-        final uniform = packedMesh.geometry.uniform!;
-        final vtx = packedMesh.geometry.vertices;
-
-        final bytes = Uint8List.fromList(uniform.buffer.asUint8List(
-          uniform.offsetInBytes,
-          uniform.lengthInBytes,
-        ));
-
-        final uint16View = bytes.buffer.asUint16List();
-        final spriteName = String.fromCharCodes(uint16View);
-
-        final sprite = tileSource.spriteIndex?.spriteByName[spriteName];
-
-        if (tileSource.spriteAtlas != null && spritesTexture != null && sprite != null) {
-          final texture = spritesTexture!;
-
-          const tileSize = 256;
-
-          final u0 = sprite.x / texture.width;
-          final v0 = (sprite.y + sprite.height) / texture.height;
-          final u1 = (sprite.x + sprite.width) / texture.width;
-          final v1 = sprite.y / texture.height;
-
-          double scale = (sprite.pixelRatio == 1 ? 1 : 1 / sprite.pixelRatio) / tileSize;
-
-          final width = sprite.width * scale;
-          final height = sprite.height * scale;
-
-          final pointBytes = Uint8List.fromList(vtx.buffer.asUint8List(
-            vtx.offsetInBytes,
-            vtx.lengthInBytes,
-          ));
-
-          final point = pointBytes.buffer.asFloat32List();
-
-          final xA = point[0];
-          final yA = point[1];
-
-          final x0 = - width;
-          final y0 = - height;
-
-          final x1 = width;
-          final y1 = height;
-
-          final vertices = Float32List.fromList([
-            xA, yA, x0, y0, u0, v0,
-            xA, yA, x1, y0, u1, v0,
-            xA, yA, x1, y1, u1, v1,
-            xA, yA, x0, y1, u0, v1
-          ]);
-
-          final geom = IconGeometry(vertices);
-          final mat = IconMaterial(colorTexture: texture, resampling: 1.0);
-
-          parent.addMesh(Mesh(geom, mat));
-
-        }
+        iconBuilder.add(packedMesh);
       } else {
         parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
       }
     }
+    final icons = iconBuilder.build();
+    if (icons != null) {
+      parent.addMesh(icons);
+    }
   }
+
 
   Material _unpackMaterial(PackedMaterial packed) =>
       _materialConstructors[packed.type.index]!.call(packed, textureProvider);
