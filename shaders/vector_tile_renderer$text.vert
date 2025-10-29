@@ -46,7 +46,7 @@ void main() {
 
     vec3 world_position = vec3(anchor.x + (finalOffset.x / scale), anchor.y + (finalOffset.y / scale), 0.0);
     
-    gl_Position = frame_info.model_transform * vec4(world_position, 1.0);
+    gl_Position = vec4((frame_info.model_transform * vec4(world_position, 1.0)).xy, 0.0, 1.0);
 
     v_texture_coords = uv;
     v_font_size = font_size;

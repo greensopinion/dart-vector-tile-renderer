@@ -52,7 +52,7 @@ void main() {
   vec2 segment_pos = getSegmentPos(curr, next);
   v_position = vec2(segment_pos);
 
-  gl_Position = frame_info.model_transform * vec4(segment_pos, 0.0, 1.0);
+  gl_Position = vec4((frame_info.model_transform * vec4(segment_pos, 0.0, 1.0)).xy, 1.0, 1.0);
 
   v_texture_coords = vec2(offset.x, offset.y * roundness);
 
