@@ -60,6 +60,77 @@ class TextBuilder {
     final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
     if (layoutResult == null) return false;
 
+    final shouldCurveText = line != null &&
+        line.points.length > 2 &&
+        layoutResult.lines.length == 1 &&
+        isLineString &&
+        rotationAlignment == RotationAlignment.map;
+
+    print("shouldCurveText: $shouldCurveText, line: ${line?.points.length} points, layoutLines: ${layoutResult.lines.length}, isLineString: $isLineString, rotationAlignment: $rotationAlignment");
+
+    if (shouldCurveText) {
+      final boundingBox = _geometryGenerator.calculateBoundingBox(
+          lines: layoutResult.lines,
+          lineWidths: layoutResult.lineWidths,
+          fontFamily: fontFamily,
+          scaling: layoutResult.scalingData.scaling,
+          lineHeight: layoutResult.scalingData.lineHeight
+      );
+      print("boundingBox: $boundingBox");
+      if (boundingBox == null) {
+        print("boundingBox is null, returning false");
+        return false;
+      }
+
+      final positionResult = _positionFinder
+          .findBestPosition(
+        line,
+        anchorType,
+        boundingBox,
+        labelSpaces,
+        canvasSize,
+        RotationAlignment.map,
+      );
+      if (positionResult == null) {
+        return false;
+      }
+
+      final res = _geometryGenerator.generateCurvedGeometry(
+        line: line,
+        bestIndex: positionResult.index,
+        lines: layoutResult.lines,
+        lineWidths: layoutResult.lineWidths,
+        fontFamily: fontFamily,
+        scaling: layoutResult.scalingData.scaling,
+        lineHeight: layoutResult.scalingData.lineHeight,
+        color: color,
+        haloColor: haloColor,
+        fontSize: fontSize
+      );
+
+      print("res: $res, batches: ${res?.batches.length}");
+      if (res == null) {
+        print("res is null, returning false");
+        return false;
+      }
+
+      final validation = _validateLabelSpace(
+          (rotation: positionResult.rotation, x: positionResult.point.x, y: positionResult.point.y),
+          res.boundingBox,
+          labelSpaces,
+          canvasSize,
+          isLineString,
+          anchorType
+      );
+      if (validation == null) return false;
+
+      _batchManager.addBatches(res.batches);
+      print("added line text");
+
+      return true;
+    }
+    return false; //fixme only draw new style for easier testing
+
     final geometryResult = _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
     if (geometryResult == null) return false;
 

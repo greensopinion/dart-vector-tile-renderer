@@ -9,7 +9,7 @@ class LinePositionFinder {
 
   LinePositionFinder(this.layoutCalculator);
 
-  ({TilePoint point, double rotation})? findBestPosition(
+  ({TilePoint point, double rotation, int index})? findBestPosition(
     TileLine line,
     LayoutAnchor anchorType,
     BoundingBox boundingBox,
@@ -24,7 +24,7 @@ class LinePositionFinder {
     final textHeight = boundingBox.sizeY;
 
     final midpoint = points.length ~/ 2;
-    ({TilePoint point, double rotation})? bestPosition;
+    ({TilePoint point, double rotation, int index})? bestPosition;
     int maxPassingChecks = 0;
 
     for (int offset = 0; offset <= midpoint + 1; offset++) {
@@ -43,7 +43,7 @@ class LinePositionFinder {
         if (result != null) {
           if (result.passingChecks >= maxPassingChecks) {
             maxPassingChecks = result.passingChecks;
-            bestPosition = (point: result.point, rotation: result.rotation);
+            bestPosition = (point: result.point, rotation: result.rotation, index: lowerIndex);
           }
         }
       }
@@ -65,7 +65,7 @@ class LinePositionFinder {
         if (result != null) {
           if (result.passingChecks >= maxPassingChecks) {
             maxPassingChecks = result.passingChecks;
-            bestPosition = (point: result.point, rotation: result.rotation);
+            bestPosition = (point: result.point, rotation: result.rotation, index: upperIndex);
           }
         }
       }
@@ -82,7 +82,7 @@ class LinePositionFinder {
               midpoint < points.length - 1)
           ? _getLineAngle(points, midpoint)
           : 0.0;
-      return (point: midPoint, rotation: rotation);
+      return (point: midPoint, rotation: rotation, index: midpoint);
     }
 
     return null;

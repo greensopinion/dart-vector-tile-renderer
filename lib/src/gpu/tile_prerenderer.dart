@@ -8,6 +8,7 @@ import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
 import '../themes/theme_layer_raster.dart';
 import 'bucket_unpacker.dart';
+import 'debug/debug_render_layer.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
 import 'text/ndc_label_space.dart';
@@ -24,9 +25,9 @@ class TilePreRenderer {
         _PreRendererLayerVisitor(data, tileset, zoom, atlasSet, pixelRatio);
     visitor.visitAllFeatures(theme);
 
-    // addDebugRenderLayer(data);
+    addDebugRenderLayer(data);
 
-    // renderLabelSpaceBoxes(data, visitor.labelSpaces[0.95]!);
+    renderLabelSpaceBoxes(data, visitor.labelSpaces[0.95]!);
 
     return data.pack();
   }

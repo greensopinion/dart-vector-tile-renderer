@@ -115,13 +115,13 @@ class TextLayerVisitor {
 
 
 
-      if (line != null) {
+      if (line != null && success) {
         final spline = ParametricUniformSpline(line.points);
 
         List<TilePoint> points = [];
 
         for (int i = 0; i < line.points.length * 4; i ++) {
-          points.add(spline.interpolate(i / 4.0));
+          points.add(spline.valueAt(i / 4.0));
         }
 
         _renderDebugTextLines(TileLine(points), renderData);
