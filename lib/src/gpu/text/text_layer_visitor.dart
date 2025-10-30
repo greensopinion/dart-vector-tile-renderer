@@ -14,6 +14,7 @@ import '../bucket_unpacker.dart';
 import '../color_extension.dart';
 import '../line/line_geometry_builder.dart';
 import '../tile_render_data.dart';
+import 'math/parametric_spline.dart';
 import 'ndc_label_space.dart';
 import 'sdf/glyph_atlas_data.dart';
 import 'text_builder.dart';
@@ -110,6 +111,20 @@ class TextLayerVisitor {
         final iconBytes = Uint16List.fromList(icon.codeUnits).buffer.asByteData();
 
         renderData.addMesh(PackedMesh(PackedGeometry(vertices: Float32List.fromList([(point.x / 2048) - 1, 1 - (point.y / 2048)]).buffer.asByteData(), indices: ByteData(0), uniform: iconBytes, type: GeometryType.icon), PackedMaterial(type: MaterialType.icon)));
+      }
+
+
+
+      if (line != null) {
+        final spline = ParametricUniformSpline(line.points);
+
+        List<TilePoint> points = [];
+
+        for (int i = 0; i < line.points.length * 4; i ++) {
+          points.add(spline.interpolate(i / 4.0));
+        }
+
+        _renderDebugTextLines(TileLine(points), renderData);
       }
 
       // _renderDebugTextLines(line, renderData);
