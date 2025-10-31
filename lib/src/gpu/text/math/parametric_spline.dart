@@ -1,5 +1,6 @@
 
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:vector_tile_renderer/src/gpu/text/math/polynomial.dart';
 import 'package:vector_tile_renderer/src/gpu/text/math/uniform_spline.dart';
@@ -122,8 +123,8 @@ class ParametricUniformSpline {
     if (t0 == t1) return 0.0;
 
     final sign = (t1 - t0).sign;
-    final start = min(t0, t1);
-    final stop = max(t0, t1);
+    final start = clampDouble(min(t0, t1), 0.0, splineX.numSegments.toDouble());
+    final stop = clampDouble(max(t0, t1),  0.0, splineX.numSegments.toDouble());
 
     double totalDistance = 0.0;
     double currentStart = start;
