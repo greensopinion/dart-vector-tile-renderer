@@ -221,7 +221,6 @@ class TextGeometryGenerator {
       required Vector4 color,
       Vector4? haloColor,
       required int fontSize}) {
-    print("generateCurvedGeometry: line has ${line.points.length} points, bestIndex: $bestIndex");
     final spline = ParametricUniformSpline.linear(line.points);
 
     final tempBatches = <int, GeometryBatch>{};
@@ -230,10 +229,7 @@ class TextGeometryGenerator {
     final lineText = lines.first;
     final lineWidth = lineWidths.first;
 
-    print("Text: '$lineText', lineWidth: $lineWidth, scaling: $scaling");
-
     double currentDistance = -lineWidth / 2.0;
-    print("Starting currentDistance: $currentDistance");
 
     final firstChar = lineText.codeUnits.firstOrNull;
     if (firstChar == null) return null;
@@ -250,8 +246,6 @@ class TextGeometryGenerator {
     final maxCenter = spline.indexFromSignedDistance(99999999, -padding);
 
     if (maxCenter < minCenter) return null; //fixme: we should extrapolate the line when it's too short
-
-    print("min: $minCenter, max: $maxCenter");
 
     double centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
 
@@ -285,16 +279,23 @@ class TextGeometryGenerator {
       final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
 
       final distanceToTravel = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048 * flip;
-      double t = spline.indexFromSignedDistance(centerIndex, distanceToTravel);
-      TilePoint localOffset = spline.valueAt(t);
-      double x = (localOffset.x / 2048) - 1;
-      double y = 1 - (localOffset.y / 2048);
-      double rotation = flipRadians - spline.rotationAt(t);
 
-      if (tempBatch.vertexOffset < 12) { // Log first 3 chars
-        print("Char #${tempBatch.vertexOffset ~/ 4}: '${String.fromCharCode(charCode)}' distanceToTravel: $distanceToTravel, t: $t, position: (${localOffset.x}, ${localOffset.y})");
+      final zoomScaleFactors = [1.0, 1.5, 2.0, 2.5];
+
+      final poses = [];
+      final rots = [];
+
+      for (var zoom in zoomScaleFactors) {
+        double t = spline.indexFromSignedDistance(centerIndex, distanceToTravel / zoom);
+        rots.add(_normalizeRadians(flipRadians - spline.rotationAt(t)));
+        TilePoint localOffset = spline.valueAt(t);
+        poses.add((localOffset.x / 2048) - 1);
+        poses.add(1 - (localOffset.y / 2048));
       }
 
+
+      final x = poses[0];
+      final y = poses[1];
 
       final uv = atlas.getCharacterUV(charCode);
 
@@ -345,36 +346,32 @@ class TextGeometryGenerator {
         charMinY,
         left,
         bottom,
-        x,
-        y,
-        rotation,
+        ...poses,
+        ...rots,
         0.0, 0.5, fontSize.toDouble(),
 
         charMaxX,
         charMinY,
         right,
         bottom,
-        x,
-        y,
-        rotation,
+        ...poses,
+        ...rots,
         0.0, 0.5, fontSize.toDouble(),
 
         charMaxX,
         charMaxY,
         right,
         top,
-        x,
-        y,
-        rotation,
+        ...poses,
+        ...rots,
         0.0, 0.5, fontSize.toDouble(),
 
         charMinX,
         charMaxY,
         left,
         top,
-        x,
-        y,
-        rotation,
+        ...poses,
+        ...rots,
         0.0, 0.5, fontSize.toDouble(),
 
       ]);
@@ -396,5 +393,14 @@ class TextGeometryGenerator {
     if (tempBatches.isEmpty) return null;
 
     return (batches: tempBatches, boundingBox: boundingBox, rotation: avgRotation, point: center);
+  }
+
+  double _normalizeRadians(double angle) {
+    const twoPi = 2 * pi;
+    angle = angle % twoPi; // Wraps into -2π..2π
+    if (angle < 0) {
+      angle += twoPi; // Shift negative values to 0..2π
+    }
+    return angle;
   }
 }
