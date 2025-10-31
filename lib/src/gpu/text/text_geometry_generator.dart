@@ -210,7 +210,7 @@ class TextGeometryGenerator {
     return transformedBatches;
   }
 
-  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})? generateCurvedGeometry({
+  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox, double rotation, TilePoint point})? generateCurvedGeometry({
       required TileLine line,
       required int bestIndex,
       required List<String> lines,
@@ -255,12 +255,21 @@ class TextGeometryGenerator {
 
     double centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
 
+    TilePoint center = spline.valueAt(centerIndex);
+
+    double dx = spline.splineX.interpolate(centerIndex + padding) - spline.splineX.interpolate(centerIndex - padding);
+    double dy = spline.splineY.interpolate(centerIndex + padding) - spline.splineY.interpolate(centerIndex - padding);
+
+
     double flip = (spline.splineX.interpolate(centerIndex + padding) - spline.splineX.interpolate(centerIndex - padding)).sign;
     double flipRadians = pi;
     if (flip != -1) {
       flip = 1;
       flipRadians = 0;
     }
+
+    double avgRotation = atan2(dy, dx) + flipRadians;
+
 
     for (final charCode in lineText.codeUnits) {
       final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
@@ -302,8 +311,34 @@ class TextGeometryGenerator {
       final charMinY = - halfHeight;
       final charMaxY = halfHeight;
 
+      // Rotate the bounding box corners by -avgRotation
+      final cosRot = cos(avgRotation);
+      final sinRot = sin(avgRotation);
 
-      boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
+      // Rotate all four corners
+      final corners = [
+        (x + charMinX, y + charMinY),
+        (x + charMaxX, y + charMinY),
+        (x + charMinX, y + charMaxY),
+        (x + charMaxX, y + charMaxY),
+      ];
+
+      double minRotatedX = double.infinity;
+      double maxRotatedX = double.negativeInfinity;
+      double minRotatedY = double.infinity;
+      double maxRotatedY = double.negativeInfinity;
+
+      for (final (cornerX, cornerY) in corners) {
+        final rotatedX = cornerX * cosRot - cornerY * sinRot;
+        final rotatedY = cornerX * sinRot + cornerY * cosRot;
+
+        minRotatedX = min(minRotatedX, rotatedX);
+        maxRotatedX = max(maxRotatedX, rotatedX);
+        minRotatedY = min(minRotatedY, rotatedY);
+        maxRotatedY = max(maxRotatedY, rotatedY);
+      }
+
+      boundingBox.updateBounds(minRotatedX, maxRotatedX, minRotatedY, maxRotatedY);
 
       tempBatch.vertices.addAll([
         charMinX,
@@ -360,6 +395,6 @@ class TextGeometryGenerator {
 
     if (tempBatches.isEmpty) return null;
 
-    return (batches: tempBatches, boundingBox: boundingBox);
+    return (batches: tempBatches, boundingBox: boundingBox, rotation: avgRotation, point: center);
   }
 }
