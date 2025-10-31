@@ -35,6 +35,10 @@
         "type": "vertex",
         "file": "shaders/vector_tile_renderer$text.vert"
     },
+    "CurvedTextVertex": {
+        "type": "vertex",
+        "file": "shaders/vector_tile_renderer$text_curved.vert"
+    },
     "TextFragment": {
         "type": "fragment",
         "file": "shaders/vector_tile_renderer$text.frag"

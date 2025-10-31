@@ -9,8 +9,8 @@ frame_info;
 
 const int layer_count = 4;
 const float inv_spacing = 2;
+const float min_scale = 0.85;
 
-in vec2 offset;
 in vec2 uv;
 in vec2 anchor0;
 in vec2 anchor1;
@@ -20,9 +20,8 @@ in float rotation0;
 in float rotation1;
 in float rotation2;
 in float rotation3;
-in float rotation_scale;
-in float min_scale;
 in float font_size;
+in float offsetDist;
 
 out vec2 v_texture_coords;
 out float v_font_size;
@@ -64,21 +63,19 @@ void main() {
     vec2 interpolatedAnchor = mix(anchors[i0], anchors[i1], t);
     float interpolatedRotation = mixAngle(rotations[i0], rotations[i1], t);
 
-    vec4 finalOffset = vec4(offset, 0.0, 0.0);
+    vec2 localOffset = vec2(
+        ((gl_VertexIndex + 1) % 4 <= 1 ? -offsetDist : offsetDist),   // X
+        (gl_VertexIndex % 4 <= 1 ? -offsetDist : offsetDist)    // Y
+    );
+
     float rot = interpolatedRotation;
 
-    if (rotation_scale > 0) {
-        rot -= atan(transform[1][0], transform[0][0]);
-    }
+    localOffset = mat2(
+        cos(rot), sin(rot),
+        -sin(rot), cos(rot)
+    ) * localOffset;
 
-    finalOffset = mat4(
-        cos(rot), sin(rot), 0, 0,
-        -sin(rot), cos(rot), 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 0
-    ) * finalOffset;
-
-    vec3 world_position = vec3(interpolatedAnchor.x + (finalOffset.x / scale), interpolatedAnchor.y + (finalOffset.y / scale), 0.0);
+    vec3 world_position = vec3(interpolatedAnchor.x + (localOffset.x / scale), interpolatedAnchor.y + (localOffset.y / scale), 0.0);
     
     gl_Position = vec4((frame_info.model_transform * vec4(world_position, 1.0)).xy, 0.0, 1.0);
 
