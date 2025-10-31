@@ -115,17 +115,17 @@ class TextLayerVisitor {
 
 
 
-      if (line != null && success) {
-        final spline = ParametricUniformSpline(line.points);
-
-        List<TilePoint> points = [];
-
-        for (int i = 0; i < line.points.length * 4; i ++) {
-          points.add(spline.valueAt(i / 4.0));
-        }
-
-        _renderDebugTextLines(TileLine(points), renderData);
-      }
+      // if (line != null && success) {
+      //   final spline = ParametricUniformSpline.linear(line.points);
+      //
+      //   List<TilePoint> points = [];
+      //
+      //   for (int i = 0; i < line.points.length * 4; i ++) {
+      //     points.add(spline.valueAt(i / 4.0));
+      //   }
+      //
+      //   _renderDebugTextLines(TileLine(points), renderData);
+      // }
 
       // _renderDebugTextLines(line, renderData);
     }

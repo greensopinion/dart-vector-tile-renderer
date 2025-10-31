@@ -220,7 +220,7 @@ class TextGeometryGenerator {
       Vector4? haloColor,
       required int fontSize}) {
     print("generateCurvedGeometry: line has ${line.points.length} points, bestIndex: $bestIndex");
-    final spline = ParametricUniformSpline(line.points);
+    final spline = ParametricUniformSpline.linear(line.points);
 
     final tempBatches = <int, GeometryBatch>{};
     final boundingBox = BoundingBox();
