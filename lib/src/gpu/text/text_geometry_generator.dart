@@ -244,10 +244,10 @@ class TextGeometryGenerator {
     }
     final glyphMetrics = atlas.getGlyphMetrics(firstChar)!;
 
-    final padding = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048;
+    final padding = (glyphMetrics.glyphLeft * scaling - currentDistance) * 2048;
 
-    final minCenter = spline.indexFromSignedDistance(0, -padding);
-    final maxCenter = spline.indexFromSignedDistance(99999999, padding);
+    final minCenter = spline.indexFromSignedDistance(0, padding);
+    final maxCenter = spline.indexFromSignedDistance(99999999, -padding);
 
     if (maxCenter < minCenter) return null; //fixme: we should extrapolate the line when it's too short
 
@@ -255,7 +255,12 @@ class TextGeometryGenerator {
 
     double centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
 
-    //centerIndex = max(centerIndex, spline.indexFromSignedDistance(0, lineWidth * 1024));
+    double flip = (spline.splineX.interpolate(centerIndex + padding) - spline.splineX.interpolate(centerIndex - padding)).sign;
+    double flipRadians = pi;
+    if (flip != -1) {
+      flip = 1;
+      flipRadians = 0;
+    }
 
     for (final charCode in lineText.codeUnits) {
       final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
@@ -270,12 +275,12 @@ class TextGeometryGenerator {
 
       final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
 
-      final distanceToTravel = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048;
+      final distanceToTravel = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048 * flip;
       double t = spline.indexFromSignedDistance(centerIndex, distanceToTravel);
       TilePoint localOffset = spline.valueAt(t);
       double x = (localOffset.x / 2048) - 1;
       double y = 1 - (localOffset.y / 2048);
-      double rotation = - spline.rotationAt(t);
+      double rotation = flipRadians - spline.rotationAt(t);
 
       if (tempBatch.vertexOffset < 12) { // Log first 3 chars
         print("Char #${tempBatch.vertexOffset ~/ 4}: '${String.fromCharCode(charCode)}' distanceToTravel: $distanceToTravel, t: $t, position: (${localOffset.x}, ${localOffset.y})");
