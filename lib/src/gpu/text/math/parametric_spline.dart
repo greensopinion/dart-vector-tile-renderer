@@ -3,18 +3,39 @@ import 'dart:math';
 
 import 'package:vector_tile_renderer/src/gpu/text/math/polynomial.dart';
 import 'package:vector_tile_renderer/src/gpu/text/math/uniform_spline.dart';
+import 'package:vector_tile_renderer/src/gpu/text/math/uniform_spline_base.dart';
+import 'package:vector_tile_renderer/src/gpu/text/math/linear_spline.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
 import 'integral_approximation.dart';
 
 class ParametricUniformSpline {
-  final UniformSplineInterpolation splineX;
-  final UniformSplineInterpolation splineY;
+  final UniformSplineInterpolationBase splineX;
+  final UniformSplineInterpolationBase splineY;
 
-  ParametricUniformSpline(List<TilePoint> points)
-      : assert(points.length >= 2),
-        splineX = UniformSplineInterpolation(points.map((p) => p.x).toList()),
-        splineY = UniformSplineInterpolation(points.map((p) => p.y).toList());
+  /// Creates a parametric spline with custom interpolation strategy
+  ParametricUniformSpline(
+    List<TilePoint> points,
+    UniformSplineInterpolationBase Function(List<double>) createSpline,
+  )   : assert(points.length >= 2),
+        splineX = createSpline(points.map((p) => p.x).toList()),
+        splineY = createSpline(points.map((p) => p.y).toList());
+
+  /// Creates a parametric spline with cubic (smooth) interpolation
+  factory ParametricUniformSpline.cubic(List<TilePoint> points) {
+    return ParametricUniformSpline(
+      points,
+      (ys) => UniformSplineInterpolation(ys),
+    );
+  }
+
+  /// Creates a parametric spline with linear interpolation
+  factory ParametricUniformSpline.linear(List<TilePoint> points) {
+    return ParametricUniformSpline(
+      points,
+      (ys) => LinearUniformSplineInterpolation(ys),
+    );
+  }
 
   TilePoint valueAt(double t) =>
       TilePoint(splineX.interpolate(t), splineY.interpolate(t));
@@ -31,7 +52,7 @@ class ParametricUniformSpline {
     double sign = distance.sign;
     if (sign != 1 && sign != -1) return t0;
 
-    final int numSegments = splineX.segments.length;
+    final int numSegments = splineX.numSegments;
     double targetDistance = distance.abs();
 
     int startIndex = t0.floor();
@@ -131,13 +152,13 @@ class ParametricUniformSpline {
     final index = start.toInt();
     final indexDouble = index.toDouble();
 
-    if (index >= splineX.segments.length || index < 0) return 0.0;
+    if (index >= splineX.numSegments || index < 0) return 0.0;
 
     start = start.clamp(indexDouble, indexDouble + 1);
     stop = stop.clamp(indexDouble, indexDouble + 1);
 
-    final dxDt = splineX.segments[index].derivative();
-    final dyDt = splineY.segments[index].derivative();
+    final dxDt = splineX.derivativePolynomial(index);
+    final dyDt = splineY.derivativePolynomial(index);
 
     final speedSquared = Polynomial.sum(dxDt.squared(), dyDt.squared());
 

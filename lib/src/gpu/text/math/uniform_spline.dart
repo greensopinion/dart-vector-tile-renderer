@@ -1,7 +1,9 @@
 
 import 'package:vector_tile_renderer/src/gpu/text/math/polynomial.dart';
+import 'package:vector_tile_renderer/src/gpu/text/math/uniform_spline_base.dart';
 
-class UniformSplineInterpolation {
+class UniformSplineInterpolation extends UniformSplineInterpolationBase {
+  @override
   final List<double> ys;
   final List<SplineSegment> segments;
 
@@ -62,6 +64,7 @@ class UniformSplineInterpolation {
   }
 
   /// Interpolates a value at parameter t (0 <= t <= n - 1)
+  @override
   double interpolate(double t) {
     if (t <= 0) return ys.first;
     if (t >= ys.length - 1) return ys.last;
@@ -72,6 +75,7 @@ class UniformSplineInterpolation {
   }
 
   /// Derivative (slope) at parameter t
+  @override
   double derivative(double t) {
     if (t <= 0) return segments.first.derivative().evaluate(0);
     if (t >= ys.length - 1) return segments.last.derivative().evaluate(1);
@@ -79,6 +83,13 @@ class UniformSplineInterpolation {
     final i = t.floor();
     final localT = t - i;
     return segments[i].derivative().evaluate(localT);
+  }
+
+  /// Returns the derivative polynomial for a specific segment
+  @override
+  Polynomial derivativePolynomial(int segmentIndex) {
+    assert(segmentIndex >= 0 && segmentIndex < segments.length);
+    return segments[segmentIndex].derivative();
   }
 }
 

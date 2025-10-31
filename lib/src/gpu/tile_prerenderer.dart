@@ -25,9 +25,9 @@ class TilePreRenderer {
         _PreRendererLayerVisitor(data, tileset, zoom, atlasSet, pixelRatio);
     visitor.visitAllFeatures(theme);
 
-    addDebugRenderLayer(data);
+    // addDebugRenderLayer(data);
 
-    renderLabelSpaceBoxes(data, visitor.labelSpaces[0.95]!);
+    // renderLabelSpaceBoxes(data, visitor.labelSpaces[0.95]!);
 
     return data.pack();
   }
