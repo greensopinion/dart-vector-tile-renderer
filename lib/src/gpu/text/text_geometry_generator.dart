@@ -255,7 +255,7 @@ class TextGeometryGenerator {
 
     double centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
 
-    TilePoint center = spline.valueAt(centerIndex);
+    TilePoint center = spline.valueAt(centerIndex); //fixme: used for bounding box offset, but should use the center of the bounding box instead
 
     double dx = spline.splineX.interpolate(centerIndex + padding) - spline.splineX.interpolate(centerIndex - padding);
     double dy = spline.splineY.interpolate(centerIndex + padding) - spline.splineY.interpolate(centerIndex - padding);
