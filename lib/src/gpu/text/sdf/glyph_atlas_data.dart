@@ -113,8 +113,7 @@ class GlyphAtlas {
   final AtlasID atlasID;
   final int atlasWidth;
   final int atlasHeight;
-  final int cellWidth;
-  final int cellHeight;
+  final int cellSize;
   final Map<int, GlyphMetrics> glyphMetrics;
   final String fontFamily;
   final double fontSize;
@@ -126,8 +125,7 @@ class GlyphAtlas {
     required this.atlasID,
     required this.atlasWidth,
     required this.atlasHeight,
-    required this.cellWidth,
-    required this.cellHeight,
+    required this.cellSize,
     required this.glyphMetrics,
     required this.fontFamily,
     required this.fontSize,
@@ -151,10 +149,10 @@ class GlyphAtlas {
     final col = charIndex % gridCols;
     final row = charIndex ~/ gridCols;
 
-    final x1 = col * cellWidth;
-    final y1 = row * cellHeight;
-    final x2 = x1 + cellWidth;
-    final y2 = y1 + cellHeight;
+    final x1 = col * cellSize;
+    final y1 = row * cellSize;
+    final x2 = x1 + cellSize;
+    final y2 = y1 + cellSize;
 
     // Convert to UV coordinates (0.0 to 1.0)
     final u1 = x1 / atlasWidth;

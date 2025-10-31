@@ -52,13 +52,12 @@ class TextGeometryGenerator {
         final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
         offsetX -= glyphMetrics.glyphLeft * scaling;
 
-        final halfHeight = scaling * atlas.cellHeight / 2;
-        final halfWidth = scaling * atlas.cellWidth / 2;
+        final offsetDist = scaling * atlas.cellSize / 2;
 
-        final charMinX = offsetX - halfWidth;
-        final charMaxX = offsetX + halfWidth;
-        final charMinY = baseY - halfHeight;
-        final charMaxY = baseY + halfHeight;
+        final charMinX = offsetX - offsetDist;
+        final charMaxX = offsetX + offsetDist;
+        final charMinY = baseY - offsetDist;
+        final charMaxY = baseY + offsetDist;
 
         boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
 
@@ -112,13 +111,12 @@ class TextGeometryGenerator {
         final double left = uv.u1;
         final double right = uv.u2;
 
-        final halfHeight = scaling * atlas.cellHeight / 2;
-        final halfWidth = scaling * atlas.cellWidth / 2;
+        final offsetDist = scaling * atlas.cellSize / 2;
 
-        final charMinX = offsetX - halfWidth;
-        final charMaxX = offsetX + halfWidth;
-        final charMinY = baseY - halfHeight;
-        final charMaxY = baseY + halfHeight;
+        final charMinX = offsetX - offsetDist;
+        final charMaxX = offsetX + offsetDist;
+        final charMinY = baseY - offsetDist;
+        final charMaxY = baseY + offsetDist;
 
         boundingBox.updateBounds(charMinX, charMaxX, charMinY, charMaxY);
 
@@ -304,13 +302,7 @@ class TextGeometryGenerator {
       final double left = uv.u1;
       final double right = uv.u2;
 
-      final halfHeight = scaling * atlas.cellHeight / 2;
-      final halfWidth = scaling * atlas.cellWidth / 2;
-
-      final charMinX = - halfWidth;
-      final charMaxX = halfWidth;
-      final charMinY = - halfHeight;
-      final charMaxY = halfHeight;
+      final offsetDist = scaling * atlas.cellSize / 2;
 
       // Rotate the bounding box corners by -avgRotation
       final cosRot = cos(avgRotation);
@@ -318,10 +310,10 @@ class TextGeometryGenerator {
 
       // Rotate all four corners
       final corners = [
-        (x + charMinX, y + charMinY),
-        (x + charMaxX, y + charMinY),
-        (x + charMinX, y + charMaxY),
-        (x + charMaxX, y + charMaxY),
+        (x - offsetDist, y - offsetDist),
+        (x + offsetDist, y - offsetDist),
+        (x - offsetDist, y + offsetDist),
+        (x + offsetDist, y + offsetDist),
       ];
 
       double minRotatedX = double.infinity;
@@ -342,37 +334,34 @@ class TextGeometryGenerator {
       boundingBox.updateBounds(minRotatedX, maxRotatedX, minRotatedY, maxRotatedY);
 
       tempBatch.vertices.addAll([
-        charMinX,
-        charMinY,
+
         left,
         bottom,
         ...poses,
         ...rots,
-        0.0, 0.5, fontSize.toDouble(),
+        fontSize.toDouble(),
+        offsetDist,
 
-        charMaxX,
-        charMinY,
         right,
         bottom,
         ...poses,
         ...rots,
-        0.0, 0.5, fontSize.toDouble(),
+        fontSize.toDouble(),
+        offsetDist,
 
-        charMaxX,
-        charMaxY,
         right,
         top,
         ...poses,
         ...rots,
-        0.0, 0.5, fontSize.toDouble(),
+        fontSize.toDouble(),
+        offsetDist,
 
-        charMinX,
-        charMaxY,
         left,
         top,
         ...poses,
         ...rots,
-        0.0, 0.5, fontSize.toDouble(),
+        fontSize.toDouble(),
+        offsetDist,
 
       ]);
 
