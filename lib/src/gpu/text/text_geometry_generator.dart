@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/text/math/parametric_spline.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
@@ -233,6 +235,28 @@ class TextGeometryGenerator {
     double currentDistance = -lineWidth / 2.0;
     print("Starting currentDistance: $currentDistance");
 
+    final firstChar = lineText.codeUnits.firstOrNull;
+    if (firstChar == null) return null;
+
+    final atlas = atlasSet.getAtlasForChar(firstChar, fontFamily);
+    if (atlas == null) {
+      return null;
+    }
+    final glyphMetrics = atlas.getGlyphMetrics(firstChar)!;
+
+    final padding = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048;
+
+    final minCenter = spline.indexFromSignedDistance(0, -padding);
+    final maxCenter = spline.indexFromSignedDistance(99999999, padding);
+
+    if (maxCenter < minCenter) return null; //fixme: we should extrapolate the line when it's too short
+
+    print("min: $minCenter, max: $maxCenter");
+
+    double centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
+
+    //centerIndex = max(centerIndex, spline.indexFromSignedDistance(0, lineWidth * 1024));
+
     for (final charCode in lineText.codeUnits) {
       final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
       if (atlas == null) {
@@ -247,7 +271,7 @@ class TextGeometryGenerator {
       final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
 
       final distanceToTravel = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048;
-      double t = spline.indexFromSignedDistance(bestIndex.toDouble(), distanceToTravel);
+      double t = spline.indexFromSignedDistance(centerIndex, distanceToTravel);
       TilePoint localOffset = spline.valueAt(t);
       double x = (localOffset.x / 2048) - 1;
       double y = 1 - (localOffset.y / 2048);

@@ -50,25 +50,27 @@ class ParametricUniformSpline {
 
 
   double indexFromSignedDistance(double t0, double distance) {
-    double sign = distance.sign;
-    if (sign != 1 && sign != -1) return t0;
-
     final int numSegments = splineX.numSegments;
+    final clampedT0 = t0.clamp(0, numSegments).toDouble();
+
+    double sign = distance.sign;
+    if (sign != 1 && sign != -1) return clampedT0;
+
     double targetDistance = distance.abs();
 
-    int startIndex = t0.floor();
+    int startIndex = clampedT0.floor();
     int endIndex = sign > 0 ? numSegments - 1 : 0;
 
     double accumulatedDistance = 0.0;
-    double t = t0;
+    double t = clampedT0;
     int currentIndex = startIndex;
 
     while (_shouldContinueIteration(sign, currentIndex, endIndex)) {
-      double nextT = _computeNextBoundary(t, currentIndex, sign, t0, targetDistance);
+      double nextT = _computeNextBoundary(t, currentIndex, sign, clampedT0, targetDistance);
       double segmentDistance = signedDistance(t, nextT).abs();
 
       if (accumulatedDistance + segmentDistance >= targetDistance) {
-        return _findExactParameterByDistance(t0, t, nextT, targetDistance);
+        return _findExactParameterByDistance(clampedT0, t, nextT, targetDistance);
       }
 
       accumulatedDistance += segmentDistance;

@@ -66,8 +66,6 @@ class TextBuilder {
         isLineString &&
         rotationAlignment == RotationAlignment.map;
 
-    print("shouldCurveText: $shouldCurveText, line: ${line?.points.length} points, layoutLines: ${layoutResult.lines.length}, isLineString: $isLineString, rotationAlignment: $rotationAlignment");
-
     if (shouldCurveText) {
       final boundingBox = _geometryGenerator.calculateBoundingBox(
           lines: layoutResult.lines,
