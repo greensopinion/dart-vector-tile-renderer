@@ -113,7 +113,7 @@ class TextBuilder {
       }
 
       final validation = _validateLabelSpace(
-          (rotation: positionResult.rotation, x: positionResult.point.x, y: positionResult.point.y),
+          (rotation: res.rotation, x: res.point.x, y: res.point.y),
           res.boundingBox,
           labelSpaces,
           canvasSize,
