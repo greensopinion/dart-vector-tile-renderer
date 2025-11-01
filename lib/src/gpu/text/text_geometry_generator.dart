@@ -243,7 +243,7 @@ class TextGeometryGenerator {
     final minCenter = spline.indexFromSignedDistance(0, padding);
     final maxCenter = spline.indexFromSignedDistance(99999999, -padding);
 
-    if (maxCenter < minCenter) return null; //fixme: we should extrapolate the line when it's too short
+    if (maxCenter < minCenter) return null;
 
     double centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
 
