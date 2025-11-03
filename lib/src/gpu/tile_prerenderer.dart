@@ -11,9 +11,9 @@ import 'bucket_unpacker.dart';
 import 'debug/debug_render_layer.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
-import 'text/ndc_label_space.dart';
+import 'text/prerender/ndc_label_space.dart';
 import 'text/sdf/glyph_atlas_data.dart';
-import 'text/text_layer_visitor.dart';
+import 'text/prerender/text_layer_visitor.dart';
 import 'tile_render_data.dart';
 
 class TilePreRenderer {

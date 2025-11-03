@@ -6,9 +6,9 @@ import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/icon/icon_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_material.dart';
-import 'package:vector_tile_renderer/src/gpu/text/curved_text_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
+import 'package:vector_tile_renderer/src/gpu/text/render/curved_text_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/text/render/text_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/text/render/text_material.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 import 'package:vector_tile_renderer/src/tileset_raster.dart';
 

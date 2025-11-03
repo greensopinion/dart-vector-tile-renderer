@@ -1,7 +1,7 @@
 import 'package:flutter_scene/scene.dart';
 
-import '../shaders.dart';
-import '../tile_render_data.dart';
+import '../../shaders.dart';
+import '../../tile_render_data.dart';
 
 class CurvedTextGeometry extends UnskinnedGeometry {
   static const vertexSize = 16;
