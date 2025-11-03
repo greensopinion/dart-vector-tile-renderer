@@ -8,7 +8,6 @@ import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
-import '../../features/extensions.dart';
 import '../../themes/style.dart';
 import 'ndc_label_space.dart';
 import 'text_layout_calculator.dart';
@@ -196,7 +195,7 @@ class TextBuilder {
     );
   }
 
-  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})? _generateTextGeometry(
+  ({Map<int, TextGeometryBatch> batches, BoundingBox boundingBox})? _generateTextGeometry(
     _LayoutResult layout,
     String fontFamily,
     Vector4 color,
@@ -275,8 +274,8 @@ class TextBuilder {
     );
   }
 
-  Map<int, GeometryBatch> _transformAndFinalize(
-    ({Map<int, GeometryBatch> batches, BoundingBox boundingBox}) geometry,
+  Map<int, TextGeometryBatch> _transformAndFinalize(
+    ({Map<int, TextGeometryBatch> batches, BoundingBox boundingBox}) geometry,
     _LayoutResult layout,
     ({double x, double y, double rotation}) position,
     ({double minScaleFactor, Offset center}) validation,

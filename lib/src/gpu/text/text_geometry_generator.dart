@@ -3,23 +3,9 @@ import 'dart:math';
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/text/math/parametric_spline.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
+import 'batch_manager.dart';
 import 'sdf/glyph_atlas_data.dart';
 import 'text_layout_calculator.dart';
-
-class GeometryBatch {
-  final int textureID;
-  final Vector4 color;
-  final Vector4? haloColor;
-  final List<double> vertices = [];
-  final List<int> indices = [];
-  int vertexOffset = 0;
-
-  GeometryBatch(this.textureID, this.color, this.haloColor);
-
-  bool matches(GeometryBatch other) => (textureID == other.textureID &&
-      color == other.color &&
-      haloColor == other.haloColor);
-}
 
 class TextGeometryGenerator {
   final AtlasSet atlasSet;
@@ -70,7 +56,7 @@ class TextGeometryGenerator {
     return boundingBox;
   }
 
-  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox})?
+  ({Map<int, TextGeometryBatch> batches, BoundingBox boundingBox})?
       generateGeometry({
     required List<String> lines,
     required List<double> lineWidths,
@@ -80,7 +66,7 @@ class TextGeometryGenerator {
     required Vector4 color,
     Vector4? haloColor,
   }) {
-    final tempBatches = <int, GeometryBatch>{};
+    final tempBatches = <int, TextGeometryBatch>{};
     final boundingBox = BoundingBox();
 
     for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
@@ -99,7 +85,7 @@ class TextGeometryGenerator {
         final textureID = atlas.atlasID.hashCode;
 
         final tempBatch = tempBatches.putIfAbsent(
-            textureID, () => GeometryBatch(textureID, color, haloColor));
+            textureID, () => TextGeometryBatch(textureID, color, haloColor));
 
         final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
         offsetX -= glyphMetrics.glyphLeft * scaling;
@@ -161,8 +147,8 @@ class TextGeometryGenerator {
     return (batches: tempBatches, boundingBox: boundingBox);
   }
 
-  Map<int, GeometryBatch> transformGeometry({
-    required Map<int, GeometryBatch> sourceBatches,
+  Map<int, TextGeometryBatch> transformGeometry({
+    required Map<int, TextGeometryBatch> sourceBatches,
     required double centerOffsetX,
     required double centerOffsetY,
     required double centerX,
@@ -172,7 +158,7 @@ class TextGeometryGenerator {
     required double minScaleFactor,
     required double fontSize,
   }) {
-    final transformedBatches = <int, GeometryBatch>{};
+    final transformedBatches = <int, TextGeometryBatch>{};
 
     for (final sourceBatch in sourceBatches.values) {
       final tempVertices = sourceBatch.vertices;
@@ -193,7 +179,7 @@ class TextGeometryGenerator {
         ]);
       }
 
-      final newBatch = GeometryBatch(
+      final newBatch = TextGeometryBatch(
         sourceBatch.textureID,
         sourceBatch.color,
         sourceBatch.haloColor,
@@ -208,7 +194,7 @@ class TextGeometryGenerator {
     return transformedBatches;
   }
 
-  ({Map<int, GeometryBatch> batches, BoundingBox boundingBox, double rotation, TilePoint point})? generateCurvedGeometry({
+  ({Map<int, TextGeometryBatch> batches, BoundingBox boundingBox, double rotation, TilePoint point})? generateCurvedGeometry({
       required TileLine line,
       required int bestIndex,
       required List<String> lines,
@@ -221,7 +207,7 @@ class TextGeometryGenerator {
       required int fontSize}) {
     final spline = ParametricUniformSpline.linear(line.points);
 
-    final tempBatches = <int, GeometryBatch>{};
+    final tempBatches = <int, TextGeometryBatch>{};
     final boundingBox = BoundingBox();
 
     final lineText = lines.first;
@@ -272,7 +258,7 @@ class TextGeometryGenerator {
       final textureID = atlas.atlasID.hashCode;
 
       final tempBatch = tempBatches.putIfAbsent(
-          textureID, () => GeometryBatch(textureID, color, haloColor));
+          textureID, () => TextGeometryBatch(textureID, color, haloColor));
 
       final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
 

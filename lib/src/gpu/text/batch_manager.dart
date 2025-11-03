@@ -1,25 +1,36 @@
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
-
 import '../bucket_unpacker.dart';
 import '../tile_render_data.dart';
 import '../utils.dart';
-import 'text_geometry.dart';
-import 'text_geometry_generator.dart';
+
+class TextGeometryBatch {
+  final int textureID;
+  final Vector4 color;
+  final Vector4? haloColor;
+  final List<double> vertices = [];
+  final List<int> indices = [];
+  int vertexOffset = 0;
+
+  TextGeometryBatch(this.textureID, this.color, this.haloColor);
+
+  bool matches(TextGeometryBatch other) => (textureID == other.textureID &&
+      color == other.color &&
+      haloColor == other.haloColor);
+}
 
 class BatchManager {
-  final List<GeometryBatch> _batches = [];
+  final List<TextGeometryBatch> _batches = [];
 
   final GeometryType geometryType;
-
   final int vertexSize;
 
   BatchManager(this.geometryType, this.vertexSize);
 
-  void addBatches(Map<int, GeometryBatch> newBatches) {
+  void addBatches(Map<int, TextGeometryBatch> newBatches) {
     for (final newBatch in newBatches.values) {
-      GeometryBatch? existingBatch;
+      TextGeometryBatch? existingBatch;
       for (final batch in _batches) {
         if (batch.matches(newBatch)) {
           existingBatch = batch;
@@ -28,7 +39,7 @@ class BatchManager {
       }
 
       if (existingBatch == null) {
-        existingBatch = GeometryBatch(
+        existingBatch = TextGeometryBatch(
           newBatch.textureID,
           newBatch.color,
           newBatch.haloColor,
