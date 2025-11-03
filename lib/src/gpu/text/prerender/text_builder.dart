@@ -2,16 +2,17 @@ import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
-import 'package:vector_tile_renderer/src/gpu/text/curved_text_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/text/prerender/curved_text/curved_text_geometry_generator.dart';
+import 'package:vector_tile_renderer/src/gpu/text/render/curved_text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
-import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
+import 'package:vector_tile_renderer/src/gpu/text/render/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
-import '../../themes/style.dart';
+import '../../../themes/style.dart';
 import 'ndc_label_space.dart';
 import 'text_layout_calculator.dart';
-import 'text_geometry_generator.dart';
+import 'regular_text/text_geometry_generator.dart';
 import 'line_position_finder.dart';
 import 'label_space_validator.dart';
 import 'batch_manager.dart';
@@ -32,6 +33,7 @@ class TextBuilder {
   final AtlasSet atlasSet;
   final TextLayoutCalculator _layoutCalculator;
   final TextGeometryGenerator _geometryGenerator;
+  final CurvedTextGeometryGenerator _curvedTextGeometryGenerator;
   final LinePositionFinder _positionFinder;
   final LabelSpaceValidator _spaceValidator;
   final BatchManager _curvedTextBatchManager;
@@ -41,6 +43,7 @@ class TextBuilder {
   TextBuilder(this.atlasSet)
       : _layoutCalculator = TextLayoutCalculator(atlasSet),
         _geometryGenerator = TextGeometryGenerator(atlasSet),
+        _curvedTextGeometryGenerator = CurvedTextGeometryGenerator(atlasSet),
         _positionFinder = LinePositionFinder(TextLayoutCalculator(atlasSet)),
         _spaceValidator = LabelSpaceValidator(TextLayoutCalculator(atlasSet)),
         _curvedTextBatchManager = BatchManager(GeometryType.curvedText, CurvedTextGeometry.vertexSize),
@@ -98,7 +101,7 @@ class TextBuilder {
         return false;
       }
 
-      final res = _geometryGenerator.generateCurvedGeometry(
+      final res = _curvedTextGeometryGenerator.generateCurvedGeometry(
         line: line,
         bestIndex: positionResult.index,
         lines: layoutResult.lines,

@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
-import '../../themes/style.dart';
+import '../../../themes/style.dart';
 
 import 'ndc_label_space.dart';
 import 'text_layout_calculator.dart';

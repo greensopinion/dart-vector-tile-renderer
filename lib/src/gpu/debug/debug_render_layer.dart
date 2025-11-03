@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import '../bucket_unpacker.dart';
-import '../text/ndc_label_space.dart';
+import '../text/prerender/ndc_label_space.dart';
 import '../tile_render_data.dart';
 
 void addDebugRenderLayer(TileRenderData renderData) {
