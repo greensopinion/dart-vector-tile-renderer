@@ -2,7 +2,9 @@ import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
+import 'package:vector_tile_renderer/src/gpu/text/curved_text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
+import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 
@@ -33,14 +35,17 @@ class TextBuilder {
   final TextGeometryGenerator _geometryGenerator;
   final LinePositionFinder _positionFinder;
   final LabelSpaceValidator _spaceValidator;
-  final BatchManager _batchManager;
+  final BatchManager _curvedTextBatchManager;
+  final BatchManager _regularTextBatchManager;
+
 
   TextBuilder(this.atlasSet)
       : _layoutCalculator = TextLayoutCalculator(atlasSet),
         _geometryGenerator = TextGeometryGenerator(atlasSet),
         _positionFinder = LinePositionFinder(TextLayoutCalculator(atlasSet)),
         _spaceValidator = LabelSpaceValidator(TextLayoutCalculator(atlasSet)),
-        _batchManager = BatchManager(GeometryType.curvedText);
+        _curvedTextBatchManager = BatchManager(GeometryType.curvedText, CurvedTextGeometry.vertexSize),
+        _regularTextBatchManager = BatchManager(GeometryType.text, TextGeometry.vertexSize);
 
   bool addText({
     required String text,
@@ -123,12 +128,11 @@ class TextBuilder {
       );
       if (validation == null) return false;
 
-      _batchManager.addBatches(res.batches);
+      _curvedTextBatchManager.addBatches(res.batches);
       print("added line text");
 
       return true;
     }
-    return false; //fixme only draw new style for easier testing
 
     final geometryResult = _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
     if (geometryResult == null) return false;
@@ -164,7 +168,7 @@ class TextBuilder {
       anchorType,
     );
 
-    _batchManager.addBatches(transformedBatches);
+    _regularTextBatchManager.addBatches(transformedBatches);
     return true;
   }
 
@@ -306,6 +310,6 @@ class TextBuilder {
   }
 
   List<PackedMesh> getMeshes() {
-    return _batchManager.getMeshes();
+    return [..._curvedTextBatchManager.getMeshes(), ..._regularTextBatchManager.getMeshes()];
   }
 }
