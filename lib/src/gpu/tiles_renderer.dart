@@ -13,7 +13,7 @@ import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';
 import 'orthographic_camera.dart';
 import 'position_transform.dart';
-import 'text/atlas_creating_text_visitor.dart';
+import 'text/sdf/atlas_creating_text_visitor.dart';
 import 'tile_prerenderer.dart';
 import 'tile_render_data.dart';
 
