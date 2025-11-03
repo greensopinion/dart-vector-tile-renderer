@@ -13,7 +13,9 @@ class BatchManager {
 
   final GeometryType geometryType;
 
-  BatchManager(this.geometryType);
+  final int vertexSize;
+
+  BatchManager(this.geometryType, this.vertexSize);
 
   void addBatches(Map<int, GeometryBatch> newBatches) {
     for (final newBatch in newBatches.values) {
@@ -40,7 +42,7 @@ class BatchManager {
       existingBatch.vertices.addAll(newBatch.vertices);
       existingBatch.indices.addAll(adjustedIndices);
       existingBatch.vertexOffset +=
-          newBatch.vertices.length ~/ TextGeometry.vertexSize;
+          newBatch.vertices.length ~/ vertexSize;
     }
   }
 
