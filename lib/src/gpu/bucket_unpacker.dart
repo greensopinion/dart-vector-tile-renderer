@@ -6,6 +6,7 @@ import 'package:vector_math/vector_math.dart';
 import 'package:vector_tile_renderer/src/gpu/icon/icon_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_material.dart';
+import 'package:vector_tile_renderer/src/gpu/text/curved_text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/text_material.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
@@ -62,6 +63,7 @@ enum GeometryType {
   background,
   raster,
   text,
+  curvedText,
   icon;
 }
 
@@ -78,7 +80,8 @@ final _geometryTypeToConstructor = {
   GeometryType.polygon: (a) => PolygonGeometry(a),
   GeometryType.background: (a) => BackgroundGeometry(),
   GeometryType.raster: (a) => throw UnimplementedError(),
-  GeometryType.text: (a) => TextGeometry(a)
+  GeometryType.text: (a) => TextGeometry(a),
+  GeometryType.curvedText: (a) => CurvedTextGeometry(a)
 };
 
 final _geometryConstructors =

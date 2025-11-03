@@ -11,6 +11,10 @@ import 'text_geometry_generator.dart';
 class BatchManager {
   final List<GeometryBatch> _batches = [];
 
+  final GeometryType geometryType;
+
+  BatchManager(this.geometryType);
+
   void addBatches(Map<int, GeometryBatch> newBatches) {
     for (final newBatch in newBatches.values) {
       GeometryBatch? existingBatch;
@@ -69,7 +73,7 @@ class BatchManager {
       final geometry = PackedGeometry(
           vertices: ByteData.sublistView(Float32List.fromList(batch.vertices)),
           indices: ByteData.sublistView(Uint16List.fromList(batch.indices)),
-          type: GeometryType.text);
+          type: geometryType);
 
       final material =
           PackedMaterial(type: MaterialType.text, uniform: materialUniform);
