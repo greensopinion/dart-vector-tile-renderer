@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
+import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
 import 'package:vector_tile_renderer/src/model/geometry_model.dart';
@@ -39,7 +40,7 @@ class TextBuilder {
         _geometryGenerator = TextGeometryGenerator(atlasSet),
         _positionFinder = LinePositionFinder(TextLayoutCalculator(atlasSet)),
         _spaceValidator = LabelSpaceValidator(TextLayoutCalculator(atlasSet)),
-        _batchManager = BatchManager();
+        _batchManager = BatchManager(GeometryType.curvedText);
 
   bool addText({
     required String text,
