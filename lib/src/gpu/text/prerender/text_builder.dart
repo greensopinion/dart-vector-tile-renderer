@@ -82,9 +82,7 @@ class TextBuilder {
           scaling: layoutResult.scalingData.scaling,
           lineHeight: layoutResult.scalingData.lineHeight
       );
-      print("boundingBox: $boundingBox");
       if (boundingBox == null) {
-        print("boundingBox is null, returning false");
         return false;
       }
 
@@ -114,9 +112,7 @@ class TextBuilder {
         fontSize: fontSize
       );
 
-      print("res: $res, batches: ${res?.batches.length}");
       if (res == null) {
-        print("res is null, returning false");
         return false;
       }
 
@@ -131,7 +127,6 @@ class TextBuilder {
       if (validation == null) return false;
 
       _curvedTextBatchManager.addBatches(res.batches);
-      print("added line text");
 
       return true;
     }
