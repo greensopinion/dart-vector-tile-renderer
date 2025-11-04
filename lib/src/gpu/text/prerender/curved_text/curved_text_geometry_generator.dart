@@ -61,6 +61,9 @@ class CurvedTextGeometryGenerator {
 
     final center = spline.valueAt(centerIndex);
 
+    // Track previous glyph rotations for angle difference checking
+    List<double>? previousRots;
+
     // Process each character
     for (final charCode in lineText.codeUnits) {
       final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
@@ -80,6 +83,18 @@ class CurvedTextGeometryGenerator {
         distanceToTravel: distanceToTravel,
         flipRadians: flipRadians,
       );
+
+      // Check if rotation difference exceeds pi/4 at any zoom level
+      if (previousRots != null) {
+        const maxRotationDiff = pi / 4;
+        for (int i = 0; i < posRot.rots.length; i++) {
+          final angleDiff = _shortestAngularDifference(previousRots[i], posRot.rots[i]);
+          if (angleDiff.abs() > maxRotationDiff) {
+            return null;
+          }
+        }
+      }
+      previousRots = posRot.rots;
 
       final x = posRot.poses[0];
       final y = posRot.poses[1];
@@ -278,5 +293,19 @@ class CurvedTextGeometryGenerator {
       angle += twoPi; // Shift negative values to 0..2π
     }
     return angle;
+  }
+
+  /// Calculates the shortest angular difference between two angles.
+  /// Handles wrapping correctly (e.g., difference between 0.1 and 6.2 is ~0.183, not ~6.1)
+  double _shortestAngularDifference(double angle1, double angle2) {
+    double diff = angle2 - angle1;
+    // Normalize difference to [-pi, pi]
+    while (diff > pi) {
+      diff -= 2 * pi;
+    }
+    while (diff < -pi) {
+      diff += 2 * pi;
+    }
+    return diff;
   }
 }
