@@ -62,7 +62,7 @@ class TextBuilder {
     Vector4? haloColor,
     int? maxWidth,
     required bool isLineString,
-    required double displayScaleFactor,
+    required double pixelRatio,
     required LayoutAnchor anchorType,
   }) {
     final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
@@ -75,62 +75,15 @@ class TextBuilder {
         rotationAlignment == RotationAlignment.map;
 
     if (shouldCurveText) {
-      final boundingBox = _geometryGenerator.calculateBoundingBox(
-          lines: layoutResult.lines,
-          lineWidths: layoutResult.lineWidths,
-          fontFamily: fontFamily,
-          scaling: layoutResult.scalingData.scaling,
-          lineHeight: layoutResult.scalingData.lineHeight
-      );
-      if (boundingBox == null) {
-        return false;
-      }
-
-      final positionResult = _positionFinder
-          .findBestPosition(
-        line,
-        anchorType,
-        boundingBox,
-        labelSpaces,
-        canvasSize,
-        RotationAlignment.map,
-      );
-      if (positionResult == null) {
-        return false;
-      }
-
-      final res = _curvedTextGeometryGenerator.generateCurvedGeometry(
-        line: line,
-        bestIndex: positionResult.index,
-        lines: layoutResult.lines,
-        lineWidths: layoutResult.lineWidths,
-        fontFamily: fontFamily,
-        scaling: layoutResult.scalingData.scaling,
-        lineHeight: layoutResult.scalingData.lineHeight,
-        color: color,
-        haloColor: haloColor,
-        fontSize: fontSize
-      );
-
-      if (res == null) {
-        return false;
-      }
-
-      final validation = _validateLabelSpace(
-          (rotation: res.rotation, x: res.point.x, y: res.point.y),
-          res.boundingBox,
-          labelSpaces,
-          canvasSize,
-          isLineString,
-          anchorType
-      );
-      if (validation == null) return false;
-
-      _curvedTextBatchManager.addBatches(res.batches);
-
-      return true;
+      return _tryAddCurvedText(layoutResult, fontFamily, line, anchorType, labelSpaces, canvasSize, color, haloColor,
+          fontSize, isLineString);
+    } else {
+      return _tryAddRegularText(layoutResult, fontFamily, color, haloColor, line, point, anchorType, labelSpaces,
+          canvasSize, rotationAlignment, isLineString, fontSize, pixelRatio);
     }
+  }
 
+  bool _tryAddRegularText(_LayoutResult layoutResult, String fontFamily, Vector4 color, Vector4? haloColor, TileLine? line, TilePoint? point, LayoutAnchor anchorType, Map<double, NdcLabelSpace> labelSpaces, int canvasSize, RotationAlignment rotationAlignment, bool isLineString, int fontSize, double displayScaleFactor) {
     final geometryResult = _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
     if (geometryResult == null) return false;
 
@@ -166,6 +119,69 @@ class TextBuilder {
     );
 
     _regularTextBatchManager.addBatches(transformedBatches);
+    return true;
+  }
+
+  bool _tryAddCurvedText(_LayoutResult layoutResult, String fontFamily, TileLine line, LayoutAnchor anchorType, Map<double, NdcLabelSpace> labelSpaces, int canvasSize, Vector4 color, Vector4? haloColor, int fontSize, bool isLineString) {
+    final boundingBox = _geometryGenerator.calculateBoundingBox(
+        lines: layoutResult.lines,
+        lineWidths: layoutResult.lineWidths,
+        fontFamily: fontFamily,
+        scaling: layoutResult.scalingData.scaling,
+        lineHeight: layoutResult.scalingData.lineHeight
+    );
+    if (boundingBox == null) {
+      return false;
+    }
+
+    final positionResult = _positionFinder
+        .findBestPosition(
+      line,
+      anchorType,
+      boundingBox,
+      labelSpaces,
+      canvasSize,
+      RotationAlignment.map,
+    );
+    if (positionResult == null) {
+      return false;
+    }
+
+    final res = _curvedTextGeometryGenerator.generateCurvedGeometry(
+      line: line,
+      bestIndex: positionResult.index,
+      lines: layoutResult.lines,
+      lineWidths: layoutResult.lineWidths,
+      fontFamily: fontFamily,
+      scaling: layoutResult.scalingData.scaling,
+      lineHeight: layoutResult.scalingData.lineHeight,
+      color: color,
+      haloColor: haloColor,
+      fontSize: fontSize
+    );
+
+    if (res == null) {
+      return false;
+    }
+
+    final validation = _validateLabelSpace(
+        (rotation: res.rotation, x: res.point.x, y: res.point.y),
+        res.boundingBox,
+        labelSpaces,
+        canvasSize,
+        isLineString,
+        anchorType
+    );
+    if (validation == null) return false;
+
+    for (var batch in res.batches.values) {
+      for (int i = 16; i < batch.vertices.length; i += 17) {
+        batch.vertices[i] = validation.minScaleFactor;
+      }
+    }
+
+    _curvedTextBatchManager.addBatches(res.batches);
+
     return true;
   }
 

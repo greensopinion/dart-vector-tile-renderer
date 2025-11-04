@@ -9,7 +9,6 @@ frame_info;
 
 const int layer_count = 4;
 const float inv_spacing = 2;
-const float min_scale = 0.85;
 
 in vec2 uv;
 in vec2 anchor0;
@@ -22,6 +21,7 @@ in float rotation2;
 in float rotation3;
 in float font_size;
 in float offsetDist;
+in float min_scale;
 
 out vec2 v_texture_coords;
 out float v_font_size;
