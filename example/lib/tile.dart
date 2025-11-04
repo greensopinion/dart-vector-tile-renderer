@@ -122,9 +122,8 @@ class _MapTileState extends State<MapTile> {
     final model = TileUiModel(
       tileId: TileId(z: zoom.truncate(), x: 0, y: 0),
       position: position,
-      tileset: tileset,
-      rasterTileset: const RasterTileset(tiles: {}),
       renderData: renderData,
+      tileSource: TileSource(tileset: tileset),
     );
 
     gpuRenderer.update(zoom, [model], [TileId(z: 0, x: 0, y: 0).key()]);
