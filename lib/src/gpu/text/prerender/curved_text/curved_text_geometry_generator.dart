@@ -28,15 +28,96 @@ class CurvedTextGeometryGenerator {
     Vector4? haloColor,
     required int fontSize}) {
     final spline = ParametricUniformSpline.linear(line.points);
-
     final tempBatches = <int, TextGeometryBatch>{};
     final boundingBox = BoundingBox();
 
     final lineText = lines.first;
     final lineWidth = lineWidths.first;
-
     double currentDistance = -lineWidth / 2.0;
 
+    // Calculate center bounds and validate
+    final centerBounds = _calculateCenterBounds(
+      lineText: lineText,
+      fontFamily: fontFamily,
+      scaling: scaling,
+      currentDistance: currentDistance,
+      spline: spline,
+      bestIndex: bestIndex,
+    );
+    if (centerBounds == null) return null;
+
+    final centerIndex = centerBounds.centerIndex;
+    final padding = centerBounds.padding;
+
+    // Calculate flip direction and rotation
+    final rotation = _calculateFlipAndRotation(
+      spline: spline,
+      centerIndex: centerIndex,
+      padding: padding,
+    );
+    final flip = rotation.flip;
+    final flipRadians = rotation.flipRadians;
+    final avgRotation = rotation.avgRotation;
+
+    final center = spline.valueAt(centerIndex);
+
+    // Process each character
+    for (final charCode in lineText.codeUnits) {
+      final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
+      if (atlas == null) return null;
+
+      final textureID = atlas.atlasID.hashCode;
+      final tempBatch = tempBatches.putIfAbsent(
+          textureID, () => TextGeometryBatch(textureID, color, haloColor));
+
+      final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
+      final distanceToTravel = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048 * flip;
+
+      // Calculate character positions and rotations for different zoom levels
+      final posRot = _calculateCharacterPositionsAndRotations(
+        spline: spline,
+        centerIndex: centerIndex,
+        distanceToTravel: distanceToTravel,
+        flipRadians: flipRadians,
+      );
+
+      final x = posRot.poses[0];
+      final y = posRot.poses[1];
+
+      final uv = atlas.getCharacterUV(charCode);
+      final offsetDist = scaling * atlas.cellSize / 2;
+
+      // Update bounding box for this character
+      _updateBoundingBoxForCharacter(
+        x: x,
+        y: y,
+        offsetDist: offsetDist,
+        avgRotation: avgRotation,
+        boundingBox: boundingBox,
+      );
+
+      // Add vertices for this character
+      _addVertices(tempBatch, uv.u1, uv.v2, posRot.poses, posRot.rots, fontSize, offsetDist, uv.u2, uv.v1);
+
+      currentDistance += scaling * glyphMetrics.glyphAdvance;
+      tempBatch.vertexOffset += 4;
+    }
+
+    if (tempBatches.isEmpty) return null;
+
+    return (batches: tempBatches, boundingBox: boundingBox, rotation: avgRotation, point: center);
+  }
+
+
+
+  ({double minCenter, double maxCenter, double centerIndex, double padding})? _calculateCenterBounds({
+    required String lineText,
+    required String fontFamily,
+    required double scaling,
+    required double currentDistance,
+    required ParametricUniformSpline spline,
+    required int bestIndex,
+  }) {
     final firstChar = lineText.codeUnits.firstOrNull;
     if (firstChar == null) return null;
 
@@ -53,143 +134,141 @@ class CurvedTextGeometryGenerator {
 
     if (maxCenter < minCenter) return null;
 
-    double centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
+    final centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
 
-    TilePoint center = spline.valueAt(centerIndex); //fixme: used for bounding box offset, but should use the center of the bounding box instead
+    return (minCenter: minCenter, maxCenter: maxCenter, centerIndex: centerIndex, padding: padding);
+  }
 
-    double dx = spline.splineX.interpolate(centerIndex + padding) - spline.splineX.interpolate(centerIndex - padding);
-    double dy = spline.splineY.interpolate(centerIndex + padding) - spline.splineY.interpolate(centerIndex - padding);
+  ({double flip, double flipRadians, double avgRotation}) _calculateFlipAndRotation({
+    required ParametricUniformSpline spline,
+    required double centerIndex,
+    required double padding,
+  }) {
+    final dx = spline.splineX.interpolate(centerIndex + padding) -
+               spline.splineX.interpolate(centerIndex - padding);
+    final dy = spline.splineY.interpolate(centerIndex + padding) -
+               spline.splineY.interpolate(centerIndex - padding);
 
-
-    double flip = (spline.splineX.interpolate(centerIndex + padding) - spline.splineX.interpolate(centerIndex - padding)).sign;
+    double flip = dx.sign;
     double flipRadians = pi;
     if (flip != -1) {
       flip = 1;
       flipRadians = 0;
     }
 
-    double avgRotation = atan2(dy, dx) + flipRadians;
+    final avgRotation = atan2(dy, dx) + flipRadians;
+
+    return (flip: flip, flipRadians: flipRadians, avgRotation: avgRotation);
+  }
 
 
-    for (final charCode in lineText.codeUnits) {
-      final atlas = atlasSet.getAtlasForChar(charCode, fontFamily);
-      if (atlas == null) {
-        return null;
-      }
-
-      final textureID = atlas.atlasID.hashCode;
-
-      final tempBatch = tempBatches.putIfAbsent(
-          textureID, () => TextGeometryBatch(textureID, color, haloColor));
-
-      final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
-
-      final distanceToTravel = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048 * flip;
-
-      final zoomScaleFactors = [1.0, 1.5, 2.0, 2.5];
-
-      final poses = [];
-      final rots = [];
-
-      for (var zoom in zoomScaleFactors) {
-        double t = spline.indexFromSignedDistance(centerIndex, distanceToTravel / zoom);
-        rots.add(_normalizeRadians(flipRadians - spline.rotationAt(t)));
-        TilePoint localOffset = spline.valueAt(t);
-        poses.add((localOffset.x / 2048) - 1);
-        poses.add(1 - (localOffset.y / 2048));
-      }
 
 
-      final x = poses[0];
-      final y = poses[1];
+  ({List<double> poses, List<double> rots}) _calculateCharacterPositionsAndRotations({
+    required ParametricUniformSpline spline,
+    required double centerIndex,
+    required double distanceToTravel,
+    required double flipRadians,
+  }) {
+    const zoomScaleFactors = [1.0, 1.5, 2.0, 2.5];
 
-      final uv = atlas.getCharacterUV(charCode);
+    final poses = <double>[];
+    final rots = <double>[];
 
-      final double top = uv.v1;
-      final double bottom = uv.v2;
-      final double left = uv.u1;
-      final double right = uv.u2;
-
-      final offsetDist = scaling * atlas.cellSize / 2;
-
-      // Rotate the bounding box corners by -avgRotation
-      final cosRot = cos(avgRotation);
-      final sinRot = sin(avgRotation);
-
-      // Rotate all four corners
-      final corners = [
-        (x - offsetDist, y - offsetDist),
-        (x + offsetDist, y - offsetDist),
-        (x - offsetDist, y + offsetDist),
-        (x + offsetDist, y + offsetDist),
-      ];
-
-      double minRotatedX = double.infinity;
-      double maxRotatedX = double.negativeInfinity;
-      double minRotatedY = double.infinity;
-      double maxRotatedY = double.negativeInfinity;
-
-      for (final (cornerX, cornerY) in corners) {
-        final rotatedX = cornerX * cosRot - cornerY * sinRot;
-        final rotatedY = cornerX * sinRot + cornerY * cosRot;
-
-        minRotatedX = min(minRotatedX, rotatedX);
-        maxRotatedX = max(maxRotatedX, rotatedX);
-        minRotatedY = min(minRotatedY, rotatedY);
-        maxRotatedY = max(maxRotatedY, rotatedY);
-      }
-
-      boundingBox.updateBounds(minRotatedX, maxRotatedX, minRotatedY, maxRotatedY);
-
-      tempBatch.vertices.addAll([
-
-        left,
-        bottom,
-        ...poses,
-        ...rots,
-        fontSize.toDouble(),
-        offsetDist,
-
-        right,
-        bottom,
-        ...poses,
-        ...rots,
-        fontSize.toDouble(),
-        offsetDist,
-
-        right,
-        top,
-        ...poses,
-        ...rots,
-        fontSize.toDouble(),
-        offsetDist,
-
-        left,
-        top,
-        ...poses,
-        ...rots,
-        fontSize.toDouble(),
-        offsetDist,
-
-      ]);
-
-      tempBatch.indices.addAll([
-        tempBatch.vertexOffset + 0,
-        tempBatch.vertexOffset + 2,
-        tempBatch.vertexOffset + 1,
-        tempBatch.vertexOffset + 2,
-        tempBatch.vertexOffset + 0,
-        tempBatch.vertexOffset + 3,
-      ]);
-
-      currentDistance += scaling * glyphMetrics.glyphAdvance;
-
-      tempBatch.vertexOffset += 4;
+    for (final zoom in zoomScaleFactors) {
+      final t = spline.indexFromSignedDistance(centerIndex, distanceToTravel / zoom);
+      rots.add(_normalizeRadians(flipRadians - spline.rotationAt(t)));
+      final localOffset = spline.valueAt(t);
+      poses.add((localOffset.x / 2048) - 1);
+      poses.add(1 - (localOffset.y / 2048));
     }
 
-    if (tempBatches.isEmpty) return null;
+    return (poses: poses, rots: rots);
+  }
 
-    return (batches: tempBatches, boundingBox: boundingBox, rotation: avgRotation, point: center);
+
+
+
+  void _updateBoundingBoxForCharacter({
+    required double x,
+    required double y,
+    required double offsetDist,
+    required double avgRotation,
+    required BoundingBox boundingBox,
+  }) {
+    final cosRot = cos(avgRotation);
+    final sinRot = sin(avgRotation);
+
+    // Rotate all four corners
+    final corners = [
+      (x - offsetDist, y - offsetDist),
+      (x + offsetDist, y - offsetDist),
+      (x - offsetDist, y + offsetDist),
+      (x + offsetDist, y + offsetDist),
+    ];
+
+    double minRotatedX = double.infinity;
+    double maxRotatedX = double.negativeInfinity;
+    double minRotatedY = double.infinity;
+    double maxRotatedY = double.negativeInfinity;
+
+    for (final (cornerX, cornerY) in corners) {
+      final rotatedX = cornerX * cosRot - cornerY * sinRot;
+      final rotatedY = cornerX * sinRot + cornerY * cosRot;
+
+      minRotatedX = min(minRotatedX, rotatedX);
+      maxRotatedX = max(maxRotatedX, rotatedX);
+      minRotatedY = min(minRotatedY, rotatedY);
+      maxRotatedY = max(maxRotatedY, rotatedY);
+    }
+
+    boundingBox.updateBounds(minRotatedX, maxRotatedX, minRotatedY, maxRotatedY);
+  }
+
+
+
+
+  void _addVertices(TextGeometryBatch tempBatch, double left, double bottom, List<dynamic> poses, List<dynamic> rots, int fontSize, double offsetDist, double right, double top) {
+    tempBatch.vertices.addAll([
+
+      left,
+      bottom,
+      ...poses,
+      ...rots,
+      fontSize.toDouble(),
+      offsetDist,
+
+      right,
+      bottom,
+      ...poses,
+      ...rots,
+      fontSize.toDouble(),
+      offsetDist,
+
+      right,
+      top,
+      ...poses,
+      ...rots,
+      fontSize.toDouble(),
+      offsetDist,
+
+      left,
+      top,
+      ...poses,
+      ...rots,
+      fontSize.toDouble(),
+      offsetDist,
+
+    ]);
+
+    tempBatch.indices.addAll([
+      tempBatch.vertexOffset + 0,
+      tempBatch.vertexOffset + 2,
+      tempBatch.vertexOffset + 1,
+      tempBatch.vertexOffset + 2,
+      tempBatch.vertexOffset + 0,
+      tempBatch.vertexOffset + 3,
+    ]);
   }
 
   double _normalizeRadians(double angle) {

@@ -69,7 +69,7 @@ class TextBuilder {
     if (layoutResult == null) return false;
 
     final shouldCurveText = line != null &&
-        line.points.length > 2 &&
+        line.points.length >= 2 &&
         layoutResult.lines.length == 1 &&
         isLineString &&
         rotationAlignment == RotationAlignment.map;
