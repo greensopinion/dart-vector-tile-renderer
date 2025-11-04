@@ -37,7 +37,9 @@ class _PreRendererLayerVisitor extends LayerVisitor {
   final TileRenderData tileRenderData;
   late final VisitorContext context;
   final labelSpaces = <double, NdcLabelSpace>{
-    0.95: NdcLabelSpace(),
+    1.5: NdcLabelSpace(),
+    1.25: NdcLabelSpace(),
+    1.0: NdcLabelSpace(),
     0.75: NdcLabelSpace(),
     0.5: NdcLabelSpace(),
     0.25: NdcLabelSpace()

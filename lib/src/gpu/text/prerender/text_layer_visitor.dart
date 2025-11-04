@@ -102,7 +102,7 @@ class TextLayerVisitor {
           haloColor: textHalo?.color.vector4,
           maxWidth: maxWidth,
           isLineString: isLineString,
-          displayScaleFactor: context.pixelRatio,
+          pixelRatio: context.pixelRatio,
           anchorType: anchor);
 
       final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);

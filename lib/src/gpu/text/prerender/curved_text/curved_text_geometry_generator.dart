@@ -252,6 +252,7 @@ class CurvedTextGeometryGenerator {
       ...rots,
       fontSize.toDouble(),
       offsetDist,
+      0.0,
 
       right,
       bottom,
@@ -259,6 +260,7 @@ class CurvedTextGeometryGenerator {
       ...rots,
       fontSize.toDouble(),
       offsetDist,
+      0.0,
 
       right,
       top,
@@ -266,6 +268,7 @@ class CurvedTextGeometryGenerator {
       ...rots,
       fontSize.toDouble(),
       offsetDist,
+      0.0,
 
       left,
       top,
@@ -273,6 +276,7 @@ class CurvedTextGeometryGenerator {
       ...rots,
       fontSize.toDouble(),
       offsetDist,
+      0.0,
 
     ]);
 
