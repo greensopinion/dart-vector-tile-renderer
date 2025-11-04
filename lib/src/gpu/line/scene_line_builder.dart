@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
@@ -18,6 +19,23 @@ class FeatureGroup {
   int size = 0;
 }
 
+class PaintGroup {
+  final PaintModel paint0;
+  late final PaintModel paint1;
+
+  PaintGroup(this.paint0, PaintModel? paint1) {
+    this.paint1 = paint1 ?? paint0;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PaintGroup && paint0 == other.paint0;
+  }
+
+  @override
+  int get hashCode => paint0.hashCode;
+}
+
 class SceneLineBuilder {
   final TileRenderData renderData;
   final VisitorContext context;
@@ -25,7 +43,7 @@ class SceneLineBuilder {
   SceneLineBuilder(this.renderData, this.context);
 
   void addFeatures(Style style, Iterable<LayerFeature> features) {
-    Map<PaintModel, FeatureGroup> featureGroups = {};
+    Map<PaintGroup, FeatureGroup> featureGroups = {};
     for (final feature in features) {
       final result = _getLines(style, feature);
       if (result != null) {
@@ -46,25 +64,29 @@ class SceneLineBuilder {
     featureGroups.forEach((paint, group) {
       _addMesh(
         group.lines,
-        paint.strokeWidth!,
-        features.first.layer.extent,
         paint,
-        paint.strokeDashPattern,
       );
     });
   }
 
-  (PaintModel, Iterable<List<TilePoint>>)? _getLines(
+  (PaintGroup, Iterable<List<TilePoint>>)? _getLines(
       Style style, LayerFeature feature) {
-    EvaluationContext evaluationContext = EvaluationContext(
+
+    EvaluationContext evaluationContext0 = EvaluationContext(
         () => feature.feature.properties, TileFeatureType.none, context.logger,
-        zoom: context.zoom, zoomScaleFactor: 1.0, hasImage: (_) => false);
+        zoom: context.zoom.floorToDouble(), zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-    final paint = style.linePaint?.evaluate(evaluationContext);
+    EvaluationContext evaluationContext1 = EvaluationContext(
+            () => feature.feature.properties, TileFeatureType.none, context.logger,
+        zoom: context.zoom.ceilToDouble(), zoomScaleFactor: 1.0, hasImage: (_) => false);
 
-    if (paint != null && paint.strokeWidth != null && paint.strokeWidth! > 0) {
+    final paint0 = style.linePaint?.evaluate(evaluationContext0);
+    final paint1 = style.linePaint?.evaluate(evaluationContext1);
+
+
+    if (paint0 != null && paint0.strokeWidth != null && paint0.strokeWidth! > 0) {
       if (feature.feature.modelLines.isNotEmpty) {
-        return (paint, feature.feature.modelLines.map((it) => it.points));
+        return (PaintGroup(paint0, paint1), feature.feature.modelLines.map((it) => it.points));
       } else if (feature.feature.modelPolygons.isNotEmpty) {
         var outlines = feature.feature.modelPolygons
             .expand((poly) => {
@@ -74,26 +96,31 @@ class SceneLineBuilder {
             .flattened
             .toList();
 
-        return (paint, outlines);
+        return (PaintGroup(paint0, paint1), outlines);
       }
     }
     return null;
   }
 
-  void _addMesh(List<List<TilePoint>> lines, double lineWidth, int extent,
-      PaintModel paint, List<double>? dashLengths) {
+  void _addMesh(List<List<TilePoint>> lines, PaintGroup paints) {
     final (vertices, indices) = LineGeometryBuilder().build(
       lines,
-      paint.lineCap ?? LineCap.DEFAULT,
-      paint.lineJoin ?? LineJoin.DEFAULT,
+      paints.paint0.lineCap ?? LineCap.DEFAULT,
+      paints.paint0.lineJoin ?? LineJoin.DEFAULT,
     );
 
+    final stroke0 = paints.paint0.strokeWidth!;
+    final stroke1 = paints.paint1.strokeWidth ?? stroke0;
+
+
     final ByteData geomUniform = Float32List.fromList([
-      lineWidth / 128,
-      extent / 2,
+      stroke0 / 128,
+      log(stroke1 / stroke0) / ln2,
     ]).buffer.asByteData();
 
-    final color = paint.color.vector4;
+    final color = paints.paint0.color.vector4;
+
+    final dashLengths = paints.paint0.strokeDashPattern;
 
     final ByteData materialUniform = Float32List.fromList([
       color.x,

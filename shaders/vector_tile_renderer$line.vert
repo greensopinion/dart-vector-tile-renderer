@@ -13,7 +13,7 @@ frame_info;
 
 uniform LineGeometry {
   float width;
-  float extentScale;
+  float widthScaling;
 }
 line_geometry;
 
@@ -29,7 +29,7 @@ out float v_length;
 out float cumulative_length;
 
 vec2 scalePoint(vec2 p) {
-  return vec2((p.x / line_geometry.extentScale) - 1, 1 - (p.y / line_geometry.extentScale));
+  return vec2((p.x / 2048) - 1, 1 - (p.y / 2048));
 }
 
 vec2 getSegmentPos(vec2 curr, vec2 next) {
@@ -40,7 +40,8 @@ vec2 getSegmentPos(vec2 curr, vec2 next) {
 
   mat4 transform = frame_info.model_transform;
 
-  float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
+  float scaleFactor = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
+  float scale = scaleFactor / exp2(line_geometry.widthScaling * log2(max(scaleFactor, 0.0)));
 
   return curr + (clamp(offset.x, -5, 5) * offsetDist * perp / scale) + (clamp(offset.y, -5, 5) * offsetDist * unitDir / scale);
 }
