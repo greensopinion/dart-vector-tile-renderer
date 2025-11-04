@@ -115,7 +115,7 @@ class SceneLineBuilder {
 
     final ByteData geomUniform = Float32List.fromList([
       stroke0 / 128,
-      log(stroke1 / stroke0) / ln2,
+      1 - (log(stroke1 / stroke0) / ln2),
     ]).buffer.asByteData();
 
     final color = paints.paint0.color.vector4;
