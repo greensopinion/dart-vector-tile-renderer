@@ -41,7 +41,7 @@ vec2 getSegmentPos(vec2 curr, vec2 next) {
   mat4 transform = frame_info.model_transform;
 
   float scaleFactor = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
-  float scale = scaleFactor / exp2(line_geometry.widthScaling * log2(max(scaleFactor, 0.0)));
+  float scale = pow(scaleFactor, line_geometry.widthScaling);
 
   return curr + (clamp(offset.x, -5, 5) * offsetDist * perp / scale) + (clamp(offset.y, -5, 5) * offsetDist * unitDir / scale);
 }
