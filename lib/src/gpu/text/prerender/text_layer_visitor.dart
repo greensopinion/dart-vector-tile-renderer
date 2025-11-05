@@ -14,7 +14,6 @@ import '../../bucket_unpacker.dart';
 import '../../color_extension.dart';
 import '../../line/line_geometry_builder.dart';
 import '../../tile_render_data.dart';
-import '../math/parametric_spline.dart';
 import 'ndc_label_space.dart';
 import '../sdf/glyph_atlas_data.dart';
 import 'text_builder.dart';

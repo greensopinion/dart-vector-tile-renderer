@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter_gpu/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import '../shaders.dart';

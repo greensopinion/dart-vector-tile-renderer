@@ -8,9 +8,9 @@ void main() {
     group('construction', () {
       test('creates cubic spline from points', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
         expect(spline, isNotNull);
@@ -18,9 +18,9 @@ void main() {
 
       test('creates linear spline from points', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.linear(points);
         expect(spline, isNotNull);
@@ -28,7 +28,7 @@ void main() {
 
       test('requires at least two points', () {
         expect(
-          () => ParametricUniformSpline.cubic([TilePoint(0.0, 0.0)]),
+          () => ParametricUniformSpline.cubic([const TilePoint(0.0, 0.0)]),
           throwsA(isA<AssertionError>()),
         );
       });
@@ -37,10 +37,10 @@ void main() {
     group('valueAt', () {
       test('passes through all control points', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 2.0),
-          TilePoint(2.0, 1.0),
-          TilePoint(3.0, 3.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 2.0),
+          const TilePoint(2.0, 1.0),
+          const TilePoint(3.0, 3.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -53,8 +53,8 @@ void main() {
 
       test('interpolates between points', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(2.0, 2.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(2.0, 2.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -68,9 +68,9 @@ void main() {
 
       test('handles horizontal line', () {
         final points = [
-          TilePoint(0.0, 5.0),
-          TilePoint(1.0, 5.0),
-          TilePoint(2.0, 5.0),
+          const TilePoint(0.0, 5.0),
+          const TilePoint(1.0, 5.0),
+          const TilePoint(2.0, 5.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -80,9 +80,9 @@ void main() {
 
       test('handles vertical line', () {
         final points = [
-          TilePoint(5.0, 0.0),
-          TilePoint(5.0, 1.0),
-          TilePoint(5.0, 2.0),
+          const TilePoint(5.0, 0.0),
+          const TilePoint(5.0, 1.0),
+          const TilePoint(5.0, 2.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -94,8 +94,8 @@ void main() {
     group('derivativeAt', () {
       test('returns zero derivative for stationary point', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(0.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(0.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -106,8 +106,8 @@ void main() {
 
       test('has positive x-derivative for rightward motion', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(10.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(10.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -117,8 +117,8 @@ void main() {
 
       test('has positive y-derivative for upward motion', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(0.0, 10.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(0.0, 10.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -130,8 +130,8 @@ void main() {
     group('rotationAt', () {
       test('returns 0 for rightward horizontal line', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -141,8 +141,8 @@ void main() {
 
       test('returns pi/2 for upward vertical line', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(0.0, 1.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(0.0, 1.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -152,8 +152,8 @@ void main() {
 
       test('returns pi for leftward horizontal line', () {
         final points = [
-          TilePoint(1.0, 0.0),
-          TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
+          const TilePoint(0.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -163,8 +163,8 @@ void main() {
 
       test('returns -pi/2 for downward vertical line', () {
         final points = [
-          TilePoint(0.0, 1.0),
-          TilePoint(0.0, 0.0),
+          const TilePoint(0.0, 1.0),
+          const TilePoint(0.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -174,8 +174,8 @@ void main() {
 
       test('returns pi/4 for diagonal line at 45 degrees', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -187,8 +187,8 @@ void main() {
     group('signedDistance', () {
       test('returns zero for same parameter', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -197,8 +197,8 @@ void main() {
 
       test('returns positive distance forward along curve', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -209,8 +209,8 @@ void main() {
 
       test('returns negative distance backward along curve', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -221,9 +221,9 @@ void main() {
 
       test('is antisymmetric', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -235,8 +235,8 @@ void main() {
 
       test('handles diagonal line distance correctly', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(3.0, 4.0), // 3-4-5 triangle
+          const TilePoint(0.0, 0.0),
+          const TilePoint(3.0, 4.0), // 3-4-5 triangle
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -247,9 +247,9 @@ void main() {
 
       test('accumulates distance across multiple segments', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -261,8 +261,8 @@ void main() {
     group('indexFromSignedDistance', () {
       test('returns same index for zero distance', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -271,9 +271,9 @@ void main() {
 
       test('moves forward for positive distance', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -284,9 +284,9 @@ void main() {
 
       test('moves backward for negative distance', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -297,8 +297,8 @@ void main() {
 
       test('clamps to start when exceeding backward distance', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -308,8 +308,8 @@ void main() {
 
       test('clamps to end when exceeding forward distance', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -319,14 +319,14 @@ void main() {
 
       test('approximately inverts signedDistance', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
-          TilePoint(2.0, 1.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
+          const TilePoint(2.0, 1.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
-        final t0 = 0.5;
-        final t1 = 1.5;
+        const t0 = 0.5;
+        const t1 = 1.5;
         final distance = spline.signedDistance(t0, t1);
         final tResult = spline.indexFromSignedDistance(t0, distance);
 
@@ -335,9 +335,9 @@ void main() {
 
       test('works for fractional starting position', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -348,9 +348,9 @@ void main() {
 
       test('handles curved path correctly', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
-          TilePoint(2.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
+          const TilePoint(2.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -361,10 +361,10 @@ void main() {
 
       test('handles multiple segments traversal', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 0.0),
-          TilePoint(2.0, 0.0),
-          TilePoint(3.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 0.0),
+          const TilePoint(2.0, 0.0),
+          const TilePoint(3.0, 0.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -377,8 +377,8 @@ void main() {
     group('edge cases', () {
       test('handles very short spline', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(0.001, 0.001),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(0.001, 0.001),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -389,9 +389,9 @@ void main() {
 
       test('handles spline with coincident points', () {
         final points = [
-          TilePoint(0.0, 0.0),
-          TilePoint(0.0, 0.0),
-          TilePoint(1.0, 1.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(0.0, 0.0),
+          const TilePoint(1.0, 1.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -402,8 +402,8 @@ void main() {
 
       test('handles large coordinates', () {
         final points = [
-          TilePoint(1000.0, 2000.0),
-          TilePoint(1100.0, 2100.0),
+          const TilePoint(1000.0, 2000.0),
+          const TilePoint(1100.0, 2100.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
@@ -416,8 +416,8 @@ void main() {
 
       test('handles negative coordinates', () {
         final points = [
-          TilePoint(-10.0, -20.0),
-          TilePoint(-5.0, -10.0),
+          const TilePoint(-10.0, -20.0),
+          const TilePoint(-5.0, -10.0),
         ];
         final spline = ParametricUniformSpline.cubic(points);
 
