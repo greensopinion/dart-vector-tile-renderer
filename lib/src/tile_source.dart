@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter_gpu/gpu.dart';
-
 import 'themes/sprite.dart';
 import 'tileset.dart';
 import 'tileset_raster.dart';

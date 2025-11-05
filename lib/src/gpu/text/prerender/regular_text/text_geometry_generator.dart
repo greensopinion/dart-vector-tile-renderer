@@ -1,8 +1,4 @@
-import 'dart:math';
-
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/text/math/parametric_spline.dart';
-import 'package:vector_tile_renderer/src/model/geometry_model.dart';
 import '../batch_manager.dart';
 import '../../sdf/glyph_atlas_data.dart';
 import '../text_layout_calculator.dart';

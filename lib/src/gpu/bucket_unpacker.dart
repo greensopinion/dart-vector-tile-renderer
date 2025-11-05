@@ -1,22 +1,15 @@
-import 'dart:typed_data';
-
 import 'package:flutter_gpu/gpu.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/icon/icon_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/raster/raster_layer_builder.dart';
-import 'package:vector_tile_renderer/src/gpu/raster/raster_material.dart';
 import 'package:vector_tile_renderer/src/gpu/text/render/curved_text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/render/text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/render/text_material.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
-import 'package:vector_tile_renderer/src/tileset_raster.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'background/background_geometry.dart';
 import 'colored_material.dart';
 import 'icon/icon_layer_builder.dart';
-import 'icon/icon_material.dart';
 import 'line/line_geometry.dart';
 import 'line/line_material.dart';
 import 'polygon/polygon_geometry.dart';
