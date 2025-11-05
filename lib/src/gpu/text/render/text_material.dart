@@ -27,7 +27,6 @@ class TextMaterial extends UnlitMaterial {
       }
     }
 
-    creationTimestamp = DateTime.now().millisecondsSinceEpoch;
 
     sampler = SamplerOptions(
       minFilter: MinMagFilter.linear,
