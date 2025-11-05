@@ -16,7 +16,7 @@ class IconGeometry extends UnskinnedGeometry {
     final List<int> indices = [];
 
     for (int i = 0; i < vertexCount; i += 4) {
-      indices.addAll([i, i+ 1, i+ 2, i+ 2, i+ 3, i]);
+      indices.addAll([i, i + 1, i + 2, i + 2, i + 3, i]);
     }
 
     uploadVertexData(

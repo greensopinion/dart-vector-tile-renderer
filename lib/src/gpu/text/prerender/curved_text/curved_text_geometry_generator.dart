@@ -1,5 +1,3 @@
-
-
 import 'dart:math';
 
 import 'package:vector_math/vector_math.dart';
@@ -11,22 +9,26 @@ import '../batch_manager.dart';
 import '../text_layout_calculator.dart';
 
 class CurvedTextGeometryGenerator {
-
   final AtlasSet atlasSet;
 
   CurvedTextGeometryGenerator(this.atlasSet);
 
-  ({Map<int, TextGeometryBatch> batches, BoundingBox boundingBox, double rotation, TilePoint point})? generateCurvedGeometry({
-    required TileLine line,
-    required int bestIndex,
-    required List<String> lines,
-    required List<double> lineWidths,
-    required String fontFamily,
-    required double scaling,
-    required double lineHeight,
-    required Vector4 color,
-    Vector4? haloColor,
-    required int fontSize}) {
+  ({
+    Map<int, TextGeometryBatch> batches,
+    BoundingBox boundingBox,
+    double rotation,
+    TilePoint point
+  })? generateCurvedGeometry(
+      {required TileLine line,
+      required int bestIndex,
+      required List<String> lines,
+      required List<double> lineWidths,
+      required String fontFamily,
+      required double scaling,
+      required double lineHeight,
+      required Vector4 color,
+      Vector4? haloColor,
+      required int fontSize}) {
     final spline = ParametricUniformSpline.linear(line.points);
     final tempBatches = <int, TextGeometryBatch>{};
     final boundingBox = BoundingBox();
@@ -74,7 +76,8 @@ class CurvedTextGeometryGenerator {
           textureID, () => TextGeometryBatch(textureID, color, haloColor));
 
       final glyphMetrics = atlas.getGlyphMetrics(charCode)!;
-      final distanceToTravel = (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048 * flip;
+      final distanceToTravel =
+          (currentDistance - glyphMetrics.glyphLeft * scaling) * 2048 * flip;
 
       // Calculate character positions and rotations for different zoom levels
       final posRot = _calculateCharacterPositionsAndRotations(
@@ -88,7 +91,8 @@ class CurvedTextGeometryGenerator {
       if (previousRots != null) {
         const maxRotationDiff = pi / 4;
         for (int i = 0; i < posRot.rots.length; i++) {
-          final angleDiff = _shortestAngularDifference(previousRots[i], posRot.rots[i]);
+          final angleDiff =
+              _shortestAngularDifference(previousRots[i], posRot.rots[i]);
           if (angleDiff.abs() > maxRotationDiff) {
             return null;
           }
@@ -112,7 +116,8 @@ class CurvedTextGeometryGenerator {
       );
 
       // Add vertices for this character
-      _addVertices(tempBatch, uv.u1, uv.v2, posRot.poses, posRot.rots, fontSize, offsetDist, uv.u2, uv.v1);
+      _addVertices(tempBatch, uv.u1, uv.v2, posRot.poses, posRot.rots, fontSize,
+          offsetDist, uv.u2, uv.v1);
 
       currentDistance += scaling * glyphMetrics.glyphAdvance;
       tempBatch.vertexOffset += 4;
@@ -120,12 +125,16 @@ class CurvedTextGeometryGenerator {
 
     if (tempBatches.isEmpty) return null;
 
-    return (batches: tempBatches, boundingBox: boundingBox, rotation: avgRotation, point: center);
+    return (
+      batches: tempBatches,
+      boundingBox: boundingBox,
+      rotation: avgRotation,
+      point: center
+    );
   }
 
-
-
-  ({double minCenter, double maxCenter, double centerIndex, double padding})? _calculateCenterBounds({
+  ({double minCenter, double maxCenter, double centerIndex, double padding})?
+      _calculateCenterBounds({
     required String lineText,
     required String fontFamily,
     required double scaling,
@@ -151,18 +160,24 @@ class CurvedTextGeometryGenerator {
 
     final centerIndex = bestIndex.toDouble().clamp(minCenter, maxCenter);
 
-    return (minCenter: minCenter, maxCenter: maxCenter, centerIndex: centerIndex, padding: padding);
+    return (
+      minCenter: minCenter,
+      maxCenter: maxCenter,
+      centerIndex: centerIndex,
+      padding: padding
+    );
   }
 
-  ({double flip, double flipRadians, double avgRotation}) _calculateFlipAndRotation({
+  ({double flip, double flipRadians, double avgRotation})
+      _calculateFlipAndRotation({
     required ParametricUniformSpline spline,
     required double centerIndex,
     required double padding,
   }) {
     final dx = spline.splineX.interpolate(centerIndex + padding) -
-               spline.splineX.interpolate(centerIndex - padding);
+        spline.splineX.interpolate(centerIndex - padding);
     final dy = spline.splineY.interpolate(centerIndex + padding) -
-               spline.splineY.interpolate(centerIndex - padding);
+        spline.splineY.interpolate(centerIndex - padding);
 
     double flip = dx.sign;
     double flipRadians = pi;
@@ -176,10 +191,8 @@ class CurvedTextGeometryGenerator {
     return (flip: flip, flipRadians: flipRadians, avgRotation: avgRotation);
   }
 
-
-
-
-  ({List<double> poses, List<double> rots}) _calculateCharacterPositionsAndRotations({
+  ({List<double> poses, List<double> rots})
+      _calculateCharacterPositionsAndRotations({
     required ParametricUniformSpline spline,
     required double centerIndex,
     required double distanceToTravel,
@@ -191,7 +204,8 @@ class CurvedTextGeometryGenerator {
     final rots = <double>[];
 
     for (final zoom in zoomScaleFactors) {
-      final t = spline.indexFromSignedDistance(centerIndex, distanceToTravel / zoom);
+      final t =
+          spline.indexFromSignedDistance(centerIndex, distanceToTravel / zoom);
       rots.add(_normalizeRadians(flipRadians - spline.rotationAt(t)));
       final localOffset = spline.valueAt(t);
       poses.add((localOffset.x / 2048) - 1);
@@ -200,9 +214,6 @@ class CurvedTextGeometryGenerator {
 
     return (poses: poses, rots: rots);
   }
-
-
-
 
   void _updateBoundingBoxForCharacter({
     required double x,
@@ -237,47 +248,26 @@ class CurvedTextGeometryGenerator {
       maxRotatedY = max(maxRotatedY, rotatedY);
     }
 
-    boundingBox.updateBounds(minRotatedX, maxRotatedX, minRotatedY, maxRotatedY);
+    boundingBox.updateBounds(
+        minRotatedX, maxRotatedX, minRotatedY, maxRotatedY);
   }
 
-
-
-
-  void _addVertices(TextGeometryBatch tempBatch, double left, double bottom, List<dynamic> poses, List<dynamic> rots, int fontSize, double offsetDist, double right, double top) {
+  void _addVertices(
+      TextGeometryBatch tempBatch,
+      double left,
+      double bottom,
+      List<dynamic> poses,
+      List<dynamic> rots,
+      int fontSize,
+      double offsetDist,
+      double right,
+      double top) {
     tempBatch.vertices.addAll([
-
-      left,
-      bottom,
-      ...poses,
-      ...rots,
-      fontSize.toDouble(),
-      offsetDist,
-      0.0,
-
-      right,
-      bottom,
-      ...poses,
-      ...rots,
-      fontSize.toDouble(),
-      offsetDist,
-      0.0,
-
-      right,
-      top,
-      ...poses,
-      ...rots,
-      fontSize.toDouble(),
-      offsetDist,
-      0.0,
-
-      left,
-      top,
-      ...poses,
-      ...rots,
-      fontSize.toDouble(),
-      offsetDist,
-      0.0,
-
+      // maintain formatting
+      left, bottom, ...poses, ...rots, fontSize.toDouble(), offsetDist, 0.0,
+      right, bottom, ...poses, ...rots, fontSize.toDouble(), offsetDist, 0.0,
+      right, top, ...poses, ...rots, fontSize.toDouble(), offsetDist, 0.0,
+      left, top, ...poses, ...rots, fontSize.toDouble(), offsetDist, 0.0,
     ]);
 
     tempBatch.indices.addAll([

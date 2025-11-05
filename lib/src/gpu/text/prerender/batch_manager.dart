@@ -52,8 +52,7 @@ class BatchManager {
 
       existingBatch.vertices.addAll(newBatch.vertices);
       existingBatch.indices.addAll(adjustedIndices);
-      existingBatch.vertexOffset +=
-          newBatch.vertices.length ~/ vertexSize;
+      existingBatch.vertexOffset += newBatch.vertices.length ~/ vertexSize;
     }
   }
 

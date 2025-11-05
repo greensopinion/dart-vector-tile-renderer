@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'dart:ui';
 
@@ -47,8 +46,6 @@ class ParametricUniformSpline {
   double rotationAt(double t) =>
       atan2(splineY.derivative(t), splineX.derivative(t));
 
-
-
   double indexFromSignedDistance(double t0, double distance) {
     final int numSegments = splineX.numSegments;
     final clampedT0 = t0.clamp(0, numSegments).toDouble();
@@ -66,11 +63,13 @@ class ParametricUniformSpline {
     int currentIndex = startIndex;
 
     while (_shouldContinueIteration(sign, currentIndex, endIndex)) {
-      double nextT = _computeNextBoundary(t, currentIndex, sign, clampedT0, targetDistance);
+      double nextT = _computeNextBoundary(
+          t, currentIndex, sign, clampedT0, targetDistance);
       double segmentDistance = signedDistance(t, nextT).abs();
 
       if (accumulatedDistance + segmentDistance >= targetDistance) {
-        return _findExactParameterByDistance(clampedT0, t, nextT, targetDistance);
+        return _findExactParameterByDistance(
+            clampedT0, t, nextT, targetDistance);
       }
 
       accumulatedDistance += segmentDistance;
@@ -83,15 +82,15 @@ class ParametricUniformSpline {
 
   bool _shouldContinueIteration(double sign, int currentIndex, int endIndex) {
     return (sign > 0 && currentIndex <= endIndex) ||
-           (sign < 0 && currentIndex >= endIndex);
+        (sign < 0 && currentIndex >= endIndex);
   }
 
   double _computeNextBoundary(double t, int currentIndex, double sign,
-                               double t0, double targetDistance) {
+      double t0, double targetDistance) {
     double nextT = sign > 0 ? currentIndex + 1.0 : currentIndex.toDouble();
 
     bool exceedsTarget = (sign > 0 && nextT > t0 + targetDistance) ||
-                         (sign < 0 && nextT < t0 - targetDistance);
+        (sign < 0 && nextT < t0 - targetDistance);
 
     if (exceedsTarget) {
       nextT = t + (sign > 0 ? 1 : -1);
@@ -100,8 +99,8 @@ class ParametricUniformSpline {
     return nextT;
   }
 
-  double _findExactParameterByDistance(double t0, double low, double high,
-                                       double targetDistance) {
+  double _findExactParameterByDistance(
+      double t0, double low, double high, double targetDistance) {
     for (int i = 0; i < 20; i++) {
       double mid = (low + high) / 2;
       double midDistance = signedDistance(t0, mid).abs();
@@ -120,13 +119,12 @@ class ParametricUniformSpline {
     return sign > 0 ? numSegments.toDouble() : 0.0;
   }
 
-
   double signedDistance(double t0, double t1) {
     if (t0 == t1) return 0.0;
 
     final sign = (t1 - t0).sign;
     final start = clampDouble(min(t0, t1), 0.0, splineX.numSegments.toDouble());
-    final stop = clampDouble(max(t0, t1),  0.0, splineX.numSegments.toDouble());
+    final stop = clampDouble(max(t0, t1), 0.0, splineX.numSegments.toDouble());
 
     double totalDistance = 0.0;
     double currentStart = start;
@@ -165,7 +163,8 @@ class ParametricUniformSpline {
 
     final speedSquared = Polynomial.sum(dxDt.squared(), dyDt.squared());
 
-    return IntegralApproximation.trapezoidalSqrtFunc(speedSquared, start, stop) * sign;
+    return IntegralApproximation.trapezoidalSqrtFunc(
+            speedSquared, start, stop) *
+        sign;
   }
 }
-

@@ -1,4 +1,3 @@
-
 import 'package:vector_tile_renderer/src/gpu/text/math/polynomial.dart';
 import 'package:vector_tile_renderer/src/gpu/text/math/uniform_spline_base.dart';
 
@@ -62,8 +61,5 @@ class LinearSegment extends Polynomial {
   LinearSegment({
     required this.linearCoefficient,
     required double constantTerm,
-  }) : super([
-    linearCoefficient,
-    constantTerm
-  ]);
+  }) : super([linearCoefficient, constantTerm]);
 }

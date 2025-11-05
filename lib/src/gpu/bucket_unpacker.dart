@@ -23,7 +23,6 @@ import 'polygon/polygon_geometry.dart';
 import 'tile_render_data.dart';
 
 class BucketUnpacker {
-
   final TextureProvider textureProvider;
   final TileSource tileSource;
 
@@ -36,11 +35,13 @@ class BucketUnpacker {
 
     for (var packedMesh in bucket.data) {
       if (packedMesh.geometry.type == GeometryType.raster) {
-        RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!, packedMesh.material.uniform!, tileSource.rasterTileset);
+        RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!,
+            packedMesh.material.uniform!, tileSource.rasterTileset);
       } else if (packedMesh.geometry.type == GeometryType.icon) {
         iconBuilder.add(packedMesh);
       } else {
-        parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry), _unpackMaterial(packedMesh.material)));
+        parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry),
+            _unpackMaterial(packedMesh.material)));
       }
     }
     final icons = iconBuilder.build();
@@ -48,7 +49,6 @@ class BucketUnpacker {
       parent.addMesh(icons);
     }
   }
-
 
   Material _unpackMaterial(PackedMaterial packed) =>
       _materialConstructors[packed.type.index]!.call(packed, textureProvider);

@@ -20,7 +20,12 @@ import 'batch_manager.dart';
 class _LayoutResult {
   final List<String> lines;
   final List<double> lineWidths;
-  final ({double fontScale, double canvasScale, double scaling, double lineHeight}) scalingData;
+  final ({
+    double fontScale,
+    double canvasScale,
+    double scaling,
+    double lineHeight
+  }) scalingData;
 
   _LayoutResult({
     required this.lines,
@@ -39,15 +44,16 @@ class TextBuilder {
   final BatchManager _curvedTextBatchManager;
   final BatchManager _regularTextBatchManager;
 
-
   TextBuilder(this.atlasSet)
       : _layoutCalculator = TextLayoutCalculator(atlasSet),
         _geometryGenerator = TextGeometryGenerator(atlasSet),
         _curvedTextGeometryGenerator = CurvedTextGeometryGenerator(atlasSet),
         _positionFinder = LinePositionFinder(TextLayoutCalculator(atlasSet)),
         _spaceValidator = LabelSpaceValidator(TextLayoutCalculator(atlasSet)),
-        _curvedTextBatchManager = BatchManager(GeometryType.curvedText, CurvedTextGeometry.vertexSize),
-        _regularTextBatchManager = BatchManager(GeometryType.text, TextGeometry.vertexSize);
+        _curvedTextBatchManager = BatchManager(
+            GeometryType.curvedText, CurvedTextGeometry.vertexSize),
+        _regularTextBatchManager =
+            BatchManager(GeometryType.text, TextGeometry.vertexSize);
 
   bool addText({
     required String text,
@@ -65,7 +71,8 @@ class TextBuilder {
     required double pixelRatio,
     required LayoutAnchor anchorType,
   }) {
-    final layoutResult = _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
+    final layoutResult =
+        _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
     if (layoutResult == null) return false;
 
     final shouldCurveText = line != null &&
@@ -75,16 +82,42 @@ class TextBuilder {
         rotationAlignment == RotationAlignment.map;
 
     if (shouldCurveText) {
-      return _tryAddCurvedText(layoutResult, fontFamily, line, anchorType, labelSpaces, canvasSize, color, haloColor,
-          fontSize, isLineString);
+      return _tryAddCurvedText(layoutResult, fontFamily, line, anchorType,
+          labelSpaces, canvasSize, color, haloColor, fontSize, isLineString);
     } else {
-      return _tryAddRegularText(layoutResult, fontFamily, color, haloColor, line, point, anchorType, labelSpaces,
-          canvasSize, rotationAlignment, isLineString, fontSize, pixelRatio);
+      return _tryAddRegularText(
+          layoutResult,
+          fontFamily,
+          color,
+          haloColor,
+          line,
+          point,
+          anchorType,
+          labelSpaces,
+          canvasSize,
+          rotationAlignment,
+          isLineString,
+          fontSize,
+          pixelRatio);
     }
   }
 
-  bool _tryAddRegularText(_LayoutResult layoutResult, String fontFamily, Vector4 color, Vector4? haloColor, TileLine? line, TilePoint? point, LayoutAnchor anchorType, Map<double, NdcLabelSpace> labelSpaces, int canvasSize, RotationAlignment rotationAlignment, bool isLineString, int fontSize, double displayScaleFactor) {
-    final geometryResult = _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
+  bool _tryAddRegularText(
+      _LayoutResult layoutResult,
+      String fontFamily,
+      Vector4 color,
+      Vector4? haloColor,
+      TileLine? line,
+      TilePoint? point,
+      LayoutAnchor anchorType,
+      Map<double, NdcLabelSpace> labelSpaces,
+      int canvasSize,
+      RotationAlignment rotationAlignment,
+      bool isLineString,
+      int fontSize,
+      double displayScaleFactor) {
+    final geometryResult =
+        _generateTextGeometry(layoutResult, fontFamily, color, haloColor);
     if (geometryResult == null) return false;
 
     final position = _determineTextPosition(
@@ -98,14 +131,8 @@ class TextBuilder {
     );
     if (position == null) return false;
 
-    final validation = _validateLabelSpace(
-      position,
-      geometryResult.boundingBox,
-      labelSpaces,
-      canvasSize,
-      isLineString,
-        anchorType
-    );
+    final validation = _validateLabelSpace(position, geometryResult.boundingBox,
+        labelSpaces, canvasSize, isLineString, anchorType);
     if (validation == null) return false;
 
     final transformedBatches = _transformAndFinalize(
@@ -122,20 +149,28 @@ class TextBuilder {
     return true;
   }
 
-  bool _tryAddCurvedText(_LayoutResult layoutResult, String fontFamily, TileLine line, LayoutAnchor anchorType, Map<double, NdcLabelSpace> labelSpaces, int canvasSize, Vector4 color, Vector4? haloColor, int fontSize, bool isLineString) {
+  bool _tryAddCurvedText(
+      _LayoutResult layoutResult,
+      String fontFamily,
+      TileLine line,
+      LayoutAnchor anchorType,
+      Map<double, NdcLabelSpace> labelSpaces,
+      int canvasSize,
+      Vector4 color,
+      Vector4? haloColor,
+      int fontSize,
+      bool isLineString) {
     final boundingBox = _geometryGenerator.calculateBoundingBox(
         lines: layoutResult.lines,
         lineWidths: layoutResult.lineWidths,
         fontFamily: fontFamily,
         scaling: layoutResult.scalingData.scaling,
-        lineHeight: layoutResult.scalingData.lineHeight
-    );
+        lineHeight: layoutResult.scalingData.lineHeight);
     if (boundingBox == null) {
       return false;
     }
 
-    final positionResult = _positionFinder
-        .findBestPosition(
+    final positionResult = _positionFinder.findBestPosition(
       line,
       anchorType,
       boundingBox,
@@ -148,17 +183,16 @@ class TextBuilder {
     }
 
     final res = _curvedTextGeometryGenerator.generateCurvedGeometry(
-      line: line,
-      bestIndex: positionResult.index,
-      lines: layoutResult.lines,
-      lineWidths: layoutResult.lineWidths,
-      fontFamily: fontFamily,
-      scaling: layoutResult.scalingData.scaling,
-      lineHeight: layoutResult.scalingData.lineHeight,
-      color: color,
-      haloColor: haloColor,
-      fontSize: fontSize
-    );
+        line: line,
+        bestIndex: positionResult.index,
+        lines: layoutResult.lines,
+        lineWidths: layoutResult.lineWidths,
+        fontFamily: fontFamily,
+        scaling: layoutResult.scalingData.scaling,
+        lineHeight: layoutResult.scalingData.lineHeight,
+        color: color,
+        haloColor: haloColor,
+        fontSize: fontSize);
 
     if (res == null) {
       return false;
@@ -170,8 +204,7 @@ class TextBuilder {
         labelSpaces,
         canvasSize,
         isLineString,
-        anchorType
-    );
+        anchorType);
     if (validation == null) return false;
 
     for (var batch in res.batches.values) {
@@ -193,7 +226,8 @@ class TextBuilder {
     int canvasSize,
   ) {
     final lines = _layoutCalculator.wrapTextLines(text, fontSize, maxWidth);
-    final scalingData = _layoutCalculator.calculateScaling(fontSize, canvasSize);
+    final scalingData =
+        _layoutCalculator.calculateScaling(fontSize, canvasSize);
     final lineWidths = _layoutCalculator.calculateLineWidths(
       lines,
       fontFamily,
@@ -209,7 +243,8 @@ class TextBuilder {
     );
   }
 
-  ({Map<int, TextGeometryBatch> batches, BoundingBox boundingBox})? _generateTextGeometry(
+  ({Map<int, TextGeometryBatch> batches, BoundingBox boundingBox})?
+      _generateTextGeometry(
     _LayoutResult layout,
     String fontFamily,
     Vector4 color,
@@ -306,7 +341,8 @@ class TextBuilder {
       centerOffsetY = isMultiLine ? 0.0 : geometry.boundingBox.centerOffsetY;
     }
 
-    final dynamicRotationScale = rotationAlignment == RotationAlignment.viewport ? 1.0 : 0.0;
+    final dynamicRotationScale =
+        rotationAlignment == RotationAlignment.viewport ? 1.0 : 0.0;
     final baseRotation = -LabelSpaceValidator.normalizeToPi(position.rotation);
 
     return _geometryGenerator.transformGeometry(
@@ -323,6 +359,9 @@ class TextBuilder {
   }
 
   List<PackedMesh> getMeshes() {
-    return [..._curvedTextBatchManager.getMeshes(), ..._regularTextBatchManager.getMeshes()];
+    return [
+      ..._curvedTextBatchManager.getMeshes(),
+      ..._regularTextBatchManager.getMeshes()
+    ];
   }
 }

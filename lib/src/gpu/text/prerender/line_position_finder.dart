@@ -43,7 +43,11 @@ class LinePositionFinder {
         if (result != null) {
           if (result.passingChecks >= maxPassingChecks) {
             maxPassingChecks = result.passingChecks;
-            bestPosition = (point: result.point, rotation: result.rotation, index: lowerIndex);
+            bestPosition = (
+              point: result.point,
+              rotation: result.rotation,
+              index: lowerIndex
+            );
           }
         }
       }
@@ -65,7 +69,11 @@ class LinePositionFinder {
         if (result != null) {
           if (result.passingChecks >= maxPassingChecks) {
             maxPassingChecks = result.passingChecks;
-            bestPosition = (point: result.point, rotation: result.rotation, index: upperIndex);
+            bestPosition = (
+              point: result.point,
+              rotation: result.rotation,
+              index: upperIndex
+            );
           }
         }
       }
@@ -88,8 +96,7 @@ class LinePositionFinder {
     return null;
   }
 
-  ({TilePoint point, double rotation, int passingChecks})?
-      _tryLinePosition(
+  ({TilePoint point, double rotation, int passingChecks})? _tryLinePosition(
     List<TilePoint> points,
     LayoutAnchor anchorType,
     int index,
@@ -142,7 +149,6 @@ class LinePositionFinder {
       }
       passingChecks++;
     }
-
 
     return (
       point: point,

@@ -7,7 +7,8 @@ import '../utils.dart';
 class IconMaterial extends UnlitMaterial {
   late gpu.SamplerOptions sampler;
 
-  IconMaterial({required gpu.Texture colorTexture, required double resampling}) {
+  IconMaterial(
+      {required gpu.Texture colorTexture, required double resampling}) {
     setFragmentShader(shaderLibrary['IconFragment']!);
     baseColorTexture = Material.whitePlaceholder(colorTexture);
 

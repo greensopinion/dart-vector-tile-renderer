@@ -26,6 +26,5 @@ class TileSource {
       {required this.tileset,
       this.spriteIndex,
       this.spriteAtlas,
-      this.rasterTileset = const RasterTileset(tiles: {})}
-  );
+      this.rasterTileset = const RasterTileset(tiles: {})});
 }
