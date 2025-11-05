@@ -93,10 +93,13 @@ void main() {
         );
 
         // Higher step counts should converge to similar values
-        expect((result32 - result128).abs(), lessThan((result8 - result32).abs()));
+        expect(
+            (result32 - result128).abs(), lessThan((result8 - result32).abs()));
       });
 
-      test('integrates quadratic polynomial sqrt(4 + 4x + x^2) = sqrt((x+2)^2) = |x+2|', () {
+      test(
+          'integrates quadratic polynomial sqrt(4 + 4x + x^2) = sqrt((x+2)^2) = |x+2|',
+          () {
         // For x >= -2: sqrt((x+2)^2) = x+2
         // Integral from 0 to 1 is integral of (x+2) = [x^2/2 + 2x] from 0 to 1
         // = (1/2 + 2) - 0 = 2.5

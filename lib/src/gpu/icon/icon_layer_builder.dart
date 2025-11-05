@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 
 import 'package:flutter_gpu/gpu.dart';
@@ -44,7 +43,6 @@ class IconLayerBuilder {
     final texture = spritesTexture;
 
     if (tileSource.spriteAtlas != null && texture != null && sprite != null) {
-
       const tileSize = 256;
 
       final u0 = sprite.x / texture.width;
@@ -52,7 +50,8 @@ class IconLayerBuilder {
       final u1 = (sprite.x + sprite.width) / texture.width;
       final v1 = sprite.y / texture.height;
 
-      double scale = (sprite.pixelRatio == 1 ? 1 : 1 / sprite.pixelRatio) / tileSize;
+      double scale =
+          (sprite.pixelRatio == 1 ? 1 : 1 / sprite.pixelRatio) / tileSize;
 
       final width = sprite.width * scale;
       final height = sprite.height * scale;
@@ -73,8 +72,8 @@ class IconLayerBuilder {
       final x1 = width;
       final y1 = height;
 
-       vertices.addAll([
-        xA, yA, x0, y0, u0, v0,
+      vertices.addAll([
+        xA, yA, x0, y0, u0, v0, // maintain formatting
         xA, yA, x1, y0, u1, v0,
         xA, yA, x1, y1, u1, v1,
         xA, yA, x0, y1, u0, v1

@@ -108,12 +108,20 @@ class TextLayerVisitor {
       final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);
 
       if (success && icon != null && icon.isNotEmpty && point != null) {
-        final iconBytes = Uint16List.fromList(icon.codeUnits).buffer.asByteData();
+        final iconBytes =
+            Uint16List.fromList(icon.codeUnits).buffer.asByteData();
 
-        renderData.addMesh(PackedMesh(PackedGeometry(vertices: Float32List.fromList([(point.x / 2048) - 1, 1 - (point.y / 2048)]).buffer.asByteData(), indices: ByteData(0), uniform: iconBytes, type: GeometryType.icon), PackedMaterial(type: MaterialType.icon)));
+        renderData.addMesh(PackedMesh(
+            PackedGeometry(
+                vertices: Float32List.fromList(
+                        [(point.x / 2048) - 1, 1 - (point.y / 2048)])
+                    .buffer
+                    .asByteData(),
+                indices: ByteData(0),
+                uniform: iconBytes,
+                type: GeometryType.icon),
+            PackedMaterial(type: MaterialType.icon)));
       }
-
-
 
       // if (line != null && success) {
       //   final spline = ParametricUniformSpline.linear(line.points);

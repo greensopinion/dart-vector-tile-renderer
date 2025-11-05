@@ -1,4 +1,3 @@
-
 import 'package:vector_tile_renderer/src/gpu/text/math/polynomial.dart';
 import 'package:vector_tile_renderer/src/gpu/text/math/uniform_spline_base.dart';
 
@@ -93,18 +92,16 @@ class UniformSplineInterpolation extends UniformSplineInterpolationBase {
   }
 }
 
-
-class SplineSegment extends Polynomial{
-
+class SplineSegment extends Polynomial {
   SplineSegment({
     required double cubicCoefficient,
     required double quadraticCoefficient,
     required double linearCoefficient,
     required double constantTerm,
   }) : super([
-    cubicCoefficient,
-    quadraticCoefficient,
-    linearCoefficient,
-    constantTerm
-  ]);
+          cubicCoefficient,
+          quadraticCoefficient,
+          linearCoefficient,
+          constantTerm
+        ]);
 }

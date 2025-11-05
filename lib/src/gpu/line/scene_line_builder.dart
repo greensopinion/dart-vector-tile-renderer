@@ -71,22 +71,29 @@ class SceneLineBuilder {
 
   (PaintGroup, Iterable<List<TilePoint>>)? _getLines(
       Style style, LayerFeature feature) {
-
     EvaluationContext evaluationContext0 = EvaluationContext(
         () => feature.feature.properties, TileFeatureType.none, context.logger,
-        zoom: context.zoom.floorToDouble(), zoomScaleFactor: 1.0, hasImage: (_) => false);
+        zoom: context.zoom.floorToDouble(),
+        zoomScaleFactor: 1.0,
+        hasImage: (_) => false);
 
     EvaluationContext evaluationContext1 = EvaluationContext(
-            () => feature.feature.properties, TileFeatureType.none, context.logger,
-        zoom: context.zoom.ceilToDouble(), zoomScaleFactor: 1.0, hasImage: (_) => false);
+        () => feature.feature.properties, TileFeatureType.none, context.logger,
+        zoom: context.zoom.ceilToDouble(),
+        zoomScaleFactor: 1.0,
+        hasImage: (_) => false);
 
     final paint0 = style.linePaint?.evaluate(evaluationContext0);
     final paint1 = style.linePaint?.evaluate(evaluationContext1);
 
-
-    if (paint0 != null && paint0.strokeWidth != null && paint0.strokeWidth! > 0) {
+    if (paint0 != null &&
+        paint0.strokeWidth != null &&
+        paint0.strokeWidth! > 0) {
       if (feature.feature.modelLines.isNotEmpty) {
-        return (PaintGroup(paint0, paint1), feature.feature.modelLines.map((it) => it.points));
+        return (
+          PaintGroup(paint0, paint1),
+          feature.feature.modelLines.map((it) => it.points)
+        );
       } else if (feature.feature.modelPolygons.isNotEmpty) {
         var outlines = feature.feature.modelPolygons
             .expand((poly) => {
@@ -111,7 +118,6 @@ class SceneLineBuilder {
 
     final stroke0 = paints.paint0.strokeWidth!;
     final stroke1 = paints.paint1.strokeWidth ?? stroke0;
-
 
     final ByteData geomUniform = Float32List.fromList([
       stroke0 / 128,

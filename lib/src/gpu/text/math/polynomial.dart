@@ -11,9 +11,9 @@ class Polynomial {
   }
 
   Polynomial derivative() => Polynomial([
-    for (int i = 0; i < _terms.length - 1; i++)
-      exponentForTerm(i) * _terms[i],
-  ]);
+        for (int i = 0; i < _terms.length - 1; i++)
+          exponentForTerm(i) * _terms[i],
+      ]);
 
   // Horner's method
   double evaluate(double x) {
@@ -49,8 +49,12 @@ class Polynomial {
 
     // Pad the shorter polynomial with zeros on the left (highest exponent side)
     for (int i = 0; i < maxLength; i++) {
-      double a = i >= maxLength - f._terms.length ? f._terms[i - (maxLength - f._terms.length)] : 0.0;
-      double b = i >= maxLength - g._terms.length ? g._terms[i - (maxLength - g._terms.length)] : 0.0;
+      double a = i >= maxLength - f._terms.length
+          ? f._terms[i - (maxLength - f._terms.length)]
+          : 0.0;
+      double b = i >= maxLength - g._terms.length
+          ? g._terms[i - (maxLength - g._terms.length)]
+          : 0.0;
       resultTerms[i] = a + b;
     }
 
