@@ -34,7 +34,7 @@ class TileUiModel {
   final TileId tileId;
   final Rect position;
   final TileSource tileSource;
-  final Uint8List? renderData;
+  final List<Map<String, Uint8List>>? renderData;
 
   TileUiModel(
       {required this.tileId,
@@ -81,7 +81,8 @@ class TilesRenderer {
     return scene;
   }
 
-  Uint8List Function(Theme theme, double zoom, Tileset tileset, String tileID)
+  Map<String, Uint8List> Function(
+          Theme theme, double zoom, Tileset tileset, String tileID)
       getPreRenderer() {
     final atlasProvider = _atlasProvider;
     final view = ui.PlatformDispatcher.instance.views.first;
@@ -117,8 +118,16 @@ class TilesRenderer {
 
         final sprites = _getSpritesTexture(model.tileSource.spriteAtlas);
 
-        BucketUnpacker(_textureProvider, model.tileSource, sprites)
-            .unpackOnto(node, TileRenderData.unpack(renderData));
+        final unpacker =
+            BucketUnpacker(_textureProvider, model.tileSource, sprites);
+        for (var layer in theme.layers) {
+          for (var renderDataLayer in renderData) {
+            final data = renderDataLayer[layer.id];
+            if (data != null) {
+              unpacker.unpackOnto(node, TileRenderData.unpack(data));
+            }
+          }
+        }
       }
       _positionByKey[key] = model.position;
       scene.add(node);

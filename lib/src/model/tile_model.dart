@@ -1,5 +1,11 @@
+import 'dart:isolate';
+import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:vector_tile_renderer/src/gpu/tile_prerenderer.dart';
+import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
+
+import '../../vector_tile_renderer.dart';
 import 'geometry_model.dart';
 import 'geometry_model_ui.dart';
 import 'lazy_value.dart';
@@ -7,7 +13,39 @@ import 'lazy_value.dart';
 class Tile {
   final List<TileLayer> layers;
 
+  Map<String, TransferableTypedData>? _prerenderData = {};
+  final Map<String, Uint8List> prerenderData = {};
+
   Tile({required this.layers});
+
+  void earlyPreRender(Theme theme, double zoom, String source) {
+    final tileset = Tileset({source: this});
+    final context = VisitorContext(
+        logger: const Logger.noop(),
+        tileSource: TileSource(tileset: tileset),
+        zoom: zoom,
+        pixelRatio: 1.0);
+
+    for (var layer in theme.layers) {
+      if (EarlyPreRenderer.isLayerSupported(layer.type)) {
+        final renderData = TileRenderData();
+        layer.accept(context, EarlyPreRenderer(renderData, tileset, zoom));
+        _prerenderData?[layer.id] =
+            TransferableTypedData.fromList([renderData.pack()]);
+      }
+    }
+  }
+
+  Tile materialize() {
+    final data = _prerenderData;
+    if (data != null) {
+      _prerenderData = null;
+      data.forEach((key, value) {
+        prerenderData[key] = value.materialize().asUint8List();
+      });
+    }
+    return this;
+  }
 }
 
 class TileLayer {
