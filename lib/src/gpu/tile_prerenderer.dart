@@ -16,37 +16,39 @@ import 'text/prerender/text_layer_visitor.dart';
 import 'tile_render_data.dart';
 
 class TilePreRenderer {
-  Uint8List preRender(Theme theme, double zoom, Tileset tileset,
+  Map<String, Uint8List> preRender(Theme theme, double zoom, Tileset tileset,
       AtlasSet atlasSet, double pixelRatio) {
-    final data = TileRenderData();
+    final result = <String, Uint8List>{};
 
-    final visitor =
-        _PreRendererLayerVisitor(data, tileset, zoom, atlasSet, pixelRatio);
-    visitor.visitAllFeatures(theme);
+    final sharedLabelSpaces = <double, NdcLabelSpace>{
+      1.5: NdcLabelSpace(),
+      1.25: NdcLabelSpace(),
+      1.0: NdcLabelSpace(),
+      0.75: NdcLabelSpace(),
+      0.5: NdcLabelSpace(),
+      0.25: NdcLabelSpace()
+    };
 
-    // addDebugRenderLayer(data);
+    for (var layer in theme.layers) {
+      final data = TileRenderData();
+      final visitor = _PreRendererLayerVisitor(
+          data, tileset, zoom, atlasSet, pixelRatio, sharedLabelSpaces);
+      layer.accept(visitor.context, visitor);
+      result[layer.id] = data.pack();
+    }
 
-    // renderLabelSpaceBoxes(data, visitor.labelSpaces[1.5]!);
-
-    return data.pack();
+    return result;
   }
 }
 
 class _PreRendererLayerVisitor extends LayerVisitor {
   final TileRenderData tileRenderData;
   late final VisitorContext context;
-  final labelSpaces = <double, NdcLabelSpace>{
-    1.5: NdcLabelSpace(),
-    1.25: NdcLabelSpace(),
-    1.0: NdcLabelSpace(),
-    0.75: NdcLabelSpace(),
-    0.5: NdcLabelSpace(),
-    0.25: NdcLabelSpace()
-  };
+  final Map<double, NdcLabelSpace> labelSpaces;
   final AtlasSet atlasSet;
 
   _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom,
-      this.atlasSet, double pixelRatio) {
+      this.atlasSet, double pixelRatio, this.labelSpaces) {
     context = VisitorContext(
         logger: const Logger.noop(),
         tileSource: TileSource(tileset: tileset),
@@ -120,5 +122,57 @@ class _PreRendererLayerVisitor extends LayerVisitor {
               type: GeometryType.raster),
           PackedMaterial(uniform: uniform, type: MaterialType.raster)));
     }
+  }
+}
+
+class EarlyPreRenderer extends LayerVisitor {
+  final TileRenderData tileRenderData;
+  late final VisitorContext context;
+
+  EarlyPreRenderer(this.tileRenderData, Tileset tileset, double zoom) {
+    context = VisitorContext(
+        logger: const Logger.noop(),
+        tileSource: TileSource(tileset: tileset),
+        zoom: zoom,
+        pixelRatio: 1.0);
+  }
+
+  static bool isLayerSupported(ThemeLayerType layerType) {
+    return layerType == ThemeLayerType.line ||
+        layerType == ThemeLayerType.fill ||
+        layerType == ThemeLayerType.fillExtrusion;
+  }
+
+  @override
+  void visitFeatures(VisitorContext context, ThemeLayerType layerType,
+      Style style, Iterable<LayerFeature> features) {
+    switch (layerType) {
+      case ThemeLayerType.line:
+        return SceneLineBuilder(tileRenderData, context)
+            .addFeatures(style, features);
+      case ThemeLayerType.fill:
+      case ThemeLayerType.fillExtrusion:
+        return ScenePolygonBuilder(tileRenderData, context)
+            .addPolygons(style, features);
+      case ThemeLayerType.symbol:
+      case ThemeLayerType.background:
+      case ThemeLayerType.raster:
+      case ThemeLayerType.unsupported:
+        return;
+    }
+  }
+
+  @override
+  void visitBackground(VisitorContext context, Vector4 color) {
+    final uniform = Float32List.fromList([color.x, color.y, color.z, color.w])
+        .buffer
+        .asByteData();
+
+    tileRenderData.addMesh(PackedMesh(
+        PackedGeometry(
+            vertices: ByteData(0),
+            indices: ByteData(0),
+            type: GeometryType.background),
+        PackedMaterial(uniform: uniform, type: MaterialType.colored)));
   }
 }
