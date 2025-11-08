@@ -24,7 +24,9 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
         pixelRatio: 1.0);
 
     for (var layer in theme.layers) {
-      layer.accept(context, this);
+      if (layer.type == ThemeLayerType.symbol) {
+        layer.accept(context, this);
+      }
     }
   }
 
