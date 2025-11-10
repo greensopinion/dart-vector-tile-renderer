@@ -120,7 +120,7 @@ class SceneLineBuilder {
     final stroke1 = paints.paint1.strokeWidth ?? stroke0;
 
     final ByteData geomUniform = Float32List.fromList([
-      stroke0 / 128,
+      pow(2, context.zoomOffset) * stroke0 / 128,
       1 - (log(stroke1 / stroke0) / ln2),
     ]).buffer.asByteData();
 

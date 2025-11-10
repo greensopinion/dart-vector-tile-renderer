@@ -17,7 +17,7 @@ import 'tile_render_data.dart';
 
 class TilePreRenderer {
   Map<String, Uint8List> preRender(Theme theme, double zoom, Tileset tileset,
-      AtlasSet atlasSet, double pixelRatio) {
+      AtlasSet atlasSet, double pixelRatio, int zoomOffset) {
     final result = <String, Uint8List>{};
 
     final sharedLabelSpaces = <double, NdcLabelSpace>{
@@ -32,7 +32,7 @@ class TilePreRenderer {
     for (var layer in theme.layers) {
       final data = TileRenderData();
       final visitor = _PreRendererLayerVisitor(
-          data, tileset, zoom, atlasSet, pixelRatio, sharedLabelSpaces);
+          data, tileset, zoom, atlasSet, pixelRatio, sharedLabelSpaces, zoomOffset);
       layer.accept(visitor.context, visitor);
       result[layer.id] = data.pack();
     }
@@ -46,13 +46,15 @@ class _PreRendererLayerVisitor extends LayerVisitor {
   late final VisitorContext context;
   final Map<double, NdcLabelSpace> labelSpaces;
   final AtlasSet atlasSet;
+  final int zoomOffset;
 
   _PreRendererLayerVisitor(this.tileRenderData, Tileset tileset, double zoom,
-      this.atlasSet, double pixelRatio, this.labelSpaces) {
+      this.atlasSet, double pixelRatio, this.labelSpaces, this.zoomOffset) {
     context = VisitorContext(
         logger: const Logger.noop(),
         tileSource: TileSource(tileset: tileset),
         zoom: zoom,
+        zoomOffset: zoomOffset,
         pixelRatio: pixelRatio);
   }
 
@@ -127,15 +129,8 @@ class _PreRendererLayerVisitor extends LayerVisitor {
 
 class EarlyPreRenderer extends LayerVisitor {
   final TileRenderData tileRenderData;
-  late final VisitorContext context;
 
-  EarlyPreRenderer(this.tileRenderData, Tileset tileset, double zoom) {
-    context = VisitorContext(
-        logger: const Logger.noop(),
-        tileSource: TileSource(tileset: tileset),
-        zoom: zoom,
-        pixelRatio: 1.0);
-  }
+  EarlyPreRenderer(this.tileRenderData, Tileset tileset, double zoom);
 
   static bool isLayerSupported(ThemeLayerType layerType) {
     return layerType == ThemeLayerType.line ||
