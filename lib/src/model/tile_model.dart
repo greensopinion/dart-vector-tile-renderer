@@ -18,12 +18,13 @@ class Tile {
 
   Tile({required this.layers});
 
-  void earlyPreRender(Theme theme, double zoom, String source) {
+  void earlyPreRender(Theme theme, double zoom, int zoomOffset, String source) {
     final tileset = Tileset({source: this});
     final context = VisitorContext(
         logger: const Logger.noop(),
         tileSource: TileSource(tileset: tileset),
         zoom: zoom,
+        zoomOffset: zoomOffset,
         pixelRatio: 1.0);
 
     for (var layer in theme.layers) {
