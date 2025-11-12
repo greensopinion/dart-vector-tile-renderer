@@ -7,7 +7,7 @@ import '../themes/expression/expression.dart';
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
 import '../themes/theme_layer_raster.dart';
-import 'bucket_unpacker.dart';
+import 'geometry_unpacker.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
 import 'text/prerender/ndc_label_space.dart';

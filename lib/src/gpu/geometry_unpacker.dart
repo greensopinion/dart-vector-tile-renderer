@@ -15,13 +15,13 @@ import 'line/line_material.dart';
 import 'polygon/polygon_geometry.dart';
 import 'tile_render_data.dart';
 
-class BucketUnpacker {
+class GeometryUnpacker {
   final TextureProvider textureProvider;
   final TileSource tileSource;
 
   final Texture? spritesTexture;
 
-  BucketUnpacker(this.textureProvider, this.tileSource, this.spritesTexture);
+  GeometryUnpacker(this.textureProvider, this.tileSource, this.spritesTexture);
 
   void unpackOnto(Node parent, TileRenderData bucket) {
     final iconBuilder = IconLayerBuilder(tileSource, spritesTexture);

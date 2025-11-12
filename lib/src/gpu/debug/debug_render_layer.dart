@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import '../bucket_unpacker.dart';
+import '../geometry_unpacker.dart';
 import '../text/prerender/ndc_label_space.dart';
 import '../tile_render_data.dart';
 

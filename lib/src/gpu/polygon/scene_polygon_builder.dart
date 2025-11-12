@@ -9,7 +9,7 @@ import '../../themes/expression/expression.dart';
 import '../../themes/feature_resolver.dart';
 import '../../themes/paint_model.dart';
 import '../../themes/style.dart';
-import '../bucket_unpacker.dart';
+import '../geometry_unpacker.dart';
 import '../color_extension.dart';
 
 class FeatureGroup {
