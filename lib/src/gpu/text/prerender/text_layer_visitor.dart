@@ -10,7 +10,7 @@ import '../../../model/geometry_model.dart';
 import '../../../themes/expression/expression.dart';
 import '../../../themes/feature_resolver.dart';
 import '../../../themes/style.dart';
-import '../../bucket_unpacker.dart';
+import '../../geometry_unpacker.dart';
 import '../../color_extension.dart';
 import '../../line/line_geometry_builder.dart';
 import '../../tile_render_data.dart';

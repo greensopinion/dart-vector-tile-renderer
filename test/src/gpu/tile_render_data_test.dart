@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:vector_tile_renderer/src/gpu/tile_render_data.dart';
-import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
+import 'package:vector_tile_renderer/src/gpu/geometry_unpacker.dart';
 
 void main() {
   group('TileRenderData', () {

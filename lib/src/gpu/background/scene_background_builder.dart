@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 import 'background_geometry.dart';
-import '../bucket_unpacker.dart';
+import '../geometry_unpacker.dart';
 import '../colored_material.dart';
 import '../tile_render_data.dart';
 

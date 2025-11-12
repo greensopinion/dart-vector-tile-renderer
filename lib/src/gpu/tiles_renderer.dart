@@ -10,7 +10,7 @@ import 'package:vector_tile_renderer/src/gpu/text/sdf/atlas_provider.dart';
 import 'package:vector_tile_renderer/src/gpu/texture_provider.dart';
 
 import '../../vector_tile_renderer.dart';
-import 'bucket_unpacker.dart';
+import 'geometry_unpacker.dart';
 import 'orthographic_camera.dart';
 import 'position_transform.dart';
 import 'text/sdf/atlas_creating_text_visitor.dart';
@@ -119,7 +119,7 @@ class TilesRenderer {
         final sprites = _getSpritesTexture(model.tileSource.spriteAtlas);
 
         final unpacker =
-            BucketUnpacker(_textureProvider, model.tileSource, sprites);
+            GeometryUnpacker(_textureProvider, model.tileSource, sprites);
         for (var layer in theme.layers) {
           for (var renderDataLayer in renderData) {
             final data = renderDataLayer[layer.id];

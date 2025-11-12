@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:vector_math/vector_math.dart';
-import 'package:vector_tile_renderer/src/gpu/bucket_unpacker.dart';
+import 'package:vector_tile_renderer/src/gpu/geometry_unpacker.dart';
 import 'package:vector_tile_renderer/src/gpu/text/prerender/curved_text/curved_text_geometry_generator.dart';
 import 'package:vector_tile_renderer/src/gpu/text/render/curved_text_geometry.dart';
 import 'package:vector_tile_renderer/src/gpu/text/sdf/glyph_atlas_data.dart';
