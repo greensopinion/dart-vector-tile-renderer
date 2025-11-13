@@ -33,7 +33,7 @@ class TextLayerVisitor {
     if (symbolLayout == null || atlasSet.isEmpty) {
       return;
     }
-    final textBuilder = TextBuilder(atlasSet);
+    final textBuilder = TextBuilder(atlasSet, context.zoomOffset);
     for (var feature in features) {
       final evaluationContext = EvaluationContext(
           () => feature.feature.properties,
@@ -102,7 +102,8 @@ class TextLayerVisitor {
           maxWidth: maxWidth,
           isLineString: isLineString,
           pixelRatio: context.pixelRatio,
-          anchorType: anchor);
+          anchorType: anchor
+      );
 
       final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);
 

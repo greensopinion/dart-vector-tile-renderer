@@ -44,7 +44,9 @@ class TextBuilder {
   final BatchManager _curvedTextBatchManager;
   final BatchManager _regularTextBatchManager;
 
-  TextBuilder(this.atlasSet)
+  final int zoomOffset;
+
+  TextBuilder(this.atlasSet, this.zoomOffset)
       : _layoutCalculator = TextLayoutCalculator(atlasSet),
         _geometryGenerator = TextGeometryGenerator(atlasSet),
         _curvedTextGeometryGenerator = CurvedTextGeometryGenerator(atlasSet),
@@ -69,10 +71,10 @@ class TextBuilder {
     int? maxWidth,
     required bool isLineString,
     required double pixelRatio,
-    required LayoutAnchor anchorType,
+    required LayoutAnchor anchorType
   }) {
     final layoutResult =
-        _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
+        _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize, zoomOffset);
     if (layoutResult == null) return false;
 
     final shouldCurveText = line != null &&
@@ -83,7 +85,7 @@ class TextBuilder {
 
     if (shouldCurveText) {
       return _tryAddCurvedText(layoutResult, fontFamily, line, anchorType,
-          labelSpaces, canvasSize, color, haloColor, fontSize, isLineString);
+          labelSpaces, canvasSize, color, haloColor, fontSize, isLineString, zoomOffset);
     } else {
       return _tryAddRegularText(
           layoutResult,
@@ -159,7 +161,8 @@ class TextBuilder {
       Vector4 color,
       Vector4? haloColor,
       int fontSize,
-      bool isLineString) {
+      bool isLineString,
+      int zoomOffset) {
     final boundingBox = _geometryGenerator.calculateBoundingBox(
         lines: layoutResult.lines,
         lineWidths: layoutResult.lineWidths,
@@ -224,10 +227,11 @@ class TextBuilder {
     String fontFamily,
     int? maxWidth,
     int canvasSize,
+      int zoomOffset,
   ) {
     final lines = _layoutCalculator.wrapTextLines(text, fontSize, maxWidth);
     final scalingData =
-        _layoutCalculator.calculateScaling(fontSize, canvasSize);
+        _layoutCalculator.calculateScaling(fontSize, canvasSize, zoomOffset);
     final lineWidths = _layoutCalculator.calculateLineWidths(
       lines,
       fontFamily,
@@ -360,8 +364,8 @@ class TextBuilder {
 
   List<PackedMesh> getMeshes() {
     return [
-      ..._curvedTextBatchManager.getMeshes(),
-      ..._regularTextBatchManager.getMeshes()
+      ..._curvedTextBatchManager.getMeshes(zoomOffset),
+      ..._regularTextBatchManager.getMeshes(zoomOffset)
     ];
   }
 }

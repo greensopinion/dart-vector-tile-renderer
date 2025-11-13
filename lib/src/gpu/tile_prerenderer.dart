@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
@@ -7,6 +8,7 @@ import '../themes/expression/expression.dart';
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
 import '../themes/theme_layer_raster.dart';
+import 'debug/debug_render_layer.dart';
 import 'geometry_unpacker.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
@@ -34,6 +36,10 @@ class TilePreRenderer {
       final visitor = _PreRendererLayerVisitor(
           data, tileset, zoom, atlasSet, pixelRatio, sharedLabelSpaces, zoomOffset);
       layer.accept(visitor.context, visitor);
+
+      // if (layer.id == theme.layers.last.id) {
+      //   renderLabelSpaceBoxes(data, sharedLabelSpaces.values.toList()[2]);
+      // }
       result[layer.id] = data.pack();
     }
 

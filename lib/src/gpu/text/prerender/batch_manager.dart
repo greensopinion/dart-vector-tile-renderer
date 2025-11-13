@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
@@ -56,7 +57,7 @@ class BatchManager {
     }
   }
 
-  List<PackedMesh> getMeshes() {
+  List<PackedMesh> getMeshes(int zoomOffset) {
     final meshes = <PackedMesh>[];
 
     for (final batch in _batches) {
@@ -85,6 +86,7 @@ class BatchManager {
       final geometry = PackedGeometry(
           vertices: ByteData.sublistView(Float32List.fromList(batch.vertices)),
           indices: ByteData.sublistView(Uint16List.fromList(batch.indices)),
+          uniform: Float32List.fromList([pow(2, zoomOffset).toDouble()]).buffer.asByteData(),
           type: geometryType);
 
       final material =
