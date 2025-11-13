@@ -7,6 +7,11 @@ uniform FrameInfo {
 }
 frame_info;
 
+uniform TileOffset {
+    float scale;
+}
+tile_offset;
+
 const int layer_count = 4;
 const float inv_spacing = 2;
 
@@ -35,7 +40,7 @@ float mixAngle(float a, float b, float t) {
 void main() {
     mat4 transform = frame_info.camera_transform;
 
-    float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
+    float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform) * tile_offset.scale;
 
     if (scale < min_scale) {
         gl_Position = vec4(0.0, 0.0, -10.0, 1.0);

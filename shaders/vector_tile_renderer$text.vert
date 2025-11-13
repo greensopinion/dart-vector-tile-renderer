@@ -7,6 +7,11 @@ uniform FrameInfo {
 }
 frame_info;
 
+uniform TileOffset {
+    float scale;
+}
+tile_offset;
+
 in vec2 offset;
 in vec2 uv;
 in vec2 anchor;
@@ -21,7 +26,7 @@ out float v_font_size;
 void main() {
     mat4 transform = frame_info.camera_transform;
 
-    float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform);
+    float scale = getScaleFactor(frame_info.camera_transform, frame_info.model_transform) * tile_offset.scale;
 
     if (scale < min_scale) {
         gl_Position = vec4(0.0, 0.0, -10.0, 1.0);

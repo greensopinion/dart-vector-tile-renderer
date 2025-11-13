@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import '../sdf/glyph_atlas_data.dart';
 import '../../../themes/style.dart';
@@ -61,10 +62,10 @@ class TextLayoutCalculator {
   }
 
   ({double fontScale, double canvasScale, double scaling, double lineHeight})
-      calculateScaling(int fontSize, int canvasSize) {
+      calculateScaling(int fontSize, int canvasSize, int zoomOffset) {
     final fontScale = 15 * fontSize / atlasSet.fontSize;
     final canvasScale = 2 / canvasSize;
-    final scaling = fontScale * canvasScale;
+    final scaling = fontScale * canvasScale * pow(2, zoomOffset);
     final lineHeight = scaling * atlasSet.fontSize * 1.2;
 
     return (
