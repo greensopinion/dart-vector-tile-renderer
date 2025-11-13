@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:vector_math/vector_math.dart';
@@ -8,7 +7,6 @@ import '../themes/expression/expression.dart';
 import '../themes/feature_resolver.dart';
 import '../themes/style.dart';
 import '../themes/theme_layer_raster.dart';
-import 'debug/debug_render_layer.dart';
 import 'geometry_unpacker.dart';
 import 'line/scene_line_builder.dart';
 import 'polygon/scene_polygon_builder.dart';
@@ -44,6 +42,10 @@ class TilePreRenderer {
     }
 
     return result;
+  }
+
+  static bool isLayerSupported(ThemeLayerType layerType) {
+    return !EarlyPreRenderer.isLayerSupported(layerType);
   }
 }
 
@@ -92,20 +94,6 @@ class _PreRendererLayerVisitor extends LayerVisitor {
   }
 
   @override
-  void visitBackground(VisitorContext context, Vector4 color) {
-    final uniform = Float32List.fromList([color.x, color.y, color.z, color.w])
-        .buffer
-        .asByteData();
-
-    tileRenderData.addMesh(PackedMesh(
-        PackedGeometry(
-            vertices: ByteData(0),
-            indices: ByteData(0),
-            type: GeometryType.background),
-        PackedMaterial(uniform: uniform, type: MaterialType.colored)));
-  }
-
-  @override
   void visitRasterLayer(String key, RasterPaintModel paintModel) {
     final tileKey = Uint16List.fromList(key.codeUnits).buffer.asByteData();
 
@@ -141,7 +129,8 @@ class EarlyPreRenderer extends LayerVisitor {
   static bool isLayerSupported(ThemeLayerType layerType) {
     return layerType == ThemeLayerType.line ||
         layerType == ThemeLayerType.fill ||
-        layerType == ThemeLayerType.fillExtrusion;
+        layerType == ThemeLayerType.fillExtrusion ||
+        layerType == ThemeLayerType.background;
   }
 
   @override
