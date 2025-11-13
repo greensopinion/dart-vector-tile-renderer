@@ -31,8 +31,10 @@ class Tile {
       if (EarlyPreRenderer.isLayerSupported(layer.type)) {
         final renderData = TileRenderData();
         layer.accept(context, EarlyPreRenderer(renderData, tileset, zoom));
-        _prerenderData?[layer.id] =
-            TransferableTypedData.fromList([renderData.pack()]);
+        if (renderData.data.isNotEmpty) {
+          _prerenderData?[layer.id] =
+              TransferableTypedData.fromList([renderData.pack()]);
+        }
       }
     }
   }

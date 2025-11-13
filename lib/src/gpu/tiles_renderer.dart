@@ -92,6 +92,10 @@ class TilesRenderer {
             theme, zoom, tileset, atlasProvider.forTileID(tileID), pixelRatio, zoomOffset);
   }
 
+  bool isPreRenderLayer(ThemeLayerType layerType) {
+    return TilePreRenderer.isLayerSupported(layerType);
+  }
+
   Future preRenderUi(double zoom, Tileset tileset, String tileID) async {
     final visitor = AtlasCreatingTextVisitor(_atlasGenerator, theme);
     visitor.visitAllFeatures(tileset, zoom);
