@@ -33,6 +33,22 @@ cd example && flutter run
 
 # Features
 
+## Todo
+- Stretchable icons? Some icons are missing, this might be why
+- Icons at zoom sub-levels? Might not be helpful or necessary
+- DEM tiles
+  - hillshade
+  - contour lines
+    - elevation labels
+- 3d tiltable maps
+  - fill extrusion
+  - elevation
+- Different font weights
+   - Not implementing yet, because the currently used SDF approximation forces us to draw all text with a heavy font weight.
+- correct halo radius for text
+   - Not implementing yet, because increasing the halo radius much beyond its current fixed value results in characters overlapping with each other within a single label. Fixing this would require doubling the number of draw calls for text, which would result in a significant performance hit. Maybe there's a better solution, but I can't think of one right now.
+
+
 ## Background
  - done
    - color
@@ -70,18 +86,9 @@ cd example && flutter run
    - Italic text
    - Shift text along line to fit better in label space
    - Respect anchor from theme
-
-- todo
    - Line text follows line closely instead of rotating entire text feature to average angle of line
    - non-text symbols
-   - Different font weights
-     - Not implementing yet, because the currently used SDF approximation forces us to draw all text with a heavy font weight.
-   - correct halo radius
-     - Not implementing yet, because increasing the halo radius much beyond its current fixed value results in characters overlapping with each other within a single label. Fixing this would require doubling the number of draw calls for text, which would result in a significant performance hit. Maybe there's a better solution, but I can't think of one right now.
 
 ## Fill Extrusion
  - done
    - draws
- - todo
-   - 3d
-     - Not implementing yet, because it's out of scope
