@@ -36,6 +36,8 @@ cd example && flutter run
 ## Todo
 - Stretchable icons? Some icons are missing, this might be why
 - Icons at zoom sub-levels? Might not be helpful or necessary
+- outlines
+- support duplicate layer id
 - DEM tiles
   - hillshade
   - contour lines
