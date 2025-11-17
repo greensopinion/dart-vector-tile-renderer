@@ -66,7 +66,7 @@ class _MapTileState extends State<MapTile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   bool _disposed = false;
   Tileset? _tileset;
-  Map<String, Uint8List>? _renderData;
+  final List<Map<String, Uint8List>> _renderData = [];
 
   late final TilesRenderer gpuRenderer = TilesRenderer(theme);
   late final Renderer canvasRenderer = Renderer(theme: theme);
@@ -83,12 +83,21 @@ class _MapTileState extends State<MapTile> {
     TilesRenderer(theme);
     final tileset = await _loadTileset();
     _tileset = tileset;
+    final data = tileset.tiles.entries.map((entry) {
+      try {
+        entry.value.earlyPreRender(theme, zoom, 0, entry.key);
+        entry.value.materialize();
+      } catch (_) {}
+      return entry.value.prerenderData;
+    });
+
     await TilesRenderer.initialize;
     await gpuRenderer.preRenderUi(
         zoom, tileset, TileId(z: 0, x: 0, y: 0).key());
-    _renderData = gpuRenderer
+    _renderData.add(gpuRenderer
         .getPreRenderer()
-        .call(theme, zoom, tileset, TileId(z: 0, x: 0, y: 0).key(), 0);
+        .call(theme.copyWith(types: ThemeLayerType.values.where((it) => gpuRenderer.isPreRenderLayer(it)).toSet()), zoom, tileset, TileId(z: 0, x: 0, y: 0).key(), 0));
+    _renderData.addAll(data);
     if (!_disposed) {
       setState(() {});
     }
@@ -116,13 +125,13 @@ class _MapTileState extends State<MapTile> {
         options.size.width, options.size.height);
     final tileset = _tileset;
     final renderData = _renderData;
-    if (tileset == null || renderData == null) {
+    if (tileset == null || renderData.isEmpty) {
       return _progressIndicator();
     }
     final model = TileUiModel(
       tileId: TileId(z: zoom.truncate(), x: 0, y: 0),
       position: position,
-      renderData: [renderData],
+      renderData: _renderData,
       tileSource: TileSource(tileset: tileset),
     );
 
