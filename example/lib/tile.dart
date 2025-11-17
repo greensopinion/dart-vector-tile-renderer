@@ -66,7 +66,7 @@ class _MapTileState extends State<MapTile> {
   final theme = ProvidedThemes.lightTheme(logger: const Logger.console());
   bool _disposed = false;
   Tileset? _tileset;
-  Uint8List? _renderData;
+  Map<String, Uint8List>? _renderData;
 
   late final TilesRenderer gpuRenderer = TilesRenderer(theme);
   late final Renderer canvasRenderer = Renderer(theme: theme);
@@ -88,7 +88,7 @@ class _MapTileState extends State<MapTile> {
         zoom, tileset, TileId(z: 0, x: 0, y: 0).key());
     _renderData = gpuRenderer
         .getPreRenderer()
-        .call(theme, zoom, tileset, TileId(z: 0, x: 0, y: 0).key());
+        .call(theme, zoom, tileset, TileId(z: 0, x: 0, y: 0).key(), 0);
     if (!_disposed) {
       setState(() {});
     }
@@ -122,7 +122,7 @@ class _MapTileState extends State<MapTile> {
     final model = TileUiModel(
       tileId: TileId(z: zoom.truncate(), x: 0, y: 0),
       position: position,
-      renderData: renderData,
+      renderData: [renderData],
       tileSource: TileSource(tileset: tileset),
     );
 
