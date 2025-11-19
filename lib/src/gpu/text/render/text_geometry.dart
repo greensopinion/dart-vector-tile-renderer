@@ -21,8 +21,10 @@ class TextGeometry extends UnskinnedGeometry {
   }
 
   @override
-  void bind(RenderPass pass, HostBuffer transientsBuffer, Matrix4 modelTransform, Matrix4 cameraTransform, Vector3 cameraPosition) {
-    super.bind(pass, transientsBuffer, modelTransform, cameraTransform, cameraPosition);
+  void bind(RenderPass pass, HostBuffer transientsBuffer,
+      Matrix4 modelTransform, Matrix4 cameraTransform, Vector3 cameraPosition) {
+    super.bind(pass, transientsBuffer, modelTransform, cameraTransform,
+        cameraPosition);
 
     final uniformSlot = vertexShader.getUniformSlot('TileOffset');
     final uniformView = transientsBuffer.emplace(_uniform);

@@ -86,7 +86,9 @@ class BatchManager {
       final geometry = PackedGeometry(
           vertices: ByteData.sublistView(Float32List.fromList(batch.vertices)),
           indices: ByteData.sublistView(Uint16List.fromList(batch.indices)),
-          uniform: Float32List.fromList([pow(2, zoomOffset).toDouble()]).buffer.asByteData(),
+          uniform: Float32List.fromList([pow(2, zoomOffset).toDouble()])
+              .buffer
+              .asByteData(),
           type: geometryType);
 
       final material =
