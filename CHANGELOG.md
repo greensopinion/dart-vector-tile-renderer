@@ -1,3 +1,9 @@
+## 7.0.0-beta.2
+
+* Icon symbols
+* Curved text along lines
+* Optimizations
+
 ## 7.0.0-beta.1
 
 Render tiles using the GPU via `flutter_gpu` APIs.
