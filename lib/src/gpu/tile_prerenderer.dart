@@ -31,8 +31,8 @@ class TilePreRenderer {
 
     for (var layer in theme.layers) {
       final data = TileRenderData();
-      final visitor = _PreRendererLayerVisitor(
-          data, tileset, zoom, atlasSet, pixelRatio, sharedLabelSpaces, zoomOffset);
+      final visitor = _PreRendererLayerVisitor(data, tileset, zoom, atlasSet,
+          pixelRatio, sharedLabelSpaces, zoomOffset);
       layer.accept(visitor.context, visitor);
 
       // if (layer.id == theme.layers.last.id) {

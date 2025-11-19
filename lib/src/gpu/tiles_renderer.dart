@@ -81,15 +81,15 @@ class TilesRenderer {
     return scene;
   }
 
-  Map<String, Uint8List> Function(
-          Theme theme, double zoom, Tileset tileset, String tileID, int zoomOffset)
-      getPreRenderer() {
+  Map<String, Uint8List> Function(Theme theme, double zoom, Tileset tileset,
+      String tileID, int zoomOffset) getPreRenderer() {
     final atlasProvider = _atlasProvider;
     final view = ui.PlatformDispatcher.instance.views.first;
     final pixelRatio = view.display.devicePixelRatio;
-    return (Theme theme, double zoom, Tileset tileset, String tileID, int zoomOffset) =>
-        TilePreRenderer().preRender(
-            theme, zoom, tileset, atlasProvider.forTileID(tileID), pixelRatio, zoomOffset);
+    return (Theme theme, double zoom, Tileset tileset, String tileID,
+            int zoomOffset) =>
+        TilePreRenderer().preRender(theme, zoom, tileset,
+            atlasProvider.forTileID(tileID), pixelRatio, zoomOffset);
   }
 
   bool isPreRenderLayer(ThemeLayerType layerType) {

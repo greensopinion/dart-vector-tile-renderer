@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -94,13 +95,25 @@ class _MapTileState extends State<MapTile> {
     await TilesRenderer.initialize;
     await gpuRenderer.preRenderUi(
         zoom, tileset, TileId(z: 0, x: 0, y: 0).key());
-    _renderData.add(gpuRenderer
-        .getPreRenderer()
-        .call(theme.copyWith(types: ThemeLayerType.values.where((it) => gpuRenderer.isPreRenderLayer(it)).toSet()), zoom, tileset, TileId(z: 0, x: 0, y: 0).key(), 0));
+
+    _renderData.add(gpuRenderer.getPreRenderer().call(
+        theme.copyWith(
+            types: ThemeLayerType.values
+                .where((it) => gpuRenderer.isPreRenderLayer(it))
+                .toSet()),
+        zoom,
+        tileset,
+        TileId(z: 0, x: 0, y: 0).key(),
+        0));
     _renderData.addAll(data);
     if (!_disposed) {
       setState(() {});
     }
+    Future.delayed(const Duration(milliseconds: 500)).whenComplete(() {
+      if (!_disposed) {
+        setState(() {});
+      }
+    }); // finish fade-in animation
   }
 
   @override

@@ -102,8 +102,7 @@ class TextLayerVisitor {
           maxWidth: maxWidth,
           isLineString: isLineString,
           pixelRatio: context.pixelRatio,
-          anchorType: anchor
-      );
+          anchorType: anchor);
 
       final icon = symbolLayout.icon?.icon.evaluate(evaluationContext);
 

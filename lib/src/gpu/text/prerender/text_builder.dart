@@ -57,24 +57,23 @@ class TextBuilder {
         _regularTextBatchManager =
             BatchManager(GeometryType.text, TextGeometry.vertexSize);
 
-  bool addText({
-    required String text,
-    required int fontSize,
-    required String fontFamily,
-    TileLine? line,
-    TilePoint? point,
-    required int canvasSize,
-    required RotationAlignment rotationAlignment,
-    required Map<double, NdcLabelSpace> labelSpaces,
-    required Vector4 color,
-    Vector4? haloColor,
-    int? maxWidth,
-    required bool isLineString,
-    required double pixelRatio,
-    required LayoutAnchor anchorType
-  }) {
-    final layoutResult =
-        _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize, zoomOffset);
+  bool addText(
+      {required String text,
+      required int fontSize,
+      required String fontFamily,
+      TileLine? line,
+      TilePoint? point,
+      required int canvasSize,
+      required RotationAlignment rotationAlignment,
+      required Map<double, NdcLabelSpace> labelSpaces,
+      required Vector4 color,
+      Vector4? haloColor,
+      int? maxWidth,
+      required bool isLineString,
+      required double pixelRatio,
+      required LayoutAnchor anchorType}) {
+    final layoutResult = _calculateLayout(
+        text, fontSize, fontFamily, maxWidth, canvasSize, zoomOffset);
     if (layoutResult == null) return false;
 
     final shouldCurveText = line != null &&
@@ -84,8 +83,18 @@ class TextBuilder {
         rotationAlignment == RotationAlignment.map;
 
     if (shouldCurveText) {
-      return _tryAddCurvedText(layoutResult, fontFamily, line, anchorType,
-          labelSpaces, canvasSize, color, haloColor, fontSize, isLineString, zoomOffset);
+      return _tryAddCurvedText(
+          layoutResult,
+          fontFamily,
+          line,
+          anchorType,
+          labelSpaces,
+          canvasSize,
+          color,
+          haloColor,
+          fontSize,
+          isLineString,
+          zoomOffset);
     } else {
       return _tryAddRegularText(
           layoutResult,
@@ -227,7 +236,7 @@ class TextBuilder {
     String fontFamily,
     int? maxWidth,
     int canvasSize,
-      int zoomOffset,
+    int zoomOffset,
   ) {
     final lines = _layoutCalculator.wrapTextLines(text, fontSize, maxWidth);
     final scalingData =
