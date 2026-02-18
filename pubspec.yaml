@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  vector_tile: ^2.0.0
+  vector_tile: ">=2.0.0 <4.0.0"
   fixnum: ^1.0.0
   collection: ^1.17.2
   flutter_gpu:
