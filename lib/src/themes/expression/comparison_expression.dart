@@ -55,7 +55,6 @@ class MatchExpression extends Expression {
   bool get isConstant => false;
 }
 
-@override
 Set<String> _createProperties(Expression input,
     final List<List<Expression>> values, final List<Expression> outputs) {
   final accumulator = {...input.properties()};

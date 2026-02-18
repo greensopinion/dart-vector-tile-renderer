@@ -67,7 +67,6 @@ abstract class InterpolateExpression extends Expression {
       InterpolationStop stopAbove);
 }
 
-@override
 Set<String> _createProperties(Expression input, List<InterpolationStop> stops) {
   final accumulator = {...input.properties()};
   for (final stop in stops) {
