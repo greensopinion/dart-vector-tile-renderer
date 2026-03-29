@@ -50,9 +50,10 @@ class LayoutAnchor {
   const LayoutAnchor._(this.name);
   static const center = LayoutAnchor._('center');
   static const top = LayoutAnchor._('top');
+  static const bottom = LayoutAnchor._('bottom');
   static const DEFAULT = center;
 
-  static List<LayoutAnchor> values() => [center, top];
+  static List<LayoutAnchor> values() => [center, top, bottom];
   static LayoutAnchor fromName(String? name) =>
       values().where((v) => v.name == name).firstOrNull() ?? DEFAULT;
 }
