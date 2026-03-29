@@ -58,7 +58,11 @@ class ColorThemeFunction extends ThemeFunction<Color> {
 
   @override
   Color? interpolate(
-      Color? base, FunctionStop lower, FunctionStop upper, double zoom) {
+    Color? base,
+    FunctionStop lower,
+    FunctionStop upper,
+    double zoom,
+  ) {
     final difference = lower.zoom - upper.zoom;
     if (difference < 1.0) {
       return lower.value;

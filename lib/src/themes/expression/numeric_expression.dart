@@ -5,7 +5,7 @@ class DoubleExpression extends Expression<double> {
   final Expression _delegate;
 
   DoubleExpression(this._delegate)
-      : super('double(${_delegate.cacheKey})', _delegate.properties());
+    : super('double(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   double? evaluate(EvaluationContext context) {
@@ -30,8 +30,10 @@ class ToNumberExpression extends Expression<num> {
   final List<Expression> _delegates;
 
   ToNumberExpression(this._delegates)
-      : super('toNumber(${_delegates.map((e) => e.cacheKey).join(',')})',
-            _delegates.joinProperties());
+    : super(
+        'toNumber(${_delegates.map((e) => e.cacheKey).join(',')})',
+        _delegates.joinProperties(),
+      );
 
   @override
   num? evaluate(EvaluationContext context) {

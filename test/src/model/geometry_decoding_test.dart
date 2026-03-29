@@ -55,8 +55,10 @@ void main() {
       expect(lines, hasLength(1));
       final metric = uiGeometry.createLine(lines[0]).computeMetrics().first;
       expect(metric.getTangentForOffset(0)!.position, const Offset(0, 1));
-      expect(metric.getTangentForOffset(metric.length)!.position,
-          const Offset(2, 4));
+      expect(
+        metric.getTangentForOffset(metric.length)!.position,
+        const Offset(2, 4),
+      );
     });
 
     test('multiple line string', () {
@@ -77,23 +79,21 @@ void main() {
 
       expect(lines, hasLength(2));
 
-      final line0Metric =
-          uiGeometry.createLine(lines[0]).computeMetrics().first;
-      expect(
-        line0Metric.getTangentForOffset(0)!.position,
-        const Offset(0, 1),
-      );
+      final line0Metric = uiGeometry
+          .createLine(lines[0])
+          .computeMetrics()
+          .first;
+      expect(line0Metric.getTangentForOffset(0)!.position, const Offset(0, 1));
       expect(
         line0Metric.getTangentForOffset(line0Metric.length)!.position,
         const Offset(2, 4),
       );
 
-      final line1Metric =
-          uiGeometry.createLine(lines[1]).computeMetrics().first;
-      expect(
-        line1Metric.getTangentForOffset(0)!.position,
-        const Offset(2, 5),
-      );
+      final line1Metric = uiGeometry
+          .createLine(lines[1])
+          .computeMetrics()
+          .first;
+      expect(line1Metric.getTangentForOffset(0)!.position, const Offset(2, 5));
       expect(
         line1Metric.getTangentForOffset(line0Metric.length)!.position,
         const Offset(4, 8),
@@ -121,8 +121,10 @@ void main() {
 
       expect(polygons, hasLength(1));
 
-      final polygonMetrics =
-          uiGeometry.createPolygon(polygons[0]).computeMetrics().toList();
+      final polygonMetrics = uiGeometry
+          .createPolygon(polygons[0])
+          .computeMetrics()
+          .toList();
       expect(polygonMetrics, hasLength(1));
 
       final ringMetric = polygonMetrics[0];
@@ -167,13 +169,17 @@ void main() {
         command(closePath, 1),
       ]).toList();
 
-      final polygonMetrics =
-          uiGeometry.createPolygon(polygons[0]).computeMetrics().toList();
+      final polygonMetrics = uiGeometry
+          .createPolygon(polygons[0])
+          .computeMetrics()
+          .toList();
       expect(polygonMetrics, hasLength(2));
 
       final innerRingMetric = polygonMetrics[1];
       expect(
-          innerRingMetric.getTangentForOffset(0)!.position, const Offset(0, 0));
+        innerRingMetric.getTangentForOffset(0)!.position,
+        const Offset(0, 0),
+      );
       expect(
         innerRingMetric.getTangentForOffset(1)!.position,
         const Offset(0, 1),

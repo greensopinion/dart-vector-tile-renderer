@@ -10,23 +10,25 @@ class TileClip {
   TileClip({required this.bounds});
 
   TileData clip(TileData original) => TileData(
-      layers:
-          original.layers.map((e) => _clipLayer(e)).toList(growable: false));
+    layers: original.layers.map((e) => _clipLayer(e)).toList(growable: false),
+  );
 
   TileDataLayer _clipLayer(TileDataLayer original) {
     final pixelsPerTileUnit = 1.0 / original.extent * tileSize;
     final tileClip = ClipArea(
-        bounds.left / pixelsPerTileUnit,
-        bounds.top / pixelsPerTileUnit,
-        bounds.width / pixelsPerTileUnit,
-        bounds.height / pixelsPerTileUnit);
+      bounds.left / pixelsPerTileUnit,
+      bounds.top / pixelsPerTileUnit,
+      bounds.width / pixelsPerTileUnit,
+      bounds.height / pixelsPerTileUnit,
+    );
     return TileDataLayer(
-        name: original.name,
-        extent: original.extent,
-        features: original.features
-            .map((e) => _clipFeature(e, tileClip))
-            .whereType<TileDataFeature>()
-            .toList(growable: false));
+      name: original.name,
+      extent: original.extent,
+      features: original.features
+          .map((e) => _clipFeature(e, tileClip))
+          .whereType<TileDataFeature>()
+          .toList(growable: false),
+    );
   }
 
   TileDataFeature? _clipFeature(TileDataFeature original, ClipArea clip) {
@@ -40,7 +42,8 @@ class TileClip {
               type: original.type,
               properties: original.properties,
               geometry: null,
-              points: points);
+              points: points,
+            );
     } else if (original.hasLines) {
       final lines = original.lines
           .expand((l) => clipLine(l, clip))
@@ -52,7 +55,8 @@ class TileClip {
               type: original.type,
               properties: original.properties,
               geometry: null,
-              lines: lines);
+              lines: lines,
+            );
     } else {
       final polygons = original.polygons
           .map((p) => clipPolygon(p, clip))
@@ -64,7 +68,8 @@ class TileClip {
               type: original.type,
               properties: original.properties,
               geometry: null,
-              polygons: polygons);
+              polygons: polygons,
+            );
     }
   }
 }

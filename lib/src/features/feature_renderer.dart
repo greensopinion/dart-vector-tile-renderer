@@ -24,8 +24,8 @@ class FeatureDispatcher extends FeatureRenderer {
   final Map<TileFeatureType, FeatureRenderer> symbolTypeToRenderer;
 
   FeatureDispatcher(this.logger)
-      : typeToRenderer = createDispatchMapping(logger),
-        symbolTypeToRenderer = createSymbolDispatchMapping(logger);
+    : typeToRenderer = createDispatchMapping(logger),
+      symbolTypeToRenderer = createSymbolDispatchMapping(logger);
 
   @override
   void render(
@@ -43,15 +43,18 @@ class FeatureDispatcher extends FeatureRenderer {
     }
 
     if (delegate == null) {
-      logger.warn(() =>
-          'layer type $layerType feature ${feature.type} is not implemented');
+      logger.warn(
+        () =>
+            'layer type $layerType feature ${feature.type} is not implemented',
+      );
     } else {
       delegate.render(context, layerType, style, layer, feature);
     }
   }
 
   static Map<ThemeLayerType, FeatureRenderer> createDispatchMapping(
-      Logger logger) {
+    Logger logger,
+  ) {
     return {
       ThemeLayerType.fill: FillRenderer(logger),
       ThemeLayerType.fillExtrusion: FillRenderer(logger),
@@ -60,7 +63,8 @@ class FeatureDispatcher extends FeatureRenderer {
   }
 
   static Map<TileFeatureType, FeatureRenderer> createSymbolDispatchMapping(
-      Logger logger) {
+    Logger logger,
+  ) {
     return {
       TileFeatureType.point: SymbolPointRenderer(logger),
       TileFeatureType.linestring: SymbolLineRenderer(logger),

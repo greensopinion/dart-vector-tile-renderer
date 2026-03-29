@@ -7,12 +7,16 @@ import '../test_tile.dart';
 void main() {
   test('matches features with a selector', () async {
     final selector = SelectorFactory(testLogger).create(_minorRoadThemeLayer);
-    final tile =
-        await readTestTile(ProvidedThemes.lightTheme(logger: testLogger));
-    final transportationLayer =
-        tile.layers.where((layer) => layer.name == 'transportation').first;
-    expect(selector.layerSelector.select(tile.layers, 1).toList(),
-        contains(transportationLayer));
+    final tile = await readTestTile(
+      ProvidedThemes.lightTheme(logger: testLogger),
+    );
+    final transportationLayer = tile.layers
+        .where((layer) => layer.name == 'transportation')
+        .first;
+    expect(
+      selector.layerSelector.select(tile.layers, 1).toList(),
+      contains(transportationLayer),
+    );
     final selectedFeatures = selector.layerSelector
         .features(transportationLayer.features, 1)
         .toList();
@@ -30,7 +34,7 @@ final _minorRoadThemeLayer = {
     "all",
     ["==", "\$type", "LineString"],
     ["!in", "brunnel", "bridge", "tunnel"],
-    ["in", "class", "minor"]
+    ["in", "class", "minor"],
   ],
   "layout": {"line-cap": "round", "line-join": "round"},
   "paint": {
@@ -40,8 +44,8 @@ final _minorRoadThemeLayer = {
       "stops": [
         [13.5, 0],
         [14, 2.5],
-        [20, 18]
-      ]
-    }
-  }
+        [20, 18],
+      ],
+    },
+  },
 };

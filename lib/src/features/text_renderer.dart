@@ -22,17 +22,22 @@ class TextApproximation {
   bool _symbolCreated = false;
 
   TextApproximation(
-      this.context, this.evaluationContext, this.style, this.textLines) {
+    this.context,
+    this.evaluationContext,
+    this.style,
+    this.textLines,
+  ) {
     text = textLines.join('\n');
-    double? textSize =
-        style.symbolLayout!.text!.textSize.evaluate(evaluationContext);
+    double? textSize = style.symbolLayout!.text!.textSize.evaluate(
+      evaluationContext,
+    );
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
       }
       final maxLineWidth = textLines.map((e) => e.length).reduce(max);
-      final approximateWidth =
-          (textSize / 1.9 * (maxLineWidth + 1)).ceilToDouble();
+      final approximateWidth = (textSize / 1.9 * (maxLineWidth + 1))
+          .ceilToDouble();
       final approximateLineHeight = (textSize * 1.28).ceilToDouble();
       final approximateHeight = (textLines.length > 1)
           ? (approximateLineHeight * (textSize / 2))
@@ -41,7 +46,7 @@ class TextApproximation {
       _size = size;
       final anchor =
           style.symbolLayout!.text!.anchor.evaluate(evaluationContext) ??
-              LayoutAnchor.DEFAULT;
+          LayoutAnchor.DEFAULT;
       _translation = anchor.offset(size);
     }
   }
@@ -72,42 +77,58 @@ class TextApproximation {
     if (size == null) {
       return null;
     }
-    return _labelBox(offset, _translation, size!.width, size!.height,
-        translated: translated);
+    return _labelBox(
+      offset,
+      _translation,
+      size!.width,
+      size!.height,
+      translated: translated,
+    );
   }
 
-  StyledSymbol? _createStyledSymbol(Context context,
-      EvaluationContext evaluationContext, Style style, String text) {
+  StyledSymbol? _createStyledSymbol(
+    Context context,
+    EvaluationContext evaluationContext,
+    Style style,
+    String text,
+  ) {
     final foreground = style.textPaint!.evaluate(evaluationContext);
     if (foreground == null) {
       return null;
     }
-    double? textSize =
-        style.symbolLayout!.text!.textSize.evaluate(evaluationContext);
+    double? textSize = style.symbolLayout!.text!.textSize.evaluate(
+      evaluationContext,
+    );
     if (textSize != null) {
       if (context.zoomScaleFactor > 1.0) {
         textSize = textSize / context.zoomScaleFactor;
       }
-      double? spacing = style.symbolLayout!.text!.textLetterSpacing
-          ?.evaluate(evaluationContext);
+      double? spacing = style.symbolLayout!.text!.textLetterSpacing?.evaluate(
+        evaluationContext,
+      );
       final shadows = style.textHalo?.evaluate(evaluationContext);
       final textStyle = TextStyle(
-          foreground: foreground.paint(),
-          fontSize: textSize,
-          letterSpacing: spacing,
-          shadows: shadows,
-          fontFamily: style.symbolLayout!.text?.fontFamily,
-          fontStyle: style.symbolLayout!.text?.fontStyle);
+        foreground: foreground.paint(),
+        fontSize: textSize,
+        letterSpacing: spacing,
+        shadows: shadows,
+        fontFamily: style.symbolLayout!.text?.fontFamily,
+        fontStyle: style.symbolLayout!.text?.fontStyle,
+      );
       final textTransform = style.symbolLayout!.text?.textTransform;
-      final transformedText =
-          textTransform == null ? text : textTransform(text) ?? text;
-      final alignment =
-          style.symbolLayout!.text?.justify.evaluate(evaluationContext);
+      final transformedText = textTransform == null
+          ? text
+          : textTransform(text) ?? text;
+      final alignment = style.symbolLayout!.text?.justify.evaluate(
+        evaluationContext,
+      );
       return StyledSymbol(
-          style: SymbolStyle(
-              textAlign: alignment?.toTextAlign() ?? TextAlign.center,
-              textStyle: textStyle),
-          text: transformedText);
+        style: SymbolStyle(
+          textAlign: alignment?.toTextAlign() ?? TextAlign.center,
+          textStyle: textStyle,
+        ),
+        text: transformedText,
+      );
     }
     return null;
   }
@@ -120,8 +141,12 @@ class TextRenderer {
   late final TextPainter? _painter;
   late final Offset? _translation;
 
-  TextRenderer(this.context, EvaluationContext evaluationContext, this.style,
-      this.symbol) {
+  TextRenderer(
+    this.context,
+    EvaluationContext evaluationContext,
+    this.style,
+    this.symbol,
+  ) {
     _painter = context.textPainterProvider.provide(symbol);
     _translation = _layout(evaluationContext);
   }
@@ -135,8 +160,13 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    return _labelBox(offset, _translation, _painter!.width, _painter!.height,
-        translated: translated);
+    return _labelBox(
+      offset,
+      _translation,
+      _painter!.width,
+      _painter!.height,
+      translated: translated,
+    );
   }
 
   void render(Offset offset) {
@@ -159,14 +189,20 @@ class TextRenderer {
     if (_painter == null) {
       return null;
     }
-    final anchor = style.symbolLayout!.text!.anchor.evaluate(context) ??
+    final anchor =
+        style.symbolLayout!.text!.anchor.evaluate(context) ??
         LayoutAnchor.DEFAULT;
     return anchor.offset(_painter!.size);
   }
 }
 
-Rect? _labelBox(Offset offset, Offset? translation, double width, double height,
-    {required bool translated}) {
+Rect? _labelBox(
+  Offset offset,
+  Offset? translation,
+  double width,
+  double height, {
+  required bool translated,
+}) {
   double x = offset.dx;
   double y = offset.dy;
   if (translation != null && translated) {

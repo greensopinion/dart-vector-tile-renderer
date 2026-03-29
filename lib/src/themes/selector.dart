@@ -61,7 +61,7 @@ class _ZoomConstraintLayerSelector extends LayerSelector {
   final int? maxzoom;
 
   _ZoomConstraintLayerSelector(this.minzoom, this.maxzoom)
-      : super._('zoom($minzoom-$maxzoom)');
+    : super._('zoom($minzoom-$maxzoom)');
 
   @override
   Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) =>
@@ -93,7 +93,7 @@ class _CompositeSelector extends LayerSelector {
   final List<LayerSelector> delegates;
 
   _CompositeSelector(this.delegates)
-      : super._(delegates.map((e) => e.cacheKey).join(','));
+    : super._(delegates.map((e) => e.cacheKey).join(','));
 
   @override
   Iterable<TileLayer> select(Iterable<TileLayer> tileLayers, int zoom) {
@@ -173,14 +173,19 @@ class _ExpressionLayerSelector extends LayerSelector {
   final Expression _expression;
 
   _ExpressionLayerSelector(this._expression)
-      : super._('matching(${_expression.cacheKey})');
+    : super._('matching(${_expression.cacheKey})');
 
   @override
   Iterable<TileFeature> features(Iterable<TileFeature> features, int zoom) {
     return features.where((feature) {
       final context = EvaluationContext(
-          () => feature.properties, feature.type, const Logger.noop(),
-          zoom: zoom.toDouble(), zoomScaleFactor: 1.0, hasImage: (_) => false);
+        () => feature.properties,
+        feature.type,
+        const Logger.noop(),
+        zoom: zoom.toDouble(),
+        zoomScaleFactor: 1.0,
+        hasImage: (_) => false,
+      );
       final result = _expression.evaluate(context);
       return result is bool && result;
     });

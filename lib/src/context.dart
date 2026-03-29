@@ -28,20 +28,20 @@ class Context {
   final CachingPaintProvider paintProvider;
   late TileSpaceMapper tileSpaceMapper;
 
-  Context(
-      {required this.logger,
-      required this.canvas,
-      required this.featureRenderer,
-      required this.tileSource,
-      required this.zoomScaleFactor,
-      required this.zoom,
-      required this.rotation,
-      required this.tileSpace,
-      required this.tileClip,
-      required this.optimizations,
-      required this.textPainterProvider})
-      : labelSpace = LabelSpace(tileClip),
-        paintProvider = CachingPaintProvider();
+  Context({
+    required this.logger,
+    required this.canvas,
+    required this.featureRenderer,
+    required this.tileSource,
+    required this.zoomScaleFactor,
+    required this.zoom,
+    required this.rotation,
+    required this.tileSpace,
+    required this.tileClip,
+    required this.optimizations,
+    required this.textPainterProvider,
+  }) : labelSpace = LabelSpace(tileClip),
+       paintProvider = CachingPaintProvider();
 
   Tile? tile(String sourceId) => tileSource.tileset.tiles[sourceId];
 }

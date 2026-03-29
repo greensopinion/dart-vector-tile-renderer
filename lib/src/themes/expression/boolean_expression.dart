@@ -4,7 +4,7 @@ class ToBooleanExpression extends Expression<bool> {
   final Expression _delegate;
 
   ToBooleanExpression(this._delegate)
-      : super('toBoolean(${_delegate.cacheKey})', _delegate.properties());
+    : super('toBoolean(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   bool evaluate(EvaluationContext context) {

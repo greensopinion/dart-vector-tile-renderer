@@ -13,10 +13,10 @@ class DefaultTextPainterProvider extends TextPainterProvider {
   @override
   TextPainter provide(StyledSymbol symbol) {
     return TextPainter(
-        text: TextSpan(style: symbol.style.textStyle, text: symbol.text),
-        textAlign: symbol.style.textAlign,
-        textDirection: TextDirection.ltr)
-      ..layout();
+      text: TextSpan(style: symbol.style.textStyle, text: symbol.text),
+      textAlign: symbol.style.textAlign,
+      textDirection: TextDirection.ltr,
+    )..layout();
   }
 }
 

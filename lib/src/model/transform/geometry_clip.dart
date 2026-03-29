@@ -21,7 +21,11 @@ List<TileLine> clipLine(TileLine line, ClipArea clip) {
 }
 
 void _addPoint(
-    _PointsState state, ClipArea clip, TilePoint point, TilePoint? previous) {
+  _PointsState state,
+  ClipArea clip,
+  TilePoint point,
+  TilePoint? previous,
+) {
   if (clip.containsPoint(point)) {
     if (previous != null && !clip.containsPoint(previous)) {
       state.points.add(_intersectingPoint(point, previous, clip));
@@ -32,8 +36,11 @@ void _addPoint(
     state.lines.addLine(state.points);
     state.points = [];
   } else if (previous != null) {
-    TilePoint? segmentPointInside =
-        _findSegmentPointInside(clip, previous, point);
+    TilePoint? segmentPointInside = _findSegmentPointInside(
+      clip,
+      previous,
+      point,
+    );
     if (segmentPointInside != null) {
       _addPoint(state, clip, segmentPointInside, previous);
       _addPoint(state, clip, point, segmentPointInside);
@@ -51,8 +58,12 @@ class _PointsState {
 // the midpoint is within the clip area. Short-circuits for segments that don't
 // have overlapping bounding boxes.
 // Precision can be increased by increasing the depth. Complexity is O(2^depth)
-TilePoint? _findSegmentPointInside(ClipArea clip, TilePoint a, TilePoint b,
-    {int depth = 6}) {
+TilePoint? _findSegmentPointInside(
+  ClipArea clip,
+  TilePoint a,
+  TilePoint b, {
+  int depth = 6,
+}) {
   TilePoint midpoint = TilePoint((a.x + b.x) / 2, (a.y + b.y) / 2);
   if (clip.containsPoint(midpoint)) {
     return midpoint;
@@ -69,7 +80,10 @@ TilePolygon? clipPolygon(TilePolygon polygon, ClipArea clip) {
 }
 
 TilePoint _intersectingPoint(
-    TilePoint inside, TilePoint outside, ClipArea clip) {
+  TilePoint inside,
+  TilePoint outside,
+  ClipArea clip,
+) {
   if (inside.x == outside.x) {
     return TilePoint(inside.x, max(clip.top, min(clip.bottom, outside.y)));
   } else if (inside.y == outside.y) {
@@ -94,7 +108,11 @@ TilePoint _intersectingPoint(
 }
 
 TilePoint _intersectingClipX(
-    ClipArea clip, double alpha, TilePoint inside, TilePoint point) {
+  ClipArea clip,
+  double alpha,
+  TilePoint inside,
+  TilePoint point,
+) {
   var x = (point.x < clip.left) ? clip.left : clip.right;
   var y = point.y;
   final lengthB = _delta(x, inside.x);
@@ -108,7 +126,11 @@ TilePoint _intersectingClipX(
 }
 
 TilePoint _intersectingClipY(
-    ClipArea clip, double alpha, TilePoint inside, TilePoint point) {
+  ClipArea clip,
+  double alpha,
+  TilePoint inside,
+  TilePoint point,
+) {
   var x = point.x;
   var y = (point.y < clip.top) ? clip.top : clip.bottom;
   final beta = _nineteDegrees - alpha;

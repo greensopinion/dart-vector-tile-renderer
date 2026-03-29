@@ -53,15 +53,15 @@ class TileFeature {
   late List<BoundedPath> _paths;
   BoundedPath? _compoundPath;
 
-  TileFeature(
-      {required this.type,
-      required this.properties,
-      required List<TilePoint>? points,
-      required List<TileLine>? lines,
-      required List<TilePolygon>? polygons})
-      : _modelPoints = points,
-        _modelLines = lines,
-        _modelPolygons = polygons;
+  TileFeature({
+    required this.type,
+    required this.properties,
+    required List<TilePoint>? points,
+    required List<TileLine>? lines,
+    required List<TilePolygon>? polygons,
+  }) : _modelPoints = points,
+       _modelLines = lines,
+       _modelPolygons = polygons;
 
   List<Offset> get points {
     if (type != TileFeatureType.point) {

@@ -16,8 +16,8 @@ class Tileset {
   }
 
   Tileset._preprocessed(Tileset original, this._resolver)
-      : tiles = original.tiles,
-        preprocessed = true;
+    : tiles = original.tiles,
+      preprocessed = true;
 
   Tile? tile(String sourceId) => tiles[sourceId];
 }
@@ -37,7 +37,7 @@ class TilesetPreprocessor {
   /// [initializeGeometry] whether to initialize geometry as part of preprocessing.
   ///                      Defaults to false, only safe to use on the UI isolate.
   TilesetPreprocessor(this.theme, {bool initializeGeometry = false})
-      : _initializeGeometry = initializeGeometry;
+    : _initializeGeometry = initializeGeometry;
 
   /// Pre-processes a tileset to eliminate some expensive processing from
   /// the rendering stage.
@@ -55,7 +55,9 @@ class TilesetPreprocessor {
 
       for (final themeLayer in theme.layers.whereType<DefaultLayer>()) {
         final features = featureResolver.resolveFeatures(
-            themeLayer.selector, zoom.truncate());
+          themeLayer.selector,
+          zoom.truncate(),
+        );
         if (_initializeGeometry) {
           for (final feature in features) {
             if (feature.feature.hasPaths) {

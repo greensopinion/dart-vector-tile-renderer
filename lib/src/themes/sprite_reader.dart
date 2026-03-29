@@ -9,10 +9,14 @@ class SpriteIndexReader {
   SpriteIndexReader({this.logger = const Logger.noop()});
 
   SpriteIndex read(Map<String, dynamic> json) {
-    return SpriteIndex(Map.fromEntries(json.entries
-        .map((e) => _readSprite(e))
-        .nonNulls
-        .map((e) => MapEntry(e.name, e))));
+    return SpriteIndex(
+      Map.fromEntries(
+        json.entries
+            .map((e) => _readSprite(e))
+            .nonNulls
+            .map((e) => MapEntry(e.name, e)),
+      ),
+    );
   }
 
   Sprite? _readSprite(MapEntry<String, dynamic> entry) {
@@ -32,15 +36,16 @@ class SpriteIndexReader {
         var stretchY = _readStretch(json['stretchY'], height);
         var content = _readContent(json);
         return Sprite(
-            name: entry.key,
-            width: width,
-            height: height,
-            x: x,
-            y: y,
-            pixelRatio: pixelRatio.toInt(),
-            stretchX: stretchX,
-            stretchY: stretchY,
-            content: content);
+          name: entry.key,
+          width: width,
+          height: height,
+          x: x,
+          y: y,
+          pixelRatio: pixelRatio.toInt(),
+          stretchX: stretchX,
+          stretchY: stretchY,
+          content: content,
+        );
       }
     }
     logger.log(() => 'unexpected sprite: ${jsonEncode(json)}');
@@ -50,7 +55,7 @@ class SpriteIndexReader {
   List<List<int>> _readStretch(stretch, int defaultStretch) {
     if (stretch == null || stretch is! List<List<int>>) {
       stretch = [
-        [0, defaultStretch]
+        [0, defaultStretch],
       ];
     }
     return stretch;

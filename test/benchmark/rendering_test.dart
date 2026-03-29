@@ -23,20 +23,25 @@ Picture _renderPicture({
   canvas.clipRect(rect);
   canvas.scale(scale.toDouble(), scale.toDouble());
 
-  Renderer(theme: theme).render(canvas, TileSource(tileset: tileset),
-      zoomScaleFactor: scale, zoom: zoom, rotation: 0.0);
+  Renderer(theme: theme).render(
+    canvas,
+    TileSource(tileset: tileset),
+    zoomScaleFactor: scale,
+    zoom: zoom,
+    rotation: 0.0,
+  );
 
   return recorder.endRecording();
 }
 
 class RenderPicture extends BenchmarkBase {
-  RenderPicture({
-    required this.zoom,
-    required this.preprocessTile,
-  }) : super('RenderPicture('
-            'zoom: $zoom, '
-            'preprocessTile: $preprocessTile'
-            ')');
+  RenderPicture({required this.zoom, required this.preprocessTile})
+    : super(
+        'RenderPicture('
+        'zoom: $zoom, '
+        'preprocessTile: $preprocessTile'
+        ')',
+      );
 
   static Future<void> setupAll() async {
     testTile = await readTestTile(ThemeReader().read(lightThemeData()));
@@ -61,12 +66,8 @@ class RenderPicture extends BenchmarkBase {
   }
 
   @override
-  void run() => _renderPicture(
-        theme: theme,
-        tileset: tileset,
-        scale: 1,
-        zoom: zoom,
-      );
+  void run() =>
+      _renderPicture(theme: theme, tileset: tileset, scale: 1, zoom: zoom);
 }
 
 Future<void> main() async {
@@ -76,7 +77,7 @@ Future<void> main() async {
     for (final zoom in <double>[0, 12, 24]) ...[
       RenderPicture(zoom: zoom, preprocessTile: false),
       RenderPicture(zoom: zoom, preprocessTile: true),
-    ]
+    ],
   ];
 
   for (final benchmark in benchmarks) {

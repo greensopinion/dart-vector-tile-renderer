@@ -38,8 +38,12 @@ class StepExpressionParser extends ExpressionComponentParser {
   List<StepStop> _parseStops(List json) {
     final stops = <StepStop>[];
     for (int x = 3; (x + 1 < json.length); x += 2) {
-      stops.add(StepStop(
-          value: parser.parse(json[x]), output: parser.parse(json[x + 1])));
+      stops.add(
+        StepStop(
+          value: parser.parse(json[x]),
+          output: parser.parse(json[x + 1]),
+        ),
+      );
     }
     return stops;
   }

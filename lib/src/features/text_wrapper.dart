@@ -36,7 +36,8 @@ List<String> wrapText(String text, double textSize, int maxWidth) {
         if (optimalWordsPerLine > 1 &&
             lines.length == (optimalLineCount - 1) &&
             wordIndex == words.length - 2) {
-          final currentLinelengthPlusTrailingSpace = currentLine
+          final currentLinelengthPlusTrailingSpace =
+              currentLine
                   .map((e) => e.length * textSize)
                   .reduce((a, b) => (a + b)) +
               (currentLine.length * textSize);

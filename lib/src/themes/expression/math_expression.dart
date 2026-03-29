@@ -9,8 +9,10 @@ class NaryMathExpression extends Expression {
   final List<Expression> _operands;
 
   NaryMathExpression(String operationName, this._operation, this._operands)
-      : super('(${_operands.map((e) => e.cacheKey).join(operationName)})',
-            _operands.joinProperties());
+    : super(
+        '(${_operands.map((e) => e.cacheKey).join(operationName)})',
+        _operands.joinProperties(),
+      );
 
   @override
   evaluate(EvaluationContext context) {
@@ -35,7 +37,7 @@ class UnaryMathExpression extends Expression {
   final Expression _operand;
 
   UnaryMathExpression(String operationName, this._operation, this._operand)
-      : super('$operationName(${_operand.cacheKey})', _operand.properties());
+    : super('$operationName(${_operand.cacheKey})', _operand.properties());
 
   @override
   evaluate(EvaluationContext context) {

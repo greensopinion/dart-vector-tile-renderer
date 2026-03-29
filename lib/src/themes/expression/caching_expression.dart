@@ -3,7 +3,8 @@ import 'package:collection/collection.dart';
 import 'expression.dart';
 import 'literal_expression.dart';
 
-Expression<T> wrapConstant<T>(Expression<T> delegate) => delegate.isConstant &&
+Expression<T> wrapConstant<T>(Expression<T> delegate) =>
+    delegate.isConstant &&
         delegate is! LiteralExpression &&
         delegate is! _ConstantExpression
     ? _ConstantExpression<T>(delegate)
@@ -17,9 +18,11 @@ class _CachingExpression<T> extends Expression<T> {
   final Expression _delegate;
   final List<String> _propertyKeys;
   _CachingExpression(this._delegate)
-      : _propertyKeys =
-            List.from([..._delegate.properties()].sorted(), growable: false),
-        super(_delegate.cacheKey, _delegate.properties());
+    : _propertyKeys = List.from(
+        [..._delegate.properties()].sorted(),
+        growable: false,
+      ),
+      super(_delegate.cacheKey, _delegate.properties());
 
   final _EntryCache<T> _cache = _EntryCache<T>(50);
 
@@ -39,8 +42,10 @@ class _CachingExpression<T> extends Expression<T> {
       return _SingularCacheKey(context.getProperty(_propertyKeys.first));
     }
     if (_propertyKeys.length == 2) {
-      return _PairCacheKey(context.getProperty(_propertyKeys.first),
-          context.getProperty(_propertyKeys[1]));
+      return _PairCacheKey(
+        context.getProperty(_propertyKeys.first),
+        context.getProperty(_propertyKeys[1]),
+      );
     }
     final values = _propertyKeys
         .map((e) => context.getProperty(e))
@@ -58,7 +63,7 @@ class _ConstantExpression<T> extends Expression<T> {
   _CacheEntry<T>? _constantValue;
 
   _ConstantExpression(this._delegate)
-      : super(_delegate.cacheKey, _delegate.properties()) {
+    : super(_delegate.cacheKey, _delegate.properties()) {
     assert(_delegate.isConstant);
   }
 
@@ -121,7 +126,7 @@ class _PairCacheKey extends _CacheKey {
   final int _hashCode;
 
   _PairCacheKey(this._firstValue, this._secondValue)
-      : _hashCode = Object.hash(_firstValue, _secondValue);
+    : _hashCode = Object.hash(_firstValue, _secondValue);
 
   @override
   bool operator ==(other) =>
