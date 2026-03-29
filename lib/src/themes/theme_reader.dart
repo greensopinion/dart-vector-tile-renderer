@@ -234,8 +234,10 @@ class ThemeReader {
     );
   }
 
-  double? _minZoom(dynamic jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
-  double? _maxZoom(dynamic jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
+  double? _minZoom(dynamic jsonLayer) =>
+      (jsonLayer['minzoom'] as num?)?.toDouble();
+  double? _maxZoom(dynamic jsonLayer) =>
+      (jsonLayer['maxzoom'] as num?)?.toDouble();
 
   SymbolLayout _toSymbolLayout(dynamic jsonLayer) {
     final layout = jsonLayer['layout'];
