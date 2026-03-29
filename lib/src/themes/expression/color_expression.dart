@@ -8,7 +8,7 @@ class ColorExpression extends Expression<Color> {
   final Expression _delegate;
 
   ColorExpression(this._delegate)
-      : super('color(${_delegate.cacheKey})', _delegate.properties());
+    : super('color(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   Color? evaluate(EvaluationContext context) {

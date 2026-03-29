@@ -20,10 +20,14 @@ class DefaultLayerFeatureResolver implements LayerFeatureResolver {
 
   @override
   Iterable<LayerFeature> resolveFeatures(
-      TileLayerSelector selector, int zoom) sync* {
+    TileLayerSelector selector,
+    int zoom,
+  ) sync* {
     for (final layer in selector.select(_tileset, zoom)) {
-      for (final feature
-          in selector.layerSelector.features(layer.features, zoom)) {
+      for (final feature in selector.layerSelector.features(
+        layer.features,
+        zoom,
+      )) {
         yield LayerFeature(layer, feature);
       }
     }
@@ -44,20 +48,15 @@ class CachingLayerFeatureResolver implements LayerFeatureResolver {
   @override
   Iterable<LayerFeature> resolveFeatures(TileLayerSelector selector, int zoom) {
     final cache = _cache(zoom);
-    return cache.putIfAbsent(
-      selector.cacheKey,
-      () {
-        final minZoom = selector.layerSelector.minZoom();
-        final maxZoom = selector.layerSelector.maxZoom();
-        if ((minZoom != null && zoom < minZoom) ||
-            (maxZoom != null && zoom > maxZoom)) {
-          return [];
-        }
-        return _delegate
-            .resolveFeatures(selector, zoom)
-            .toList(growable: false);
-      },
-    );
+    return cache.putIfAbsent(selector.cacheKey, () {
+      final minZoom = selector.layerSelector.minZoom();
+      final maxZoom = selector.layerSelector.maxZoom();
+      if ((minZoom != null && zoom < minZoom) ||
+          (maxZoom != null && zoom > maxZoom)) {
+        return [];
+      }
+      return _delegate.resolveFeatures(selector, zoom).toList(growable: false);
+    });
   }
 
   Map<String, List<LayerFeature>> _cache(int zoom) {

@@ -6,9 +6,14 @@ class ComparisonExpression extends Expression {
   final bool Function(num, num) _comparison;
 
   ComparisonExpression(
-      this._comparison, String comparisonKey, this._first, this._second)
-      : super('(${_first.cacheKey} $comparisonKey ${_second.cacheKey})',
-            {..._first.properties(), ..._second.properties()});
+    this._comparison,
+    String comparisonKey,
+    this._first,
+    this._second,
+  ) : super('(${_first.cacheKey} $comparisonKey ${_second.cacheKey})', {
+        ..._first.properties(),
+        ..._second.properties(),
+      });
 
   @override
   evaluate(EvaluationContext context) {
@@ -30,17 +35,20 @@ class MatchExpression extends Expression {
   final List<Expression> _outputs;
 
   MatchExpression(this._input, this._values, this._outputs)
-      : super(
-            'match(${_input.cacheKey},${_values.map((e) => "[${e.map((i) => i.cacheKey).join(',')}]").join(',')},${_outputs.map((e) => e.cacheKey).join(',')})',
-            _createProperties(_input, _values, _outputs));
+    : super(
+        'match(${_input.cacheKey},${_values.map((e) => "[${e.map((i) => i.cacheKey).join(',')}]").join(',')},${_outputs.map((e) => e.cacheKey).join(',')})',
+        _createProperties(_input, _values, _outputs),
+      );
 
   @override
   evaluate(EvaluationContext context) {
     final input = _input.evaluate(context);
     if (input != null) {
-      for (int index = 0;
-          index < _values.length && index < _outputs.length;
-          ++index) {
+      for (
+        int index = 0;
+        index < _values.length && index < _outputs.length;
+        ++index
+      ) {
         if (_values[index].any((e) => e.evaluate(context) == input)) {
           return _outputs[index].evaluate(context);
         }
@@ -56,8 +64,11 @@ class MatchExpression extends Expression {
 }
 
 @override
-Set<String> _createProperties(Expression input,
-    final List<List<Expression>> values, final List<Expression> outputs) {
+Set<String> _createProperties(
+  Expression input,
+  final List<List<Expression>> values,
+  final List<Expression> outputs,
+) {
   final accumulator = {...input.properties()};
   for (final value in values) {
     for (final delegate in value) {

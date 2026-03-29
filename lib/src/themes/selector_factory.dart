@@ -10,7 +10,9 @@ class SelectorFactory {
     final source = themeLayer['source'];
     if (source != null && source is String) {
       return TileLayerSelector(
-          TileSelector(source), _layerSelector(themeLayer));
+        TileSelector(source),
+        _layerSelector(themeLayer),
+      );
     }
     return TileLayerSelector(TileSelector.none(), LayerSelector.none());
   }
@@ -51,8 +53,9 @@ class SelectorFactory {
     if (zoom is num) {
       return zoom;
     } else if (zoom != null) {
-      logger
-          .warn(() => 'expecting theme $property to be a number but got $zoom');
+      logger.warn(
+        () => 'expecting theme $property to be a number but got $zoom',
+      );
     }
     return null;
   }

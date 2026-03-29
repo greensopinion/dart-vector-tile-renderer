@@ -4,7 +4,7 @@ import 'expression_parser.dart';
 
 class ToNumberExpressionParser extends ExpressionComponentParser {
   ToNumberExpressionParser(ExpressionParser parser)
-      : super(parser, 'to-number');
+    : super(parser, 'to-number');
 
   @override
   bool matches(List<dynamic> json) {

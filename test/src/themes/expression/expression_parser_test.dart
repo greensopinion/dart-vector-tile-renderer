@@ -16,15 +16,18 @@ void main() {
     'a-false-bool': false,
     'an-int': 33,
     'a-double': 13.2,
-    'level': 127
+    'level': 127,
   };
   final imageNames = {'firstImage'};
   var zoom = 1.0;
   context() => EvaluationContext(
-      () => properties, TileFeatureType.linestring, const Logger.noop(),
-      zoom: zoom,
-      zoomScaleFactor: 1.0,
-      hasImage: (imageName) => imageNames.contains(imageName));
+    () => properties,
+    TileFeatureType.linestring,
+    const Logger.noop(),
+    zoom: zoom,
+    zoomScaleFactor: 1.0,
+    hasImage: (imageName) => imageNames.contains(imageName),
+  );
 
   void assertExpression(dynamic jsonExpression, String cacheKey, expected) {
     final expression = parser.parse(jsonExpression);
@@ -48,45 +51,46 @@ void main() {
 
   test('supports operators', () {
     expect(
-        parser.supportedOperators().toList()..sort(),
-        equals([
-          '!',
-          '!=',
-          '!has',
-          '!in',
-          '%',
-          '*',
-          '+',
-          '-',
-          '/',
-          '<',
-          '<=',
-          '==',
-          '>',
-          '>=',
-          '^',
-          'all',
-          'any',
-          'case',
-          'coalesce',
-          'concat',
-          'geometry-type',
-          'get',
-          'has',
-          'image',
-          'in',
-          'interpolate',
-          'is-supported-script',
-          'let',
-          'match',
-          'sqrt',
-          'step',
-          'string',
-          'to-boolean',
-          'to-number',
-          'to-string',
-          'var'
-        ]));
+      parser.supportedOperators().toList()..sort(),
+      equals([
+        '!',
+        '!=',
+        '!has',
+        '!in',
+        '%',
+        '*',
+        '+',
+        '-',
+        '/',
+        '<',
+        '<=',
+        '==',
+        '>',
+        '>=',
+        '^',
+        'all',
+        'any',
+        'case',
+        'coalesce',
+        'concat',
+        'geometry-type',
+        'get',
+        'has',
+        'image',
+        'in',
+        'interpolate',
+        'is-supported-script',
+        'let',
+        'match',
+        'sqrt',
+        'step',
+        'string',
+        'to-boolean',
+        'to-number',
+        'to-string',
+        'var',
+      ]),
+    );
   });
 
   group('literal expressions:', () {
@@ -117,53 +121,91 @@ void main() {
     test('parses to-string', () {
       assertExpression(['to-string', true], 'toString(literal(true))', 'true');
       assertExpression(
-          ['to-string', false], 'toString(literal(false))', 'false');
+        ['to-string', false],
+        'toString(literal(false))',
+        'false',
+      );
       assertExpression(['to-string', 1234], 'toString(literal(1234))', '1234');
       assertExpression(['to-string', null], 'toString(literal(null))', '');
-      assertExpression([
-        'to-string',
-        ['get', 'a-string']
-      ], 'toString(get(a-string))', 'a-string-value');
+      assertExpression(
+        [
+          'to-string',
+          ['get', 'a-string'],
+        ],
+        'toString(get(a-string))',
+        'a-string-value',
+      );
     });
 
     test('parses to-boolean', () {
       assertExpression(['to-boolean', true], 'toBoolean(literal(true))', true);
       assertExpression(
-          ['to-boolean', false], 'toBoolean(literal(false))', false);
-      assertExpression([
-        'to-boolean',
-        ['get', 'an-int']
-      ], 'toBoolean(get(an-int))', true);
-      assertExpression([
-        'to-boolean',
-        ['get', 'a-double']
-      ], 'toBoolean(get(a-double))', true);
-      assertExpression([
-        'to-boolean',
-        ['get', 'no-such-property']
-      ], 'toBoolean(get(no-such-property))', false);
+        ['to-boolean', false],
+        'toBoolean(literal(false))',
+        false,
+      );
+      assertExpression(
+        [
+          'to-boolean',
+          ['get', 'an-int'],
+        ],
+        'toBoolean(get(an-int))',
+        true,
+      );
+      assertExpression(
+        [
+          'to-boolean',
+          ['get', 'a-double'],
+        ],
+        'toBoolean(get(a-double))',
+        true,
+      );
+      assertExpression(
+        [
+          'to-boolean',
+          ['get', 'no-such-property'],
+        ],
+        'toBoolean(get(no-such-property))',
+        false,
+      );
     });
 
     test('parses to-number', () {
       assertExpression(['to-number', true], 'toNumber(literal(true))', 1);
       assertExpression(['to-number', false], 'toNumber(literal(false))', 0);
-      assertExpression([
-        'to-number',
-        ['get', 'an-int']
-      ], 'toNumber(get(an-int))', 33);
-      assertExpression([
-        'to-number',
-        ['get', 'a-double']
-      ], 'toNumber(get(a-double))', 13.2);
-      assertExpression([
-        'to-number',
-        ['get', 'no-such-property'],
-        15
-      ], 'toNumber(get(no-such-property),literal(15))', 15);
-      assertExpression([
-        'to-number',
-        ['get', 'no-such-property']
-      ], 'toNumber(get(no-such-property))', 0);
+      assertExpression(
+        [
+          'to-number',
+          ['get', 'an-int'],
+        ],
+        'toNumber(get(an-int))',
+        33,
+      );
+      assertExpression(
+        [
+          'to-number',
+          ['get', 'a-double'],
+        ],
+        'toNumber(get(a-double))',
+        13.2,
+      );
+      assertExpression(
+        [
+          'to-number',
+          ['get', 'no-such-property'],
+          15,
+        ],
+        'toNumber(get(no-such-property),literal(15))',
+        15,
+      );
+      assertExpression(
+        [
+          'to-number',
+          ['get', 'no-such-property'],
+        ],
+        'toNumber(get(no-such-property))',
+        0,
+      );
     });
   });
 
@@ -195,15 +237,22 @@ void main() {
 
     test('parses a formatted string', () {
       assertExpression(
-          '{a-string}', 'toString(get(a-string))', 'a-string-value');
+        '{a-string}',
+        'toString(get(a-string))',
+        'a-string-value',
+      );
       assertExpression('{no-match}', 'toString(get(no-match))', '');
       assertExpression('{an-int}', 'toString(get(an-int))', '33');
-      assertExpression('prefix_{an-int}',
-          'concat(literal(prefix_),toString(get(an-int)))', 'prefix_33');
       assertExpression(
-          'prefix_{an-int}_{a-string}',
-          'concat(literal(prefix_),toString(get(an-int)),literal(_),toString(get(a-string)))',
-          'prefix_33_a-string-value');
+        'prefix_{an-int}',
+        'concat(literal(prefix_),toString(get(an-int)))',
+        'prefix_33',
+      );
+      assertExpression(
+        'prefix_{an-int}_{a-string}',
+        'concat(literal(prefix_),toString(get(an-int)),literal(_),toString(get(a-string)))',
+        'prefix_33_a-string-value',
+      );
     });
 
     test('parses a get property', () {
@@ -219,8 +268,10 @@ void main() {
     test('parses a property expression', () {
       // I couldn't find the spec for this, but themes use it with
       // extrusion
-      final expression =
-          parser.parse({'property': 'a-string', 'type': 'identity'});
+      final expression = parser.parse({
+        'property': 'a-string',
+        'type': 'identity',
+      });
       expect(expression.evaluate(context()), equals('a-string-value'));
     });
 
@@ -259,9 +310,15 @@ void main() {
     });
     test('parses an image expression', () {
       assertExpression(
-          ['image', 'firstImage'], 'image(literal(firstImage))', 'firstImage');
+        ['image', 'firstImage'],
+        'image(literal(firstImage))',
+        'firstImage',
+      );
       assertExpression(
-          ['image', 'anotherImage'], 'image(literal(anotherImage))', null);
+        ['image', 'anotherImage'],
+        'image(literal(anotherImage))',
+        null,
+      );
     });
   });
 
@@ -277,7 +334,10 @@ void main() {
     }
 
     void assertNotEqualsExpression(
-        dynamic first, dynamic second, bool expected) {
+      dynamic first,
+      dynamic second,
+      bool expected,
+    ) {
       final expression = parser.parse(['!=', first, second]);
       expect(expression.evaluate(context()), equals(expected));
     }
@@ -313,11 +373,20 @@ void main() {
       assertExpression(['>', 2, 1], '(literal(2) > literal(1))', true);
       assertExpression(['>', null, 1], '(literal(null) > literal(1))', false);
       assertExpression(
-          ['>', 'an-int', 32], '(get(an-int) > literal(32))', true);
+        ['>', 'an-int', 32],
+        '(get(an-int) > literal(32))',
+        true,
+      );
       assertExpression(
-          ['>', 'an-int', 33], '(get(an-int) > literal(33))', false);
+        ['>', 'an-int', 33],
+        '(get(an-int) > literal(33))',
+        false,
+      );
       assertExpression(
-          ['>', 'an-int', 34], '(get(an-int) > literal(34))', false);
+        ['>', 'an-int', 34],
+        '(get(an-int) > literal(34))',
+        false,
+      );
     });
 
     test('parses a >= expression', () {
@@ -326,11 +395,20 @@ void main() {
       assertExpression(['>=', 2, 1], '(literal(2) >= literal(1))', true);
       assertExpression(['>=', null, 1], '(literal(null) >= literal(1))', false);
       assertExpression(
-          ['>=', 'an-int', 32], '(get(an-int) >= literal(32))', true);
+        ['>=', 'an-int', 32],
+        '(get(an-int) >= literal(32))',
+        true,
+      );
       assertExpression(
-          ['>=', 'an-int', 33], '(get(an-int) >= literal(33))', true);
+        ['>=', 'an-int', 33],
+        '(get(an-int) >= literal(33))',
+        true,
+      );
       assertExpression(
-          ['>=', 'an-int', 34], '(get(an-int) >= literal(34))', false);
+        ['>=', 'an-int', 34],
+        '(get(an-int) >= literal(34))',
+        false,
+      );
     });
 
     test('parses a < expression', () {
@@ -339,11 +417,20 @@ void main() {
       assertExpression(['<', 2, 1], '(literal(2) < literal(1))', false);
       assertExpression(['<', null, 1], '(literal(null) < literal(1))', false);
       assertExpression(
-          ['<', 'an-int', 32], '(get(an-int) < literal(32))', false);
+        ['<', 'an-int', 32],
+        '(get(an-int) < literal(32))',
+        false,
+      );
       assertExpression(
-          ['<', 'an-int', 33], '(get(an-int) < literal(33))', false);
+        ['<', 'an-int', 33],
+        '(get(an-int) < literal(33))',
+        false,
+      );
       assertExpression(
-          ['<', 'an-int', 34], '(get(an-int) < literal(34))', true);
+        ['<', 'an-int', 34],
+        '(get(an-int) < literal(34))',
+        true,
+      );
     });
 
     test('parses a <= expression', () {
@@ -352,20 +439,38 @@ void main() {
       assertExpression(['<=', 2, 1], '(literal(2) <= literal(1))', false);
       assertExpression(['<=', null, 1], '(literal(null) <= literal(1))', false);
       assertExpression(
-          ['<=', 'an-int', 32], '(get(an-int) <= literal(32))', false);
+        ['<=', 'an-int', 32],
+        '(get(an-int) <= literal(32))',
+        false,
+      );
       assertExpression(
-          ['<=', 'an-int', 33], '(get(an-int) <= literal(33))', true);
+        ['<=', 'an-int', 33],
+        '(get(an-int) <= literal(33))',
+        true,
+      );
       assertExpression(
-          ['<=', 'an-int', 34], '(get(an-int) <= literal(34))', true);
+        ['<=', 'an-int', 34],
+        '(get(an-int) <= literal(34))',
+        true,
+      );
     });
 
     test('parses an all expression', () {
       assertExpression(
-          ['all', true, false], '(all [literal(true),literal(false)])', false);
+        ['all', true, false],
+        '(all [literal(true),literal(false)])',
+        false,
+      );
       assertExpression(
-          ['all', false, true], '(all [literal(false),literal(true)])', false);
+        ['all', false, true],
+        '(all [literal(false),literal(true)])',
+        false,
+      );
       assertExpression(
-          ['all', true, true], '(all [literal(true),literal(true)])', true);
+        ['all', true, true],
+        '(all [literal(true),literal(true)])',
+        true,
+      );
     });
 
     test('parses an all expression with no arguments', () {
@@ -374,13 +479,25 @@ void main() {
 
     test('parses an any expression', () {
       assertExpression(
-          ['any', true, false], '(any [literal(true),literal(false)])', true);
+        ['any', true, false],
+        '(any [literal(true),literal(false)])',
+        true,
+      );
       assertExpression(
-          ['any', false, true], '(any [literal(false),literal(true)])', true);
+        ['any', false, true],
+        '(any [literal(false),literal(true)])',
+        true,
+      );
       assertExpression(
-          ['any', true, true], '(any [literal(true),literal(true)])', true);
-      assertExpression(['any', false, false],
-          '(any [literal(false),literal(false)])', false);
+        ['any', true, true],
+        '(any [literal(true),literal(true)])',
+        true,
+      );
+      assertExpression(
+        ['any', false, false],
+        '(any [literal(false),literal(false)])',
+        false,
+      );
     });
 
     test('parses an any expression with no arguments', () {
@@ -388,72 +505,108 @@ void main() {
     });
 
     test('parses a match expression', () {
-      assertExpression([
-        'match',
-        ['get', 'a-string'],
-        ['no-match-value', 'a-string-value'],
-        true
-      ], 'match(get(a-string),[literal(no-match-value),literal(a-string-value)],literal(true))',
-          true);
-      assertExpression([
-        'match',
-        ['get', 'a-string'],
-        'no-match-value',
-        false,
-        'a-string-value',
-        true
-      ], 'match(get(a-string),[literal(no-match-value)],[literal(a-string-value)],literal(false),literal(true))',
-          true);
+      assertExpression(
+        [
+          'match',
+          ['get', 'a-string'],
+          ['no-match-value', 'a-string-value'],
+          true,
+        ],
+        'match(get(a-string),[literal(no-match-value),literal(a-string-value)],literal(true))',
+        true,
+      );
+      assertExpression(
+        [
+          'match',
+          ['get', 'a-string'],
+          'no-match-value',
+          false,
+          'a-string-value',
+          true,
+        ],
+        'match(get(a-string),[literal(no-match-value)],[literal(a-string-value)],literal(false),literal(true))',
+        true,
+      );
     });
     test('parses a match without a fallback', () {
-      assertExpression([
-        'match',
-        ['get', 'another-string'],
-        ['no-match-value', 'a-string-value'],
-        false
-      ], 'match(get(another-string),[literal(no-match-value),literal(a-string-value)],literal(false))',
-          null);
+      assertExpression(
+        [
+          'match',
+          ['get', 'another-string'],
+          ['no-match-value', 'a-string-value'],
+          false,
+        ],
+        'match(get(another-string),[literal(no-match-value),literal(a-string-value)],literal(false))',
+        null,
+      );
     });
     test('parses a match with a fallback', () {
-      assertExpression([
-        'match',
-        ['get', 'another-string'],
-        ['no-match-value', 'a-string-value'],
-        false,
-        ['another-no-match-value'],
-        false,
-        true
-      ], 'match(get(another-string),[literal(no-match-value),literal(a-string-value)],[literal(another-no-match-value)],literal(false),literal(false),literal(true))',
-          true);
+      assertExpression(
+        [
+          'match',
+          ['get', 'another-string'],
+          ['no-match-value', 'a-string-value'],
+          false,
+          ['another-no-match-value'],
+          false,
+          true,
+        ],
+        'match(get(another-string),[literal(no-match-value),literal(a-string-value)],[literal(another-no-match-value)],literal(false),literal(false),literal(true))',
+        true,
+      );
     });
 
-    test('parses an is-supported-script expression for latin script strings',
-        () {
-      assertExpression([
-        'is-supported-script',
-        ['get', 'a-string']
-      ], 'isSupportedScript(get(a-string))', true);
-      assertExpression([
-        'is-supported-script',
-        ['get', 'a-latin-ligature']
-      ], 'isSupportedScript(get(a-latin-ligature))', true);
-    });
+    test(
+      'parses an is-supported-script expression for latin script strings',
+      () {
+        assertExpression(
+          [
+            'is-supported-script',
+            ['get', 'a-string'],
+          ],
+          'isSupportedScript(get(a-string))',
+          true,
+        );
+        assertExpression(
+          [
+            'is-supported-script',
+            ['get', 'a-latin-ligature'],
+          ],
+          'isSupportedScript(get(a-latin-ligature))',
+          true,
+        );
+      },
+    );
 
-    test('parses an is-supported-script expression for complex script strings',
-        () {
-      assertExpression([
-        'is-supported-script',
-        ['get', 'a-bengali-string']
-      ], 'isSupportedScript(get(a-bengali-string))', true);
-      assertExpression([
-        'is-supported-script',
-        ['get', 'a-burmese-string']
-      ], 'isSupportedScript(get(a-burmese-string))', true);
-      assertExpression([
-        'is-supported-script',
-        ['get', 'a-khmer-string']
-      ], 'isSupportedScript(get(a-khmer-string))', true);
-    });
+    test(
+      'parses an is-supported-script expression for complex script strings',
+      () {
+        assertExpression(
+          [
+            'is-supported-script',
+            ['get', 'a-bengali-string'],
+          ],
+          'isSupportedScript(get(a-bengali-string))',
+          true,
+        );
+        assertExpression(
+          [
+            'is-supported-script',
+            ['get', 'a-burmese-string'],
+          ],
+          'isSupportedScript(get(a-burmese-string))',
+          true,
+        );
+        assertExpression(
+          [
+            'is-supported-script',
+            ['get', 'a-khmer-string'],
+          ],
+          'isSupportedScript(get(a-khmer-string))',
+          true,
+        );
+      },
+    );
   });
   group('math expressions:', () {
     test('provides % expression', () {
@@ -483,7 +636,7 @@ void main() {
     final expression = [
       'coalesce',
       ['get', 'an-unexpected-string'],
-      ['get', 'another-string']
+      ['get', 'another-string'],
     ];
     const expectedCacheKey =
         'coalesce(get(an-unexpected-string),get(another-string))';
@@ -497,13 +650,16 @@ void main() {
       'concat',
       ['get', 'an-unexpected-string'],
       ['get', 'another-string'],
-      'a-value'
+      'a-value',
     ];
     const expectedCacheKey =
         'concat(get(an-unexpected-string),get(another-string),literal(a-value))';
     test('provides a cache key and value', () {
       assertExpression(
-          expression, expectedCacheKey, 'another-string-valuea-value');
+        expression,
+        expectedCacheKey,
+        'another-string-valuea-value',
+      );
     });
   });
 
@@ -511,7 +667,7 @@ void main() {
     final expression = [
       'string',
       ['get', 'an-unexpected-string'],
-      ['get', 'another-string']
+      ['get', 'another-string'],
     ];
     const expectedCacheKey =
         'string(get(an-unexpected-string),get(another-string))';
@@ -528,7 +684,7 @@ void main() {
       10,
       1,
       11,
-      1.5
+      1.5,
     ];
     const expectedCacheKey =
         'step(get(zoom),literal(0),[stop(literal(10),literal(1)),stop(literal(11),literal(1.5))])';
@@ -553,7 +709,7 @@ void main() {
         ["zoom"],
         0,
         14,
-        1
+        1,
       ];
       const expectedCacheKey =
           'step(get(zoom),literal(0),[stop(literal(14),literal(1))])';
@@ -577,7 +733,7 @@ void main() {
         15,
         12,
         22,
-        28
+        28,
       ];
       const expectedCacheKey =
           'interpolate(get(zoom),linear,[stop(literal(9),literal(8.5)),stop(literal(15),literal(12)),stop(literal(22),literal(28))])';
@@ -613,8 +769,8 @@ void main() {
           'base': 1,
           'stops': [
             [13, 12],
-            [14, 13]
-          ]
+            [14, 13],
+          ],
         };
         const expectedCacheKey =
             'interpolate(get(zoom),linear,[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
@@ -639,12 +795,13 @@ void main() {
           143,
           "rgba(0,0,0,0.04)",
           160,
-          "rgba(0,0,0,0.02)"
+          "rgba(0,0,0,0.02)",
         ];
         assertExpression(
-            expression,
-            'interpolate(get(level),linear,[stop(literal(110),literal(rgba(0,0,0,0.08))),stop(literal(127),literal(rgba(0,0,0,0.06))),stop(literal(143),literal(rgba(0,0,0,0.04))),stop(literal(160),literal(rgba(0,0,0,0.02)))])',
-            'rgba(0,0,0,0.06)');
+          expression,
+          'interpolate(get(level),linear,[stop(literal(110),literal(rgba(0,0,0,0.08))),stop(literal(127),literal(rgba(0,0,0,0.06))),stop(literal(143),literal(rgba(0,0,0,0.04))),stop(literal(160),literal(rgba(0,0,0,0.02)))])',
+          'rgba(0,0,0,0.06)',
+        );
       });
 
       test('supports linear with base', () {
@@ -654,13 +811,14 @@ void main() {
           ["linear", base],
           ["zoom"],
           9,
-          8.5
+          8.5,
         ];
         zoom = 1;
         assertExpression(
-            expression,
-            'interpolate(get(zoom),linear,[stop(literal(9),literal(8.5))])',
-            8.5);
+          expression,
+          'interpolate(get(zoom),linear,[stop(literal(9),literal(8.5))])',
+          8.5,
+        );
       });
     });
 
@@ -672,7 +830,7 @@ void main() {
         11,
         10.5,
         15,
-        16
+        16,
       ];
       const expectedCacheKey =
           'interpolate(get(zoom),cubicBezier(0.5,0.0,1.0,1.0),[stop(literal(11),literal(10.5)),stop(literal(15),literal(16))])';
@@ -713,7 +871,7 @@ void main() {
         9,
         8.5,
         15,
-        12
+        12,
       ];
       const expectedCacheKey =
           'interpolate(get(zoom),exponential(literal(1.2)),[stop(literal(9),literal(8.5)),stop(literal(15),literal(12))])';
@@ -744,8 +902,8 @@ void main() {
           'base': 2,
           'stops': [
             [13, 12],
-            [14, 13]
-          ]
+            [14, 13],
+          ],
         };
         const cacheKey =
             'interpolate(get(zoom),exponential(literal(2)),[stop(literal(13),literal(12)),stop(literal(14),literal(13))])';
@@ -768,8 +926,8 @@ void main() {
       [
         "*",
         ['var', 'aVariable'],
-        2
-      ]
+        2,
+      ],
     ];
     const expectedCacheKey = '(get(zoom)*literal(2))';
     test('provides variable expressions', () {
@@ -783,16 +941,16 @@ void main() {
       [
         '==',
         3,
-        ["get", 'zoom']
+        ["get", 'zoom'],
       ],
       1,
       [
         '==',
         4,
-        ["get", 'zoom']
+        ["get", 'zoom'],
       ],
       2,
-      3
+      3,
     ];
     const expectedCacheKey =
         'case(equals(literal(3),get(zoom)):literal(1);equals(literal(4),get(zoom)):literal(2);literal(true):literal(3))';

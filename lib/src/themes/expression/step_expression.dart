@@ -6,7 +6,7 @@ class StepStop {
   final String cacheKey;
 
   StepStop({required this.value, required this.output})
-      : cacheKey = 'stop(${value.cacheKey},${output.cacheKey})';
+    : cacheKey = 'stop(${value.cacheKey},${output.cacheKey})';
 }
 
 class StepExpression extends Expression {
@@ -15,9 +15,10 @@ class StepExpression extends Expression {
   final List<StepStop> _stops;
 
   StepExpression(this._input, this._defaultOutput, this._stops)
-      : super(
-            'step(${_input.cacheKey},${_defaultOutput.cacheKey},[${_stops.map((e) => e.cacheKey).join(',')}])',
-            _createProperties(_input, _defaultOutput, _stops));
+    : super(
+        'step(${_input.cacheKey},${_defaultOutput.cacheKey},[${_stops.map((e) => e.cacheKey).join(',')}])',
+        _createProperties(_input, _defaultOutput, _stops),
+      );
 
   @override
   evaluate(EvaluationContext context) {
@@ -43,8 +44,11 @@ class StepExpression extends Expression {
   bool get isConstant => false;
 }
 
-Set<String> _createProperties(Expression input, final Expression defaultOutput,
-    final List<StepStop> stops) {
+Set<String> _createProperties(
+  Expression input,
+  final Expression defaultOutput,
+  final List<StepStop> stops,
+) {
   final accumulator = {...input.properties()};
   accumulator.addAll(defaultOutput.properties());
   for (final stop in stops) {

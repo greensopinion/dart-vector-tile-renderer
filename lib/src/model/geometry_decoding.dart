@@ -144,9 +144,7 @@ Iterable<TilePolygon> decodePolygons(List<int> geometry) {
     // Decode ClosePath command.
     it.moveNext();
     final closePathCommand = it.current;
-    assert(
-      _decodeCommand(closePathCommand) == _Command.closePath,
-    );
+    assert(_decodeCommand(closePathCommand) == _Command.closePath);
     assert(_decodeCommandLength(closePathCommand) == 1);
 
     if (a == 0) {

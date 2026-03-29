@@ -6,7 +6,9 @@ void main() {
     final theme = ProvidedThemes.lightTheme();
     expect(theme.id, 'osm-liberty');
     expect(theme.version, '2021-08-22');
-    expect(theme.tileSources,
-        <String>{'openmaptiles', 'natural_earth_shaded_relief'});
+    expect(theme.tileSources, <String>{
+      'openmaptiles',
+      'natural_earth_shaded_relief',
+    });
   });
 }

@@ -9,7 +9,9 @@ void main() {
     expect(wrapText('ocean park', 20.0, 8), ['ocean', 'park']);
   });
   test('wraps text with multiple words', () {
-    expect(wrapText('sunnyside acres urban forest park', 14.0, 10),
-        ['sunnyside acres', 'urban forest park']);
+    expect(wrapText('sunnyside acres urban forest park', 14.0, 10), [
+      'sunnyside acres',
+      'urban forest park',
+    ]);
   });
 }

@@ -6,7 +6,7 @@ import 'expression_parser.dart';
 
 class InterpolateExpressionParser extends ExpressionComponentParser {
   InterpolateExpressionParser(ExpressionParser parser)
-      : super(parser, 'interpolate');
+    : super(parser, 'interpolate');
 
   @override
   bool matches(List<dynamic> json) {
@@ -42,16 +42,26 @@ class InterpolateExpressionParser extends ExpressionComponentParser {
     if (interpolationType is List &&
         interpolationType.length == 5 &&
         interpolationType[0] == 'cubic-bezier') {
-      final controlPointCoordinates =
-          interpolationType.sublist(1).whereType<num>().toList();
+      final controlPointCoordinates = interpolationType
+          .sublist(1)
+          .whereType<num>()
+          .toList();
       if (controlPointCoordinates.length == 4) {
-        final first = Point<double>(controlPointCoordinates[0].toDouble(),
-            controlPointCoordinates[1].toDouble());
-        final second = Point<double>(controlPointCoordinates[2].toDouble(),
-            controlPointCoordinates[3].toDouble());
+        final first = Point<double>(
+          controlPointCoordinates[0].toDouble(),
+          controlPointCoordinates[1].toDouble(),
+        );
+        final second = Point<double>(
+          controlPointCoordinates[2].toDouble(),
+          controlPointCoordinates[3].toDouble(),
+        );
 
         return InterpolateCubicBezierExpression(
-            inputExpression, first, second, stops);
+          inputExpression,
+          first,
+          second,
+          stops,
+        );
       }
     }
     return null;
@@ -70,9 +80,12 @@ class InterpolateExpressionParser extends ExpressionComponentParser {
   List<InterpolationStop> _parseStops(List json) {
     final stops = <InterpolationStop>[];
     for (int x = 3; (x + 1 < json.length); x += 2) {
-      stops.add(InterpolationStop(
+      stops.add(
+        InterpolationStop(
           value: parser.parsePropertyOrExpression(json[x]),
-          output: parser.parse(json[x + 1])));
+          output: parser.parse(json[x + 1]),
+        ),
+      );
     }
     return stops;
   }

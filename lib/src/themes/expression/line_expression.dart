@@ -6,7 +6,7 @@ class LineCapExpression extends Expression<LineCap> {
   final Expression _delegate;
 
   LineCapExpression(this._delegate)
-      : super('lineCap(${_delegate.cacheKey})', _delegate.properties());
+    : super('lineCap(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   LineCap evaluate(EvaluationContext context) {
@@ -27,7 +27,7 @@ class LineJoinExpression extends Expression<LineJoin> {
   final Expression _delegate;
 
   LineJoinExpression(this._delegate)
-      : super('lineJoin(${_delegate.cacheKey})', _delegate.properties());
+    : super('lineJoin(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   LineJoin evaluate(EvaluationContext context) {

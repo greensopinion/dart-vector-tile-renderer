@@ -39,8 +39,9 @@ class PolygonClip {
         final previousPoint = inputList[(index - 1) % pointCount];
         if (_isInside(currentPoint, edge)) {
           if (!_isInside(previousPoint, edge)) {
-            outputList
-                .add(_intersectingPoint(previousPoint, currentPoint, edge));
+            outputList.add(
+              _intersectingPoint(previousPoint, currentPoint, edge),
+            );
           }
           outputList.add(currentPoint);
         } else if (_isInside(previousPoint, edge)) {
@@ -68,10 +69,15 @@ class PolygonClip {
   }
 
   TilePoint _intersectingPoint(
-      TilePoint firstPoint, TilePoint secondPoint, _Edge edge) {
+    TilePoint firstPoint,
+    TilePoint secondPoint,
+    _Edge edge,
+  ) {
     // based on https://github.com/mdabdk/sutherland-hodgman/blob/main/SH.py
-    final shift = TilePoint(min(firstPoint.x, secondPoint.x).abs() + 1,
-        min(firstPoint.y, secondPoint.y).abs() + 1);
+    final shift = TilePoint(
+      min(firstPoint.x, secondPoint.x).abs() + 1,
+      min(firstPoint.y, secondPoint.y).abs() + 1,
+    );
     final l0p0 = firstPoint + shift;
     final l0p1 = secondPoint + shift;
     final second = _line(edge, shift);
@@ -104,22 +110,22 @@ class PolygonClip {
       case _Edge.left:
         return [
           TilePoint(bounds.left + shift.x, 0),
-          TilePoint(bounds.left + shift.x, maxCoordinate)
+          TilePoint(bounds.left + shift.x, maxCoordinate),
         ];
       case _Edge.top:
         return [
           TilePoint(0, bounds.top + shift.y),
-          TilePoint(maxCoordinate, bounds.top + shift.y)
+          TilePoint(maxCoordinate, bounds.top + shift.y),
         ];
       case _Edge.right:
         return [
           TilePoint(bounds.right + shift.x, 0),
-          TilePoint(bounds.right + shift.x, maxCoordinate)
+          TilePoint(bounds.right + shift.x, maxCoordinate),
         ];
       case _Edge.bottom:
         return [
           TilePoint(0, bounds.bottom + shift.y),
-          TilePoint(maxCoordinate, bounds.bottom + shift.y)
+          TilePoint(maxCoordinate, bounds.bottom + shift.y),
         ];
     }
   }

@@ -12,10 +12,14 @@ class EvaluationContext {
   final bool Function(String) hasImage;
   final Logger logger;
 
-  EvaluationContext(this._properties, this._featureType, this.logger,
-      {required this.zoom,
-      required this.zoomScaleFactor,
-      required this.hasImage});
+  EvaluationContext(
+    this._properties,
+    this._featureType,
+    this.logger, {
+    required this.zoom,
+    required this.zoomScaleFactor,
+    required this.hasImage,
+  });
 
   getProperty(String name) {
     if (name == '\$type') {
@@ -80,7 +84,7 @@ class NotNullExpression extends Expression {
   final Expression _delegate;
 
   NotNullExpression(this._delegate)
-      : super('notNull(${_delegate.cacheKey})', _delegate.properties());
+    : super('notNull(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   evaluate(EvaluationContext context) => _delegate.evaluate(context) != null;
@@ -93,7 +97,7 @@ class NotExpression extends Expression {
   final Expression _delegate;
 
   NotExpression(this._delegate)
-      : super('!${_delegate.cacheKey}', _delegate.properties());
+    : super('!${_delegate.cacheKey}', _delegate.properties());
 
   @override
   evaluate(EvaluationContext context) {
@@ -114,8 +118,10 @@ class EqualsExpression extends Expression {
   final Expression _second;
 
   EqualsExpression(this._first, this._second)
-      : super('equals(${_first.cacheKey},${_second.cacheKey})',
-            {..._first.properties(), ..._second.properties()});
+    : super('equals(${_first.cacheKey},${_second.cacheKey})', {
+        ..._first.properties(),
+        ..._second.properties(),
+      });
 
   @override
   evaluate(EvaluationContext context) {
@@ -131,8 +137,10 @@ class InExpression extends Expression {
   final List _values;
 
   InExpression(this._first, this._values)
-      : super('(${_first.cacheKey} in [${_values.join(',')}])',
-            _first.properties());
+    : super(
+        '(${_first.cacheKey} in [${_values.join(',')}])',
+        _first.properties(),
+      );
 
   @override
   evaluate(EvaluationContext context) {
@@ -148,8 +156,10 @@ class AnyExpression extends Expression {
   final List<Expression> _delegates;
 
   AnyExpression(this._delegates)
-      : super('(any [${_delegates.map((e) => e.cacheKey).join(',')}])',
-            _delegates.joinProperties());
+    : super(
+        '(any [${_delegates.map((e) => e.cacheKey).join(',')}])',
+        _delegates.joinProperties(),
+      );
 
   @override
   evaluate(EvaluationContext context) {
@@ -172,8 +182,10 @@ class AllExpression extends Expression {
   final List<Expression> _delegates;
 
   AllExpression(this._delegates)
-      : super('(all [${_delegates.map((e) => e.cacheKey).join(',')}])',
-            _delegates.joinProperties());
+    : super(
+        '(all [${_delegates.map((e) => e.cacheKey).join(',')}])',
+        _delegates.joinProperties(),
+      );
 
   @override
   evaluate(EvaluationContext context) {
@@ -196,7 +208,7 @@ class ToStringExpression extends Expression {
   final Expression _delegate;
 
   ToStringExpression(this._delegate)
-      : super('toString(${_delegate.cacheKey})', _delegate.properties());
+    : super('toString(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   evaluate(EvaluationContext context) =>

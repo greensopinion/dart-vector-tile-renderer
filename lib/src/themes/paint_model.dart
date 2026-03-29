@@ -18,15 +18,21 @@ class PaintModel {
 
   Paint? _paint;
 
-  PaintModel(
-      {required this.paintingStyle,
-      required this.color,
-      required this.strokeWidth,
-      required this.lineCap,
-      required this.lineJoin,
-      required this.strokeDashPattern})
-      : _hashCode = Object.hash(paintingStyle, color, strokeWidth, lineCap,
-            lineJoin, _equality.hash(strokeDashPattern));
+  PaintModel({
+    required this.paintingStyle,
+    required this.color,
+    required this.strokeWidth,
+    required this.lineCap,
+    required this.lineJoin,
+    required this.strokeDashPattern,
+  }) : _hashCode = Object.hash(
+         paintingStyle,
+         color,
+         strokeWidth,
+         lineCap,
+         lineJoin,
+         _equality.hash(strokeDashPattern),
+       );
 
   @override
   bool operator ==(other) =>

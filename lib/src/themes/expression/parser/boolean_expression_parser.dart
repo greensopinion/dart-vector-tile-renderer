@@ -4,7 +4,7 @@ import 'expression_parser.dart';
 
 class ToBooleanExpressionParser extends ExpressionComponentParser {
   ToBooleanExpressionParser(ExpressionParser parser)
-      : super(parser, 'to-boolean');
+    : super(parser, 'to-boolean');
 
   @override
   bool matches(List<dynamic> json) {

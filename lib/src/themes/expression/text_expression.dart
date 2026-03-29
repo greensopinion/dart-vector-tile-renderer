@@ -5,7 +5,7 @@ class LayoutAnchorExpression extends Expression<LayoutAnchor> {
   final Expression _delegate;
 
   LayoutAnchorExpression(this._delegate)
-      : super('layoutAnchor(${_delegate.cacheKey})', _delegate.properties());
+    : super('layoutAnchor(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   LayoutAnchor evaluate(EvaluationContext context) {
@@ -26,7 +26,7 @@ class LayoutPlacementExpression extends Expression<LayoutPlacement> {
   final Expression _delegate;
 
   LayoutPlacementExpression(this._delegate)
-      : super('layoutPlacement(${_delegate.cacheKey})', _delegate.properties());
+    : super('layoutPlacement(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   LayoutPlacement evaluate(EvaluationContext context) {
@@ -47,7 +47,7 @@ class LayoutJustifyExpression extends Expression<LayoutJustify> {
   final Expression _delegate;
 
   LayoutJustifyExpression(this._delegate)
-      : super('justify(${_delegate.cacheKey})', _delegate.properties());
+    : super('justify(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   LayoutJustify evaluate(EvaluationContext context) {
@@ -67,8 +67,7 @@ class LayoutJustifyExpression extends Expression<LayoutJustify> {
 class RotationAlignmentExpression extends Expression<RotationAlignment> {
   final Expression _delegate;
   RotationAlignmentExpression(this._delegate)
-      : super(
-            'rotationAlignment(${_delegate.cacheKey})', _delegate.properties());
+    : super('rotationAlignment(${_delegate.cacheKey})', _delegate.properties());
 
   @override
   RotationAlignment evaluate(EvaluationContext context) {

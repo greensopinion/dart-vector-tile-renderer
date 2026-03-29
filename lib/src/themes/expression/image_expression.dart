@@ -4,7 +4,7 @@ class ImageExpression extends Expression<String> {
   final Expression delegate;
 
   ImageExpression(this.delegate)
-      : super('image(${delegate.cacheKey})', delegate.properties());
+    : super('image(${delegate.cacheKey})', delegate.properties());
 
   @override
   String? evaluate(EvaluationContext context) {

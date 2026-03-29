@@ -16,13 +16,17 @@ class TileDataLayer {
   final int extent;
   final List<TileDataFeature> features;
 
-  TileDataLayer(
-      {required this.name, required this.extent, required this.features});
+  TileDataLayer({
+    required this.name,
+    required this.extent,
+    required this.features,
+  });
 
   TileLayer toTileLayer() => TileLayer(
-      name: name,
-      extent: extent,
-      features: features.map((e) => e.toTileFeature()).toList(growable: false));
+    name: name,
+    extent: extent,
+    features: features.map((e) => e.toTileFeature()).toList(growable: false),
+  );
 }
 
 class TileDataFeature {
@@ -33,17 +37,17 @@ class TileDataFeature {
   Iterable<TileLine>? _lines;
   Iterable<TilePolygon>? _polygons;
 
-  TileDataFeature(
-      {required this.type,
-      required this.properties,
-      required List<int>? geometry,
-      Iterable<TilePoint>? points,
-      Iterable<TileLine>? lines,
-      Iterable<TilePolygon>? polygons})
-      : _geometry = geometry,
-        _points = points,
-        _lines = lines,
-        _polygons = polygons;
+  TileDataFeature({
+    required this.type,
+    required this.properties,
+    required List<int>? geometry,
+    Iterable<TilePoint>? points,
+    Iterable<TileLine>? lines,
+    Iterable<TilePolygon>? polygons,
+  }) : _geometry = geometry,
+       _points = points,
+       _lines = lines,
+       _polygons = polygons;
 
   bool get hasLines => type == TileFeatureType.linestring;
   bool get hasPolygons => type == TileFeatureType.polygon;
@@ -93,10 +97,11 @@ class TileDataFeature {
     final tileLines = hasLines ? lines.toList(growable: false) : null;
     final tilePolygons = hasPolygons ? polygons.toList(growable: false) : null;
     return TileFeature(
-        type: type,
-        properties: properties,
-        points: tilePoints,
-        lines: tileLines,
-        polygons: tilePolygons);
+      type: type,
+      properties: properties,
+      points: tilePoints,
+      lines: tileLines,
+      polygons: tilePolygons,
+    );
   }
 }

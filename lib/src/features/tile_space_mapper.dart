@@ -3,19 +3,13 @@ import 'dart:ui';
 import '../../vector_tile_renderer.dart';
 
 class TileSpaceMapper {
-  TileSpaceMapper(
-    Canvas canvas,
-    Rect tileClip,
-    int tileSize,
-    int tileExtent,
-  ) : this._(canvas, tileClip, 1 / tileExtent * tileSize);
+  TileSpaceMapper(Canvas canvas, Rect tileClip, int tileSize, int tileExtent)
+    : this._(canvas, tileClip, 1 / tileExtent * tileSize);
 
-  TileSpaceMapper._(
-    this.canvas,
-    Rect tileClip,
-    this.pixelsPerTileUnit,
-  ) : tileClipInTileUnits = tileClip.topLeft / pixelsPerTileUnit &
-            tileClip.size / pixelsPerTileUnit;
+  TileSpaceMapper._(this.canvas, Rect tileClip, this.pixelsPerTileUnit)
+    : tileClipInTileUnits =
+          tileClip.topLeft / pixelsPerTileUnit &
+          tileClip.size / pixelsPerTileUnit;
 
   final Canvas canvas;
   final double pixelsPerTileUnit;

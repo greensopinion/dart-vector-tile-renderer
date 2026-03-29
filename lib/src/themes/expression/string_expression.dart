@@ -5,8 +5,10 @@ class StringExpression extends Expression<String> {
   final List<Expression> _values;
 
   StringExpression(this._values)
-      : super("string(${_values.map((e) => e.cacheKey).join(',')})",
-            _values.joinProperties());
+    : super(
+        "string(${_values.map((e) => e.cacheKey).join(',')})",
+        _values.joinProperties(),
+      );
 
   @override
   String evaluate(EvaluationContext context) {
@@ -32,7 +34,7 @@ class _OptionalStringExpression extends Expression<String?> {
   final Expression delegate;
 
   _OptionalStringExpression(this.delegate)
-      : super(delegate.cacheKey, delegate.properties());
+    : super(delegate.cacheKey, delegate.properties());
 
   @override
   String? evaluate(EvaluationContext context) {

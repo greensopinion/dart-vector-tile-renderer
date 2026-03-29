@@ -14,7 +14,7 @@ class PaintExpression extends Expression<PaintModel> {
   final PaintStyle _delegate;
 
   PaintExpression(this._delegate)
-      : super(_cacheKey(_delegate), _properties(_delegate));
+    : super(_cacheKey(_delegate), _properties(_delegate));
 
   @override
   PaintModel? evaluate(EvaluationContext context) => _delegate.paint(context);
@@ -31,12 +31,12 @@ class PaintExpression extends Expression<PaintModel> {
       "paint(${delegate.id},${delegate.paintingStyle},opacity(${delegate.opacity.cacheKey}),strokeWidth(${delegate.strokeWidth.cacheKey}),color(${delegate.color.cacheKey}),lineCap(${delegate.lineCap?.cacheKey ?? ''}),lineJoin(${delegate.lineJoin?.cacheKey ?? ''}))";
 
   static Set<String> _properties(PaintStyle delegate) => {
-        ...delegate.color.properties(),
-        ...delegate.strokeWidth.properties(),
-        ...delegate.opacity.properties(),
-        ...delegate.lineCap?.properties() ?? {},
-        ...delegate.lineJoin?.properties() ?? {},
-      };
+    ...delegate.color.properties(),
+    ...delegate.strokeWidth.properties(),
+    ...delegate.opacity.properties(),
+    ...delegate.lineCap?.properties() ?? {},
+    ...delegate.lineJoin?.properties() ?? {},
+  };
 }
 
 class PaintStyle {
@@ -49,15 +49,16 @@ class PaintStyle {
   final Expression<LineJoin>? lineJoin;
   final List<double>? strokeDashPattern;
 
-  PaintStyle(
-      {required this.id,
-      required this.paintingStyle,
-      required this.color,
-      required this.opacity,
-      required this.strokeWidth,
-      required this.lineCap,
-      required this.lineJoin,
-      required this.strokeDashPattern});
+  PaintStyle({
+    required this.id,
+    required this.paintingStyle,
+    required this.color,
+    required this.opacity,
+    required this.strokeWidth,
+    required this.lineCap,
+    required this.lineJoin,
+    required this.strokeDashPattern,
+  });
 
   PaintModel? paint(EvaluationContext context) {
     final opacity = this.opacity.evaluate(context);
@@ -81,12 +82,13 @@ class PaintStyle {
     final lineJoin = this.lineJoin?.evaluate(context);
     final lineCap = this.lineCap?.evaluate(context);
     return PaintModel(
-        paintingStyle: paintingStyle,
-        color: color,
-        strokeWidth: strokeWidth,
-        lineCap: lineCap,
-        lineJoin: lineJoin,
-        strokeDashPattern: strokeDashPattern);
+      paintingStyle: paintingStyle,
+      color: color,
+      strokeWidth: strokeWidth,
+      lineCap: lineCap,
+      lineJoin: lineJoin,
+      strokeDashPattern: strokeDashPattern,
+    );
   }
 }
 
@@ -96,8 +98,13 @@ class PaintFactory {
   PaintFactory(this.logger) : expressionParser = ExpressionParser(logger);
 
   Expression<PaintModel>? create(
-      String id, PaintingStyle style, String prefix, paint, layout,
-      {double? defaultStrokeWidth = 1.0}) {
+    String id,
+    PaintingStyle style,
+    String prefix,
+    paint,
+    layout, {
+    double? defaultStrokeWidth = 1.0,
+  }) {
     if (paint == null) {
       return null;
     }
@@ -105,10 +112,14 @@ class PaintFactory {
     if (color == null) {
       return null;
     }
-    final opacity = expressionParser.parse(paint['$prefix-opacity'],
-        whenNull: () => LiteralExpression(1.0));
-    final strokeWidth = expressionParser.parse(paint['$prefix-width'],
-        whenNull: () => LiteralExpression(defaultStrokeWidth));
+    final opacity = expressionParser.parse(
+      paint['$prefix-opacity'],
+      whenNull: () => LiteralExpression(1.0),
+    );
+    final strokeWidth = expressionParser.parse(
+      paint['$prefix-width'],
+      whenNull: () => LiteralExpression(defaultStrokeWidth),
+    );
     final lineCap = layout == null
         ? null
         : expressionParser.parse(layout['$prefix-cap']).asLineCapExpression();
@@ -125,25 +136,32 @@ class PaintFactory {
       }
     }
 
-    return cache(PaintExpression(PaintStyle(
-        id: id,
-        paintingStyle: style,
-        opacity: opacity.asDoubleExpression(),
-        strokeWidth: strokeWidth.asDoubleExpression(),
-        color: color.asColorExpression(),
-        lineCap: lineCap,
-        lineJoin: lineJoin,
-        strokeDashPattern: dashArray)));
+    return cache(
+      PaintExpression(
+        PaintStyle(
+          id: id,
+          paintingStyle: style,
+          opacity: opacity.asDoubleExpression(),
+          strokeWidth: strokeWidth.asDoubleExpression(),
+          color: color.asColorExpression(),
+          lineCap: lineCap,
+          lineJoin: lineJoin,
+          strokeDashPattern: dashArray,
+        ),
+      ),
+    );
   }
 }
 
 class CachingPaintProvider {
   final Map<_PaintCacheKey, PaintModel?> _paintByKey = {};
 
-  PaintModel? provide(EvaluationContext context,
-      {required Expression<PaintModel> paint,
-      required double Function(double) strokeWidthModifier,
-      required double Function(double) widthModifier}) {
+  PaintModel? provide(
+    EvaluationContext context, {
+    required Expression<PaintModel> paint,
+    required double Function(double) strokeWidthModifier,
+    required double Function(double) widthModifier,
+  }) {
     final p = paint.evaluate(context);
     if (p == null) {
       return null;
@@ -155,16 +173,18 @@ class CachingPaintProvider {
 
     final key = _PaintCacheKey(p, strokeWidth);
     return _paintByKey.putIfAbsent(
-        key,
-        () => PaintModel(
-            paintingStyle: p.paintingStyle,
-            color: p.color,
-            strokeWidth: strokeWidth,
-            lineCap: p.lineCap,
-            lineJoin: p.lineJoin,
-            strokeDashPattern: p.strokeDashPattern
-                ?.map(widthModifier)
-                .toList(growable: false)));
+      key,
+      () => PaintModel(
+        paintingStyle: p.paintingStyle,
+        color: p.color,
+        strokeWidth: strokeWidth,
+        lineCap: p.lineCap,
+        lineJoin: p.lineJoin,
+        strokeDashPattern: p.strokeDashPattern
+            ?.map(widthModifier)
+            .toList(growable: false),
+      ),
+    );
   }
 }
 
