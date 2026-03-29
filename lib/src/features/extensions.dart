@@ -15,6 +15,8 @@ extension LayoutAnchorExtension on LayoutAnchor {
         return Offset(-size.width / 2, -size.height / 2);
       case LayoutAnchor.top:
         return Offset(-size.width / 2, 0);
+      case LayoutAnchor.bottom:
+        return Offset(-size.width / 2, -size.height);
     }
     throw 'Not implemented: $name';
   }
