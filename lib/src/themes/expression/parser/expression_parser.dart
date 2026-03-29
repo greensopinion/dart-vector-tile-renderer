@@ -158,14 +158,14 @@ class ExpressionParser {
         : delegate;
   }
 
-  Expression? parseOptionalPropertyOrExpression(json) {
+  Expression? parseOptionalPropertyOrExpression(dynamic json) {
     if (json is String) {
       return parseOptional(['get', json]);
     }
     return parseOptional(json);
   }
 
-  Expression parsePropertyOrExpression(json) {
+  Expression parsePropertyOrExpression(dynamic json) {
     Expression? expression;
     if (json is String) {
       expression = parseOptional(['get', json]);

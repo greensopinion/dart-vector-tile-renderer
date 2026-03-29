@@ -85,7 +85,7 @@ class TileFactory {
     return properties.map((key, value) => MapEntry(key, _convertValue(value)));
   }
 
-  _convertValue(VectorTileValue value) {
+  Object _convertValue(VectorTileValue value) {
     final v = value.value;
     if (v is Int64) {
       return v.toInt();

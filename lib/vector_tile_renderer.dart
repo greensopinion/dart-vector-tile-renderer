@@ -1,4 +1,4 @@
-library vector_tile_renderer;
+library;
 
 export 'package:vector_tile/vector_tile.dart' show VectorTile;
 

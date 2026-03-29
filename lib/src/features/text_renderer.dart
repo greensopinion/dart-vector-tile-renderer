@@ -152,7 +152,7 @@ class TextRenderer {
   }
 
   double get textHeight => _painter!.height;
-  Size get size => Size(_painter!.width, _painter!.height);
+  Size get size => Size(_painter!.width, _painter.height);
   Offset? get translation => _translation;
   bool get canPaint => _painter != null;
 
@@ -163,8 +163,8 @@ class TextRenderer {
     return _labelBox(
       offset,
       _translation,
-      _painter!.width,
-      _painter!.height,
+      _painter.width,
+      _painter.height,
       translated: translated,
     );
   }
@@ -192,7 +192,7 @@ class TextRenderer {
     final anchor =
         style.symbolLayout!.text!.anchor.evaluate(context) ??
         LayoutAnchor.DEFAULT;
-    return anchor.offset(_painter!.size);
+    return anchor.offset(_painter.size);
   }
 }
 

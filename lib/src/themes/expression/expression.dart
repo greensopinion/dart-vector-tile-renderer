@@ -21,7 +21,7 @@ class EvaluationContext {
     required this.hasImage,
   });
 
-  getProperty(String name) {
+  dynamic getProperty(String name) {
     if (name == '\$type') {
       return _typeName();
     } else if (name == 'zoom') {
@@ -31,7 +31,7 @@ class EvaluationContext {
     return properties[name];
   }
 
-  _typeName() {
+  String _typeName() {
     switch (_featureType) {
       case TileFeatureType.point:
         return 'Point';
@@ -71,7 +71,7 @@ class UnsupportedExpression extends Expression {
 
   UnsupportedExpression(this._json) : super('unsupported', <String>{});
 
-  get json => _json;
+  dynamic get json => _json;
 
   @override
   evaluate(EvaluationContext context) => null;

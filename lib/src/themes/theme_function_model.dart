@@ -17,7 +17,7 @@ class FunctionStop<T> {
 }
 
 class DoubleFunctionModelFactory {
-  FunctionModel<double>? create(json) {
+  FunctionModel<double>? create(dynamic json) {
     double? base = (json['base'] as num?)?.toDouble();
     final stops = json['stops'] as List<dynamic>?;
     if (stops == null) {
@@ -37,7 +37,7 @@ class DoubleFunctionModelFactory {
 }
 
 class ColorFunctionModelFactory {
-  FunctionModel<Color>? create(json) {
+  FunctionModel<Color>? create(dynamic json) {
     Color? base = json['base'] is String
         ? ColorParser.toColor(json['base'] as String?)
         : null;

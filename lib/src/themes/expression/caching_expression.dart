@@ -84,7 +84,7 @@ class _EntryCache<T> {
 
   _CacheEntry<T>? get(_CacheKey key) => _entries[key];
 
-  put(_CacheKey key, _CacheEntry<T> value) {
+  void put(_CacheKey key, _CacheEntry<T> value) {
     _entries[key] = value;
     if (_entries.length > _maxSize) {
       _entries.remove(_entries.keys.first);

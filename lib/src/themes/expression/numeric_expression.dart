@@ -46,7 +46,7 @@ class ToNumberExpression extends Expression<num> {
     return 0;
   }
 
-  num? _toNumber(result) {
+  num? _toNumber(dynamic result) {
     if (result is num) {
       return result;
     } else if (result == true || result == "true") {

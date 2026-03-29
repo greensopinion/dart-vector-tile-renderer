@@ -44,7 +44,7 @@ class ThemeReader {
     });
   }
 
-  ThemeLayer? _toThemeLayer(jsonLayer) {
+  ThemeLayer? _toThemeLayer(dynamic jsonLayer) {
     final visibility = jsonLayer['layout']?['visibility'];
     if (visibility == 'none') {
       return null;
@@ -67,7 +67,7 @@ class ThemeReader {
     return null;
   }
 
-  ThemeLayer? _toBackgroundTheme(jsonLayer) {
+  ThemeLayer? _toBackgroundTheme(dynamic jsonLayer) {
     final styleBackgroundColor = jsonLayer['paint']?['background-color'];
     if (styleBackgroundColor != null) {
       final backgroundColor = expressionParser
@@ -82,7 +82,7 @@ class ThemeReader {
     return null;
   }
 
-  ThemeLayer? _toFillExtrusionTheme(jsonLayer) {
+  ThemeLayer? _toFillExtrusionTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
     final paint = paintFactory.create(
@@ -115,7 +115,7 @@ class ThemeReader {
     return null;
   }
 
-  ThemeLayer? _toRasterTheme(jsonLayer) {
+  ThemeLayer? _toRasterTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
     final opacity = expressionParser.parse(
@@ -140,7 +140,7 @@ class ThemeReader {
     );
   }
 
-  ThemeLayer? _toFillTheme(jsonLayer) {
+  ThemeLayer? _toFillTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
     final paint = paintFactory.create(
@@ -172,7 +172,7 @@ class ThemeReader {
     return null;
   }
 
-  ThemeLayer? _toLineTheme(jsonLayer) {
+  ThemeLayer? _toLineTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final jsonPaint = jsonLayer['paint'];
     final jsonLayout = jsonLayer['layout'];
@@ -197,9 +197,9 @@ class ThemeReader {
     return null;
   }
 
-  String _layerId(jsonLayer) => jsonLayer['id'] as String? ?? '<none>';
+  String _layerId(dynamic jsonLayer) => jsonLayer['id'] as String? ?? '<none>';
 
-  ThemeLayer? _toSymbolTheme(jsonLayer) {
+  ThemeLayer? _toSymbolTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
 
     final layout = _toSymbolLayout(jsonLayer);
@@ -234,10 +234,10 @@ class ThemeReader {
     );
   }
 
-  double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
-  double? _maxZoom(jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
+  double? _minZoom(dynamic jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
+  double? _maxZoom(dynamic jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
 
-  SymbolLayout _toSymbolLayout(jsonLayer) {
+  SymbolLayout _toSymbolLayout(dynamic jsonLayer) {
     final layout = jsonLayer['layout'];
     final placement = expressionParser
         .parse(layout?['symbol-placement'])
@@ -249,7 +249,7 @@ class ThemeReader {
     );
   }
 
-  IconLayout? _toIconLayout(layout) {
+  IconLayout? _toIconLayout(dynamic layout) {
     final iconFunction = expressionParser
         .parseOptional(layout?['icon-image'])
         ?.asOptionalStringExpression();
@@ -276,7 +276,7 @@ class ThemeReader {
     );
   }
 
-  TextLayout? _toTextLayout(layout) {
+  TextLayout? _toTextLayout(dynamic layout) {
     final textFunction = expressionParser
         .parseOptional(layout?['text-field'])
         ?.asOptionalStringExpression();
@@ -329,7 +329,7 @@ class ThemeReader {
     );
   }
 
-  Expression<List<Shadow>>? _toTextHalo(jsonLayer) {
+  Expression<List<Shadow>>? _toTextHalo(dynamic jsonLayer) {
     final paint = jsonLayer['paint'];
     if (paint != null) {
       final haloWidth = expressionParser
@@ -345,13 +345,13 @@ class ThemeReader {
     return null;
   }
 
-  Expression<double> _toTextSize(layout) {
+  Expression<double> _toTextSize(dynamic layout) {
     return expressionParser
         .parse(layout?['text-size'], whenNull: () => LiteralExpression(16.0))
         .asDoubleExpression();
   }
 
-  Expression<double>? _toDoubleExpression(layoutProperty) {
+  Expression<double>? _toDoubleExpression(dynamic layoutProperty) {
     if (layoutProperty == null) {
       return null;
     }
@@ -359,7 +359,7 @@ class ThemeReader {
   }
 }
 
-Map<String, dynamic> _metadata(jsonLayer) {
+Map<String, dynamic> _metadata(dynamic jsonLayer) {
   final layerMetadata = jsonLayer['metadata'];
   return (layerMetadata is Map<String, dynamic>) ? layerMetadata : {};
 }

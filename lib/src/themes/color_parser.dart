@@ -5,7 +5,7 @@ import 'theme_function.dart';
 import 'theme_function_model.dart';
 
 class ColorParser {
-  static ColorZoomFunction? parse(colorSpec) {
+  static ColorZoomFunction? parse(dynamic colorSpec) {
     if (colorSpec is String) {
       Color? color = toColor(colorSpec);
       if (color != null) {

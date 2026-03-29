@@ -26,7 +26,7 @@ abstract class InterpolateExpression extends Expression {
   bool get isConstant => false;
 
   @override
-  evaluate(EvaluationContext context) {
+  Object? evaluate(EvaluationContext context) {
     var input = _input.evaluate(context);
     if (input is num) {
       final numericInput = input.toDouble();
@@ -63,9 +63,10 @@ abstract class InterpolateExpression extends Expression {
         return stopAbove?.output.evaluate(context);
       }
     }
+    return null;
   }
 
-  interpolate(
+  Object? interpolate(
     EvaluationContext context,
     double? input,
     double valueBelow,
@@ -90,7 +91,7 @@ class InterpolateLinearExpression extends InterpolateExpression {
     : super(input, 'linear', stops);
 
   @override
-  interpolate(
+  Object? interpolate(
     EvaluationContext context,
     double? input,
     double valueBelow,
@@ -119,6 +120,7 @@ class InterpolateLinearExpression extends InterpolateExpression {
         return belowOutput;
       }
     }
+    return null;
   }
 }
 
@@ -132,7 +134,7 @@ class InterpolateExponentialExpression extends InterpolateExpression {
   ) : super(input, 'exponential(${base.cacheKey})', stops);
 
   @override
-  interpolate(
+  Object? interpolate(
     EvaluationContext context,
     double? input,
     double valueBelow,
@@ -161,6 +163,7 @@ class InterpolateExponentialExpression extends InterpolateExpression {
         }
       }
     }
+    return null;
   }
 }
 
@@ -205,7 +208,7 @@ class InterpolateCubicBezierExpression extends InterpolateExpression {
   }
 
   @override
-  interpolate(
+  Object? interpolate(
     EvaluationContext context,
     double? input,
     double valueBelow,
