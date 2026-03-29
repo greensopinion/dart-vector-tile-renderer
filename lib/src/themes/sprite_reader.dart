@@ -52,7 +52,7 @@ class SpriteIndexReader {
     return null;
   }
 
-  List<List<int>> _readStretch(stretch, int defaultStretch) {
+  List<List<int>> _readStretch(dynamic stretch, int defaultStretch) {
     if (stretch == null || stretch is! List<List<int>>) {
       stretch = [
         [0, defaultStretch],
