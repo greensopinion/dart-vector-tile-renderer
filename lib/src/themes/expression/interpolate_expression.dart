@@ -9,7 +9,7 @@ class InterpolationStop {
   final String cacheKey;
 
   InterpolationStop({required this.value, required this.output})
-      : cacheKey = 'stop(${value.cacheKey},${output.cacheKey})';
+    : cacheKey = 'stop(${value.cacheKey},${output.cacheKey})';
 }
 
 abstract class InterpolateExpression extends Expression {
@@ -17,15 +17,16 @@ abstract class InterpolateExpression extends Expression {
   final List<InterpolationStop> _stops;
 
   InterpolateExpression(this._input, String interpolation, this._stops)
-      : super(
-            'interpolate(${_input.cacheKey},$interpolation,[${_stops.map((e) => e.cacheKey).join(',')}])',
-            _createProperties(_input, _stops));
+    : super(
+        'interpolate(${_input.cacheKey},$interpolation,[${_stops.map((e) => e.cacheKey).join(',')}])',
+        _createProperties(_input, _stops),
+      );
 
   @override
   bool get isConstant => false;
 
   @override
-  evaluate(EvaluationContext context) {
+  Object? evaluate(EvaluationContext context) {
     var input = _input.evaluate(context);
     if (input is num) {
       final numericInput = input.toDouble();
@@ -48,23 +49,31 @@ abstract class InterpolateExpression extends Expression {
         }
       }
       if (valueBelow != null && valueAbove != null) {
-        return interpolate(context, numericInput, valueBelow, stopBelow!,
-            valueAbove, stopAbove!);
+        return interpolate(
+          context,
+          numericInput,
+          valueBelow,
+          stopBelow!,
+          valueAbove,
+          stopAbove!,
+        );
       } else if (valueBelow != null) {
         return stopBelow?.output.evaluate(context);
       } else {
         return stopAbove?.output.evaluate(context);
       }
     }
+    return null;
   }
 
-  interpolate(
-      EvaluationContext context,
-      double? input,
-      double valueBelow,
-      InterpolationStop stopBelow,
-      double valueAbove,
-      InterpolationStop stopAbove);
+  Object? interpolate(
+    EvaluationContext context,
+    double? input,
+    double valueBelow,
+    InterpolationStop stopBelow,
+    double valueAbove,
+    InterpolationStop stopAbove,
+  );
 }
 
 @override
@@ -79,16 +88,17 @@ Set<String> _createProperties(Expression input, List<InterpolationStop> stops) {
 
 class InterpolateLinearExpression extends InterpolateExpression {
   InterpolateLinearExpression(Expression input, List<InterpolationStop> stops)
-      : super(input, 'linear', stops);
+    : super(input, 'linear', stops);
 
   @override
-  interpolate(
-      EvaluationContext context,
-      double? input,
-      double valueBelow,
-      InterpolationStop stopBelow,
-      double valueAbove,
-      InterpolationStop stopAbove) {
+  Object? interpolate(
+    EvaluationContext context,
+    double? input,
+    double valueBelow,
+    InterpolationStop stopBelow,
+    double valueAbove,
+    InterpolationStop stopAbove,
+  ) {
     if (input != null) {
       final belowOutput = stopBelow.output.evaluate(context);
       final aboveOutput = stopAbove.output.evaluate(context);
@@ -97,13 +107,20 @@ class InterpolateLinearExpression extends InterpolateExpression {
       } else if (belowOutput == null) {
         return null;
       } else if (belowOutput is num && aboveOutput is num) {
-        return _exponentialInterpolation(input, 1, valueBelow, valueAbove,
-            belowOutput.toDouble(), aboveOutput.toDouble());
+        return _exponentialInterpolation(
+          input,
+          1,
+          valueBelow,
+          valueAbove,
+          belowOutput.toDouble(),
+          aboveOutput.toDouble(),
+        );
       } else {
         // could be a color, this is a stop-gap (e.g until we support hcl)
         return belowOutput;
       }
     }
+    return null;
   }
 }
 
@@ -111,17 +128,20 @@ class InterpolateExponentialExpression extends InterpolateExpression {
   Expression base;
 
   InterpolateExponentialExpression(
-      Expression input, this.base, List<InterpolationStop> stops)
-      : super(input, 'exponential(${base.cacheKey})', stops);
+    Expression input,
+    this.base,
+    List<InterpolationStop> stops,
+  ) : super(input, 'exponential(${base.cacheKey})', stops);
 
   @override
-  interpolate(
-      EvaluationContext context,
-      double? input,
-      double valueBelow,
-      InterpolationStop stopBelow,
-      double valueAbove,
-      InterpolationStop stopAbove) {
+  Object? interpolate(
+    EvaluationContext context,
+    double? input,
+    double valueBelow,
+    InterpolationStop stopBelow,
+    double valueAbove,
+    InterpolationStop stopAbove,
+  ) {
     if (input != null) {
       final belowOutput = stopBelow.output.evaluate(context);
       final aboveOutput = stopAbove.output.evaluate(context);
@@ -133,20 +153,28 @@ class InterpolateExponentialExpression extends InterpolateExpression {
         final baseValue = base.evaluate(context);
         if (baseValue is num) {
           return _exponentialInterpolation(
-              input,
-              baseValue.toDouble(),
-              valueBelow,
-              valueAbove,
-              belowOutput.toDouble(),
-              aboveOutput.toDouble());
+            input,
+            baseValue.toDouble(),
+            valueBelow,
+            valueAbove,
+            belowOutput.toDouble(),
+            aboveOutput.toDouble(),
+          );
         }
       }
     }
+    return null;
   }
 }
 
-double _exponentialInterpolation(double input, double base, double lowValue,
-    double highValue, double lowOutput, double highOutput) {
+double _exponentialInterpolation(
+  double input,
+  double base,
+  double lowValue,
+  double highValue,
+  double lowOutput,
+  double highOutput,
+) {
   var difference = highValue - lowValue;
   var progress = input - lowValue;
   if (difference <= 0.001 || progress <= 0) {
@@ -166,23 +194,28 @@ class InterpolateCubicBezierExpression extends InterpolateExpression {
   final Point<double> _secondControlPoint;
   late final CubicBezier _bezier;
 
-  InterpolateCubicBezierExpression(Expression input, this._firstControlPoint,
-      this._secondControlPoint, List<InterpolationStop> stops)
-      : super(
-            input,
-            'cubicBezier(${_firstControlPoint.x},${_firstControlPoint.y},${_secondControlPoint.x},${_secondControlPoint.y})',
-            stops) {
+  InterpolateCubicBezierExpression(
+    Expression input,
+    this._firstControlPoint,
+    this._secondControlPoint,
+    List<InterpolationStop> stops,
+  ) : super(
+        input,
+        'cubicBezier(${_firstControlPoint.x},${_firstControlPoint.y},${_secondControlPoint.x},${_secondControlPoint.y})',
+        stops,
+      ) {
     _bezier = CubicBezier(_firstControlPoint, _secondControlPoint);
   }
 
   @override
-  interpolate(
-      EvaluationContext context,
-      double? input,
-      double valueBelow,
-      InterpolationStop stopBelow,
-      double valueAbove,
-      InterpolationStop stopAbove) {
+  Object? interpolate(
+    EvaluationContext context,
+    double? input,
+    double valueBelow,
+    InterpolationStop stopBelow,
+    double valueAbove,
+    InterpolationStop stopAbove,
+  ) {
     if (input != null) {
       final difference = valueAbove - valueBelow;
       final progress = input - valueBelow;

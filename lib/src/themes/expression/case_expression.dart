@@ -12,8 +12,10 @@ class ConditionOutputPair {
 class CaseExpression extends Expression {
   final List<ConditionOutputPair> cases;
   CaseExpression(this.cases)
-      : super('case(${cases.map((e) => e.toCacheKey()).join(';')})',
-            _createProperties(cases));
+    : super(
+        'case(${cases.map((e) => e.toCacheKey()).join(';')})',
+        _createProperties(cases),
+      );
 
   @override
   evaluate(EvaluationContext context) {

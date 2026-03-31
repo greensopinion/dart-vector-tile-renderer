@@ -5,9 +5,10 @@ class LetExpressionParser extends ExpressionComponentParser {
   late final _VariableRegistry _registry;
 
   LetExpressionParser(
-      ExpressionParser parser, VarExpressionParser varExpressionParser)
-      : _registry = varExpressionParser._registry,
-        super(parser, 'let');
+    ExpressionParser parser,
+    VarExpressionParser varExpressionParser,
+  ) : _registry = varExpressionParser._registry,
+      super(parser, 'let');
 
   @override
   bool matches(List<dynamic> json) {
@@ -21,8 +22,9 @@ class LetExpressionParser extends ExpressionComponentParser {
 
     for (int x = 0; x < variableDefinitions.length; x += 2) {
       final variableName = variableDefinitions[x];
-      final variableExpression =
-          parser.parseOptional(variableDefinitions[x + 1]);
+      final variableExpression = parser.parseOptional(
+        variableDefinitions[x + 1],
+      );
       if (variableExpression == null) {
         return null;
       }

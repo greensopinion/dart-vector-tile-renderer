@@ -13,7 +13,9 @@ extension DashPath on Path {
         final double len = dashArray.next;
         if (draw) {
           dest.addPath(
-              metric.extractPath(distance, distance + len), Offset.zero);
+            metric.extractPath(distance, distance + len),
+            Offset.zero,
+          );
         }
         distance += len;
         draw = !draw;

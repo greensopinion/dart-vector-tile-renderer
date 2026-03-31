@@ -44,7 +44,7 @@ class ThemeReader {
     });
   }
 
-  ThemeLayer? _toThemeLayer(jsonLayer) {
+  ThemeLayer? _toThemeLayer(dynamic jsonLayer) {
     final visibility = jsonLayer['layout']?['visibility'];
     if (visibility == 'none') {
       return null;
@@ -67,22 +67,31 @@ class ThemeReader {
     return null;
   }
 
-  ThemeLayer? _toBackgroundTheme(jsonLayer) {
+  ThemeLayer? _toBackgroundTheme(dynamic jsonLayer) {
     final styleBackgroundColor = jsonLayer['paint']?['background-color'];
     if (styleBackgroundColor != null) {
-      final backgroundColor =
-          expressionParser.parse(styleBackgroundColor).asColorExpression();
+      final backgroundColor = expressionParser
+          .parse(styleBackgroundColor)
+          .asColorExpression();
       return BackgroundLayer(
-          jsonLayer['id'] ?? _unknownId, backgroundColor, _metadata(jsonLayer));
+        jsonLayer['id'] ?? _unknownId,
+        backgroundColor,
+        _metadata(jsonLayer),
+      );
     }
     return null;
   }
 
-  ThemeLayer? _toFillExtrusionTheme(jsonLayer) {
+  ThemeLayer? _toFillExtrusionTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
-    final paint = paintFactory.create(_layerId(jsonLayer), PaintingStyle.fill,
-        'fill-extrusion', paintJson, null);
+    final paint = paintFactory.create(
+      _layerId(jsonLayer),
+      PaintingStyle.fill,
+      'fill-extrusion',
+      paintJson,
+      null,
+    );
     if (paint != null) {
       final base = expressionParser
           .parseOptional(paintJson['fill-extrusion-base'])
@@ -91,75 +100,106 @@ class ThemeReader {
           .parseOptional(paintJson['fill-extrusion-height'])
           ?.asDoubleExpression();
       return DefaultLayer(
-          jsonLayer['id'] ?? _unknownId, ThemeLayerType.fillExtrusion,
-          selector: selector,
-          style: Style(
-              fillPaint: paint,
-              fillExtrusion: Extrusion(base: base, height: height)),
-          minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer),
-          metadata: _metadata(jsonLayer));
+        jsonLayer['id'] ?? _unknownId,
+        ThemeLayerType.fillExtrusion,
+        selector: selector,
+        style: Style(
+          fillPaint: paint,
+          fillExtrusion: Extrusion(base: base, height: height),
+        ),
+        minzoom: _minZoom(jsonLayer),
+        maxzoom: _maxZoom(jsonLayer),
+        metadata: _metadata(jsonLayer),
+      );
     }
     return null;
   }
 
-  ThemeLayer? _toRasterTheme(jsonLayer) {
+  ThemeLayer? _toRasterTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
-    final opacity = expressionParser.parse(paintJson?['raster-opacity'],
-        whenNull: () => LiteralExpression(1.0));
-    final resampling = expressionParser.parse(paintJson?['raster-resampling'],
-        whenNull: () => LiteralExpression("linear"));
+    final opacity = expressionParser.parse(
+      paintJson?['raster-opacity'],
+      whenNull: () => LiteralExpression(1.0),
+    );
+    final resampling = expressionParser.parse(
+      paintJson?['raster-resampling'],
+      whenNull: () => LiteralExpression("linear"),
+    );
     return ThemeLayerRaster(
-        jsonLayer['id'] ?? _unknownId, ThemeLayerType.raster,
-        selector: selector,
-        paintModel: RasterPaintModel(
-            opacity: opacity.asDoubleExpression(),
-            rasterResampling: resampling.asOptionalStringExpression()),
-        minzoom: _minZoom(jsonLayer),
-        maxzoom: _maxZoom(jsonLayer),
-        metadata: _metadata(jsonLayer));
+      jsonLayer['id'] ?? _unknownId,
+      ThemeLayerType.raster,
+      selector: selector,
+      paintModel: RasterPaintModel(
+        opacity: opacity.asDoubleExpression(),
+        rasterResampling: resampling.asOptionalStringExpression(),
+      ),
+      minzoom: _minZoom(jsonLayer),
+      maxzoom: _maxZoom(jsonLayer),
+      metadata: _metadata(jsonLayer),
+    );
   }
 
-  ThemeLayer? _toFillTheme(jsonLayer) {
+  ThemeLayer? _toFillTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final paintJson = jsonLayer['paint'];
     final paint = paintFactory.create(
-        _layerId(jsonLayer), PaintingStyle.fill, 'fill', paintJson, null);
-    final outlinePaint = paintFactory.create(_layerId(jsonLayer),
-        PaintingStyle.stroke, 'fill-outline', paintJson, null,
-        defaultStrokeWidth: 0.1);
+      _layerId(jsonLayer),
+      PaintingStyle.fill,
+      'fill',
+      paintJson,
+      null,
+    );
+    final outlinePaint = paintFactory.create(
+      _layerId(jsonLayer),
+      PaintingStyle.stroke,
+      'fill-outline',
+      paintJson,
+      null,
+      defaultStrokeWidth: 0.1,
+    );
     if (paint != null) {
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.fill,
-          selector: selector,
-          style: Style(fillPaint: paint, outlinePaint: outlinePaint),
-          minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer),
-          metadata: _metadata(jsonLayer));
+      return DefaultLayer(
+        jsonLayer['id'] ?? _unknownId,
+        ThemeLayerType.fill,
+        selector: selector,
+        style: Style(fillPaint: paint, outlinePaint: outlinePaint),
+        minzoom: _minZoom(jsonLayer),
+        maxzoom: _maxZoom(jsonLayer),
+        metadata: _metadata(jsonLayer),
+      );
     }
     return null;
   }
 
-  ThemeLayer? _toLineTheme(jsonLayer) {
+  ThemeLayer? _toLineTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
     final jsonPaint = jsonLayer['paint'];
     final jsonLayout = jsonLayer['layout'];
-    final lineStyle = paintFactory.create(_layerId(jsonLayer),
-        PaintingStyle.stroke, 'line', jsonPaint, jsonLayout);
+    final lineStyle = paintFactory.create(
+      _layerId(jsonLayer),
+      PaintingStyle.stroke,
+      'line',
+      jsonPaint,
+      jsonLayout,
+    );
     if (lineStyle != null) {
-      return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.line,
-          selector: selector,
-          style: Style(linePaint: lineStyle),
-          minzoom: _minZoom(jsonLayer),
-          maxzoom: _maxZoom(jsonLayer),
-          metadata: _metadata(jsonLayer));
+      return DefaultLayer(
+        jsonLayer['id'] ?? _unknownId,
+        ThemeLayerType.line,
+        selector: selector,
+        style: Style(linePaint: lineStyle),
+        minzoom: _minZoom(jsonLayer),
+        maxzoom: _maxZoom(jsonLayer),
+        metadata: _metadata(jsonLayer),
+      );
     }
     return null;
   }
 
-  String _layerId(jsonLayer) => jsonLayer['id'] as String? ?? '<none>';
+  String _layerId(dynamic jsonLayer) => jsonLayer['id'] as String? ?? '<none>';
 
-  ThemeLayer? _toSymbolTheme(jsonLayer) {
+  ThemeLayer? _toSymbolTheme(dynamic jsonLayer) {
     final selector = selectorFactory.create(jsonLayer);
 
     final layout = _toSymbolLayout(jsonLayer);
@@ -172,36 +212,46 @@ class ThemeReader {
     if (layout.text != null) {
       final jsonPaint = jsonLayer['paint'];
       paint = paintFactory.create(
-          _layerId(jsonLayer), PaintingStyle.fill, 'text', jsonPaint, null);
+        _layerId(jsonLayer),
+        PaintingStyle.fill,
+        'text',
+        jsonPaint,
+        null,
+      );
       if (paint == null) {
         logger.warn(() => 'layer has no paint: $jsonLayer');
         return null;
       }
     }
-    return DefaultLayer(jsonLayer['id'] ?? _unknownId, ThemeLayerType.symbol,
-        selector: selector,
-        style:
-            Style(textPaint: paint, symbolLayout: layout, textHalo: textHalo),
-        minzoom: _minZoom(jsonLayer),
-        maxzoom: _maxZoom(jsonLayer),
-        metadata: _metadata(jsonLayer));
+    return DefaultLayer(
+      jsonLayer['id'] ?? _unknownId,
+      ThemeLayerType.symbol,
+      selector: selector,
+      style: Style(textPaint: paint, symbolLayout: layout, textHalo: textHalo),
+      minzoom: _minZoom(jsonLayer),
+      maxzoom: _maxZoom(jsonLayer),
+      metadata: _metadata(jsonLayer),
+    );
   }
 
-  double? _minZoom(jsonLayer) => (jsonLayer['minzoom'] as num?)?.toDouble();
-  double? _maxZoom(jsonLayer) => (jsonLayer['maxzoom'] as num?)?.toDouble();
+  double? _minZoom(dynamic jsonLayer) =>
+      (jsonLayer['minzoom'] as num?)?.toDouble();
+  double? _maxZoom(dynamic jsonLayer) =>
+      (jsonLayer['maxzoom'] as num?)?.toDouble();
 
-  SymbolLayout _toSymbolLayout(jsonLayer) {
+  SymbolLayout _toSymbolLayout(dynamic jsonLayer) {
     final layout = jsonLayer['layout'];
     final placement = expressionParser
         .parse(layout?['symbol-placement'])
         .asLayoutPlacementExpression();
     return SymbolLayout(
-        placement: placement,
-        text: _toTextLayout(layout),
-        icon: _toIconLayout(layout));
+      placement: placement,
+      text: _toTextLayout(layout),
+      icon: _toIconLayout(layout),
+    );
   }
 
-  IconLayout? _toIconLayout(layout) {
+  IconLayout? _toIconLayout(dynamic layout) {
     final iconFunction = expressionParser
         .parseOptional(layout?['icon-image'])
         ?.asOptionalStringExpression();
@@ -219,15 +269,16 @@ class ThemeReader {
         .parse(layout?['icon-rotation-alignment'])
         .asRotationAlignmentExpression();
     return IconLayout(
-        icon: iconFunction,
-        anchor: anchor,
-        opacity: opacity,
-        size: size,
-        rotationAlignment: rotationAlignment,
-        rotate: rotate);
+      icon: iconFunction,
+      anchor: anchor,
+      opacity: opacity,
+      size: size,
+      rotationAlignment: rotationAlignment,
+      rotate: rotate,
+    );
   }
 
-  TextLayout? _toTextLayout(layout) {
+  TextLayout? _toTextLayout(dynamic layout) {
     final textFunction = expressionParser
         .parseOptional(layout?['text-field'])
         ?.asOptionalStringExpression();
@@ -235,8 +286,9 @@ class ThemeReader {
       return null;
     }
     final textSize = _toTextSize(layout);
-    final textLetterSpacing =
-        _toDoubleExpression(layout?['text-letter-spacing']);
+    final textLetterSpacing = _toDoubleExpression(
+      layout?['text-letter-spacing'],
+    );
     final anchor = expressionParser
         .parse(layout?['text-anchor'])
         .asLayoutAnchorExpression();
@@ -266,19 +318,20 @@ class ThemeReader {
         .parse(layout?['text-rotation-alignment'])
         .asRotationAlignmentExpression();
     return TextLayout(
-        anchor: anchor,
-        justify: justify,
-        text: textFunction,
-        textSize: textSize,
-        textLetterSpacing: textLetterSpacing,
-        maxWidth: maxWidth,
-        fontFamily: fontFamily,
-        fontStyle: fontStyle,
-        textTransform: textTransform,
-        rotationAlignment: rotationAlignment);
+      anchor: anchor,
+      justify: justify,
+      text: textFunction,
+      textSize: textSize,
+      textLetterSpacing: textLetterSpacing,
+      maxWidth: maxWidth,
+      fontFamily: fontFamily,
+      fontStyle: fontStyle,
+      textTransform: textTransform,
+      rotationAlignment: rotationAlignment,
+    );
   }
 
-  Expression<List<Shadow>>? _toTextHalo(jsonLayer) {
+  Expression<List<Shadow>>? _toTextHalo(dynamic jsonLayer) {
     final paint = jsonLayer['paint'];
     if (paint != null) {
       final haloWidth = expressionParser
@@ -294,13 +347,13 @@ class ThemeReader {
     return null;
   }
 
-  Expression<double> _toTextSize(layout) {
+  Expression<double> _toTextSize(dynamic layout) {
     return expressionParser
         .parse(layout?['text-size'], whenNull: () => LiteralExpression(16.0))
         .asDoubleExpression();
   }
 
-  Expression<double>? _toDoubleExpression(layoutProperty) {
+  Expression<double>? _toDoubleExpression(dynamic layoutProperty) {
     if (layoutProperty == null) {
       return null;
     }
@@ -308,7 +361,7 @@ class ThemeReader {
   }
 }
 
-Map<String, dynamic> _metadata(jsonLayer) {
+Map<String, dynamic> _metadata(dynamic jsonLayer) {
   final layerMetadata = jsonLayer['metadata'];
   return (layerMetadata is Map<String, dynamic>) ? layerMetadata : {};
 }

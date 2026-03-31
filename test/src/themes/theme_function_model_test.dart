@@ -7,8 +7,8 @@ void main() {
       "base": 1,
       "stops": [
         [9, "hsla(0, 3%, 85%, 0.84)"],
-        [12, "hsla(35, 57%, 88%, 0.49)"]
-      ]
+        [12, "hsla(35, 57%, 88%, 0.49)"],
+      ],
     };
     final model = ColorFunctionModelFactory().create(definition);
     expect(model, isNotNull);
@@ -22,8 +22,8 @@ void main() {
       "base": 1.4,
       "stops": [
         [8, 1],
-        [20, 2]
-      ]
+        [20, 2],
+      ],
     };
     final model = DoubleFunctionModelFactory().create(definition);
     expect(model, isNotNull);

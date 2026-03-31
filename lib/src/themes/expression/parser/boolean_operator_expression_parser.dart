@@ -169,7 +169,8 @@ class AllExpressionParser extends ExpressionComponentParser {
       return null;
     }
     return AllExpression(
-        delegates.whereType<Expression>().toList(growable: false));
+      delegates.whereType<Expression>().toList(growable: false),
+    );
   }
 }
 
@@ -183,7 +184,8 @@ class AnyExpressionParser extends ExpressionComponentParser {
       return null;
     }
     return AnyExpression(
-        delegates.whereType<Expression>().toList(growable: false));
+      delegates.whereType<Expression>().toList(growable: false),
+    );
   }
 }
 
@@ -262,7 +264,7 @@ class CaseExpressionParser extends ExpressionComponentParser {
 
 class IsSupportedScriptExpressionParser extends ExpressionComponentParser {
   IsSupportedScriptExpressionParser(ExpressionParser parser)
-      : super(parser, 'is-supported-script');
+    : super(parser, 'is-supported-script');
 
   @override
   bool matches(List<dynamic> json) {

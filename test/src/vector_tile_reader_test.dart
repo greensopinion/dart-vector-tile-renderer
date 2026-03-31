@@ -11,23 +11,26 @@ void main() {
     final tile = VectorTileReader().read(bytes);
     expect(tile, isNotNull);
     expect(
-        tile.layers.map((e) => e.name).toSet().toList().sorted(),
-        equals([
-          'aerodrome_label',
-          'boundary',
-          'building',
-          'landcover',
-          'landuse',
-          'park',
-          'place',
-          'transportation',
-          'transportation_name',
-          'water',
-          'waterway'
-        ]));
+      tile.layers.map((e) => e.name).toSet().toList().sorted(),
+      equals([
+        'aerodrome_label',
+        'boundary',
+        'building',
+        'landcover',
+        'landuse',
+        'park',
+        'place',
+        'transportation',
+        'transportation_name',
+        'water',
+        'waterway',
+      ]),
+    );
     final parks = tile.layers.where((l) => l.name == 'park').toList();
     expect(parks.length, 1);
-    expect(parks.first.features.map((f) => f.type).toSet().toList(),
-        equals([VectorTileGeomType.POLYGON]));
+    expect(
+      parks.first.features.map((f) => f.type).toSet().toList(),
+      equals([VectorTileGeomType.POLYGON]),
+    );
   });
 }

@@ -7,7 +7,8 @@ class SymbolStyle {
   SymbolStyle({required this.textStyle, required this.textAlign});
 
   @override
-  bool operator ==(Object other) => (other is SymbolStyle &&
+  bool operator ==(Object other) =>
+      (other is SymbolStyle &&
       textStyle.fontSize == other.textStyle.fontSize &&
       _paintEquals(textStyle.foreground, other.textStyle.foreground) &&
       _paintEquals(textStyle.background, other.textStyle.background) &&

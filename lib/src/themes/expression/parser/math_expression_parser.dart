@@ -6,8 +6,10 @@ class NaryMathExpressionParser extends ExpressionComponentParser {
   final String _operationName;
   final BinaryOperation _operation;
   NaryMathExpressionParser(
-      ExpressionParser parser, this._operationName, this._operation)
-      : super(parser, _operationName);
+    ExpressionParser parser,
+    this._operationName,
+    this._operation,
+  ) : super(parser, _operationName);
 
   @override
   bool matches(List<dynamic> json) {
@@ -32,8 +34,10 @@ class UnaryMathExpressionParser extends ExpressionComponentParser {
   final String _operationName;
   final UnaryOperation _operation;
   UnaryMathExpressionParser(
-      ExpressionParser parser, this._operationName, this._operation)
-      : super(parser, _operationName);
+    ExpressionParser parser,
+    this._operationName,
+    this._operation,
+  ) : super(parser, _operationName);
 
   @override
   bool matches(List<dynamic> json) {
@@ -51,6 +55,9 @@ class UnaryMathExpressionParser extends ExpressionComponentParser {
       return null;
     }
     return UnaryMathExpression(
-        _operationName, _operation, operandExpressions.first);
+      _operationName,
+      _operation,
+      operandExpressions.first,
+    );
   }
 }

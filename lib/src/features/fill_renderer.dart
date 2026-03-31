@@ -21,16 +21,20 @@ class FillRenderer extends FeatureRenderer {
       return;
     }
     if (style.fillPaint == null && style.outlinePaint == null) {
-      logger
-          .warn(() => 'polygon does not have a fill paint or an outline paint');
+      logger.warn(
+        () => 'polygon does not have a fill paint or an outline paint',
+      );
       return;
     }
 
     final evaluationContext = EvaluationContext(
-        () => feature.properties, feature.type, logger,
-        zoom: context.zoom,
-        zoomScaleFactor: context.zoomScaleFactor,
-        hasImage: context.hasImage);
+      () => feature.properties,
+      feature.type,
+      logger,
+      zoom: context.zoom,
+      zoomScaleFactor: context.zoomScaleFactor,
+      hasImage: context.hasImage,
+    );
     final fillPaint = style.fillPaint?.evaluate(evaluationContext);
     final outlinePaint = style.outlinePaint?.evaluate(evaluationContext);
 

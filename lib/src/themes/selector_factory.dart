@@ -6,16 +6,18 @@ class SelectorFactory {
   final Logger logger;
   SelectorFactory(this.logger);
 
-  TileLayerSelector create(themeLayer) {
+  TileLayerSelector create(dynamic themeLayer) {
     final source = themeLayer['source'];
     if (source != null && source is String) {
       return TileLayerSelector(
-          TileSelector(source), _layerSelector(themeLayer));
+        TileSelector(source),
+        _layerSelector(themeLayer),
+      );
     }
     return TileLayerSelector(TileSelector.none(), LayerSelector.none());
   }
 
-  LayerSelector _layerSelector(themeLayer) {
+  LayerSelector _layerSelector(dynamic themeLayer) {
     final sourceLayer = themeLayer['source-layer'];
     if (sourceLayer != null && sourceLayer is String) {
       var selector = LayerSelector.named(sourceLayer);
@@ -46,13 +48,14 @@ class SelectorFactory {
     return LayerSelector.expression(expression);
   }
 
-  num? _getZoomChecked(themeLayer, String property) {
+  num? _getZoomChecked(dynamic themeLayer, String property) {
     final zoom = themeLayer[property];
     if (zoom is num) {
       return zoom;
     } else if (zoom != null) {
-      logger
-          .warn(() => 'expecting theme $property to be a number but got $zoom');
+      logger.warn(
+        () => 'expecting theme $property to be a number but got $zoom',
+      );
     }
     return null;
   }

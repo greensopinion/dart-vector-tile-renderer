@@ -1,68 +1,68 @@
 Map<String, dynamic> lightThemeData() {
-// ## Code License
-// The Mapbox GL Style JSON file is originally derived from [OSM Bright from
-// Mapbox Open Styles](https://github.com/mapbox/mapbox-gl-styles/blob/master/LICENSE.md).
-// The modified Mapbox GL Style JSON retains the same BSD license.
-//
-// > Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//
-// > * Redistributions of source code must retain the above copyright notice, this
-// list of conditions and the following disclaimer.
-// * Redistributions in binary form must reproduce the above copyright notice, this
-// list of conditions and the following disclaimer in the documentation and/or other
-// materials provided with the distribution.
-// * Neither the name of Mapbox nor the names of its contributors may be used to
-// endorse or promote products derived from this software without specific prior
-// written permission.
-//
-// > THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-// IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-// POSSIBILITY OF SUCH DAMAGE.
-//
-// ## Design License
-//
-// The look and feel of the OSM liberty map design is also derived
-// (although heavily altered) from [OSM Bright from Mapbox Open Styles](https://github.com/mapbox/mapbox-gl-styles/blob/master/LICENSE.md)
-// which is licensed under the Creative Commons Attribution 3.0 license.
-//
-// The map is displaying and styling the data from [OpenMapTiles](https://openmaptiles.org/)
-// with [CC-BY 4.0 design license](https://github.com/openmaptiles/openmaptiles/blob/master/LICENSE.md).
-//
-// The products or services using this map style need to visibly credit "OpenMapTiles.org"
-// or reference "OpenMapTiles" with a link to http://openmaptiles.org/. For a browsable
-// electronic map based on OpenMapTiles and OpenStreetMap data, the credit should appear
-// in the corner of the map. For example:
-//
-// [© OpenMapTiles](https://openmaptiles.org/)
-// [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)
-//
-// For printed and static maps a similar attribution should be made in a textual
-// description near the image, in the same fashion as if you cite a photograph.
-//
-// ## Icons
-//
-// OSM Liberty is using the [Maki POI icon set](https://github.com/mapbox/maki/blob/master/LICENSE.txt)
-// which is licensed under CC0 1.0 Universal.
-//
-// The right arrow was derived from [Wikipedia][wiki_arrow] which is in the public
-// domain.
-//
-// [wiki_arrow]: https://commons.wikimedia.org/wiki/File:Arrowright.svg
-//
-// ## Fonts
-//
-// OSM Liberty is using the Roboto font family (Copyright 2011 Google).
-// Roboto is licensed under the [Apache License, Version 2.0](https://github.com/google/roboto/blob/master/LICENSE).
-// https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md
-// https://github.com/maputnik/osm-liberty
+  // ## Code License
+  // The Mapbox GL Style JSON file is originally derived from [OSM Bright from
+  // Mapbox Open Styles](https://github.com/mapbox/mapbox-gl-styles/blob/master/LICENSE.md).
+  // The modified Mapbox GL Style JSON retains the same BSD license.
+  //
+  // > Redistribution and use in source and binary forms, with or without modification,
+  // are permitted provided that the following conditions are met:
+  //
+  // > * Redistributions of source code must retain the above copyright notice, this
+  // list of conditions and the following disclaimer.
+  // * Redistributions in binary form must reproduce the above copyright notice, this
+  // list of conditions and the following disclaimer in the documentation and/or other
+  // materials provided with the distribution.
+  // * Neither the name of Mapbox nor the names of its contributors may be used to
+  // endorse or promote products derived from this software without specific prior
+  // written permission.
+  //
+  // > THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  // IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  // INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  // NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  // PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  // POSSIBILITY OF SUCH DAMAGE.
+  //
+  // ## Design License
+  //
+  // The look and feel of the OSM liberty map design is also derived
+  // (although heavily altered) from [OSM Bright from Mapbox Open Styles](https://github.com/mapbox/mapbox-gl-styles/blob/master/LICENSE.md)
+  // which is licensed under the Creative Commons Attribution 3.0 license.
+  //
+  // The map is displaying and styling the data from [OpenMapTiles](https://openmaptiles.org/)
+  // with [CC-BY 4.0 design license](https://github.com/openmaptiles/openmaptiles/blob/master/LICENSE.md).
+  //
+  // The products or services using this map style need to visibly credit "OpenMapTiles.org"
+  // or reference "OpenMapTiles" with a link to http://openmaptiles.org/. For a browsable
+  // electronic map based on OpenMapTiles and OpenStreetMap data, the credit should appear
+  // in the corner of the map. For example:
+  //
+  // [© OpenMapTiles](https://openmaptiles.org/)
+  // [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)
+  //
+  // For printed and static maps a similar attribution should be made in a textual
+  // description near the image, in the same fashion as if you cite a photograph.
+  //
+  // ## Icons
+  //
+  // OSM Liberty is using the [Maki POI icon set](https://github.com/mapbox/maki/blob/master/LICENSE.txt)
+  // which is licensed under CC0 1.0 Universal.
+  //
+  // The right arrow was derived from [Wikipedia][wiki_arrow] which is in the public
+  // domain.
+  //
+  // [wiki_arrow]: https://commons.wikimedia.org/wiki/File:Arrowright.svg
+  //
+  // ## Fonts
+  //
+  // OSM Liberty is using the Roboto font family (Copyright 2011 Google).
+  // Roboto is licensed under the [Apache License, Version 2.0](https://github.com/google/roboto/blob/master/LICENSE).
+  // https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md
+  // https://github.com/maputnik/osm-liberty
   return {
     "version": 8,
     "name": "OSM Liberty",
@@ -71,21 +71,21 @@ Map<String, dynamic> lightThemeData() {
           "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
       "maputnik:renderer": "mbgljs",
       "openmaptiles:version": "3.x",
-      "version": "2021-08-22"
+      "version": "2021-08-22",
     },
     "sources": {
       "openmaptiles": {
         "type": "vector",
-        "url": "https://api.maptiler.com/tiles/v3/tiles.json?key={key}"
+        "url": "https://api.maptiler.com/tiles/v3/tiles.json?key={key}",
       },
       "natural_earth_shaded_relief": {
         "maxzoom": 6,
         "tileSize": 256,
         "tiles": [
-          "https://klokantech.github.io/naturalearthtiles/tiles/natural_earth_2_shaded_relief.raster/{z}/{x}/{y}.png"
+          "https://klokantech.github.io/naturalearthtiles/tiles/natural_earth_2_shaded_relief.raster/{z}/{x}/{y}.png",
         ],
-        "type": "raster"
-      }
+        "type": "raster",
+      },
     },
     "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
     "glyphs":
@@ -94,7 +94,7 @@ Map<String, dynamic> lightThemeData() {
       {
         "id": "background",
         "type": "background",
-        "paint": {"background-color": "rgb(239,239,239)"}
+        "paint": {"background-color": "rgb(239,239,239)"},
       },
       {
         "id": "natural_earth",
@@ -106,10 +106,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.5,
             "stops": [
               [0, 0.6],
-              [6, 0.1]
-            ]
-          }
-        }
+              [6, 0.1],
+            ],
+          },
+        },
       },
       {
         "id": "park",
@@ -119,8 +119,8 @@ Map<String, dynamic> lightThemeData() {
         "paint": {
           "fill-color": "#d8e8c8",
           "fill-opacity": 0.7,
-          "fill-outline-color": "rgba(95, 208, 100, 1)"
-        }
+          "fill-outline-color": "rgba(95, 208, 100, 1)",
+        },
       },
       {
         "id": "park_outline",
@@ -129,8 +129,8 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "park",
         "paint": {
           "line-dasharray": [1, 1.5],
-          "line-color": "rgba(228, 241, 215, 1)"
-        }
+          "line-color": "rgba(228, 241, 215, 1)",
+        },
       },
       {
         "id": "landuse_residential",
@@ -144,10 +144,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1,
             "stops": [
               [9, "hsla(0, 3%, 85%, 0.84)"],
-              [12, "hsla(35, 57%, 88%, 0.49)"]
-            ]
-          }
-        }
+              [12, "hsla(35, 57%, 88%, 0.49)"],
+            ],
+          },
+        },
       },
       {
         "id": "landcover_wood",
@@ -156,13 +156,13 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "landcover",
         "filter": [
           "all",
-          ["==", "class", "wood"]
+          ["==", "class", "wood"],
         ],
         "paint": {
           "fill-antialias": false,
           "fill-color": "hsla(98, 61%, 72%, 0.7)",
-          "fill-opacity": 0.4
-        }
+          "fill-opacity": 0.4,
+        },
       },
       {
         "id": "landcover_grass",
@@ -171,13 +171,13 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "landcover",
         "filter": [
           "all",
-          ["==", "class", "grass"]
+          ["==", "class", "grass"],
         ],
         "paint": {
           "fill-antialias": false,
           "fill-color": "rgba(176, 213, 154, 1)",
-          "fill-opacity": 0.3
-        }
+          "fill-opacity": 0.3,
+        },
       },
       {
         "id": "landcover_ice",
@@ -186,13 +186,13 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "landcover",
         "filter": [
           "all",
-          ["==", "class", "ice"]
+          ["==", "class", "ice"],
         ],
         "paint": {
           "fill-antialias": false,
           "fill-color": "rgba(224, 236, 236, 1)",
-          "fill-opacity": 0.8
-        }
+          "fill-opacity": 0.8,
+        },
       },
       {
         "id": "landuse_cemetery",
@@ -200,7 +200,7 @@ Map<String, dynamic> lightThemeData() {
         "source": "openmaptiles",
         "source-layer": "landuse",
         "filter": ["==", "class", "cemetery"],
-        "paint": {"fill-color": "hsl(75, 37%, 81%)"}
+        "paint": {"fill-color": "hsl(75, 37%, 81%)"},
       },
       {
         "id": "landuse_hospital",
@@ -208,7 +208,7 @@ Map<String, dynamic> lightThemeData() {
         "source": "openmaptiles",
         "source-layer": "landuse",
         "filter": ["==", "class", "hospital"],
-        "paint": {"fill-color": "#fde"}
+        "paint": {"fill-color": "#fde"},
       },
       {
         "id": "landuse_school",
@@ -216,7 +216,7 @@ Map<String, dynamic> lightThemeData() {
         "source": "openmaptiles",
         "source-layer": "landuse",
         "filter": ["==", "class", "school"],
-        "paint": {"fill-color": "rgb(236,238,204)"}
+        "paint": {"fill-color": "rgb(236,238,204)"},
       },
       {
         "id": "waterway_tunnel",
@@ -225,7 +225,7 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "waterway",
         "filter": [
           "all",
-          ["==", "brunnel", "tunnel"]
+          ["==", "brunnel", "tunnel"],
         ],
         "paint": {
           "line-color": "#a0c8f0",
@@ -233,18 +233,18 @@ Map<String, dynamic> lightThemeData() {
           "line-gap-width": {
             "stops": [
               [12, 0],
-              [20, 6]
-            ]
+              [20, 6],
+            ],
           },
           "line-opacity": 1,
           "line-width": {
             "base": 1.4,
             "stops": [
               [8, 1],
-              [20, 2]
-            ]
-          }
-        }
+              [20, 2],
+            ],
+          },
+        },
       },
       {
         "id": "waterway_river",
@@ -254,7 +254,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "class", "river"],
-          ["!=", "brunnel", "tunnel"]
+          ["!=", "brunnel", "tunnel"],
         ],
         "layout": {"line-cap": "round"},
         "paint": {
@@ -263,10 +263,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [11, 0.5],
-              [20, 6]
-            ]
-          }
-        }
+              [20, 6],
+            ],
+          },
+        },
       },
       {
         "id": "waterway_other",
@@ -276,7 +276,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!=", "class", "river"],
-          ["!=", "brunnel", "tunnel"]
+          ["!=", "brunnel", "tunnel"],
         ],
         "layout": {"line-cap": "round"},
         "paint": {
@@ -285,10 +285,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.3,
             "stops": [
               [13, 0.5],
-              [20, 6]
-            ]
-          }
-        }
+              [20, 6],
+            ],
+          },
+        },
       },
       {
         "id": "water",
@@ -297,9 +297,9 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "water",
         "filter": [
           "all",
-          ["!=", "brunnel", "tunnel"]
+          ["!=", "brunnel", "tunnel"],
         ],
-        "paint": {"fill-color": "rgb(158,189,255)"}
+        "paint": {"fill-color": "rgb(158,189,255)"},
       },
       {
         "id": "landcover_sand",
@@ -308,9 +308,9 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "landcover",
         "filter": [
           "all",
-          ["==", "class", "sand"]
+          ["==", "class", "sand"],
         ],
-        "paint": {"fill-color": "rgba(247, 239, 195, 1)"}
+        "paint": {"fill-color": "rgba(247, 239, 195, 1)"},
       },
       {
         "id": "aeroway_fill",
@@ -319,7 +319,7 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "aeroway",
         "minzoom": 11,
         "filter": ["==", "\$type", "Polygon"],
-        "paint": {"fill-color": "rgba(229, 228, 224, 1)", "fill-opacity": 0.7}
+        "paint": {"fill-color": "rgba(229, 228, 224, 1)", "fill-opacity": 0.7},
       },
       {
         "id": "aeroway_runway",
@@ -330,7 +330,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "\$type", "LineString"],
-          ["==", "class", "runway"]
+          ["==", "class", "runway"],
         ],
         "paint": {
           "line-color": "#f0ede9",
@@ -338,10 +338,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [11, 3],
-              [20, 16]
-            ]
-          }
-        }
+              [20, 16],
+            ],
+          },
+        },
       },
       {
         "id": "aeroway_taxiway",
@@ -352,7 +352,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "\$type", "LineString"],
-          ["==", "class", "taxiway"]
+          ["==", "class", "taxiway"],
         ],
         "paint": {
           "line-color": "#f0ede9",
@@ -360,10 +360,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [11, 0.5],
-              [20, 6]
-            ]
-          }
-        }
+              [20, 6],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_motorway_link_casing",
@@ -374,7 +374,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["==", "ramp", 1],
-          ["==", "brunnel", "tunnel"]
+          ["==", "brunnel", "tunnel"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -386,10 +386,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 1],
               [13, 3],
               [14, 4],
-              [20, 15]
-            ]
-          }
-        }
+              [20, 15],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_service_track_casing",
@@ -399,7 +399,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "service", "track"]
+          ["in", "class", "service", "track"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -410,10 +410,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [15, 1],
               [16, 4],
-              [20, 11]
-            ]
-          }
-        }
+              [20, 11],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_link_casing",
@@ -423,7 +423,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "ramp", 1],
-          ["==", "brunnel", "tunnel"]
+          ["==", "brunnel", "tunnel"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -434,10 +434,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 1],
               [13, 3],
               [14, 4],
-              [20, 15]
-            ]
-          }
-        }
+              [20, 15],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_street_casing",
@@ -447,7 +447,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "street", "street_limited"]
+          ["in", "class", "street", "street_limited"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -455,8 +455,8 @@ Map<String, dynamic> lightThemeData() {
           "line-opacity": {
             "stops": [
               [12, 0],
-              [12.5, 1]
-            ]
+              [12.5, 1],
+            ],
           },
           "line-width": {
             "base": 1.2,
@@ -464,10 +464,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 0.5],
               [13, 1],
               [14, 4],
-              [20, 15]
-            ]
-          }
-        }
+              [20, 15],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_secondary_tertiary_casing",
@@ -477,7 +477,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "secondary", "tertiary"]
+          ["in", "class", "secondary", "tertiary"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -486,10 +486,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [8, 1.5],
-              [20, 17]
-            ]
-          }
-        }
+              [20, 17],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_trunk_primary_casing",
@@ -499,7 +499,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "primary", "trunk"]
+          ["in", "class", "primary", "trunk"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -510,10 +510,10 @@ Map<String, dynamic> lightThemeData() {
               [5, 0.4],
               [6, 0.7],
               [7, 1.75],
-              [20, 22]
-            ]
-          }
-        }
+              [20, 22],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_motorway_casing",
@@ -524,7 +524,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["!=", "ramp", 1],
-          ["==", "brunnel", "tunnel"]
+          ["==", "brunnel", "tunnel"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -536,10 +536,10 @@ Map<String, dynamic> lightThemeData() {
               [5, 0.4],
               [6, 0.7],
               [7, 1.75],
-              [20, 22]
-            ]
-          }
-        }
+              [20, 22],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_path_pedestrian",
@@ -550,7 +550,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "\$type", "LineString"],
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "path", "pedestrian"]
+          ["in", "class", "path", "pedestrian"],
         ],
         "paint": {
           "line-color": "hsl(0, 0%, 100%)",
@@ -559,10 +559,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [14, 0.5],
-              [20, 10]
-            ]
-          }
-        }
+              [20, 10],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_motorway_link",
@@ -573,7 +573,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["==", "ramp", 1],
-          ["==", "brunnel", "tunnel"]
+          ["==", "brunnel", "tunnel"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -584,10 +584,10 @@ Map<String, dynamic> lightThemeData() {
               [12.5, 0],
               [13, 1.5],
               [14, 2.5],
-              [20, 11.5]
-            ]
-          }
-        }
+              [20, 11.5],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_service_track",
@@ -597,7 +597,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "service", "track"]
+          ["in", "class", "service", "track"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -607,10 +607,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [15.5, 0],
               [16, 2],
-              [20, 7.5]
-            ]
-          }
-        }
+              [20, 7.5],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_link",
@@ -620,7 +620,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "ramp", 1],
-          ["==", "brunnel", "tunnel"]
+          ["==", "brunnel", "tunnel"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -631,10 +631,10 @@ Map<String, dynamic> lightThemeData() {
               [12.5, 0],
               [13, 1.5],
               [14, 2.5],
-              [20, 11.5]
-            ]
-          }
-        }
+              [20, 11.5],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_minor",
@@ -644,7 +644,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "minor"]
+          ["in", "class", "minor"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -654,10 +654,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [13.5, 0],
               [14, 2.5],
-              [20, 11.5]
-            ]
-          }
-        }
+              [20, 11.5],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_secondary_tertiary",
@@ -667,7 +667,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "secondary", "tertiary"]
+          ["in", "class", "secondary", "tertiary"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -677,10 +677,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [6.5, 0],
               [7, 0.5],
-              [20, 10]
-            ]
-          }
-        }
+              [20, 10],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_trunk_primary",
@@ -690,7 +690,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "primary", "trunk"]
+          ["in", "class", "primary", "trunk"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -700,10 +700,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [5, 0],
               [7, 1],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_motorway",
@@ -714,7 +714,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["!=", "ramp", 1],
-          ["==", "brunnel", "tunnel"]
+          ["==", "brunnel", "tunnel"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -724,10 +724,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [5, 0],
               [7, 1],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_major_rail",
@@ -737,7 +737,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "rail"]
+          ["in", "class", "rail"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -746,10 +746,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14, 0.4],
               [15, 0.75],
-              [20, 2]
-            ]
-          }
-        }
+              [20, 2],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_major_rail_hatching",
@@ -759,7 +759,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["==", "class", "rail"]
+          ["==", "class", "rail"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -769,10 +769,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14.5, 0],
               [15, 3],
-              [20, 8]
-            ]
-          }
-        }
+              [20, 8],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_transit_rail",
@@ -782,7 +782,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["in", "class", "transit"]
+          ["in", "class", "transit"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -791,10 +791,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14, 0.4],
               [15, 0.75],
-              [20, 2]
-            ]
-          }
-        }
+              [20, 2],
+            ],
+          },
+        },
       },
       {
         "id": "tunnel_transit_rail_hatching",
@@ -804,7 +804,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "tunnel"],
-          ["==", "class", "transit"]
+          ["==", "class", "transit"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -814,10 +814,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14.5, 0],
               [15, 3],
-              [20, 8]
-            ]
-          }
-        }
+              [20, 8],
+            ],
+          },
+        },
       },
       {
         "id": "road_area_pattern",
@@ -826,9 +826,9 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "transportation",
         "filter": [
           "all",
-          ["==", "\$type", "Polygon"]
+          ["==", "\$type", "Polygon"],
         ],
-        "paint": {"fill-pattern": "pedestrian_polygon"}
+        "paint": {"fill-pattern": "pedestrian_polygon"},
       },
       {
         "id": "road_motorway_link_casing",
@@ -840,7 +840,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
           ["==", "class", "motorway"],
-          ["==", "ramp", 1]
+          ["==", "ramp", 1],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -851,10 +851,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 1],
               [13, 3],
               [14, 4],
-              [20, 15]
-            ]
-          }
-        }
+              [20, 15],
+            ],
+          },
+        },
       },
       {
         "id": "road_service_track_casing",
@@ -864,7 +864,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["in", "class", "service", "track"]
+          ["in", "class", "service", "track"],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -874,10 +874,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [15, 1],
               [16, 4],
-              [20, 11]
-            ]
-          }
-        }
+              [20, 11],
+            ],
+          },
+        },
       },
       {
         "id": "road_link_casing",
@@ -895,9 +895,9 @@ Map<String, dynamic> lightThemeData() {
             "path",
             "track",
             "service",
-            "motorway"
+            "motorway",
           ],
-          ["==", "ramp", 1]
+          ["==", "ramp", 1],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -908,10 +908,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 1],
               [13, 3],
               [14, 4],
-              [20, 15]
-            ]
-          }
-        }
+              [20, 15],
+            ],
+          },
+        },
       },
       {
         "id": "road_minor_casing",
@@ -923,7 +923,7 @@ Map<String, dynamic> lightThemeData() {
           ["==", "\$type", "LineString"],
           ["!in", "brunnel", "bridge", "tunnel"],
           ["in", "class", "minor"],
-          ["!=", "ramp", 1]
+          ["!=", "ramp", 1],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -931,8 +931,8 @@ Map<String, dynamic> lightThemeData() {
           "line-opacity": {
             "stops": [
               [12, 0],
-              [12.5, 1]
-            ]
+              [12.5, 1],
+            ],
           },
           "line-width": {
             "base": 1.2,
@@ -940,10 +940,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 0.5],
               [13, 1],
               [14, 4],
-              [20, 20]
-            ]
-          }
-        }
+              [20, 20],
+            ],
+          },
+        },
       },
       {
         "id": "road_secondary_tertiary_casing",
@@ -954,7 +954,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
           ["in", "class", "secondary", "tertiary"],
-          ["!=", "ramp", 1]
+          ["!=", "ramp", 1],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -963,10 +963,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [8, 1.5],
-              [20, 17]
-            ]
-          }
-        }
+              [20, 17],
+            ],
+          },
+        },
       },
       {
         "id": "road_trunk_primary_casing",
@@ -976,7 +976,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["in", "class", "primary", "trunk"]
+          ["in", "class", "primary", "trunk"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -987,10 +987,10 @@ Map<String, dynamic> lightThemeData() {
               [5, 0.4],
               [6, 0.7],
               [7, 1.75],
-              [20, 22]
-            ]
-          }
-        }
+              [20, 22],
+            ],
+          },
+        },
       },
       {
         "id": "road_motorway_casing",
@@ -1002,7 +1002,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
           ["==", "class", "motorway"],
-          ["!=", "ramp", 1]
+          ["!=", "ramp", 1],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1013,10 +1013,10 @@ Map<String, dynamic> lightThemeData() {
               [5, 0.4],
               [6, 0.7],
               [7, 1.75],
-              [20, 22]
-            ]
-          }
-        }
+              [20, 22],
+            ],
+          },
+        },
       },
       {
         "id": "road_path_pedestrian",
@@ -1028,7 +1028,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "\$type", "LineString"],
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["in", "class", "path", "pedestrian"]
+          ["in", "class", "path", "pedestrian"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1038,10 +1038,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [14, 1],
-              [20, 10]
-            ]
-          }
-        }
+              [20, 10],
+            ],
+          },
+        },
       },
       {
         "id": "road_motorway_link",
@@ -1053,7 +1053,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
           ["==", "class", "motorway"],
-          ["==", "ramp", 1]
+          ["==", "ramp", 1],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1064,10 +1064,10 @@ Map<String, dynamic> lightThemeData() {
               [12.5, 0],
               [13, 1.5],
               [14, 2.5],
-              [20, 11.5]
-            ]
-          }
-        }
+              [20, 11.5],
+            ],
+          },
+        },
       },
       {
         "id": "road_service_track",
@@ -1077,7 +1077,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["in", "class", "service", "track"]
+          ["in", "class", "service", "track"],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1087,10 +1087,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [15.5, 0],
               [16, 2],
-              [20, 7.5]
-            ]
-          }
-        }
+              [20, 7.5],
+            ],
+          },
+        },
       },
       {
         "id": "road_link",
@@ -1102,7 +1102,15 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
           ["==", "ramp", 1],
-          ["!in", "class", "pedestrian", "path", "track", "service", "motorway"]
+          [
+            "!in",
+            "class",
+            "pedestrian",
+            "path",
+            "track",
+            "service",
+            "motorway",
+          ],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1113,10 +1121,10 @@ Map<String, dynamic> lightThemeData() {
               [12.5, 0],
               [13, 1.5],
               [14, 2.5],
-              [20, 11.5]
-            ]
-          }
-        }
+              [20, 11.5],
+            ],
+          },
+        },
       },
       {
         "id": "road_minor",
@@ -1127,7 +1135,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "\$type", "LineString"],
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["in", "class", "minor"]
+          ["in", "class", "minor"],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1137,10 +1145,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [13.5, 0],
               [14, 2.5],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "road_secondary_tertiary",
@@ -1150,7 +1158,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["in", "class", "secondary", "tertiary"]
+          ["in", "class", "secondary", "tertiary"],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1160,10 +1168,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [6.5, 0],
               [8, 0.5],
-              [20, 13]
-            ]
-          }
-        }
+              [20, 13],
+            ],
+          },
+        },
       },
       {
         "id": "road_trunk_primary",
@@ -1173,7 +1181,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["in", "class", "primary", "trunk"]
+          ["in", "class", "primary", "trunk"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1183,10 +1191,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [5, 0],
               [7, 1],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "road_motorway",
@@ -1198,7 +1206,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
           ["==", "class", "motorway"],
-          ["!=", "ramp", 1]
+          ["!=", "ramp", 1],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1206,18 +1214,18 @@ Map<String, dynamic> lightThemeData() {
             "base": 1,
             "stops": [
               [5, "hsl(26, 87%, 62%)"],
-              [6, "#fc8"]
-            ]
+              [6, "#fc8"],
+            ],
           },
           "line-width": {
             "base": 1.2,
             "stops": [
               [5, 0],
               [7, 1],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "road_major_rail",
@@ -1227,7 +1235,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["==", "class", "rail"]
+          ["==", "class", "rail"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1236,10 +1244,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14, 0.4],
               [15, 0.75],
-              [20, 2]
-            ]
-          }
-        }
+              [20, 2],
+            ],
+          },
+        },
       },
       {
         "id": "road_major_rail_hatching",
@@ -1249,7 +1257,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["==", "class", "rail"]
+          ["==", "class", "rail"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1259,10 +1267,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14.5, 0],
               [15, 3],
-              [20, 8]
-            ]
-          }
-        }
+              [20, 8],
+            ],
+          },
+        },
       },
       {
         "id": "road_transit_rail",
@@ -1272,7 +1280,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["==", "class", "transit"]
+          ["==", "class", "transit"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1281,10 +1289,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14, 0.4],
               [15, 0.75],
-              [20, 2]
-            ]
-          }
-        }
+              [20, 2],
+            ],
+          },
+        },
       },
       {
         "id": "road_transit_rail_hatching",
@@ -1294,7 +1302,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["!in", "brunnel", "bridge", "tunnel"],
-          ["==", "class", "transit"]
+          ["==", "class", "transit"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1304,10 +1312,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14.5, 0],
               [15, 3],
-              [20, 8]
-            ]
-          }
-        }
+              [20, 8],
+            ],
+          },
+        },
       },
       {
         "id": "road_one_way_arrow",
@@ -1316,7 +1324,7 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "transportation",
         "minzoom": 15,
         "filter": ["==", "oneway", 1],
-        "layout": {"icon-image": "arrow", "symbol-placement": "line"}
+        "layout": {"icon-image": "arrow", "symbol-placement": "line"},
       },
       {
         "id": "road_one_way_arrow_opposite",
@@ -1328,8 +1336,8 @@ Map<String, dynamic> lightThemeData() {
         "layout": {
           "icon-image": "arrow",
           "symbol-placement": "line",
-          "icon-rotate": 180
-        }
+          "icon-rotate": 180,
+        },
       },
       {
         "id": "bridge_motorway_link_casing",
@@ -1340,7 +1348,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["==", "ramp", 1],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1351,10 +1359,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 1],
               [13, 3],
               [14, 4],
-              [20, 15]
-            ]
-          }
-        }
+              [20, 15],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_service_track_casing",
@@ -1364,7 +1372,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "service", "track"]
+          ["in", "class", "service", "track"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1374,10 +1382,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [15, 1],
               [16, 4],
-              [20, 11]
-            ]
-          }
-        }
+              [20, 11],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_link_casing",
@@ -1387,7 +1395,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "class", "link"],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1398,10 +1406,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 1],
               [13, 3],
               [14, 4],
-              [20, 15]
-            ]
-          }
-        }
+              [20, 15],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_street_casing",
@@ -1411,7 +1419,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "street", "street_limited"]
+          ["in", "class", "street", "street_limited"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1419,8 +1427,8 @@ Map<String, dynamic> lightThemeData() {
           "line-opacity": {
             "stops": [
               [12, 0],
-              [12.5, 1]
-            ]
+              [12.5, 1],
+            ],
           },
           "line-width": {
             "base": 1.2,
@@ -1428,10 +1436,10 @@ Map<String, dynamic> lightThemeData() {
               [12, 0.5],
               [13, 1],
               [14, 4],
-              [20, 25]
-            ]
-          }
-        }
+              [20, 25],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_path_pedestrian_casing",
@@ -1442,7 +1450,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "\$type", "LineString"],
           ["==", "brunnel", "bridge"],
-          ["in", "class", "path", "pedestrian"]
+          ["in", "class", "path", "pedestrian"],
         ],
         "paint": {
           "line-color": "hsl(35, 6%, 80%)",
@@ -1451,10 +1459,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [14, 1.5],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_secondary_tertiary_casing",
@@ -1464,7 +1472,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "secondary", "tertiary"]
+          ["in", "class", "secondary", "tertiary"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1473,10 +1481,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [8, 1.5],
-              [20, 17]
-            ]
-          }
-        }
+              [20, 17],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_trunk_primary_casing",
@@ -1486,7 +1494,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "primary", "trunk"]
+          ["in", "class", "primary", "trunk"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1497,10 +1505,10 @@ Map<String, dynamic> lightThemeData() {
               [5, 0.4],
               [6, 0.7],
               [7, 1.75],
-              [20, 22]
-            ]
-          }
-        }
+              [20, 22],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_motorway_casing",
@@ -1511,7 +1519,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["!=", "ramp", 1],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1522,10 +1530,10 @@ Map<String, dynamic> lightThemeData() {
               [5, 0.4],
               [6, 0.7],
               [7, 1.75],
-              [20, 22]
-            ]
-          }
-        }
+              [20, 22],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_path_pedestrian",
@@ -1536,7 +1544,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "\$type", "LineString"],
           ["==", "brunnel", "bridge"],
-          ["in", "class", "path", "pedestrian"]
+          ["in", "class", "path", "pedestrian"],
         ],
         "paint": {
           "line-color": "hsl(0, 0%, 100%)",
@@ -1545,10 +1553,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [14, 0.5],
-              [20, 10]
-            ]
-          }
-        }
+              [20, 10],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_motorway_link",
@@ -1559,7 +1567,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["==", "ramp", 1],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1570,10 +1578,10 @@ Map<String, dynamic> lightThemeData() {
               [12.5, 0],
               [13, 1.5],
               [14, 2.5],
-              [20, 11.5]
-            ]
-          }
-        }
+              [20, 11.5],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_service_track",
@@ -1583,7 +1591,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "service", "track"]
+          ["in", "class", "service", "track"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1593,10 +1601,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [15.5, 0],
               [16, 2],
-              [20, 7.5]
-            ]
-          }
-        }
+              [20, 7.5],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_link",
@@ -1606,7 +1614,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "class", "link"],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1617,10 +1625,10 @@ Map<String, dynamic> lightThemeData() {
               [12.5, 0],
               [13, 1.5],
               [14, 2.5],
-              [20, 11.5]
-            ]
-          }
-        }
+              [20, 11.5],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_street",
@@ -1630,7 +1638,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "minor"]
+          ["in", "class", "minor"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1640,10 +1648,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [13.5, 0],
               [14, 2.5],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_secondary_tertiary",
@@ -1653,7 +1661,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "secondary", "tertiary"]
+          ["in", "class", "secondary", "tertiary"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1663,10 +1671,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [6.5, 0],
               [7, 0.5],
-              [20, 10]
-            ]
-          }
-        }
+              [20, 10],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_trunk_primary",
@@ -1676,7 +1684,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "brunnel", "bridge"],
-          ["in", "class", "primary", "trunk"]
+          ["in", "class", "primary", "trunk"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1686,10 +1694,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [5, 0],
               [7, 1],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_motorway",
@@ -1700,7 +1708,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "class", "motorway"],
           ["!=", "ramp", 1],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1710,10 +1718,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [5, 0],
               [7, 1],
-              [20, 18]
-            ]
-          }
-        }
+              [20, 18],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_major_rail",
@@ -1723,7 +1731,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "class", "rail"],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1732,10 +1740,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14, 0.4],
               [15, 0.75],
-              [20, 2]
-            ]
-          }
-        }
+              [20, 2],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_major_rail_hatching",
@@ -1745,7 +1753,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "class", "rail"],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1755,10 +1763,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14.5, 0],
               [15, 3],
-              [20, 8]
-            ]
-          }
-        }
+              [20, 8],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_transit_rail",
@@ -1768,7 +1776,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "class", "transit"],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1777,10 +1785,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14, 0.4],
               [15, 0.75],
-              [20, 2]
-            ]
-          }
-        }
+              [20, 2],
+            ],
+          },
+        },
       },
       {
         "id": "bridge_transit_rail_hatching",
@@ -1790,7 +1798,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "class", "transit"],
-          ["==", "brunnel", "bridge"]
+          ["==", "brunnel", "bridge"],
         ],
         "paint": {
           "line-color": "#bbb",
@@ -1800,10 +1808,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [14.5, 0],
               [15, 3],
-              [20, 8]
-            ]
-          }
-        }
+              [20, 8],
+            ],
+          },
+        },
       },
       {
         "id": "building",
@@ -1818,10 +1826,10 @@ Map<String, dynamic> lightThemeData() {
             "base": 1,
             "stops": [
               [13, "hsla(35, 6%, 79%, 0.32)"],
-              [14, "hsl(35, 6%, 79%)"]
-            ]
-          }
-        }
+              [14, "hsl(35, 6%, 79%)"],
+            ],
+          },
+        },
       },
       {
         "id": "building-3d",
@@ -1833,14 +1841,14 @@ Map<String, dynamic> lightThemeData() {
           "fill-extrusion-color": "hsl(35, 8%, 85%)",
           "fill-extrusion-height": {
             "property": "render_height",
-            "type": "identity"
+            "type": "identity",
           },
           "fill-extrusion-base": {
             "property": "render_min_height",
-            "type": "identity"
+            "type": "identity",
           },
-          "fill-extrusion-opacity": 0.8
-        }
+          "fill-extrusion-opacity": 0.8,
+        },
       },
       {
         "id": "boundary_3",
@@ -1850,7 +1858,7 @@ Map<String, dynamic> lightThemeData() {
         "minzoom": 8,
         "filter": [
           "all",
-          ["in", "admin_level", 3, 4]
+          ["in", "admin_level", 3, 4],
         ],
         "layout": {"line-join": "round"},
         "paint": {
@@ -1861,10 +1869,10 @@ Map<String, dynamic> lightThemeData() {
             "stops": [
               [4, 0.4],
               [5, 1],
-              [12, 1.8]
-            ]
-          }
-        }
+              [12, 1.8],
+            ],
+          },
+        },
       },
       {
         "id": "boundary_2_z0-4",
@@ -1875,7 +1883,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "admin_level", 2],
-          ["!has", "claimed_by"]
+          ["!has", "claimed_by"],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1884,18 +1892,18 @@ Map<String, dynamic> lightThemeData() {
             "base": 1,
             "stops": [
               [0, 0.4],
-              [4, 1]
-            ]
+              [4, 1],
+            ],
           },
           "line-width": {
             "base": 1,
             "stops": [
               [3, 1],
               [5, 1.2],
-              [12, 3]
-            ]
-          }
-        }
+              [12, 3],
+            ],
+          },
+        },
       },
       {
         "id": "boundary_2_z5-",
@@ -1905,7 +1913,7 @@ Map<String, dynamic> lightThemeData() {
         "minzoom": 5,
         "filter": [
           "all",
-          ["==", "admin_level", 2]
+          ["==", "admin_level", 2],
         ],
         "layout": {"line-cap": "round", "line-join": "round"},
         "paint": {
@@ -1914,18 +1922,18 @@ Map<String, dynamic> lightThemeData() {
             "base": 1,
             "stops": [
               [0, 0.4],
-              [4, 1]
-            ]
+              [4, 1],
+            ],
           },
           "line-width": {
             "base": 1,
             "stops": [
               [3, 1],
               [5, 1.2],
-              [12, 3]
-            ]
-          }
-        }
+              [12, 3],
+            ],
+          },
+        },
       },
       {
         "id": "water_name_line",
@@ -1934,20 +1942,20 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "waterway",
         "filter": [
           "all",
-          ["==", "\$type", "LineString"]
+          ["==", "\$type", "LineString"],
         ],
         "layout": {
           "text-field": "{name}",
           "text-font": ["Roboto Regular"],
           "text-max-width": 5,
           "text-size": 12,
-          "symbol-placement": "line"
+          "symbol-placement": "line",
         },
         "paint": {
           "text-color": "#5d60be",
           "text-halo-color": "rgba(255,255,255,0.7)",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "water_name_point",
@@ -1959,13 +1967,13 @@ Map<String, dynamic> lightThemeData() {
           "text-field": "{name}",
           "text-font": ["Roboto Regular"],
           "text-max-width": 5,
-          "text-size": 12
+          "text-size": 12,
         },
         "paint": {
           "text-color": "#5d60be",
           "text-halo-color": "rgba(255,255,255,0.7)",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "poi_z16",
@@ -1976,7 +1984,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "\$type", "Point"],
-          [">=", "rank", 20]
+          [">=", "rank", 20],
         ],
         "layout": {
           "icon-image": "{class}_11",
@@ -1985,14 +1993,14 @@ Map<String, dynamic> lightThemeData() {
           "text-font": ["Roboto Condensed Italic"],
           "text-max-width": 9,
           "text-offset": [0, 0.6],
-          "text-size": 12
+          "text-size": 12,
         },
         "paint": {
           "text-color": "#666",
           "text-halo-blur": 0.5,
           "text-halo-color": "#ffffff",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "poi_z15",
@@ -2004,7 +2012,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "\$type", "Point"],
           [">=", "rank", 7],
-          ["<", "rank", 20]
+          ["<", "rank", 20],
         ],
         "layout": {
           "icon-image": "{class}_11",
@@ -2013,14 +2021,14 @@ Map<String, dynamic> lightThemeData() {
           "text-font": ["Roboto Condensed Italic"],
           "text-max-width": 9,
           "text-offset": [0, 0.6],
-          "text-size": 12
+          "text-size": 12,
         },
         "paint": {
           "text-color": "#666",
           "text-halo-blur": 0.5,
           "text-halo-color": "#ffffff",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "poi_z14",
@@ -2032,7 +2040,7 @@ Map<String, dynamic> lightThemeData() {
           "all",
           ["==", "\$type", "Point"],
           [">=", "rank", 1],
-          ["<", "rank", 7]
+          ["<", "rank", 7],
         ],
         "layout": {
           "icon-image": "{class}_11",
@@ -2041,14 +2049,14 @@ Map<String, dynamic> lightThemeData() {
           "text-font": ["Roboto Condensed Italic"],
           "text-max-width": 9,
           "text-offset": [0, 0.6],
-          "text-size": 12
+          "text-size": 12,
         },
         "paint": {
           "text-color": "#666",
           "text-halo-blur": 0.5,
           "text-halo-color": "#ffffff",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "poi_transit",
@@ -2057,7 +2065,7 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "poi",
         "filter": [
           "all",
-          ["in", "class", "bus", "rail", "airport"]
+          ["in", "class", "bus", "rail", "airport"],
         ],
         "layout": {
           "icon-image": "{class}_11",
@@ -2066,14 +2074,14 @@ Map<String, dynamic> lightThemeData() {
           "text-font": ["Roboto Condensed Italic"],
           "text-max-width": 9,
           "text-offset": [0.9, 0],
-          "text-size": 12
+          "text-size": 12,
         },
         "paint": {
           "text-color": "#4898ff",
           "text-halo-blur": 0.5,
           "text-halo-color": "#ffffff",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "road_label",
@@ -2091,15 +2099,15 @@ Map<String, dynamic> lightThemeData() {
             "base": 1,
             "stops": [
               [13, 12],
-              [14, 13]
-            ]
-          }
+              [14, 13],
+            ],
+          },
         },
         "paint": {
           "text-color": "#765",
           "text-halo-blur": 0.5,
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "road_shield",
@@ -2109,7 +2117,7 @@ Map<String, dynamic> lightThemeData() {
         "minzoom": 7,
         "filter": [
           "all",
-          ["<=", "ref_length", 6]
+          ["<=", "ref_length", 6],
         ],
         "layout": {
           "icon-image": "default_{ref_length}",
@@ -2118,8 +2126,8 @@ Map<String, dynamic> lightThemeData() {
             "base": 1,
             "stops": [
               [10, "point"],
-              [11, "line"]
-            ]
+              [11, "line"],
+            ],
           },
           "symbol-spacing": 500,
           "text-field": "{ref}",
@@ -2127,8 +2135,8 @@ Map<String, dynamic> lightThemeData() {
           "text-offset": [0, 0.1],
           "text-rotation-alignment": "viewport",
           "text-size": 10,
-          "icon-size": 0.8
-        }
+          "icon-size": 0.8,
+        },
       },
       {
         "id": "place_other",
@@ -2144,8 +2152,8 @@ Map<String, dynamic> lightThemeData() {
             "island",
             "islet",
             "neighbourhood",
-            "suburb"
-          ]
+            "suburb",
+          ],
         ],
         "layout": {
           "text-field": "{name_en}",
@@ -2156,16 +2164,16 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [12, 10],
-              [15, 14]
-            ]
+              [15, 14],
+            ],
           },
-          "text-transform": "uppercase"
+          "text-transform": "uppercase",
         },
         "paint": {
           "text-color": "#633",
           "text-halo-color": "rgba(255,255,255,0.8)",
-          "text-halo-width": 1.2
-        }
+          "text-halo-width": 1.2,
+        },
       },
       {
         "id": "place_village",
@@ -2174,7 +2182,7 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "place",
         "filter": [
           "all",
-          ["==", "class", "village"]
+          ["==", "class", "village"],
         ],
         "layout": {
           "text-field": "{name_en}",
@@ -2184,15 +2192,15 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [10, 12],
-              [15, 22]
-            ]
-          }
+              [15, 22],
+            ],
+          },
         },
         "paint": {
           "text-color": "#333",
           "text-halo-color": "rgba(255,255,255,0.8)",
-          "text-halo-width": 1.2
-        }
+          "text-halo-width": 1.2,
+        },
       },
       {
         "id": "place_town",
@@ -2201,15 +2209,15 @@ Map<String, dynamic> lightThemeData() {
         "source-layer": "place",
         "filter": [
           "all",
-          ["==", "class", "town"]
+          ["==", "class", "town"],
         ],
         "layout": {
           "icon-image": {
             "base": 1,
             "stops": [
               [0, "dot_9"],
-              [8, ""]
-            ]
+              [8, ""],
+            ],
           },
           "text-anchor": "bottom",
           "text-field": "{name_en}",
@@ -2220,15 +2228,15 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [7, 12],
-              [11, 16]
-            ]
-          }
+              [11, 16],
+            ],
+          },
         },
         "paint": {
           "text-color": "#333",
           "text-halo-color": "rgba(255,255,255,0.8)",
-          "text-halo-width": 1.2
-        }
+          "text-halo-width": 1.2,
+        },
       },
       {
         "id": "place_city",
@@ -2238,15 +2246,15 @@ Map<String, dynamic> lightThemeData() {
         "minzoom": 5,
         "filter": [
           "all",
-          ["==", "class", "city"]
+          ["==", "class", "city"],
         ],
         "layout": {
           "icon-image": {
             "base": 1,
             "stops": [
               [0, "dot_9"],
-              [8, ""]
-            ]
+              [8, ""],
+            ],
           },
           "text-anchor": "bottom",
           "text-field": "{name_en}",
@@ -2257,17 +2265,17 @@ Map<String, dynamic> lightThemeData() {
             "base": 1.2,
             "stops": [
               [7, 14],
-              [11, 24]
-            ]
+              [11, 24],
+            ],
           },
           "icon-allow-overlap": true,
-          "icon-optional": false
+          "icon-optional": false,
         },
         "paint": {
           "text-color": "#333",
           "text-halo-color": "rgba(255,255,255,0.8)",
-          "text-halo-width": 1.2
-        }
+          "text-halo-width": 1.2,
+        },
       },
       {
         "id": "state",
@@ -2277,7 +2285,7 @@ Map<String, dynamic> lightThemeData() {
         "maxzoom": 6,
         "filter": [
           "all",
-          ["==", "class", "state"]
+          ["==", "class", "state"],
         ],
         "layout": {
           "text-field": "{name_en}",
@@ -2285,16 +2293,16 @@ Map<String, dynamic> lightThemeData() {
           "text-size": {
             "stops": [
               [4, 11],
-              [6, 15]
-            ]
+              [6, 15],
+            ],
           },
-          "text-transform": "uppercase"
+          "text-transform": "uppercase",
         },
         "paint": {
           "text-color": "#633",
           "text-halo-color": "rgba(255,255,255,0.7)",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "country_3",
@@ -2304,7 +2312,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           [">=", "rank", 3],
-          ["==", "class", "country"]
+          ["==", "class", "country"],
         ],
         "layout": {
           "text-field": "{name_en}",
@@ -2313,17 +2321,17 @@ Map<String, dynamic> lightThemeData() {
           "text-size": {
             "stops": [
               [3, 11],
-              [7, 17]
-            ]
+              [7, 17],
+            ],
           },
-          "text-transform": "none"
+          "text-transform": "none",
         },
         "paint": {
           "text-color": "#334",
           "text-halo-blur": 1,
           "text-halo-color": "rgba(255,255,255,0.8)",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "country_2",
@@ -2333,7 +2341,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "rank", 2],
-          ["==", "class", "country"]
+          ["==", "class", "country"],
         ],
         "layout": {
           "text-field": "{name_en}",
@@ -2342,17 +2350,17 @@ Map<String, dynamic> lightThemeData() {
           "text-size": {
             "stops": [
               [2, 11],
-              [5, 17]
-            ]
+              [5, 17],
+            ],
           },
-          "text-transform": "none"
+          "text-transform": "none",
         },
         "paint": {
           "text-color": "#334",
           "text-halo-blur": 1,
           "text-halo-color": "rgba(255,255,255,0.8)",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "country_1",
@@ -2362,7 +2370,7 @@ Map<String, dynamic> lightThemeData() {
         "filter": [
           "all",
           ["==", "rank", 1],
-          ["==", "class", "country"]
+          ["==", "class", "country"],
         ],
         "layout": {
           "text-field": "{name_en}",
@@ -2371,17 +2379,17 @@ Map<String, dynamic> lightThemeData() {
           "text-size": {
             "stops": [
               [1, 11],
-              [4, 17]
-            ]
+              [4, 17],
+            ],
           },
-          "text-transform": "none"
+          "text-transform": "none",
         },
         "paint": {
           "text-color": "#334",
           "text-halo-blur": 1,
           "text-halo-color": "rgba(255,255,255,0.8)",
-          "text-halo-width": 1
-        }
+          "text-halo-width": 1,
+        },
       },
       {
         "id": "continent",
@@ -2391,22 +2399,22 @@ Map<String, dynamic> lightThemeData() {
         "maxzoom": 1,
         "filter": [
           "all",
-          ["==", "class", "continent"]
+          ["==", "class", "continent"],
         ],
         "layout": {
           "text-field": "{name_en}",
           "text-font": ["Roboto Condensed Italic"],
           "text-size": 13,
           "text-transform": "uppercase",
-          "text-justify": "center"
+          "text-justify": "center",
         },
         "paint": {
           "text-color": "#633",
           "text-halo-color": "rgba(255,255,255,0.7)",
-          "text-halo-width": 1
-        }
-      }
+          "text-halo-width": 1,
+        },
+      },
     ],
-    "id": "osm-liberty"
+    "id": "osm-liberty",
   };
 }

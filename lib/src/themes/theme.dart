@@ -19,12 +19,13 @@ class Theme {
   /// If specified, the returned theme has only layers matching the given [atZoom].
   Theme copyWith({Set<ThemeLayerType>? types, String? id, double? atZoom}) {
     return Theme(
-        id: id ?? this.id,
-        version: version,
-        layers: layers
-            .where((layer) => types?.contains(layer.type) ?? true)
-            .where((layer) => atZoom == null || _matchesZoom(atZoom, layer))
-            .toList(growable: false));
+      id: id ?? this.id,
+      version: version,
+      layers: layers
+          .where((layer) => types?.contains(layer.type) ?? true)
+          .where((layer) => atZoom == null || _matchesZoom(atZoom, layer))
+          .toList(growable: false),
+    );
   }
 
   bool _matchesZoom(double zoom, ThemeLayer layer) =>
@@ -43,7 +44,7 @@ enum ThemeLayerType {
   symbol,
   background,
   raster,
-  unsupported
+  unsupported,
 }
 
 /// Represents a layer in the theme. Can [render] to a [Context], and specifies
@@ -54,8 +55,13 @@ abstract class ThemeLayer {
   final double? minzoom;
   final double? maxzoom;
   final Map<String, dynamic> metadata;
-  ThemeLayer(this.id, this.type,
-      {required this.minzoom, required this.maxzoom, required this.metadata});
+  ThemeLayer(
+    this.id,
+    this.type, {
+    required this.minzoom,
+    required this.maxzoom,
+    required this.metadata,
+  });
 
   String? get tileSource;
 

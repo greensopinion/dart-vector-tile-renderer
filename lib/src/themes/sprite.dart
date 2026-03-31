@@ -15,14 +15,15 @@ class Sprite {
   final List<List<int>> stretchX;
   final List<List<int>> stretchY;
 
-  Sprite(
-      {required this.name,
-      required this.width,
-      required this.height,
-      required this.x,
-      required this.y,
-      required this.pixelRatio,
-      this.content,
-      required this.stretchX,
-      required this.stretchY});
+  Sprite({
+    required this.name,
+    required this.width,
+    required this.height,
+    required this.x,
+    required this.y,
+    required this.pixelRatio,
+    this.content,
+    required this.stretchX,
+    required this.stretchY,
+  });
 }

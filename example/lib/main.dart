@@ -134,24 +134,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _radio<T extends Enum>(String label, List<T> values,
       T Function() currentValue, TileOptions Function(T value) applyer) {
-    return Row(
-        children: values
-            .map((v) => SizedBox(
-                width: 150,
-                child: ListTile(
-                  title: Text(v.name),
-                  leading: Radio<T>(
-                    value: v,
-                    groupValue: currentValue(),
-                    onChanged: (T? value) {
-                      if (value != null) {
-                        setState(() {
-                          options = applyer(value);
-                        });
-                      }
-                    },
-                  ),
-                )))
-            .toList());
+    return RadioGroup<T>(
+        groupValue: currentValue(),
+        onChanged: (T? value) {
+          if (value != null) {
+            setState(() {
+              options = applyer(value);
+            });
+          }
+        },
+        child: Row(
+            children: values
+                .map((v) => SizedBox(
+                    width: 150,
+                    child: ListTile(
+                      title: Text(v.name),
+                      leading: Radio<T>(
+                        value: v,
+                      ),
+                    )))
+                .toList()));
   }
 }

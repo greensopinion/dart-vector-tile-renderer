@@ -21,14 +21,15 @@ class Style {
   final Expression<List<Shadow>>? textHalo;
   final Expression<PaintModel>? outlinePaint;
 
-  Style(
-      {this.fillPaint,
-      this.fillExtrusion,
-      this.outlinePaint,
-      this.linePaint,
-      this.textPaint,
-      this.symbolLayout,
-      this.textHalo});
+  Style({
+    this.fillPaint,
+    this.fillExtrusion,
+    this.outlinePaint,
+    this.linePaint,
+    this.textPaint,
+    this.symbolLayout,
+    this.textHalo,
+  });
 }
 
 class LayoutPlacement {
@@ -89,11 +90,7 @@ class SymbolLayout {
   final TextLayout? text;
   final IconLayout? icon;
 
-  SymbolLayout({
-    required this.placement,
-    this.text,
-    this.icon,
-  });
+  SymbolLayout({required this.placement, this.text, this.icon});
 }
 
 class IconLayout {
@@ -104,13 +101,14 @@ class IconLayout {
   final Expression<RotationAlignment>? rotationAlignment;
   final Expression<double>? rotate;
 
-  IconLayout(
-      {required this.icon,
-      required this.anchor,
-      required this.opacity,
-      required this.size,
-      required this.rotationAlignment,
-      required this.rotate});
+  IconLayout({
+    required this.icon,
+    required this.anchor,
+    required this.opacity,
+    required this.size,
+    required this.rotationAlignment,
+    required this.rotate,
+  });
 }
 
 class TextLayout {
@@ -125,17 +123,18 @@ class TextLayout {
   final TextTransformFunction? textTransform;
   final Expression<RotationAlignment>? rotationAlignment;
 
-  TextLayout(
-      {required this.anchor,
-      required this.justify,
-      required this.text,
-      required this.textSize,
-      required this.textLetterSpacing,
-      required this.maxWidth,
-      required this.fontFamily,
-      required this.fontStyle,
-      required this.textTransform,
-      required this.rotationAlignment});
+  TextLayout({
+    required this.anchor,
+    required this.justify,
+    required this.text,
+    required this.textSize,
+    required this.textLetterSpacing,
+    required this.maxWidth,
+    required this.fontFamily,
+    required this.fontStyle,
+    required this.textTransform,
+    required this.rotationAlignment,
+  });
 }
 
 class LineCap {

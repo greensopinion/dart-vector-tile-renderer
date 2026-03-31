@@ -13,7 +13,7 @@ class ImageRenderer {
   final double scale;
 
   ImageRenderer({required this.theme, required this.scale, Logger? logger})
-      : logger = logger ?? const Logger.noop() {
+    : logger = logger ?? const Logger.noop() {
     assert(scale >= 1 && scale <= 4);
   }
 
@@ -27,8 +27,11 @@ class ImageRenderer {
   /// [zoom] the current zoom level, which is used to filter theme layers
   ///        via `minzoom` and `maxzoom`. Value if provided must be >= 0 and <= 24
   /// [tile] the tile to render
-  Future<Image> render(TileSource tile,
-      {double zoomScaleFactor = 1.0, required double zoom}) {
+  Future<Image> render(
+    TileSource tile, {
+    double zoomScaleFactor = 1.0,
+    required double zoom,
+  }) {
     return profileAsync('RenderImage', () {
       final recorder = PictureRecorder();
       double size = scale * tileSize;
@@ -36,8 +39,13 @@ class ImageRenderer {
       final canvas = Canvas(recorder, rect);
       canvas.clipRect(rect);
       canvas.scale(scale.toDouble(), scale.toDouble());
-      Renderer(theme: theme, logger: logger).render(canvas, tile,
-          zoomScaleFactor: zoomScaleFactor, zoom: zoom, rotation: 0.0);
+      Renderer(theme: theme, logger: logger).render(
+        canvas,
+        tile,
+        zoomScaleFactor: zoomScaleFactor,
+        zoom: zoom,
+        rotation: 0.0,
+      );
       return recorder.endRecording().toImage(size.floor(), size.floor());
     });
   }

@@ -33,14 +33,26 @@ class ExpressionParser {
     _register(NotExpressionParser(this));
     _register(EqualsExpressionParser(this));
     _register(NotEqualsExpressionParser(this));
-    _register(ComparisonExpressionParser(
-        this, '<', (first, second) => first < second));
-    _register(ComparisonExpressionParser(
-        this, '>', (first, second) => first > second));
-    _register(ComparisonExpressionParser(
-        this, '<=', (first, second) => first <= second));
-    _register(ComparisonExpressionParser(
-        this, '>=', (first, second) => first >= second));
+    _register(
+      ComparisonExpressionParser(this, '<', (first, second) => first < second),
+    );
+    _register(
+      ComparisonExpressionParser(this, '>', (first, second) => first > second),
+    );
+    _register(
+      ComparisonExpressionParser(
+        this,
+        '<=',
+        (first, second) => first <= second,
+      ),
+    );
+    _register(
+      ComparisonExpressionParser(
+        this,
+        '>=',
+        (first, second) => first >= second,
+      ),
+    );
     _register(AllExpressionParser(this));
     _register(AnyExpressionParser(this));
     _register(InterpolateExpressionParser(this), caching: true);
@@ -104,14 +116,14 @@ class ExpressionParser {
             'interpolate',
             ['linear'],
             ['zoom'],
-            ..._flattenStops(stops)
+            ..._flattenStops(stops),
           ]);
         } else {
           return parseOptional([
             'interpolate',
             ['exponential', base],
             ['zoom'],
-            ..._flattenStops(stops)
+            ..._flattenStops(stops),
           ]);
         }
       } else {
@@ -141,18 +153,19 @@ class ExpressionParser {
     if (_parserByOperator.containsKey(delegate.operator)) {
       throw Exception('duplicate operator ${delegate.operator}');
     }
-    _parserByOperator[delegate.operator] =
-        caching ? _CacheParserWrapper(delegate) : delegate;
+    _parserByOperator[delegate.operator] = caching
+        ? _CacheParserWrapper(delegate)
+        : delegate;
   }
 
-  Expression? parseOptionalPropertyOrExpression(json) {
+  Expression? parseOptionalPropertyOrExpression(dynamic json) {
     if (json is String) {
       return parseOptional(['get', json]);
     }
     return parseOptional(json);
   }
 
-  Expression parsePropertyOrExpression(json) {
+  Expression parsePropertyOrExpression(dynamic json) {
     Expression? expression;
     if (json is String) {
       expression = parseOptional(['get', json]);
@@ -177,7 +190,8 @@ class ExpressionParser {
       for (final match in matches) {
         if (match.start > previousOffset) {
           result.add(
-              LiteralExpression(json.substring(previousOffset, match.start)));
+            LiteralExpression(json.substring(previousOffset, match.start)),
+          );
         }
         final propertyName = match.group(1);
         if (propertyName != null) {
@@ -212,7 +226,7 @@ class _CacheParserWrapper extends ExpressionComponentParser {
   final ExpressionComponentParser _delegate;
 
   _CacheParserWrapper(this._delegate)
-      : super(_delegate.parser, _delegate.operator);
+    : super(_delegate.parser, _delegate.operator);
 
   @override
   bool matches(List<dynamic> json) => _delegate.matches(json);

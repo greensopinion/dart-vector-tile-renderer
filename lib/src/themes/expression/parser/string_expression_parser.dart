@@ -7,7 +7,7 @@ import 'expression_parser.dart';
 
 class ToStringExpressionParser extends ExpressionComponentParser {
   ToStringExpressionParser(ExpressionParser parser)
-      : super(parser, 'to-string');
+    : super(parser, 'to-string');
 
   @override
   bool matches(List<dynamic> json) {
@@ -92,7 +92,7 @@ class StringExpressionParser extends ExpressionComponentParser {
 
 class GeometryTypeExpressionParser extends ExpressionComponentParser {
   GeometryTypeExpressionParser(ExpressionParser parser)
-      : super(parser, 'geometry-type');
+    : super(parser, 'geometry-type');
 
   @override
   bool matches(List<dynamic> json) {

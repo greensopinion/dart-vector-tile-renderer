@@ -4,8 +4,10 @@ class IsSupportedScriptExpression extends Expression {
   final Expression _expression;
 
   IsSupportedScriptExpression(this._expression)
-      : super('isSupportedScript(${_expression.cacheKey})',
-            _expression.properties());
+    : super(
+        'isSupportedScript(${_expression.cacheKey})',
+        _expression.properties(),
+      );
 
   @override
   evaluate(EvaluationContext context) {
@@ -27,7 +29,8 @@ class IsSupportedScriptExpression extends Expression {
       return true;
     }
     context.logger.warn(
-        () => 'IsSupportedScriptExpression expected string but got $operand');
+      () => 'IsSupportedScriptExpression expected string but got $operand',
+    );
     return null;
   }
 

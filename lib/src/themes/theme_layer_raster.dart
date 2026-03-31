@@ -16,12 +16,15 @@ class RasterPaintModel {
 class ThemeLayerRaster extends ThemeLayer {
   final TileLayerSelector selector;
   final RasterPaintModel paintModel;
-  ThemeLayerRaster(super.id, super.type,
-      {required this.selector,
-      required this.paintModel,
-      required super.minzoom,
-      required super.maxzoom,
-      required super.metadata});
+  ThemeLayerRaster(
+    super.id,
+    super.type, {
+    required this.selector,
+    required this.paintModel,
+    required super.minzoom,
+    required super.maxzoom,
+    required super.metadata,
+  });
 
   @override
   void render(Context context) {
@@ -33,10 +36,13 @@ class ThemeLayerRaster extends ThemeLayer {
 
   void renderImage(Context context, RasterTile image) {
     final evaluationContext = EvaluationContext(
-        () => {}, TileFeatureType.none, context.logger,
-        zoom: context.zoom,
-        zoomScaleFactor: context.zoomScaleFactor,
-        hasImage: context.hasImage);
+      () => {},
+      TileFeatureType.none,
+      context.logger,
+      zoom: context.zoom,
+      zoomScaleFactor: context.zoomScaleFactor,
+      hasImage: context.hasImage,
+    );
     final opacity = paintModel.opacity.evaluate(evaluationContext) ?? 1.0;
     if (opacity > 0.0) {
       final paint = Paint()
@@ -44,26 +50,32 @@ class ThemeLayerRaster extends ThemeLayer {
         ..isAntiAlias = true
         ..filterQuality = _filterQuality(evaluationContext);
       if (image.scope == context.tileSpace) {
-        context.canvas
-            .drawImageRect(image.image, image.scope, context.tileSpace, paint);
+        context.canvas.drawImageRect(
+          image.image,
+          image.scope,
+          context.tileSpace,
+          paint,
+        );
       } else {
         final scale = context.tileClip.width / image.scope.width;
         context.canvas.drawAtlas(
-            image.image,
-            [
-              RSTransform.fromComponents(
-                  rotation: 0.0,
-                  scale: scale,
-                  anchorX: 0.0,
-                  anchorY: 0.0,
-                  translateX: context.tileClip.left,
-                  translateY: context.tileClip.top),
-            ],
-            [image.scope],
-            null,
-            null,
-            null,
-            paint);
+          image.image,
+          [
+            RSTransform.fromComponents(
+              rotation: 0.0,
+              scale: scale,
+              anchorX: 0.0,
+              anchorY: 0.0,
+              translateX: context.tileClip.left,
+              translateY: context.tileClip.top,
+            ),
+          ],
+          [image.scope],
+          null,
+          null,
+          null,
+          paint,
+        );
       }
     }
   }

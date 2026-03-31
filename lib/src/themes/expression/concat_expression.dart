@@ -5,8 +5,10 @@ class ConcatExpression extends Expression {
   final List<Expression> _values;
 
   ConcatExpression(this._values)
-      : super("concat(${_values.map((e) => e.cacheKey).join(',')})",
-            _values.joinProperties());
+    : super(
+        "concat(${_values.map((e) => e.cacheKey).join(',')})",
+        _values.joinProperties(),
+      );
 
   @override
   evaluate(EvaluationContext context) => _values

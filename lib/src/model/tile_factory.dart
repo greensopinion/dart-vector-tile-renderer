@@ -15,20 +15,23 @@ class TileFactory {
   late final Set<String> propertyNames;
   late final Set<String> layerNames;
   TileFactory(this.theme, this.logger) {
-    final layers =
-        theme.layers.whereType<DefaultLayer>().toList(growable: false);
+    final layers = theme.layers.whereType<DefaultLayer>().toList(
+      growable: false,
+    );
     propertyNames = layers.map((e) => e.propertyNames()).flatSet();
-    layerNames =
-        layers.map((e) => e.selector.layerSelector.layerNames()).flatSet();
+    layerNames = layers
+        .map((e) => e.selector.layerSelector.layerNames())
+        .flatSet();
   }
 
   TileData createTileData(VectorTile tile) {
     return TileData(
-        layers: tile.layers
-            .where((layer) => layerNames.contains(layer.name))
-            .map(_vectorLayerToTileDataLayer)
-            .whereType<TileDataLayer>()
-            .toList(growable: false));
+      layers: tile.layers
+          .where((layer) => layerNames.contains(layer.name))
+          .map(_vectorLayerToTileDataLayer)
+          .whereType<TileDataLayer>()
+          .toList(growable: false),
+    );
   }
 
   Tile create(VectorTile tile) {
@@ -37,35 +40,40 @@ class TileFactory {
 
   TileDataLayer? _vectorLayerToTileDataLayer(VectorTileLayer vectorLayer) {
     return TileDataLayer(
-        name: vectorLayer.name,
-        extent: vectorLayer.extent,
-        features: vectorLayer.features
-            .map(_vectorFeatureToTileDataFeature)
-            .whereType<TileDataFeature>()
-            .toList(growable: false));
+      name: vectorLayer.name,
+      extent: vectorLayer.extent,
+      features: vectorLayer.features
+          .map(_vectorFeatureToTileDataFeature)
+          .whereType<TileDataFeature>()
+          .toList(growable: false),
+    );
   }
 
   TileDataFeature? _vectorFeatureToTileDataFeature(
-      VectorTileFeature vectorFeature) {
+    VectorTileFeature vectorFeature,
+  ) {
     final type = vectorFeature.type;
     if (type == null || type == VectorTileGeomType.UNKNOWN) {
       return null;
     }
     if (type == VectorTileGeomType.POINT) {
       return TileDataFeature(
-          type: TileFeatureType.point,
-          properties: _decodeProperties(vectorFeature),
-          geometry: vectorFeature.geometryList!);
+        type: TileFeatureType.point,
+        properties: _decodeProperties(vectorFeature),
+        geometry: vectorFeature.geometryList!,
+      );
     } else if (type == VectorTileGeomType.LINESTRING) {
       return TileDataFeature(
-          type: TileFeatureType.linestring,
-          properties: _decodeProperties(vectorFeature),
-          geometry: vectorFeature.geometryList!);
+        type: TileFeatureType.linestring,
+        properties: _decodeProperties(vectorFeature),
+        geometry: vectorFeature.geometryList!,
+      );
     } else if (type == VectorTileGeomType.POLYGON) {
       return TileDataFeature(
-          type: TileFeatureType.polygon,
-          properties: _decodeProperties(vectorFeature),
-          geometry: vectorFeature.geometryList!);
+        type: TileFeatureType.polygon,
+        properties: _decodeProperties(vectorFeature),
+        geometry: vectorFeature.geometryList!,
+      );
     }
     return null;
   }
@@ -77,7 +85,7 @@ class TileFactory {
     return properties.map((key, value) => MapEntry(key, _convertValue(value)));
   }
 
-  _convertValue(VectorTileValue value) {
+  Object _convertValue(VectorTileValue value) {
     final v = value.value;
     if (v is Int64) {
       return v.toInt();

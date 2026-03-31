@@ -16,8 +16,12 @@ class LabelSpace {
       !_occupied.any((existing) => existing.space.overlaps(rect));
 
   void occupy(String text, Rect box) {
-    final boxWithMargin = Rect.fromLTRB(box.left - margin, box.top - margin,
-        box.right + (2 * margin), box.bottom + (2 * margin));
+    final boxWithMargin = Rect.fromLTRB(
+      box.left - margin,
+      box.top - margin,
+      box.right + (2 * margin),
+      box.bottom + (2 * margin),
+    );
     _occupied.add(_LabelRect(text, boxWithMargin));
     texts.add(text);
   }

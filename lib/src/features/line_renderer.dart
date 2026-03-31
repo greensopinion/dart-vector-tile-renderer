@@ -25,32 +25,39 @@ class LineRenderer extends FeatureRenderer {
     }
     final linePaintExpression = style.linePaint;
     if (linePaintExpression == null) {
-      logger.warn(() =>
-          'line does not have a line paint for vector tile layer ${layer.name}');
+      logger.warn(
+        () =>
+            'line does not have a line paint for vector tile layer ${layer.name}',
+      );
       return;
     }
 
     final evaluationContext = EvaluationContext(
-        () => feature.properties, feature.type, logger,
-        zoom: context.zoom,
-        zoomScaleFactor: context.zoomScaleFactor,
-        hasImage: context.hasImage);
+      () => feature.properties,
+      feature.type,
+      logger,
+      zoom: context.zoom,
+      zoomScaleFactor: context.zoomScaleFactor,
+      hasImage: context.hasImage,
+    );
 
     final paint = style.linePaint?.evaluate(evaluationContext);
     if (paint == null) {
       return;
     }
 
-    final effectivePaint = context.paintProvider.provide(evaluationContext,
-        paint: linePaintExpression,
-        strokeWidthModifier: (strokeWidth) {
-          if (context.zoomScaleFactor > 1.0) {
-            strokeWidth = strokeWidth / context.zoomScaleFactor;
-          }
-          return strokeWidth;
-        },
-        widthModifier: (strokeWidth) =>
-            context.tileSpaceMapper.widthFromPixelToTile(strokeWidth));
+    final effectivePaint = context.paintProvider.provide(
+      evaluationContext,
+      paint: linePaintExpression,
+      strokeWidthModifier: (strokeWidth) {
+        if (context.zoomScaleFactor > 1.0) {
+          strokeWidth = strokeWidth / context.zoomScaleFactor;
+        }
+        return strokeWidth;
+      },
+      widthModifier: (strokeWidth) =>
+          context.tileSpaceMapper.widthFromPixelToTile(strokeWidth),
+    );
     if (effectivePaint == null) {
       return;
     }
