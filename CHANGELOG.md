@@ -1,3 +1,7 @@
+## 6.0.1
+
+* update `vector_tile` dependency to include 4.x versions for compatibility with `protobuf` 6.x
+
 ## 6.0.0
 
 * add `raster-resampling` to raster layer
