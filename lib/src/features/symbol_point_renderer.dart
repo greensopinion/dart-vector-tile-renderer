@@ -33,20 +33,27 @@ class SymbolPointRenderer extends FeatureRenderer {
     }
 
     final evaluationContext = EvaluationContext(
-        () => feature.properties, feature.type, logger,
-        zoom: context.zoom,
-        zoomScaleFactor: context.zoomScaleFactor,
-        hasImage: context.hasImage);
+      () => feature.properties,
+      feature.type,
+      logger,
+      zoom: context.zoom,
+      zoomScaleFactor: context.zoomScaleFactor,
+      hasImage: context.hasImage,
+    );
 
     final text = symbolLayout.text?.text.evaluate(evaluationContext);
-    final icon = symbolLayout.getIcon(context, evaluationContext,
-        layoutPlacement: LayoutPlacement.point);
+    final icon = symbolLayout.getIcon(
+      context,
+      evaluationContext,
+      layoutPlacement: LayoutPlacement.point,
+    );
     if (text == null && icon == null) {
       logger.warn(() => 'point with no text or icon');
       return;
     }
-    final textAbbreviation =
-        text == null ? null : TextAbbreviator().abbreviate(text);
+    final textAbbreviation = text == null
+        ? null
+        : TextAbbreviator().abbreviate(text);
     if (textAbbreviation != null &&
         !context.labelSpace.canAccept(textAbbreviation)) {
       return;
@@ -58,11 +65,13 @@ class SymbolPointRenderer extends FeatureRenderer {
     final textApproximation = lines == null
         ? null
         : TextApproximation(context, evaluationContext, style, lines);
-    final textAnchor = symbolLayout.text?.anchor.evaluate(evaluationContext) ??
+    final textAnchor =
+        symbolLayout.text?.anchor.evaluate(evaluationContext) ??
         LayoutAnchor.center;
     final rotationAlignment = symbolLayout.textRotationAlignment(
-        evaluationContext,
-        layoutPlacement: LayoutPlacement.line);
+      evaluationContext,
+      layoutPlacement: LayoutPlacement.line,
+    );
 
     logger.log(() => 'rendering symbol points');
 
@@ -89,9 +98,11 @@ class SymbolPointRenderer extends FeatureRenderer {
           context.canvas.translate(-offset.dx, -offset.dy);
         }
         if (icon != null) {
-          final occupied = icon.render(offset,
-              contentSize: textApproximation?.renderer.size ?? Size.zero,
-              withRotation: false);
+          final occupied = icon.render(
+            offset,
+            contentSize: textApproximation?.renderer.size ?? Size.zero,
+            withRotation: false,
+          );
           if (occupied != null) {
             if (!occupied.overlapsText && textAnchor == LayoutAnchor.top) {
               textOffset = textOffset.translate(0, occupied.area.height / 2.0);
@@ -101,10 +112,10 @@ class SymbolPointRenderer extends FeatureRenderer {
             } else if (occupied.overlapsText &&
                 textAnchor == LayoutAnchor.center) {
               textOffset = textOffset.translate(
-                  0,
-                  (occupied.contentArea.top - occupied.area.top).abs() -
-                      (occupied.contentArea.bottom - occupied.area.bottom)
-                          .abs());
+                0,
+                (occupied.contentArea.top - occupied.area.top).abs() -
+                    (occupied.contentArea.bottom - occupied.area.bottom).abs(),
+              );
             }
           }
         }
