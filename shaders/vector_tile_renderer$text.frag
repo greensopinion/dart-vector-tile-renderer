@@ -4,8 +4,10 @@ uniform FragInfo {
 }
 frag_info;
 
+// NOTE: float (not int) for Impeller GLES compatibility — GLES backend only
+// supports float uniforms.
 uniform Age {
-  int milliseconds;
+  float milliseconds;
 }
 age;
 

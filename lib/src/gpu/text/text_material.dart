@@ -54,12 +54,13 @@ class TextMaterial extends UnlitMaterial {
 
     creationTimestamp ??= DateTime.now().millisecondsSinceEpoch;
 
+    // Impeller GLES only supports float uniforms; shader declares
+    // `Age { float milliseconds; }` so we pass a Float32 here.
     pass.bindUniform(
       fragmentShader.getUniformSlot("Age"),
-      transientsBuffer.emplace(Int64List.fromList(
-              [DateTime.now().millisecondsSinceEpoch - creationTimestamp!])
-          .buffer
-          .asByteData()),
+      transientsBuffer.emplace(Float32List.fromList([
+        (DateTime.now().millisecondsSinceEpoch - creationTimestamp!).toDouble(),
+      ]).buffer.asByteData()),
     );
 
     pass.bindTexture(fragmentShader.getUniformSlot('sdf'), baseColorTexture,
