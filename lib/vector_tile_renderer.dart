@@ -5,7 +5,8 @@ export 'package:vector_tile/vector_tile.dart' show VectorTile;
 export 'src/caching/cache_provider.dart';
 export 'src/coordinates/coordinate_transformer.dart';
 export 'src/factories/tile_renderer_factory.dart';
-export 'src/gpu/tiles_renderer.dart';
+export 'src/gpu/tiles_renderer.dart'
+    if (dart.library.js_interop) 'src/gpu/tiles_renderer_stub.dart';
 export 'src/image_renderer.dart';
 export 'src/image_to_png.dart';
 export 'src/logger.dart';

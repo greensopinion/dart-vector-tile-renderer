@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter_gpu/gpu.dart';
-import 'package:flutter_scene/scene.dart';
+import 'tileset_raster_gpu_stub.dart'
+    if (dart.library.ffi) 'package:flutter_gpu/gpu.dart';
 
 /// A raster tile is an image with a corresponding scope defining the portion of
 /// the image that is in scope for the tile.
