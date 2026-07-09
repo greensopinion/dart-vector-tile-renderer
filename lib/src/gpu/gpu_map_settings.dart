@@ -33,6 +33,12 @@ class GpuMapSettings {
   /// Anti-aliasing mode. Defaults to [MapAntiAliasing.msaa].
   static MapAntiAliasing antiAliasing = MapAntiAliasing.msaa;
 
+  /// Number of recently off-screen GPU tile nodes to retain per renderer.
+  ///
+  /// Set to zero to disable reuse. Higher values make backtracking pans
+  /// smoother at the cost of GPU memory.
+  static int tileNodeCacheCapacity = 12;
+
   /// Whether to frustum-cull tile geometry outside the camera view.
   ///
   /// When `true`, off-screen geometry is skipped, cutting draw calls when many

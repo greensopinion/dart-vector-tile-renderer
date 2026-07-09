@@ -39,17 +39,6 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
 
       final filtered = charCodes.toList()..sort();
 
-      if (filtered.first < 256) {
-        await atlasGenerator.loadAtlas(
-            str: _defaultChars, fontFamily: font, tileID: "");
-        if (filtered.last >= 256) {
-          final chop = filtered.indexWhere((it) => it >= 256);
-          filtered.removeRange(0, chop);
-        } else {
-          continue;
-        }
-      }
-
       for (var i = 0; i < filtered.length; i += 256) {
         final end = (i + 256 < filtered.length) ? i + 256 : filtered.length;
         final charChunk = filtered.sublist(i, end);
@@ -62,9 +51,6 @@ class AtlasCreatingTextVisitor extends LayerVisitor {
 
     fontToCharCodes.clear();
   }
-
-  static final String _defaultChars =
-      String.fromCharCodes(List.generate(256, (i) => i));
 
   @override
   void visitFeatures(VisitorContext context, ThemeLayerType layerType,

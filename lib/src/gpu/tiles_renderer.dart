@@ -10,7 +10,6 @@ import 'texture_provider.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';
-import 'gpu_map_settings.dart';
 import 'orthographic_camera.dart';
 import 'position_transform.dart';
 import 'shaders.dart';
@@ -63,6 +62,7 @@ class TilesRenderer {
   static Future<void> initialize = _initializer.future;
 
   final _positionByKey = <String, Rect>{};
+  final _cachedNodes = <String, Node>{};
   final AtlasProvider _atlasProvider = AtlasProvider();
   final TextureProvider _textureProvider = TextureProvider();
   late final _atlasGenerator = AtlasGenerator(
@@ -108,19 +108,23 @@ class TilesRenderer {
   Future preRenderUi(double zoom, Tileset tileset, String tileID) async {
     final visitor = AtlasCreatingTextVisitor(_atlasGenerator, theme);
     visitor.visitAllFeatures(tileset, zoom);
-
     await visitor.finish(tileID);
   }
 
   void update(double zoom, List<TileUiModel> models, Iterable<String> tileIDs) {
+    if (GpuMapSettings.tileNodeCacheCapacity <= 0) {
+      _cachedNodes.clear();
+    }
     final scene = this.scene;
-    final nodesByKey =
+    final activeNodesByKey =
         Map.fromEntries(scene.root.children.map((n) => MapEntry(n.name, n)));
     scene.root.removeAll();
     _positionByKey.clear();
+    final currentTileKeys = <String>{};
     for (final model in models) {
       final key = 'z=${model.tileId.z},x=${model.tileId.x},y=${model.tileId.y}';
-      var node = nodesByKey[key];
+      currentTileKeys.add(key);
+      var node = activeNodesByKey[key] ?? _cachedNodes.remove(key);
       if (node == null) {
         node = Node(name: key);
         final renderData = model.renderData;
@@ -135,7 +139,28 @@ class TilesRenderer {
       scene.add(node);
     }
 
-    _atlasGenerator.unloadWhereNotFound(tileIDs.toSet());
+    for (final entry in activeNodesByKey.entries) {
+      if (!currentTileKeys.contains(entry.key)) {
+        _cacheNode(entry.key, entry.value);
+      }
+    }
+
+    _atlasGenerator.unloadWhereNotFound({
+      ...tileIDs,
+      ..._cachedNodes.keys,
+    });
+  }
+
+  void _cacheNode(String key, Node node) {
+    final capacity = GpuMapSettings.tileNodeCacheCapacity;
+    if (capacity <= 0) {
+      return;
+    }
+    _cachedNodes.remove(key);
+    _cachedNodes[key] = node;
+    while (_cachedNodes.length > capacity) {
+      _cachedNodes.remove(_cachedNodes.keys.first);
+    }
   }
 
   void render(ui.Canvas canvas, ui.Size size, double rotation) {

@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'atlas_provider.dart';
 import 'sdf_renderer.dart';
 import '../../texture_provider.dart';
@@ -11,6 +12,7 @@ import 'glyph_atlas_data.dart';
 
 class AtlasGenerator {
   final _loading = <AtlasID, Completer<GlyphAtlas>>{};
+  static Future<void> _generationTail = Future.value();
 
   final AtlasProvider atlasProvider;
   final TextureProvider textureProvider;
@@ -45,19 +47,27 @@ class AtlasGenerator {
     textureProvider.unloadWhereNotFound(neededTextureKeys);
   }
 
-  Future<GlyphAtlas> _loadAtlas(AtlasID id) async {
+  Future<GlyphAtlas> _loadAtlas(AtlasID id) {
     var atlas = _loading[id];
     if (atlas == null) {
-      final completer = Completer<GlyphAtlas>();
-      _loading[id] = completer;
-      try {
-        completer.complete(await _generateBitmapAtlas(id, 24));
-      } catch (e) {
-        completer.completeError(e);
-      }
-      atlas = completer;
+      atlas = Completer<GlyphAtlas>();
+      _loading[id] = atlas;
+      _enqueueGeneration(id, atlas);
     }
     return atlas.future;
+  }
+
+  void _enqueueGeneration(AtlasID id, Completer<GlyphAtlas> completer) {
+    _generationTail = _generationTail.then((_) async {
+      try {
+        completer.complete(await _generateBitmapAtlas(id, 24));
+      } catch (error, stackTrace) {
+        completer.completeError(error, stackTrace);
+      }
+
+      // Keep one frame available for map gestures before starting the next atlas.
+      await SchedulerBinding.instance.endOfFrame;
+    });
   }
 
   Future<GlyphAtlas> _generateBitmapAtlas(AtlasID id, int fontSize) async {
@@ -79,10 +89,9 @@ class AtlasGenerator {
 
     final sdfRenderer = SdfRenderer(config, cellSize * config.renderScale);
 
-    textureProvider.addLoaded(
-        sdfRenderer
-            .renderToSDF(await glyphRenderer.renderGlyphs(renderFontSize)),
-        id.hashCode);
+    final glyphs = await glyphRenderer.renderGlyphs(renderFontSize);
+    final sdfTexture = sdfRenderer.renderToSDF(glyphs);
+    textureProvider.addLoaded(sdfTexture, id.hashCode);
 
     return GlyphAtlas(
       atlasID: id,

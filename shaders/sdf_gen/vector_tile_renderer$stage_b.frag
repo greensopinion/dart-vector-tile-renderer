@@ -17,7 +17,7 @@ void main() {
     float dist = 9999;
 
     float minBound = max(v_position.x - (frag_info.radius / frag_info.width), 0);
-    float maxBound = max(v_position.x + (frag_info.radius / frag_info.width), 1);
+    float maxBound = min(v_position.x + (frag_info.radius / frag_info.width), 1);
     float stepSize = 1 / frag_info.width;
 
 
