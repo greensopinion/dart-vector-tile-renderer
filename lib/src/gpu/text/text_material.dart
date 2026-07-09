@@ -41,7 +41,7 @@ class TextMaterial extends UnlitMaterial {
   void bind(
     RenderPass pass,
     HostBuffer transientsBuffer,
-    Environment environment,
+    Lighting lighting,
   ) {
     configureRenderPass(pass);
     pass.setWindingOrder(WindingOrder.clockwise);

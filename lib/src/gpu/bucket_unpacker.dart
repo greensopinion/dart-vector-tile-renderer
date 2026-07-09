@@ -1,7 +1,9 @@
 import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart';
 
 import '../tileset_raster.dart';
 import 'background/background_geometry.dart';
+import 'gpu_map_settings.dart';
 import 'colored_material.dart';
 import 'line/line_geometry.dart';
 import 'line/line_material.dart';
@@ -18,15 +20,33 @@ class BucketUnpacker {
 
   BucketUnpacker(this.textureProvider, this.rasterTileset);
 
+  /// Keep all layer depths inside Impeller's [0, 1] clip-space z range while
+  /// making layer order dominate flutter_scene's translucent depth sort.
+  static const _maxLayerDepth = 0.95;
+
   void unpackOnto(Node parent, TileRenderData bucket) {
+    final layerCount = bucket.data.length;
+    var layer = 0;
     for (var packedMesh in bucket.data) {
+      final layerDepth = layerCount <= 1
+          ? 0.0
+          : _maxLayerDepth * (layerCount - 1 - layer) / (layerCount - 1);
+      final layerTransform =
+          Matrix4.translation(Vector3(0, 0, layerDepth));
       if (packedMesh.geometry.type == GeometryType.raster) {
-        RasterLayerBuilder().build(parent, packedMesh.geometry.uniform!,
+        final node = Node(localTransform: layerTransform)
+          ..frustumCulled = GpuMapSettings.frustumCulling;
+        parent.add(node);
+        RasterLayerBuilder().build(node, packedMesh.geometry.uniform!,
             packedMesh.material.uniform!, rasterTileset);
       } else {
-        parent.addMesh(Mesh(_unpackGeometry(packedMesh.geometry),
-            _unpackMaterial(packedMesh.material)));
+        parent.add(Node(
+          localTransform: layerTransform,
+          mesh: Mesh(_unpackGeometry(packedMesh.geometry),
+              _unpackMaterial(packedMesh.material)),
+        )..frustumCulled = GpuMapSettings.frustumCulling);
       }
+      layer++;
     }
   }
 

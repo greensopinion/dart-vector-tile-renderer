@@ -10,11 +10,20 @@ import 'texture_provider.dart';
 
 import '../../vector_tile_renderer.dart';
 import 'bucket_unpacker.dart';
+import 'gpu_map_settings.dart';
 import 'orthographic_camera.dart';
 import 'position_transform.dart';
+import 'shaders.dart';
 import 'text/atlas_creating_text_visitor.dart';
 import 'tile_prerenderer.dart';
 import 'tile_render_data.dart';
+
+AntiAliasingMode _sceneAntiAliasing(MapAntiAliasing aa) => switch (aa) {
+      MapAntiAliasing.none => AntiAliasingMode.none,
+      MapAntiAliasing.fxaa => AntiAliasingMode.fxaa,
+      MapAntiAliasing.msaa => AntiAliasingMode.msaa,
+      MapAntiAliasing.auto => AntiAliasingMode.auto,
+    };
 
 class TileId {
   final int z;
@@ -63,7 +72,13 @@ class TilesRenderer {
 
   TilesRenderer(this.theme) {
     if (!_initializer.isCompleted) {
-      Scene.initializeStaticResources().then((_) {
+      // flutter_scene's base shader bundle and our tile shader bundle both load
+      // asynchronously (shader assets can't be read synchronously on any
+      // backend); geometry/material construction throws until both are ready.
+      Future.wait([
+        Scene.initializeStaticResources(),
+        loadShaderLibrary(),
+      ]).then((_) {
         if (!_initializer.isCompleted) {
           _initializer.complete();
         }
@@ -124,6 +139,10 @@ class TilesRenderer {
   }
 
   void render(ui.Canvas canvas, ui.Size size, double rotation) {
+    final scene = this.scene;
+    // Read live so a change to GpuMapSettings takes effect next frame.
+    scene.antiAliasingMode = _sceneAntiAliasing(GpuMapSettings.antiAliasing);
+
     canvas.clipRect(Offset.zero & size);
 
     // Apply device pixel ratio scaling
@@ -143,7 +162,7 @@ class TilesRenderer {
 
   Scene _createScene() {
     Scene scene = Scene();
-    scene.antiAliasingMode = AntiAliasingMode.msaa;
+    scene.antiAliasingMode = _sceneAntiAliasing(GpuMapSettings.antiAliasing);
     return scene;
   }
 

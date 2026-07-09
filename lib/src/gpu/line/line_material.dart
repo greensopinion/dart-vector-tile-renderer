@@ -18,8 +18,8 @@ class LineMaterial extends Material {
 
   @override
   void bind(
-      RenderPass pass, HostBuffer transientsBuffer, Environment environment) {
-    super.bind(pass, transientsBuffer, environment);
+      RenderPass pass, HostBuffer transientsBuffer, Lighting lighting) {
+    super.bind(pass, transientsBuffer, lighting);
 
     final lineMaterialSlot = fragmentShader.getUniformSlot('LineMaterial');
     final lineMaterialView = transientsBuffer.emplace(_uniform);

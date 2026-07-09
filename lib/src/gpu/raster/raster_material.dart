@@ -29,7 +29,7 @@ class RasterMaterial extends UnlitMaterial {
   void bind(
     gpu.RenderPass pass,
     gpu.HostBuffer transientsBuffer,
-    Environment environment,
+    Lighting lighting,
   ) {
     pass.setCullMode(gpu.CullMode.backFace);
     pass.setWindingOrder(gpu.WindingOrder.counterClockwise);

@@ -4,6 +4,20 @@ import 'package:flutter_gpu/gpu.dart';
 import 'package:vector_math/vector_math.dart';
 
 void configureRenderPass(RenderPass pass) {
+  // The map is 2D and drawn on the fast opaque path. Two adjustments make that
+  // correct under flutter_scene 0.18.1:
+  //
+  // - Never cull: map geometry has no meaningful front/back face and layers
+  //   wind inconsistently (earcut fills vs. the fixed background quad); the
+  //   default back-face culling would drop the "wrong-facing" ones (e.g. the
+  //   background quad, leaving a transparent -> black tile).
+  // - Write + test depth: each tile layer gets a distinct z (see
+  //   BucketUnpacker), background farthest and labels nearest. The depth buffer
+  //   then keeps the nearest (topmost) layer per pixel no matter which order
+  //   flutter_scene draws pipelines in — so the flat layers stack correctly
+  //   while staying on the cheap early-Z opaque path instead of the slow
+  //   blended translucent pass.
+  pass.setCullMode(CullMode.none);
   pass.setDepthWriteEnable(true);
   pass.setDepthCompareOperation(CompareFunction.lessEqual);
   pass.setColorBlendEnable(true);

@@ -61,8 +61,11 @@ class TextLayoutCalculator {
   }
 
   ({double fontScale, double canvasScale, double scaling, double lineHeight})
-      calculateScaling(int fontSize, int canvasSize) {
-    final fontScale = 15 * fontSize / atlasSet.fontSize;
+      calculateScaling(int fontSize, int canvasSize, double displayScaleFactor) {
+    // Scale glyph size by the device pixel ratio, matching the rest of the
+    // text pipeline (the geometry font metric uses fontSize * displayScaleFactor
+    // too). Without this the GPU labels render ~pixelRatio times too small.
+    final fontScale = 15 * fontSize * displayScaleFactor / atlasSet.fontSize;
     final canvasScale = 2 / canvasSize;
     final scaling = fontScale * canvasScale;
     final lineHeight = scaling * atlasSet.fontSize * 1.2;

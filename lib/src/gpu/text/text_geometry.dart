@@ -1,9 +1,8 @@
-import 'package:flutter_scene/scene.dart';
-
 import '../shaders.dart';
+import '../tile_geometry.dart';
 import '../tile_render_data.dart';
 
-class TextGeometry extends UnskinnedGeometry {
+class TextGeometry extends TileGeometry {
   static const vertexSize = 10;
 
   TextGeometry(PackedGeometry packed) {

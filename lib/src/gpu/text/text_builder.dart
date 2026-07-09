@@ -61,8 +61,8 @@ class TextBuilder {
     required double displayScaleFactor,
     required LayoutAnchor anchorType,
   }) {
-    final layoutResult =
-        _calculateLayout(text, fontSize, fontFamily, maxWidth, canvasSize);
+    final layoutResult = _calculateLayout(
+        text, fontSize, fontFamily, maxWidth, canvasSize, displayScaleFactor);
     if (layoutResult == null) return;
 
     final geometryResult =
@@ -103,10 +103,11 @@ class TextBuilder {
     String fontFamily,
     int? maxWidth,
     int canvasSize,
+    double displayScaleFactor,
   ) {
     final lines = _layoutCalculator.wrapTextLines(text, fontSize, maxWidth);
-    final scalingData =
-        _layoutCalculator.calculateScaling(fontSize, canvasSize);
+    final scalingData = _layoutCalculator.calculateScaling(
+        fontSize, canvasSize, displayScaleFactor);
     final lineWidths = _layoutCalculator.calculateLineWidths(
       lines,
       fontFamily,

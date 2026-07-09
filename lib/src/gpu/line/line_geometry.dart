@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter_gpu/gpu.dart';
-import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart';
 
 import '../shaders.dart';
+import '../tile_geometry.dart';
 import '../tile_render_data.dart';
 
-class LineGeometry extends UnskinnedGeometry {
+class LineGeometry extends TileGeometry {
   late double lineWidth;
   late int extent;
   late List<double>? dashLengths;

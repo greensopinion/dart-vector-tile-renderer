@@ -94,7 +94,7 @@ class SdfRenderer {
         gpu.gpuContext.createRenderPipeline(vertexShader, fragmentShader);
     renderPass.bindPipeline(pipeline);
 
-    renderPass.bindVertexBuffer(vertices, _vertices.length ~/ 2);
+    renderPass.bindVertexBuffer(vertices);
 
     final textureSlot = fragmentShader.getUniformSlot('glyph_texture');
     renderPass.bindTexture(textureSlot, input);
@@ -102,7 +102,7 @@ class SdfRenderer {
     final uniformSlot = fragmentShader.getUniformSlot('FragInfo');
     renderPass.bindUniform(uniformSlot, uniform);
 
-    renderPass.draw();
+    renderPass.draw(_vertices.length ~/ 2);
 
     commandBuffer.submit();
   }

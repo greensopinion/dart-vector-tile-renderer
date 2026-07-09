@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter_gpu/gpu.dart' as gpu;
-import 'package:flutter_scene/scene.dart';
 
 import '../../../vector_tile_renderer.dart';
 import '../shaders.dart';
+import '../tile_geometry.dart';
 
-class RasterGeometry extends UnskinnedGeometry {
+class RasterGeometry extends TileGeometry {
   RasterGeometry(RasterTile tile) {
     setVertexShader(shaderLibrary["RasterVertex"]!);
 
