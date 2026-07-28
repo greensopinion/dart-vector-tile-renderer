@@ -1,3 +1,7 @@
+## 6.1.1
+
+* fix `vector_tile` dependency to include 4.x versions
+
 ## 6.1.0
 
 * add support for `text-anchor` `bottom` and `icon-anchor` `bottom`
