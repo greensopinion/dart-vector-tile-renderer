@@ -1,6 +1,6 @@
 name: vector_tile_renderer
 description: A vector tile renderer for use in creating map tile images or writing to a canvas.
-version: 6.1.0
+version: 6.1.1
 
 environment:
   sdk: ^3.8.1
@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  vector_tile: ^2.0.0
+  vector_tile: ">=3.0.0 <5.0.0"
   fixnum: ^1.0.0
   collection: ^1.19.1
 
